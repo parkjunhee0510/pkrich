@@ -15,9 +15,7 @@ def search_news(item: WatchlistItem, max_results: int = 3) -> list[NewsItem]:
     if not can_open_tcp_connection("duckduckgo.com", 443):
         return []
 
-    query_parts = [item.ticker, item.name, "stock news"]
-    query_parts.extend(item.keywords[:2])
-    query = " ".join(part for part in query_parts if part)
+    query = build_news_query(item)
 
     try:
         from duckduckgo_search import DDGS  # type: ignore
@@ -47,9 +45,37 @@ def search_news(item: WatchlistItem, max_results: int = 3) -> list[NewsItem]:
         return []
 
 
+def build_news_query(item: WatchlistItem) -> str:
+    company_name = _normalize_company_name(item.name)
+    keyword_text = " ".join(_normalize_keywords(item.keywords[:2]))
+    focus_terms = "earnings guidance analyst upgrade downgrade outlook"
+    query_parts = [
+        item.ticker,
+        company_name,
+        "stock",
+        keyword_text,
+        focus_terms,
+    ]
+    return " ".join(part for part in query_parts if part).strip()
+
+
 def _normalize_link(link: str) -> str:
     if not link:
         return ""
     if link.startswith("http://") or link.startswith("https://"):
         return link
     return f"https://duckduckgo.com/?q={quote_plus(link)}"
+
+
+def _normalize_company_name(name: str) -> str:
+    cleaned = name.replace("Corporation", "").replace("Corp.", "").replace("Inc.", "").strip()
+    return " ".join(cleaned.split())
+
+
+def _normalize_keywords(keywords: list[str]) -> list[str]:
+    normalized: list[str] = []
+    for keyword in keywords:
+        cleaned = " ".join(keyword.strip().split())
+        if cleaned:
+            normalized.append(cleaned)
+    return normalized

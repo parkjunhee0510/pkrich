@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from datetime import date
 from typing import Any
 
 from src.types import CollectedTickerData, NewsItem, TickerAnalysis, WatchlistItem
 from src.utils.env import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 
 def analyze_tickers(
@@ -29,11 +32,12 @@ def _analyze_with_openai(
     news_map: dict[str, list[NewsItem]],
     run_date: date,
 ) -> list[TickerAnalysis]:
+    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
     try:
         from openai import OpenAI
 
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
         payload = []
         for item in watchlist:
             market = collected[item.ticker]
@@ -58,53 +62,84 @@ def _analyze_with_openai(
                 }
             )
 
-        response = client.responses.create(
-            model=model,
-            input=[
-                {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": (
-                                "You are a cost-aware equity research assistant. "
-                                "Use only the provided data. Return strict JSON with key 'tickers'."
-                            ),
-                        }
-                    ],
+        try:
+            response = client.responses.create(
+                model=model,
+                input=[
+                    {
+                        "role": "system",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": (
+                                    "You are a cost-aware equity research assistant. "
+                                    "Use only the provided data. Return strict JSON with key 'tickers'."
+                                ),
+                            }
+                        ],
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": (
+                                    "Create concise structured research notes for each ticker. "
+                                    "Required fields: ticker, summary, key_news, financial_highlights, "
+                                    "risks_or_watchpoints, signal_or_takeaway. "
+                                    f"Data date: {run_date.isoformat()}\n"
+                                    + json.dumps(payload, ensure_ascii=True)
+                                ),
+                            }
+                        ],
+                    },
+                ],
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": "ticker_research_batch",
+                        "schema": _response_schema(),
+                        "strict": True,
+                    }
                 },
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": (
-                                "Create concise structured research notes for each ticker. "
-                                "Required fields: ticker, summary, key_news, financial_highlights, "
-                                "risks_or_watchpoints, signal_or_takeaway. "
-                                f"Data date: {run_date.isoformat()}\n"
-                                + json.dumps(payload, ensure_ascii=True)
-                            ),
-                        }
-                    ],
-                },
-            ],
-            text={
-                "format": {
-                    "type": "json_schema",
-                    "name": "ticker_research_batch",
-                    "schema": _response_schema(),
-                    "strict": True,
-                }
-            },
-        )
+            )
+        except Exception as exc:
+            _log_analyzer_event(
+                "openai_request_failed",
+                model=model,
+                run_date=run_date.isoformat(),
+                ticker_count=len(watchlist),
+                error_type=type(exc).__name__,
+                error_message=str(exc),
+            )
+            return []
 
         content = getattr(response, "output_text", "").strip()
-        tickers = _parse_and_validate_response(content, watchlist)
+        try:
+            tickers = _parse_and_validate_response(content, watchlist)
+        except Exception as exc:
+            _log_analyzer_event(
+                "openai_response_validation_failed",
+                model=model,
+                run_date=run_date.isoformat(),
+                ticker_count=len(watchlist),
+                response_length=len(content),
+                error_type=type(exc).__name__,
+                error_message=str(exc),
+            )
+            return []
+
         analyses: list[TickerAnalysis] = []
         for item in watchlist:
             match = next((entry for entry in tickers if entry["ticker"] == item.ticker), None)
             if not match:
+                _log_analyzer_event(
+                    "openai_response_missing_ticker",
+                    model=model,
+                    run_date=run_date.isoformat(),
+                    ticker=item.ticker,
+                    ticker_count=len(watchlist),
+                )
                 continue
             market = collected[item.ticker]
             analyses.append(
@@ -121,7 +156,15 @@ def _analyze_with_openai(
                 )
             )
         return analyses
-    except Exception:
+    except Exception as exc:
+        _log_analyzer_event(
+            "openai_analyzer_failed",
+            model=model,
+            run_date=run_date.isoformat(),
+            ticker_count=len(watchlist),
+            error_type=type(exc).__name__,
+            error_message=str(exc),
+        )
         return []
 
 
@@ -269,3 +312,12 @@ def _response_schema() -> dict[str, Any]:
         },
         "required": ["tickers"],
     }
+
+
+def _log_analyzer_event(event: str, **fields: Any) -> None:
+    logger.warning(_build_log_message(event, **fields))
+
+
+def _build_log_message(event: str, **fields: Any) -> str:
+    payload = {"event": event, **fields}
+    return json.dumps(payload, ensure_ascii=True, sort_keys=True)
