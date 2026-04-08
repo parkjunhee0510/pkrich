@@ -46,6 +46,8 @@ class OutputTests(unittest.TestCase):
         self.assertIn("## Market Overview", content)
         self.assertIn("## Watchlist Summary", content)
         self.assertIn("## Top Movers", content)
+        self.assertIn("## Top News Links", content)
+        self.assertIn("**AAPL**: [Headline 1](https://example.com/headline-1)", content)
         self.assertIn("## Action Items", content)
 
     def test_render_ticker_markdown_keeps_expected_sections(self) -> None:

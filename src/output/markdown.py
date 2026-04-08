@@ -43,6 +43,7 @@ def render_daily_markdown(analyses: list[TickerAnalysis], run_date: date) -> str
         f"- **{analysis.ticker}**: {analysis.summary}"
         for analysis in top_movers[:3]
     ) or "- No movers available."
+    top_news_links = _render_daily_news_links(analyses)
     action_items = "\n".join(
         f"- [ ] Review {analysis.ticker} for any material update."
         for analysis in analyses
@@ -62,6 +63,9 @@ def render_daily_markdown(analyses: list[TickerAnalysis], run_date: date) -> str
             "",
             "## Top Movers",
             top_mover_lines,
+            "",
+            "## Top News Links",
+            top_news_links,
             "",
             "## Action Items",
             action_items,
@@ -145,6 +149,16 @@ def _render_news_items(analysis: TickerAnalysis) -> str:
     if analysis.news_references:
         return "\n".join(_render_news_line(item) for item in analysis.news_references)
     return _render_bullets(analysis.key_news)
+
+
+def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
+    lines: list[str] = []
+    for analysis in analyses:
+        if analysis.news_references:
+            lines.append(f"- **{analysis.ticker}**: {_render_news_line(analysis.news_references[0])[2:]}")
+        elif analysis.key_news:
+            lines.append(f"- **{analysis.ticker}**: {analysis.key_news[0]}")
+    return "\n".join(lines) if lines else "- No news links available."
 
 
 def _render_news_line(item) -> str:
