@@ -39,6 +39,9 @@ def _sample_analysis() -> TickerAnalysis:
 
 
 class OutputTests(unittest.TestCase):
+    def _top_news_section(self, content: str) -> str:
+        return content.split("## Top News Links", 1)[1].split("## Action Items", 1)[0]
+
     def test_render_daily_markdown_keeps_expected_sections(self) -> None:
         content = render_daily_markdown([_sample_analysis()], date(2026, 4, 8))
 
@@ -80,8 +83,9 @@ class OutputTests(unittest.TestCase):
         )
 
         content = render_daily_markdown([older, newer], date(2026, 4, 8))
+        top_news_section = self._top_news_section(content)
 
-        self.assertLess(content.find("**AAPL**"), content.find("**MSFT**"))
+        self.assertLess(top_news_section.find("**AAPL**"), top_news_section.find("**MSFT**"))
 
     def test_render_daily_markdown_uses_source_priority_when_dates_match(self) -> None:
         yahoo_item = TickerAnalysis(
@@ -113,8 +117,57 @@ class OutputTests(unittest.TestCase):
         reuters_item = _sample_analysis()
 
         content = render_daily_markdown([yahoo_item, reuters_item], date(2026, 4, 8))
+        top_news_section = self._top_news_section(content)
 
-        self.assertLess(content.find("**AAPL**"), content.find("**MSFT**"))
+        self.assertLess(top_news_section.find("**AAPL**"), top_news_section.find("**MSFT**"))
+
+    def test_render_daily_markdown_uses_configurable_source_priority(self) -> None:
+        original_output_config = Path("config/output.yaml").read_text(encoding="utf-8")
+        try:
+            Path("config/output.yaml").write_text(
+                "\n".join(
+                    [
+                        "news_source_priority:",
+                        "  Reuters: 1",
+                        "  Yahoo Finance: 10",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            yahoo_item = TickerAnalysis(
+                ticker="MSFT",
+                name="Microsoft Corporation",
+                date="2026-04-08",
+                summary="Microsoft summary.",
+                key_news=["Headline 2"],
+                news_references=[
+                    NewsItem(
+                        title="Headline 2",
+                        source="Yahoo Finance",
+                        published_at="2026-04-08",
+                        link="https://example.com/headline-2",
+                    )
+                ],
+                financial_highlights=["Market cap: 2.00T"],
+                risks_or_watchpoints=["Watch cloud demand."],
+                signal_or_takeaway="Stay on watch.",
+                data_snapshot={
+                    "Price": "200.00 USD",
+                    "Daily Change": "+0.50%",
+                    "Market Cap": "2.00T",
+                    "Trailing P/E": "30.00",
+                    "Sector": "Technology",
+                },
+            )
+
+            reuters_item = _sample_analysis()
+            content = render_daily_markdown([reuters_item, yahoo_item], date(2026, 4, 8))
+            top_news_section = self._top_news_section(content)
+
+            self.assertLess(top_news_section.find("**MSFT**"), top_news_section.find("**AAPL**"))
+        finally:
+            Path("config/output.yaml").write_text(original_output_config, encoding="utf-8")
 
     def test_render_ticker_markdown_keeps_expected_sections(self) -> None:
         content = render_ticker_markdown(_sample_analysis())

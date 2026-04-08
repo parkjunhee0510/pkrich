@@ -35,6 +35,38 @@ def load_watchlist(path: str = "config/watchlist.yaml") -> list[WatchlistItem]:
     return items
 
 
+def load_simple_mapping(path: str) -> dict[str, object]:
+    raw_lines = Path(path).read_text(encoding="utf-8").splitlines()
+    result: dict[str, object] = {}
+    current_section: str | None = None
+    current_mapping: dict[str, object] = {}
+
+    for line in raw_lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        if not line.startswith(" ") and stripped.endswith(":"):
+            if current_section is not None:
+                result[current_section] = current_mapping
+            current_section = stripped[:-1]
+            current_mapping = {}
+            continue
+
+        if current_section is None:
+            key, value = _split_key_value(stripped)
+            result[key] = _parse_scalar(value)
+            continue
+
+        key, value = _split_key_value(stripped)
+        current_mapping[key] = _parse_scalar(value)
+
+    if current_section is not None:
+        result[current_section] = current_mapping
+
+    return result
+
+
 def _split_key_value(line: str) -> tuple[str, str]:
     key, value = line.split(":", 1)
     return key.strip(), value.strip()
@@ -46,7 +78,14 @@ def _parse_value(value: str) -> object:
         if not inner:
             return []
         return [part.strip().strip('"').strip("'") for part in inner.split(",")]
-    return value.strip('"').strip("'")
+    return _parse_scalar(value)
+
+
+def _parse_scalar(value: str) -> object:
+    normalized = value.strip('"').strip("'")
+    if normalized.lstrip("-").isdigit():
+        return int(normalized)
+    return normalized
 
 
 def _build_watchlist_item(raw: dict[str, object]) -> WatchlistItem:

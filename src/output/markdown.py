@@ -6,6 +6,20 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 from src.types import TickerAnalysis
+from src.utils.config import load_simple_mapping
+
+
+_DEFAULT_SOURCE_PRIORITIES = {
+    "reuters": 5,
+    "associated press": 4,
+    "ap": 4,
+    "bloomberg": 3,
+    "yahoo finance": 2,
+    "seeking alpha": 1,
+    "duckduckgo": 0,
+    "rss": 0,
+    "fallback": -1,
+}
 
 
 def write_outputs(analyses: list[TickerAnalysis], run_date: date) -> None:
@@ -153,7 +167,7 @@ def _render_news_items(analysis: TickerAnalysis) -> str:
 
 
 def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
-    grouped: dict[str, list[tuple[TickerAnalysis, object, str]]] = {}
+    grouped: dict[str, list[tuple[tuple[datetime, int], str, str]]] = {}
     for analysis in analyses:
         sector = analysis.data_snapshot.get("Sector", "N/A")
         if analysis.news_references:
@@ -169,7 +183,7 @@ def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
             sort_key = (_news_sort_key(""), _source_priority(""))
         else:
             continue
-        grouped.setdefault(sector, []).append((analysis, sort_key, line))
+        grouped.setdefault(sector, []).append((sort_key, analysis.ticker, line))
 
     if not grouped:
         return "- No news links available."
@@ -179,7 +193,7 @@ def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
         sections.append(f"### {sector}")
         ordered_lines = sorted(
             grouped[sector],
-            key=lambda entry: (entry[1], entry[0].ticker),
+            key=lambda entry: (entry[0][0], entry[0][1], entry[1]),
             reverse=True,
         )
         sections.extend(entry[2] for entry in ordered_lines)
@@ -219,15 +233,19 @@ def _news_sort_key(raw_value: str) -> datetime:
 
 def _source_priority(source: str) -> int:
     normalized = (source or "").strip().lower()
-    priorities = {
-        "reuters": 5,
-        "associated press": 4,
-        "ap": 4,
-        "bloomberg": 3,
-        "yahoo finance": 2,
-        "seeking alpha": 1,
-        "duckduckgo": 0,
-        "rss": 0,
-        "fallback": -1,
-    }
+    priorities = _load_source_priorities()
     return priorities.get(normalized, 0)
+
+
+def _load_source_priorities() -> dict[str, int]:
+    try:
+        raw_config = load_simple_mapping("config/output.yaml")
+        configured = raw_config.get("news_source_priority", {})
+        if not isinstance(configured, dict):
+            return _DEFAULT_SOURCE_PRIORITIES
+        return {
+            str(key).strip().lower(): int(value)
+            for key, value in configured.items()
+        }
+    except Exception:
+        return _DEFAULT_SOURCE_PRIORITIES

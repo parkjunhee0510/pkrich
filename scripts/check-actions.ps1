@@ -95,6 +95,19 @@ Write-LogLine "Inspecting failed run: $($failedRun.databaseId)"
 $failedSummary = gh run view $failedRun.databaseId -R $Repo
 $failedSummary | ForEach-Object { Write-LogLine $_ }
 
+try {
+    $failedJobs = gh run view $failedRun.databaseId -R $Repo --json jobs | ConvertFrom-Json
+    if ($failedJobs.jobs) {
+        Write-LogLine "  Jobs:"
+        foreach ($job in $failedJobs.jobs) {
+            Write-LogLine "    - $($job.name): $($job.conclusion)"
+        }
+    }
+}
+catch {
+    Write-LogLine "  Jobs: unavailable"
+}
+
 Write-LogLine ""
 Write-LogLine "Downloading failed run log output"
 $failedLog = gh run view $failedRun.databaseId -R $Repo --log-failed

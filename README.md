@@ -81,17 +81,15 @@ What the script does:
 - prints failed job logs
 - writes the same output to `.actions-check.txt` by default
 
-## Branch Migration Checklist
+## Branch Status
 
-Use this checklist when changing the repository default branch from `master` to `main`.
+The repository branch migration is complete.
 
-1. Confirm `main` exists on GitHub.
-2. Open the repository settings page:
-   - `https://github.com/parkjunhee0510/pkrich/settings/branches`
-3. Change the default branch from `master` to `main`.
-4. Re-open the Actions tab and confirm new runs target `main`.
-5. Re-open repository settings and confirm branch protection rules, if any, now point to `main`.
-6. Update any local clones:
+- local branch: `main`
+- remote default branch: `main`
+- remote branches: `origin/main`
+
+If another local clone still points to `master`, update it with:
 
 ```bash
 git fetch origin
@@ -100,15 +98,11 @@ git branch -u origin/main main
 git remote set-head origin -a
 ```
 
-7. After confirming nothing still depends on `master`, delete the remote branch:
+## Output Configuration
 
-```bash
-git push origin --delete master
-```
+News source tie-break priority for daily notes is configurable in:
 
-Current observed branch state in this repo:
-- local branch: `main`
-- remote branches: `origin/main`
+- `config/output.yaml`
 
 ## Notes
 
