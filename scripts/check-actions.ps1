@@ -1,7 +1,9 @@
 param(
     [string]$Repo = "parkjunhee0510/pkrich",
     [int]$Limit = 10,
-    [string]$OutputPath = ".actions-check.txt"
+    [string]$OutputPath = "",
+    [string]$LogDirectory = "logs\\actions",
+    [int]$FailedSummaryLimit = 3
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,11 +16,17 @@ function Write-LogLine {
 }
 
 function Save-LogBuffer {
+    if ([string]::IsNullOrWhiteSpace($OutputPath)) {
+        $timestamp = Get-Date -Format "yyyy-MM-dd"
+        $OutputPath = Join-Path $LogDirectory "$timestamp-actions-check.txt"
+    }
+
     $directory = Split-Path -Parent $OutputPath
     if ($directory) {
         New-Item -ItemType Directory -Force -Path $directory | Out-Null
     }
     $script:LogBuffer | Set-Content -Path $OutputPath -Encoding UTF8
+    Write-Host "Saved log output to $OutputPath"
 }
 
 function Test-GhAuth {
@@ -83,11 +91,21 @@ $failedRun = $runMetadata `
     | Where-Object { $_.conclusion -eq "failure" -or $_.status -eq "completed" -and $_.conclusion -eq "startup_failure" } `
     | Select-Object -First 1
 
+$recentFailedRuns = $runMetadata `
+    | Where-Object { $_.conclusion -eq "failure" -or $_.status -eq "completed" -and $_.conclusion -eq "startup_failure" } `
+    | Select-Object -First $FailedSummaryLimit
+
 if ($null -eq $failedRun) {
     Write-LogLine ""
     Write-LogLine "No failed runs found in the recent history."
     Save-LogBuffer
     exit 0
+}
+
+Write-LogLine ""
+Write-LogLine "Recent failed run comparison"
+foreach ($run in $recentFailedRuns) {
+    Write-LogLine "  - Run ID: $($run.databaseId) | Workflow: $($run.workflowName) | Title: $($run.displayTitle) | Branch: $($run.headBranch) | Updated At: $($run.updatedAt)"
 }
 
 Write-LogLine ""

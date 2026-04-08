@@ -127,6 +127,9 @@ class OutputTests(unittest.TestCase):
             Path("config/output.yaml").write_text(
                 "\n".join(
                     [
+                        "hide_fallback_news_without_links: true",
+                        "sector_display_order:",
+                        "  - Technology",
                         "news_source_priority:",
                         "  Reuters: 1",
                         "  Yahoo Finance: 10",
@@ -166,6 +169,89 @@ class OutputTests(unittest.TestCase):
             top_news_section = self._top_news_section(content)
 
             self.assertLess(top_news_section.find("**MSFT**"), top_news_section.find("**AAPL**"))
+        finally:
+            Path("config/output.yaml").write_text(original_output_config, encoding="utf-8")
+
+    def test_render_daily_markdown_hides_fallback_items_without_links_by_default(self) -> None:
+        fallback_item = TickerAnalysis(
+            ticker="MSFT",
+            name="Microsoft Corporation",
+            date="2026-04-08",
+            summary="Microsoft summary.",
+            key_news=["Fallback headline"],
+            news_references=[
+                NewsItem(
+                    title="Fallback headline",
+                    source="fallback",
+                    published_at="2026-04-08",
+                    link="",
+                )
+            ],
+            financial_highlights=["Market cap: 2.00T"],
+            risks_or_watchpoints=["Watch cloud demand."],
+            signal_or_takeaway="Stay on watch.",
+            data_snapshot={
+                "Price": "200.00 USD",
+                "Daily Change": "+0.50%",
+                "Market Cap": "2.00T",
+                "Trailing P/E": "30.00",
+                "Sector": "Technology",
+            },
+        )
+
+        content = render_daily_markdown([fallback_item], date(2026, 4, 8))
+
+        self.assertIn("- No news links available.", content)
+        self.assertNotIn("Fallback headline", content)
+
+    def test_render_daily_markdown_uses_configurable_sector_order(self) -> None:
+        original_output_config = Path("config/output.yaml").read_text(encoding="utf-8")
+        try:
+            Path("config/output.yaml").write_text(
+                "\n".join(
+                    [
+                        "hide_fallback_news_without_links: false",
+                        "sector_display_order:",
+                        "  - Semiconductors",
+                        "  - Technology",
+                        "news_source_priority:",
+                        "  Reuters: 5",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            semiconductor = TickerAnalysis(
+                ticker="NVDA",
+                name="NVIDIA Corporation",
+                date="2026-04-08",
+                summary="NVIDIA summary.",
+                key_news=["Headline 2"],
+                news_references=[
+                    NewsItem(
+                        title="Headline 2",
+                        source="Reuters",
+                        published_at="2026-04-08",
+                        link="https://example.com/headline-2",
+                    )
+                ],
+                financial_highlights=["Market cap: 2.00T"],
+                risks_or_watchpoints=["Watch demand."],
+                signal_or_takeaway="Stay on watch.",
+                data_snapshot={
+                    "Price": "200.00 USD",
+                    "Daily Change": "+0.50%",
+                    "Market Cap": "2.00T",
+                    "Trailing P/E": "30.00",
+                    "Sector": "Semiconductors",
+                },
+            )
+
+            technology = _sample_analysis()
+            content = render_daily_markdown([technology, semiconductor], date(2026, 4, 8))
+            top_news_section = self._top_news_section(content)
+
+            self.assertLess(top_news_section.find("### Semiconductors"), top_news_section.find("### Technology"))
         finally:
             Path("config/output.yaml").write_text(original_output_config, encoding="utf-8")
 

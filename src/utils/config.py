@@ -36,35 +36,41 @@ def load_watchlist(path: str = "config/watchlist.yaml") -> list[WatchlistItem]:
 
 
 def load_simple_mapping(path: str) -> dict[str, object]:
-    raw_lines = Path(path).read_text(encoding="utf-8").splitlines()
-    result: dict[str, object] = {}
-    current_section: str | None = None
-    current_mapping: dict[str, object] = {}
+    try:
+        import yaml  # type: ignore
 
-    for line in raw_lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
+        loaded = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+        return loaded if isinstance(loaded, dict) else {}
+    except Exception:
+        raw_lines = Path(path).read_text(encoding="utf-8").splitlines()
+        result: dict[str, object] = {}
+        current_section: str | None = None
+        current_mapping: dict[str, object] = {}
 
-        if not line.startswith(" ") and stripped.endswith(":"):
-            if current_section is not None:
-                result[current_section] = current_mapping
-            current_section = stripped[:-1]
-            current_mapping = {}
-            continue
+        for line in raw_lines:
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
 
-        if current_section is None:
+            if not line.startswith(" ") and stripped.endswith(":"):
+                if current_section is not None:
+                    result[current_section] = current_mapping
+                current_section = stripped[:-1]
+                current_mapping = {}
+                continue
+
+            if current_section is None:
+                key, value = _split_key_value(stripped)
+                result[key] = _parse_scalar(value)
+                continue
+
             key, value = _split_key_value(stripped)
-            result[key] = _parse_scalar(value)
-            continue
+            current_mapping[key] = _parse_scalar(value)
 
-        key, value = _split_key_value(stripped)
-        current_mapping[key] = _parse_scalar(value)
+        if current_section is not None:
+            result[current_section] = current_mapping
 
-    if current_section is not None:
-        result[current_section] = current_mapping
-
-    return result
+        return result
 
 
 def _split_key_value(line: str) -> tuple[str, str]:

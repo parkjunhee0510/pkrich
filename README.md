@@ -71,15 +71,23 @@ To save the result to a custom file:
 .\scripts\check-actions.ps1 -OutputPath .\logs\actions-check.txt
 ```
 
+To control auto-rotated log storage and failed-run comparison size:
+
+```powershell
+.\scripts\check-actions.ps1 -LogDirectory .\logs\actions -FailedSummaryLimit 5
+```
+
 What the script does:
 - verifies GitHub CLI authentication
 - lists recent workflow runs
 - prints the most recent successful run summary
 - prints job-level status for the most recent successful run
+- prints a comparison summary for the most recent failed runs
 - finds the most recent failed run
-- prints the failed run summary
+- prints the latest failed run summary
+- prints job-level status for the latest failed run
 - prints failed job logs
-- writes the same output to `.actions-check.txt` by default
+- writes the output to a date-based file under `logs/actions/` by default
 
 ## Branch Status
 
@@ -100,9 +108,14 @@ git remote set-head origin -a
 
 ## Output Configuration
 
-News source tie-break priority for daily notes is configurable in:
+Daily note output rules are configurable in:
 
 - `config/output.yaml`
+
+Current configurable rules include:
+- fallback news hiding for items without links
+- sector display order
+- news source priority for tie-breaks
 
 ## Notes
 

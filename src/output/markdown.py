@@ -20,6 +20,20 @@ _DEFAULT_SOURCE_PRIORITIES = {
     "rss": 0,
     "fallback": -1,
 }
+_DEFAULT_SECTOR_DISPLAY_ORDER = [
+    "Technology",
+    "Semiconductors",
+    "Healthcare",
+    "Financials",
+    "Energy",
+    "Consumer Discretionary",
+    "Consumer Staples",
+    "Industrials",
+    "Communication Services",
+    "Utilities",
+    "Real Estate",
+    "Materials",
+]
 
 
 def write_outputs(analyses: list[TickerAnalysis], run_date: date) -> None:
@@ -168,11 +182,23 @@ def _render_news_items(analysis: TickerAnalysis) -> str:
 
 def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
     grouped: dict[str, list[tuple[tuple[datetime, int], str, str]]] = {}
+    hide_fallback_without_links = _hide_fallback_news_without_links()
     for analysis in analyses:
         sector = analysis.data_snapshot.get("Sector", "N/A")
         if analysis.news_references:
+            visible_news = [
+                item
+                for item in analysis.news_references
+                if not (
+                    hide_fallback_without_links
+                    and not item.link
+                    and (item.source or "").strip().lower() == "fallback"
+                )
+            ]
+            if not visible_news:
+                continue
             first_news = sorted(
-                analysis.news_references,
+                visible_news,
                 key=lambda item: (_news_sort_key(item.published_at), _source_priority(item.source)),
                 reverse=True,
             )[0]
@@ -189,7 +215,7 @@ def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
         return "- No news links available."
 
     sections: list[str] = []
-    for sector in sorted(grouped):
+    for sector in _ordered_sectors(grouped):
         sections.append(f"### {sector}")
         ordered_lines = sorted(
             grouped[sector],
@@ -249,3 +275,31 @@ def _load_source_priorities() -> dict[str, int]:
         }
     except Exception:
         return _DEFAULT_SOURCE_PRIORITIES
+
+
+def _hide_fallback_news_without_links() -> bool:
+    try:
+        raw_config = load_simple_mapping("config/output.yaml")
+        configured = raw_config.get("hide_fallback_news_without_links")
+        if isinstance(configured, bool):
+            return configured
+        return True
+    except Exception:
+        return True
+
+
+def _ordered_sectors(grouped: dict[str, list[tuple[tuple[datetime, int], str, str]]]) -> list[str]:
+    configured_order = _load_sector_display_order()
+    order_map = {sector: index for index, sector in enumerate(configured_order)}
+    return sorted(grouped, key=lambda sector: (order_map.get(sector, len(order_map)), sector))
+
+
+def _load_sector_display_order() -> list[str]:
+    try:
+        raw_config = load_simple_mapping("config/output.yaml")
+        configured = raw_config.get("sector_display_order")
+        if not isinstance(configured, list):
+            return _DEFAULT_SECTOR_DISPLAY_ORDER
+        return [str(item) for item in configured if str(item).strip()]
+    except Exception:
+        return _DEFAULT_SECTOR_DISPLAY_ORDER
