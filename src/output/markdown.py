@@ -159,14 +159,14 @@ def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
         if analysis.news_references:
             first_news = sorted(
                 analysis.news_references,
-                key=lambda item: _news_sort_key(item.published_at),
+                key=lambda item: (_news_sort_key(item.published_at), _source_priority(item.source)),
                 reverse=True,
             )[0]
             line = f"- **{analysis.ticker}**: {_render_news_line(first_news)[2:]}"
-            sort_key = _news_sort_key(first_news.published_at)
+            sort_key = (_news_sort_key(first_news.published_at), _source_priority(first_news.source))
         elif analysis.key_news:
             line = f"- **{analysis.ticker}**: {analysis.key_news[0]}"
-            sort_key = _news_sort_key("")
+            sort_key = (_news_sort_key(""), _source_priority(""))
         else:
             continue
         grouped.setdefault(sector, []).append((analysis, sort_key, line))
@@ -215,3 +215,19 @@ def _news_sort_key(raw_value: str) -> datetime:
         return parsedate_to_datetime(raw_value).replace(tzinfo=None)
     except (TypeError, ValueError):
         return datetime.min
+
+
+def _source_priority(source: str) -> int:
+    normalized = (source or "").strip().lower()
+    priorities = {
+        "reuters": 5,
+        "associated press": 4,
+        "ap": 4,
+        "bloomberg": 3,
+        "yahoo finance": 2,
+        "seeking alpha": 1,
+        "duckduckgo": 0,
+        "rss": 0,
+        "fallback": -1,
+    }
+    return priorities.get(normalized, 0)

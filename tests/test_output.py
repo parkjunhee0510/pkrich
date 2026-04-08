@@ -83,6 +83,39 @@ class OutputTests(unittest.TestCase):
 
         self.assertLess(content.find("**AAPL**"), content.find("**MSFT**"))
 
+    def test_render_daily_markdown_uses_source_priority_when_dates_match(self) -> None:
+        yahoo_item = TickerAnalysis(
+            ticker="MSFT",
+            name="Microsoft Corporation",
+            date="2026-04-08",
+            summary="Microsoft summary.",
+            key_news=["Headline 2"],
+            news_references=[
+                NewsItem(
+                    title="Headline 2",
+                    source="Yahoo Finance",
+                    published_at="2026-04-08",
+                    link="https://example.com/headline-2",
+                )
+            ],
+            financial_highlights=["Market cap: 2.00T"],
+            risks_or_watchpoints=["Watch cloud demand."],
+            signal_or_takeaway="Stay on watch.",
+            data_snapshot={
+                "Price": "200.00 USD",
+                "Daily Change": "+0.50%",
+                "Market Cap": "2.00T",
+                "Trailing P/E": "30.00",
+                "Sector": "Technology",
+            },
+        )
+
+        reuters_item = _sample_analysis()
+
+        content = render_daily_markdown([yahoo_item, reuters_item], date(2026, 4, 8))
+
+        self.assertLess(content.find("**AAPL**"), content.find("**MSFT**"))
+
     def test_render_ticker_markdown_keeps_expected_sections(self) -> None:
         content = render_ticker_markdown(_sample_analysis())
 

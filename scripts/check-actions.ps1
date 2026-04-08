@@ -64,6 +64,19 @@ if ($null -ne $successfulRun) {
     Write-LogLine "  Branch: $($successfulRun.headBranch)"
     Write-LogLine "  Created At: $($successfulRun.createdAt)"
     Write-LogLine "  Updated At: $($successfulRun.updatedAt)"
+
+    try {
+        $successfulJobs = gh run view $successfulRun.databaseId -R $Repo --json jobs | ConvertFrom-Json
+        if ($successfulJobs.jobs) {
+            Write-LogLine "  Jobs:"
+            foreach ($job in $successfulJobs.jobs) {
+                Write-LogLine "    - $($job.name): $($job.conclusion)"
+            }
+        }
+    }
+    catch {
+        Write-LogLine "  Jobs: unavailable"
+    }
 }
 
 $failedRun = $runMetadata `

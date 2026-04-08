@@ -75,6 +75,7 @@ What the script does:
 - verifies GitHub CLI authentication
 - lists recent workflow runs
 - prints the most recent successful run summary
+- prints job-level status for the most recent successful run
 - finds the most recent failed run
 - prints the failed run summary
 - prints failed job logs
@@ -107,7 +108,7 @@ git push origin --delete master
 
 Current observed branch state in this repo:
 - local branch: `main`
-- remote branches: `origin/main`, `origin/master`
+- remote branches: `origin/main`
 
 ## Notes
 
