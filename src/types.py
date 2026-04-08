@@ -39,6 +39,7 @@ class TickerAnalysis:
     date: str
     summary: str
     key_news: list[str]
+    news_references: list[NewsItem]
     financial_highlights: list[str]
     risks_or_watchpoints: list[str]
     signal_or_takeaway: str

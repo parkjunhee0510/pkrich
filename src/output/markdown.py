@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import csv
-from datetime import date
+from datetime import date, datetime
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 from src.types import TickerAnalysis
@@ -43,6 +44,7 @@ def render_daily_markdown(analyses: list[TickerAnalysis], run_date: date) -> str
         f"- **{analysis.ticker}**: {analysis.summary}"
         for analysis in top_movers[:3]
     ) or "- No movers available."
+    top_news_links = _render_daily_news_links(analyses)
     action_items = "\n".join(
         f"- [ ] Review {analysis.ticker} for any material update."
         for analysis in analyses
@@ -63,6 +65,9 @@ def render_daily_markdown(analyses: list[TickerAnalysis], run_date: date) -> str
             "## Top Movers",
             top_mover_lines,
             "",
+            "## Top News Links",
+            top_news_links,
+            "",
             "## Action Items",
             action_items,
             "",
@@ -79,7 +84,7 @@ def render_ticker_markdown(analysis: TickerAnalysis) -> str:
             analysis.summary or "No summary available.",
             "",
             "## Key News",
-            _render_bullets(analysis.key_news),
+            _render_news_items(analysis),
             "",
             "## Financial Highlights",
             _render_bullets(analysis.financial_highlights),
@@ -141,8 +146,72 @@ def _render_bullets(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
 
+def _render_news_items(analysis: TickerAnalysis) -> str:
+    if analysis.news_references:
+        return "\n".join(_render_news_line(item) for item in analysis.news_references)
+    return _render_bullets(analysis.key_news)
+
+
+def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
+    grouped: dict[str, list[tuple[TickerAnalysis, object, str]]] = {}
+    for analysis in analyses:
+        sector = analysis.data_snapshot.get("Sector", "N/A")
+        if analysis.news_references:
+            first_news = sorted(
+                analysis.news_references,
+                key=lambda item: _news_sort_key(item.published_at),
+                reverse=True,
+            )[0]
+            line = f"- **{analysis.ticker}**: {_render_news_line(first_news)[2:]}"
+            sort_key = _news_sort_key(first_news.published_at)
+        elif analysis.key_news:
+            line = f"- **{analysis.ticker}**: {analysis.key_news[0]}"
+            sort_key = _news_sort_key("")
+        else:
+            continue
+        grouped.setdefault(sector, []).append((analysis, sort_key, line))
+
+    if not grouped:
+        return "- No news links available."
+
+    sections: list[str] = []
+    for sector in sorted(grouped):
+        sections.append(f"### {sector}")
+        ordered_lines = sorted(
+            grouped[sector],
+            key=lambda entry: (entry[1], entry[0].ticker),
+            reverse=True,
+        )
+        sections.extend(entry[2] for entry in ordered_lines)
+        sections.append("")
+    return "\n".join(sections).rstrip()
+
+
+def _render_news_line(item) -> str:
+    source = item.source or "Source"
+    published_suffix = f" ({item.published_at})" if item.published_at else ""
+    if item.link:
+        return f"- [{item.title}]({item.link}) - {source}{published_suffix}"
+    return f"- {item.title} - {source}{published_suffix}"
+
+
 def _numeric_change(raw_value: str) -> float:
     try:
         return float(raw_value.replace("%", ""))
     except ValueError:
         return float("-inf")
+
+
+def _news_sort_key(raw_value: str) -> datetime:
+    if not raw_value:
+        return datetime.min
+
+    try:
+        return datetime.fromisoformat(raw_value.replace("Z", "+00:00")).replace(tzinfo=None)
+    except ValueError:
+        pass
+
+    try:
+        return parsedate_to_datetime(raw_value).replace(tzinfo=None)
+    except (TypeError, ValueError):
+        return datetime.min
