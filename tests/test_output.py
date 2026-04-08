@@ -40,6 +40,8 @@ def _sample_analysis() -> TickerAnalysis:
 
 class OutputTests(unittest.TestCase):
     def _top_news_section(self, content: str) -> str:
+        if "## Top News Links" not in content:
+            return ""
         return content.split("## Top News Links", 1)[1].split("## Action Items", 1)[0]
 
     def test_render_daily_markdown_keeps_expected_sections(self) -> None:
@@ -204,6 +206,57 @@ class OutputTests(unittest.TestCase):
         self.assertIn("- No news links available.", content)
         self.assertNotIn("Fallback headline", content)
 
+    def test_render_daily_markdown_can_hide_empty_top_news_links_section(self) -> None:
+        original_output_config = Path("config/output.yaml").read_text(encoding="utf-8")
+        try:
+            Path("config/output.yaml").write_text(
+                "\n".join(
+                    [
+                        "hide_fallback_news_without_links: true",
+                        "hide_empty_top_news_links_section: true",
+                        "hide_fallback_news_without_links_in_ticker_notes: false",
+                        "sector_display_order:",
+                        "  - Technology",
+                        "news_source_priority:",
+                        "  Reuters: 5",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            fallback_item = TickerAnalysis(
+                ticker="MSFT",
+                name="Microsoft Corporation",
+                date="2026-04-08",
+                summary="Microsoft summary.",
+                key_news=["Fallback headline"],
+                news_references=[
+                    NewsItem(
+                        title="Fallback headline",
+                        source="fallback",
+                        published_at="2026-04-08",
+                        link="",
+                    )
+                ],
+                financial_highlights=["Market cap: 2.00T"],
+                risks_or_watchpoints=["Watch cloud demand."],
+                signal_or_takeaway="Stay on watch.",
+                data_snapshot={
+                    "Price": "200.00 USD",
+                    "Daily Change": "+0.50%",
+                    "Market Cap": "2.00T",
+                    "Trailing P/E": "30.00",
+                    "Sector": "Technology",
+                },
+            )
+
+            content = render_daily_markdown([fallback_item], date(2026, 4, 8))
+
+            self.assertNotIn("## Top News Links", content)
+            self.assertNotIn("- No news links available.", content)
+        finally:
+            Path("config/output.yaml").write_text(original_output_config, encoding="utf-8")
+
     def test_render_daily_markdown_uses_configurable_sector_order(self) -> None:
         original_output_config = Path("config/output.yaml").read_text(encoding="utf-8")
         try:
@@ -266,6 +319,58 @@ class OutputTests(unittest.TestCase):
         self.assertIn("## Risks / Watchpoints", content)
         self.assertIn("## Data Snapshot", content)
         self.assertIn("## Signal / Takeaway", content)
+
+    def test_render_ticker_markdown_can_hide_fallback_items_without_links(self) -> None:
+        original_output_config = Path("config/output.yaml").read_text(encoding="utf-8")
+        try:
+            Path("config/output.yaml").write_text(
+                "\n".join(
+                    [
+                        "hide_fallback_news_without_links: true",
+                        "hide_empty_top_news_links_section: false",
+                        "hide_fallback_news_without_links_in_ticker_notes: true",
+                        "sector_display_order:",
+                        "  - Technology",
+                        "news_source_priority:",
+                        "  Reuters: 5",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            fallback_item = TickerAnalysis(
+                ticker="MSFT",
+                name="Microsoft Corporation",
+                date="2026-04-08",
+                summary="Microsoft summary.",
+                key_news=["Fallback headline"],
+                news_references=[
+                    NewsItem(
+                        title="Fallback headline",
+                        source="fallback",
+                        published_at="2026-04-08",
+                        link="",
+                    )
+                ],
+                financial_highlights=["Market cap: 2.00T"],
+                risks_or_watchpoints=["Watch cloud demand."],
+                signal_or_takeaway="Stay on watch.",
+                data_snapshot={
+                    "Price": "200.00 USD",
+                    "Daily Change": "+0.50%",
+                    "Market Cap": "2.00T",
+                    "Trailing P/E": "30.00",
+                    "Sector": "Technology",
+                },
+            )
+
+            content = render_ticker_markdown(fallback_item)
+
+            self.assertIn("## Key News", content)
+            self.assertIn("- None.", content)
+            self.assertNotIn("Fallback headline - fallback", content)
+        finally:
+            Path("config/output.yaml").write_text(original_output_config, encoding="utf-8")
 
     def test_append_price_history_replaces_same_day_rows(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

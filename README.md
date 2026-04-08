@@ -88,6 +88,7 @@ What the script does:
 - prints job-level status for the latest failed run
 - prints failed job logs
 - writes the output to a date-based file under `logs/actions/` by default
+- writes summary artifacts to sibling `.summary.json` and `.summary.csv` files
 
 ## Branch Status
 
@@ -114,6 +115,8 @@ Daily note output rules are configurable in:
 
 Current configurable rules include:
 - fallback news hiding for items without links
+- optional hiding of an empty `Top News Links` section
+- optional fallback hiding in ticker notes
 - sector display order
 - news source priority for tie-breaks
 

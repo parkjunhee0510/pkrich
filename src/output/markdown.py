@@ -78,29 +78,40 @@ def render_daily_markdown(analyses: list[TickerAnalysis], run_date: date) -> str
         for analysis in analyses
     ) or "- [ ] No action items."
 
-    return "\n".join(
+    lines = [
+        f"# Daily Research - {run_date.isoformat()}",
+        "",
+        "## Market Overview",
+        "Market overview is derived from collected watchlist data for this run.",
+        "",
+        "## Watchlist Summary",
+        "| Ticker | Price | Change | Signal |",
+        "|--------|-------|--------|--------|",
+        watchlist_rows or "| N/A | N/A | N/A | N/A |",
+        "",
+        "## Top Movers",
+        top_mover_lines,
+        "",
+    ]
+
+    if not (_hide_empty_top_news_links_section() and top_news_links == "- No news links available."):
+        lines.extend(
+            [
+                "## Top News Links",
+                top_news_links,
+                "",
+            ]
+        )
+
+    lines.extend(
         [
-            f"# Daily Research - {run_date.isoformat()}",
-            "",
-            "## Market Overview",
-            "Market overview is derived from collected watchlist data for this run.",
-            "",
-            "## Watchlist Summary",
-            "| Ticker | Price | Change | Signal |",
-            "|--------|-------|--------|--------|",
-            watchlist_rows or "| N/A | N/A | N/A | N/A |",
-            "",
-            "## Top Movers",
-            top_mover_lines,
-            "",
-            "## Top News Links",
-            top_news_links,
-            "",
             "## Action Items",
             action_items,
             "",
         ]
     )
+
+    return "\n".join(lines)
 
 
 def render_ticker_markdown(analysis: TickerAnalysis) -> str:
@@ -176,7 +187,20 @@ def _render_bullets(items: list[str]) -> str:
 
 def _render_news_items(analysis: TickerAnalysis) -> str:
     if analysis.news_references:
-        return "\n".join(_render_news_line(item) for item in analysis.news_references)
+        hide_fallback_without_links = _hide_fallback_news_without_links_in_ticker_notes()
+        visible_news = [
+            item
+            for item in analysis.news_references
+            if not (
+                hide_fallback_without_links
+                and not item.link
+                and (item.source or "").strip().lower() == "fallback"
+            )
+        ]
+        if visible_news:
+            return "\n".join(_render_news_line(item) for item in visible_news)
+        if hide_fallback_without_links:
+            return "- None."
     return _render_bullets(analysis.key_news)
 
 
@@ -286,6 +310,28 @@ def _hide_fallback_news_without_links() -> bool:
         return True
     except Exception:
         return True
+
+
+def _hide_fallback_news_without_links_in_ticker_notes() -> bool:
+    try:
+        raw_config = load_simple_mapping("config/output.yaml")
+        configured = raw_config.get("hide_fallback_news_without_links_in_ticker_notes")
+        if isinstance(configured, bool):
+            return configured
+        return False
+    except Exception:
+        return False
+
+
+def _hide_empty_top_news_links_section() -> bool:
+    try:
+        raw_config = load_simple_mapping("config/output.yaml")
+        configured = raw_config.get("hide_empty_top_news_links_section")
+        if isinstance(configured, bool):
+            return configured
+        return False
+    except Exception:
+        return False
 
 
 def _ordered_sectors(grouped: dict[str, list[tuple[tuple[datetime, int], str, str]]]) -> list[str]:
