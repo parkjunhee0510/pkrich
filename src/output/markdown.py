@@ -152,13 +152,26 @@ def _render_news_items(analysis: TickerAnalysis) -> str:
 
 
 def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
-    lines: list[str] = []
+    grouped: dict[str, list[str]] = {}
     for analysis in analyses:
+        sector = analysis.data_snapshot.get("Sector", "N/A")
         if analysis.news_references:
-            lines.append(f"- **{analysis.ticker}**: {_render_news_line(analysis.news_references[0])[2:]}")
+            line = f"- **{analysis.ticker}**: {_render_news_line(analysis.news_references[0])[2:]}"
         elif analysis.key_news:
-            lines.append(f"- **{analysis.ticker}**: {analysis.key_news[0]}")
-    return "\n".join(lines) if lines else "- No news links available."
+            line = f"- **{analysis.ticker}**: {analysis.key_news[0]}"
+        else:
+            continue
+        grouped.setdefault(sector, []).append(line)
+
+    if not grouped:
+        return "- No news links available."
+
+    sections: list[str] = []
+    for sector in sorted(grouped):
+        sections.append(f"### {sector}")
+        sections.extend(grouped[sector])
+        sections.append("")
+    return "\n".join(sections).rstrip()
 
 
 def _render_news_line(item) -> str:

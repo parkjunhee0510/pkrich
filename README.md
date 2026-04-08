@@ -65,12 +65,19 @@ Then run:
 .\scripts\check-actions.ps1
 ```
 
+To save the result to a custom file:
+
+```powershell
+.\scripts\check-actions.ps1 -OutputPath .\logs\actions-check.txt
+```
+
 What the script does:
 - verifies GitHub CLI authentication
 - lists recent workflow runs
 - finds the most recent failed run
 - prints the failed run summary
 - prints failed job logs
+- writes the same output to `.actions-check.txt` by default
 
 ## Branch Migration Checklist
 

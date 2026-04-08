@@ -1,9 +1,25 @@
 param(
     [string]$Repo = "parkjunhee0510/pkrich",
-    [int]$Limit = 10
+    [int]$Limit = 10,
+    [string]$OutputPath = ".actions-check.txt"
 )
 
 $ErrorActionPreference = "Stop"
+$script:LogBuffer = New-Object System.Collections.Generic.List[string]
+
+function Write-LogLine {
+    param([string]$Message)
+    Write-Host $Message
+    $script:LogBuffer.Add($Message) | Out-Null
+}
+
+function Save-LogBuffer {
+    $directory = Split-Path -Parent $OutputPath
+    if ($directory) {
+        New-Item -ItemType Directory -Force -Path $directory | Out-Null
+    }
+    $script:LogBuffer | Set-Content -Path $OutputPath -Encoding UTF8
+}
 
 function Test-GhAuth {
     try {
@@ -20,15 +36,17 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
 }
 
 if (-not $env:GH_TOKEN -and -not (Test-GhAuth)) {
-    Write-Host "Authentication required."
-    Write-Host "Use one of the following before rerunning:"
-    Write-Host "  gh auth login"
-    Write-Host "  `$env:GH_TOKEN='<token>'"
+    Write-LogLine "Authentication required."
+    Write-LogLine "Use one of the following before rerunning:"
+    Write-LogLine "  gh auth login"
+    Write-LogLine "  `$env:GH_TOKEN='<token>'"
+    Save-LogBuffer
     exit 1
 }
 
-Write-Host "Recent workflow runs for $Repo"
-gh run list -R $Repo --limit $Limit
+Write-LogLine "Recent workflow runs for $Repo"
+$recentRuns = gh run list -R $Repo --limit $Limit
+$recentRuns | ForEach-Object { Write-LogLine $_ }
 
 $failedRun = gh run list -R $Repo --limit $Limit --json databaseId,conclusion,status `
     | ConvertFrom-Json `
@@ -36,15 +54,19 @@ $failedRun = gh run list -R $Repo --limit $Limit --json databaseId,conclusion,st
     | Select-Object -First 1
 
 if ($null -eq $failedRun) {
-    Write-Host ""
-    Write-Host "No failed runs found in the recent history."
+    Write-LogLine ""
+    Write-LogLine "No failed runs found in the recent history."
+    Save-LogBuffer
     exit 0
 }
 
-Write-Host ""
-Write-Host "Inspecting failed run: $($failedRun.databaseId)"
-gh run view $failedRun.databaseId -R $Repo
+Write-LogLine ""
+Write-LogLine "Inspecting failed run: $($failedRun.databaseId)"
+$failedSummary = gh run view $failedRun.databaseId -R $Repo
+$failedSummary | ForEach-Object { Write-LogLine $_ }
 
-Write-Host ""
-Write-Host "Downloading failed run log output"
-gh run view $failedRun.databaseId -R $Repo --log-failed
+Write-LogLine ""
+Write-LogLine "Downloading failed run log output"
+$failedLog = gh run view $failedRun.databaseId -R $Repo --log-failed
+$failedLog | ForEach-Object { Write-LogLine $_ }
+Save-LogBuffer
