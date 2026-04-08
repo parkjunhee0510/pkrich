@@ -1,0 +1,70 @@
+from __future__ import annotations
+
+import csv
+import tempfile
+import unittest
+from datetime import date
+from pathlib import Path
+
+from src.output.markdown import append_price_history, render_daily_markdown, render_ticker_markdown
+from src.types import TickerAnalysis
+
+
+def _sample_analysis() -> TickerAnalysis:
+    return TickerAnalysis(
+        ticker="AAPL",
+        name="Apple Inc.",
+        date="2026-04-08",
+        summary="Sample summary.",
+        key_news=["Headline 1"],
+        financial_highlights=["Market cap: 1.00T"],
+        risks_or_watchpoints=["Watch competition."],
+        signal_or_takeaway="Stay on watch.",
+        data_snapshot={
+            "Price": "100.00 USD",
+            "Daily Change": "+1.23%",
+            "Market Cap": "1.00T",
+            "Trailing P/E": "25.00",
+            "Sector": "Technology",
+        },
+    )
+
+
+class OutputTests(unittest.TestCase):
+    def test_render_daily_markdown_keeps_expected_sections(self) -> None:
+        content = render_daily_markdown([_sample_analysis()], date(2026, 4, 8))
+
+        self.assertIn("# Daily Research - 2026-04-08", content)
+        self.assertIn("## Market Overview", content)
+        self.assertIn("## Watchlist Summary", content)
+        self.assertIn("## Top Movers", content)
+        self.assertIn("## Action Items", content)
+
+    def test_render_ticker_markdown_keeps_expected_sections(self) -> None:
+        content = render_ticker_markdown(_sample_analysis())
+
+        self.assertIn("# AAPL - 2026-04-08", content)
+        self.assertIn("## Summary", content)
+        self.assertIn("## Key News", content)
+        self.assertIn("## Financial Highlights", content)
+        self.assertIn("## Risks / Watchpoints", content)
+        self.assertIn("## Data Snapshot", content)
+        self.assertIn("## Signal / Takeaway", content)
+
+    def test_append_price_history_replaces_same_day_rows(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "price_history.csv"
+
+            append_price_history(csv_path, [_sample_analysis()])
+            append_price_history(csv_path, [_sample_analysis()])
+
+            with csv_path.open("r", encoding="utf-8", newline="") as csv_file:
+                rows = list(csv.DictReader(csv_file))
+
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["ticker"], "AAPL")
+            self.assertEqual(rows[0]["date"], "2026-04-08")
+
+
+if __name__ == "__main__":
+    unittest.main()
