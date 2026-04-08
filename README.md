@@ -74,6 +74,7 @@ To save the result to a custom file:
 What the script does:
 - verifies GitHub CLI authentication
 - lists recent workflow runs
+- prints the most recent successful run summary
 - finds the most recent failed run
 - prints the failed run summary
 - prints failed job logs

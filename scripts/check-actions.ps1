@@ -48,8 +48,25 @@ Write-LogLine "Recent workflow runs for $Repo"
 $recentRuns = gh run list -R $Repo --limit $Limit
 $recentRuns | ForEach-Object { Write-LogLine $_ }
 
-$failedRun = gh run list -R $Repo --limit $Limit --json databaseId,conclusion,status `
-    | ConvertFrom-Json `
+$runMetadata = gh run list -R $Repo --limit $Limit --json databaseId,conclusion,status,displayTitle,headBranch,workflowName,createdAt,updatedAt `
+    | ConvertFrom-Json
+
+$successfulRun = $runMetadata `
+    | Where-Object { $_.status -eq "completed" -and $_.conclusion -eq "success" } `
+    | Select-Object -First 1
+
+if ($null -ne $successfulRun) {
+    Write-LogLine ""
+    Write-LogLine "Most recent successful run summary"
+    Write-LogLine "  Run ID: $($successfulRun.databaseId)"
+    Write-LogLine "  Workflow: $($successfulRun.workflowName)"
+    Write-LogLine "  Title: $($successfulRun.displayTitle)"
+    Write-LogLine "  Branch: $($successfulRun.headBranch)"
+    Write-LogLine "  Created At: $($successfulRun.createdAt)"
+    Write-LogLine "  Updated At: $($successfulRun.updatedAt)"
+}
+
+$failedRun = $runMetadata `
     | Where-Object { $_.conclusion -eq "failure" -or $_.status -eq "completed" -and $_.conclusion -eq "startup_failure" } `
     | Select-Object -First 1
 
