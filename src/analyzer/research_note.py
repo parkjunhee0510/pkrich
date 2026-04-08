@@ -149,6 +149,7 @@ def _analyze_with_openai(
                     date=run_date.isoformat(),
                     summary=match["summary"],
                     key_news=match["key_news"][:5],
+                    news_references=news_map.get(item.ticker, [])[:5],
                     financial_highlights=match["financial_highlights"][:5],
                     risks_or_watchpoints=match["risks_or_watchpoints"][:5],
                     signal_or_takeaway=match["signal_or_takeaway"],
@@ -194,6 +195,7 @@ def _build_fallback_analyses(
                     f"Latest observed price is {price_text} with {change_text}."
                 ),
                 key_news=[article.title for article in ticker_news[:5]],
+                news_references=ticker_news[:5],
                 financial_highlights=[
                     f"Market cap: {market.market_cap}",
                     f"Trailing P/E: {market.pe_ratio}",

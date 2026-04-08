@@ -79,7 +79,7 @@ def render_ticker_markdown(analysis: TickerAnalysis) -> str:
             analysis.summary or "No summary available.",
             "",
             "## Key News",
-            _render_bullets(analysis.key_news),
+            _render_news_items(analysis),
             "",
             "## Financial Highlights",
             _render_bullets(analysis.financial_highlights),
@@ -139,6 +139,20 @@ def _render_bullets(items: list[str]) -> str:
     if not items:
         return "- None."
     return "\n".join(f"- {item}" for item in items)
+
+
+def _render_news_items(analysis: TickerAnalysis) -> str:
+    if analysis.news_references:
+        return "\n".join(_render_news_line(item) for item in analysis.news_references)
+    return _render_bullets(analysis.key_news)
+
+
+def _render_news_line(item) -> str:
+    source = item.source or "Source"
+    published_suffix = f" ({item.published_at})" if item.published_at else ""
+    if item.link:
+        return f"- [{item.title}]({item.link}) - {source}{published_suffix}"
+    return f"- {item.title} - {source}{published_suffix}"
 
 
 def _numeric_change(raw_value: str) -> float:

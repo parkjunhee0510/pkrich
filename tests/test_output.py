@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 
 from src.output.markdown import append_price_history, render_daily_markdown, render_ticker_markdown
-from src.types import TickerAnalysis
+from src.types import NewsItem, TickerAnalysis
 
 
 def _sample_analysis() -> TickerAnalysis:
@@ -17,6 +17,14 @@ def _sample_analysis() -> TickerAnalysis:
         date="2026-04-08",
         summary="Sample summary.",
         key_news=["Headline 1"],
+        news_references=[
+            NewsItem(
+                title="Headline 1",
+                source="Reuters",
+                published_at="2026-04-08",
+                link="https://example.com/headline-1",
+            )
+        ],
         financial_highlights=["Market cap: 1.00T"],
         risks_or_watchpoints=["Watch competition."],
         signal_or_takeaway="Stay on watch.",
@@ -46,6 +54,7 @@ class OutputTests(unittest.TestCase):
         self.assertIn("# AAPL - 2026-04-08", content)
         self.assertIn("## Summary", content)
         self.assertIn("## Key News", content)
+        self.assertIn("[Headline 1](https://example.com/headline-1)", content)
         self.assertIn("## Financial Highlights", content)
         self.assertIn("## Risks / Watchpoints", content)
         self.assertIn("## Data Snapshot", content)
