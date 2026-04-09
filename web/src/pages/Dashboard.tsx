@@ -57,34 +57,49 @@ export function Dashboard() {
     shortFloatHigh: false,
     strongBuyUpside: false,
   })
-
-  if (loading) return <p className="status">Loading...</p>
-  if (error) return <p className="status error">Failed to load data: {error}</p>
-  if (!data || data.days.length === 0) return <p className="status">No data available.</p>
-
-  const idx = selectedIdx ?? data.days.length - 1
-  const day = data.days[idx]
-  const sectors = Array.from(new Set(day.tickers.map((ticker) => ticker.data_snapshot['Sector'] || '기타'))).sort((a, b) => a.localeCompare(b))
+  const days = data?.days ?? []
+  const rawIdx = selectedIdx ?? Math.max(days.length - 1, 0)
+  const idx = days.length > 0 ? Math.min(rawIdx, days.length - 1) : 0
+  const day = days[idx] ?? { date: '', market_overview: [], tickers: [] }
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
-  const filteredTickers = day.tickers
-    .filter((ticker) => {
-      const matchesQuery =
-        normalizedQuery.length === 0 ||
-        ticker.ticker.toLowerCase().includes(normalizedQuery) ||
-        ticker.name.toLowerCase().includes(normalizedQuery)
+  const sectors = useMemo(
+    () =>
+      Array.from(new Set(day.tickers.map((ticker) => ticker.data_snapshot['Sector'] || '기타'))).sort((a, b) =>
+        a.localeCompare(b),
+      ),
+    [day.tickers],
+  )
 
-      const sector = ticker.data_snapshot['Sector'] || '기타'
-      const matchesSector = selectedSector === 'ALL' || sector === selectedSector
-      const matchesTraderFilters = applyTraderFilters(ticker, traderFilters)
-      return matchesQuery && matchesSector && matchesTraderFilters
-    })
-    .sort((left, right) => computeSetupScore(right).score - computeSetupScore(left).score || left.ticker.localeCompare(right.ticker))
+  const filteredTickers = useMemo(
+    () =>
+      day.tickers
+        .filter((ticker) => {
+          const matchesQuery =
+            normalizedQuery.length === 0 ||
+            ticker.ticker.toLowerCase().includes(normalizedQuery) ||
+            ticker.name.toLowerCase().includes(normalizedQuery)
+
+          const sector = ticker.data_snapshot['Sector'] || '기타'
+          const matchesSector = selectedSector === 'ALL' || sector === selectedSector
+          const matchesTraderFilters = applyTraderFilters(ticker, traderFilters)
+          return matchesQuery && matchesSector && matchesTraderFilters
+        })
+        .sort(
+          (left, right) =>
+            computeSetupScore(right).score - computeSetupScore(left).score || left.ticker.localeCompare(right.ticker),
+        ),
+    [day.tickers, normalizedQuery, selectedSector, traderFilters],
+  )
 
   const topSetupCards = useMemo(() => buildSetupCards(filteredTickers, 5), [filteredTickers])
   const earningsBoardSections = useMemo(() => buildEarningsBoardSections(day.tickers), [day.tickers])
   const catalystFeedSections = useMemo(() => buildCatalystFeedSections(day.tickers), [day.tickers])
-  const signalHighlights = useMemo(() => buildSignalPerformanceHighlights(data.signal_stats), [data.signal_stats])
+  const signalHighlights = useMemo(() => buildSignalPerformanceHighlights(data?.signal_stats), [data?.signal_stats])
+
+  if (loading) return <p className="status">Loading...</p>
+  if (error) return <p className="status error">Failed to load data: {error}</p>
+  if (!data || data.days.length === 0) return <p className="status">No data available.</p>
 
   return (
     <div className="dashboard">
