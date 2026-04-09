@@ -178,6 +178,13 @@ cd web
 npm run dev
 ```
 
+로컬 개발 접속 경로:
+
+- Dashboard: `http://localhost:5173/`
+- Ticker detail: `http://localhost:5173/ticker/AAPL`
+
+배포 경로는 계속 `https://parkjunhee0510.github.io/pkrich/` 기준 `/pkrich/`를 사용합니다.
+
 주요 기능:
 - 날짜 선택
 - 티커/종목명 검색

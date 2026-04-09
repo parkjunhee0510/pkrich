@@ -38,6 +38,9 @@ def build_quarterly_financial_display_rows(
                 "revenue": str(row.get("revenue", "N/A")),
                 "operating_income": str(row.get("operating_income", "N/A")),
                 "eps": str(row.get("eps", "N/A")),
+                "estimated_eps": str(row.get("estimated_eps", "N/A")),
+                "surprise_pct": str(row.get("surprise_pct", "N/A")),
+                "beat_miss": str(row.get("beat_miss", "N/A")),
                 "revenue_yoy": _format_yoy(row.get("revenue"), prior_row.get("revenue") if prior_row else None),
                 "operating_income_yoy": _format_yoy(
                     row.get("operating_income"),

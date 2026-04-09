@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from src.types import PortfolioSummary, TickerAnalysis
+from src.utils.earnings_setup import build_earnings_setup
 from src.utils.sec_filings import collect_sec_filing_tags, collect_sec_filings, sort_sec_filings
 from src.utils.ticker_timelines import build_ticker_timelines
 
@@ -23,6 +24,7 @@ def write_json_outputs(
     output_root: Path | None = None,
     period_changes_by_ticker: dict[str, dict[str, str]] | None = None,
     portfolio_summary: PortfolioSummary | None = None,
+    signal_stats: dict[str, Any] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     root = output_root or Path("output")
     data_dir = root / "data"
@@ -35,6 +37,7 @@ def write_json_outputs(
         market_overview or [],
         period_changes_by_ticker or {},
         portfolio_summary,
+        signal_stats or {},
     )
     _write_price_history_json(data_dir / "price_history.json", data_dir / "price_history.csv")
     timelines = _write_ticker_timelines_json(data_dir / "ticker_timelines.json", merged_days)
@@ -49,6 +52,7 @@ def _write_dashboard_json(
     market_overview: list[dict[str, str]],
     period_changes_by_ticker: dict[str, dict[str, str]],
     portfolio_summary: PortfolioSummary | None,
+    signal_stats: dict[str, Any],
 ) -> list[dict[str, Any]]:
     existing_days: list[dict[str, Any]] = []
     if path.exists():
@@ -74,11 +78,15 @@ def _write_dashboard_json(
     if len(merged) > _MAX_DAYS:
         merged = merged[-_MAX_DAYS:]
 
-    path.write_text(json.dumps({"days": merged}, ensure_ascii=False, indent=2), encoding="utf-8")
+    path.write_text(
+        json.dumps({"days": merged, "signal_stats": signal_stats}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
     return merged
 
 
 def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]) -> dict[str, Any]:
+    currency = _snapshot_currency(analysis.data_snapshot)
     return {
         "ticker": analysis.ticker,
         "name": analysis.name,
@@ -99,13 +107,31 @@ def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]
         "signal_or_takeaway": analysis.signal_or_takeaway,
         "data_snapshot": analysis.data_snapshot,
         "fundamentals": analysis.fundamentals,
+        "earnings_setup": build_earnings_setup(
+            analysis.fundamentals,
+            analysis.quarterly_financials,
+            analysis.upcoming_events,
+            currency=currency,
+        ),
+        "price_action": analysis.price_action,
         "quarterly_financials": analysis.quarterly_financials[:4],
         "upcoming_events": analysis.upcoming_events,
         "news_tone": analysis.news_tone,
+        "trade_frame": analysis.trade_frame,
         "period_changes": period_changes,
         "sec_filing_tags": collect_sec_filing_tags(analysis.news_references),
         "sec_filings": sort_sec_filings(collect_sec_filings(analysis.news_references)),
     }
+
+
+def _snapshot_currency(snapshot: dict[str, str]) -> str:
+    price_value = str(snapshot.get("Price", "")).strip()
+    if not price_value:
+        return "USD"
+    parts = price_value.split()
+    if len(parts) >= 2 and parts[-1].isalpha():
+        return parts[-1]
+    return "USD"
 
 
 def _write_price_history_json(json_path: Path, csv_path: Path) -> None:

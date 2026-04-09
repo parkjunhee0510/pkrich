@@ -40,6 +40,7 @@ class PipelineTests(unittest.TestCase):
             daily_path = temp_path / 'output' / 'daily' / '2026-04-08.md'
             ticker_path = temp_path / 'output' / 'tickers' / 'AAPL' / '2026-04-08.md'
             csv_path = temp_path / 'output' / 'data' / 'price_history.csv'
+            signal_csv_path = temp_path / 'output' / 'data' / 'signal_tracker.csv'
             dashboard_path = temp_path / 'output' / 'data' / 'dashboard.json'
             timeline_path = temp_path / 'output' / 'data' / 'ticker_timelines.json'
             log_summary_path = temp_path / 'logs' / 'pipeline' / '2026-04-08.summary.json'
@@ -47,6 +48,7 @@ class PipelineTests(unittest.TestCase):
             self.assertTrue(daily_path.exists())
             self.assertTrue(ticker_path.exists())
             self.assertTrue(csv_path.exists())
+            self.assertTrue(signal_csv_path.exists())
             self.assertTrue(dashboard_path.exists())
             self.assertTrue(timeline_path.exists())
             self.assertTrue(log_summary_path.exists())

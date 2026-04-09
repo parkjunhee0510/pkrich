@@ -149,6 +149,30 @@ class NewsCollectionTests(unittest.TestCase):
         self.assertEqual(merged[0].source, 'Reuters')
         self.assertEqual(merged[1].source, 'SEC EDGAR')
 
+    def test_merge_news_items_prefers_hard_catalyst_over_soft_recap_when_dates_match(self) -> None:
+        item = WatchlistItem(ticker='AAPL', name='Apple Inc.', sector='Technology', keywords=['iPhone'])
+        primary = [
+            NewsItem(
+                title='Why Apple stock could move next',
+                source='Google News',
+                published_at='2026-04-09',
+                link='https://example.com/recap',
+            ),
+            NewsItem(
+                title='[실적] Apple Inc., 8-K Item 2.02 실적 발표를 SEC에 제출',
+                source='SEC EDGAR',
+                published_at='2026-04-09',
+                link='https://example.com/sec',
+                item_number='2.02',
+                catalyst_type='hard',
+                importance_score=200,
+            ),
+        ]
+
+        merged = _merge_news_items(item, primary, [], max_items=2, run_date=date(2026, 4, 9))
+
+        self.assertEqual(merged[0].source, 'SEC EDGAR')
+
     def test_build_news_query_includes_finance_context_and_keywords(self) -> None:
         query = build_news_query(
             WatchlistItem(
@@ -235,7 +259,7 @@ class NewsCollectionTests(unittest.TestCase):
 
         items = news_map['AAPL']
         self.assertEqual(len(items), 5)
-        self.assertEqual(items[0].source, 'Associated Press')
+        self.assertEqual(items[0].source, 'SEC EDGAR')
         self.assertTrue({'Yahoo Finance', 'Associated Press', 'SEC EDGAR', 'IR RSS'}.issubset({entry.source for entry in items}))
 
     def test_search_news_maps_ddgs_results(self) -> None:

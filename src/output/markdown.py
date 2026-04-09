@@ -13,6 +13,7 @@ from src.types import PortfolioSummary, TickerAnalysis
 from src.utils.config import load_simple_mapping
 from src.utils.datastore import get_datastore
 from src.utils.datastore_csv import append_price_history_csv
+from src.utils.earnings_setup import build_earnings_setup, extract_earnings_countdown
 from src.utils.news_tone import build_news_tone
 from src.utils.pipeline_logging import record_pipeline_event
 from src.utils.quarterly_financials import build_quarterly_financial_display_rows
@@ -78,6 +79,7 @@ def write_outputs(
     market_overview: list[dict[str, str]] | None = None,
     direct_period_changes: dict[str, dict[str, str]] | None = None,
     portfolio_summary: PortfolioSummary | None = None,
+    signal_stats: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     output_root = Path("output")
     daily_dir = output_root / "daily"
@@ -102,6 +104,7 @@ def write_outputs(
         output_root=output_root,
         period_changes_by_ticker=period_changes_by_ticker,
         portfolio_summary=portfolio_summary,
+        signal_stats=signal_stats,
     )
 
     daily_path = daily_dir / f"{run_date.isoformat()}.md"
@@ -190,13 +193,16 @@ def render_ticker_markdown(
     period_changes: dict[str, str] | None = None,
     recent_timeline: list[dict[str, Any]] | None = None,
 ) -> str:
-    snapshot_rows = _render_snapshot_rows(analysis.data_snapshot)
+    snapshot_rows = _render_snapshot_rows(analysis.data_snapshot, analysis)
     return "\n".join(
         [
             f"# {analysis.ticker} - {analysis.date}",
             "",
             "## 요약",
             analysis.summary or "요약이 없습니다.",
+            "",
+            "## 실적 셋업 요약",
+            _render_earnings_setup_summary(analysis),
             "",
             "## 주요 뉴스",
             _render_news_items(analysis),
@@ -212,6 +218,12 @@ def render_ticker_markdown(
             "|------|----|",
             *snapshot_rows,
             "",
+            "## 포지셔닝 데이터",
+            _render_positioning_data(analysis.fundamentals),
+            "",
+            "## 실적 컨센서스 디테일",
+            _render_earnings_setup(analysis),
+            "",
             "## 최근 변화 비교",
             _render_period_changes(analysis, period_changes),
             "",
@@ -223,6 +235,12 @@ def render_ticker_markdown(
             "",
             "## 최근 타임라인",
             _render_recent_timeline(recent_timeline or []),
+            "",
+            "## 트레이드 프레임",
+            _render_trade_frame(analysis.trade_frame),
+            "",
+            "## 포지션 사이징 참고",
+            _render_position_sizing_hint(analysis),
             "",
             "## 시그널 / 한줄 결론",
             analysis.signal_or_takeaway or "요약 결론이 없습니다.",
@@ -249,6 +267,9 @@ def render_weekly_markdown(summary: WeeklySummaryData) -> str:
             "## 종목별 주간 등락 요약",
             _render_weekly_ticker_table(summary),
             "",
+            "## 섹터 퍼포먼스",
+            _render_weekly_sector_performance(summary),
+            "",
             "## 주간 상위 상승/하락 종목",
             "### 상승",
             _render_weekly_mover_list(summary.top_gainers, empty_message="- 이번 주 상승 종목이 없습니다."),
@@ -258,6 +279,9 @@ def render_weekly_markdown(summary: WeeklySummaryData) -> str:
             "",
             "## 이번 주 반복 노출 뉴스 요약",
             _render_weekly_news(summary),
+            "",
+            "## 시그널 검증 결과 (지난 20거래일)",
+            _render_weekly_signal_validation(summary),
             "",
             "## 다음 주 점검 항목",
             _render_weekly_actions(summary),
@@ -304,6 +328,22 @@ def _render_weekly_ticker_table(summary: WeeklySummaryData) -> str:
     return "\n".join(["| 티커 | 시작가 | 종료가 | 주간 등락률 |", "|------|--------|--------|-------------|", rows])
 
 
+def _render_weekly_sector_performance(summary: WeeklySummaryData) -> str:
+    if not summary.sector_performance:
+        return "- 이번 주 섹터 성과 데이터가 없습니다."
+    rows = "\n".join(
+        f"| {item.sector} | {item.ticker_count} | {item.average_weekly_change} |"
+        for item in summary.sector_performance
+    )
+    return "\n".join(
+        [
+            "| 섹터 | 종목수 | 평균 주간 등락 |",
+            "|------|--------|---------------|",
+            rows,
+        ]
+    )
+
+
 def _render_weekly_mover_list(movers: list[Any], *, empty_message: str) -> str:
     if not movers:
         return empty_message
@@ -320,6 +360,34 @@ def _render_weekly_actions(summary: WeeklySummaryData) -> str:
     if not summary.action_items:
         return "- [ ] 다음 주 점검 항목이 없습니다."
     return "\n".join(f"- [ ] {item}" for item in summary.action_items)
+
+
+def _render_weekly_signal_validation(summary: WeeklySummaryData) -> str:
+    if not summary.signal_validation_rows:
+        return "- 아직 평가 가능한 시그널 이력이 없습니다."
+
+    rows = [
+        "| 날짜 | 종목 | 방향 | 촉매 | 1D | 5D | 20D |",
+        "|------|------|------|------|----|----|-----|",
+    ]
+    for row in summary.signal_validation_rows:
+        rows.append(
+            "| {date} | {ticker} | {direction} | {catalyst} | {r1} | {r5} | {r20} |".format(
+                date=row.get("signal_date", ""),
+                ticker=row.get("ticker", ""),
+                direction=row.get("signal_direction", ""),
+                catalyst=row.get("catalyst_tag", "N/A"),
+                r1=row.get("return_1d", "N/A"),
+                r5=row.get("return_5d", "N/A"),
+                r20=row.get("return_20d", "N/A"),
+            )
+        )
+
+    if summary.signal_summary:
+        rows.append("")
+        rows.extend(f"**{line}**" for line in summary.signal_summary)
+
+    return "\n".join(rows)
 
 
 def _render_bullets(items: list[str]) -> str:
@@ -378,7 +446,7 @@ def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
 
 
 def _render_daily_upcoming_schedule(analyses: list[TickerAnalysis]) -> str:
-    events: list[tuple[str, str, str, str]] = []
+    events: list[tuple[str, str, str, str, str]] = []
     for analysis in analyses:
         for event in analysis.upcoming_events:
             events.append(
@@ -387,12 +455,16 @@ def _render_daily_upcoming_schedule(analyses: list[TickerAnalysis]) -> str:
                     analysis.ticker,
                     event.get("label", "일정"),
                     event.get("days_until", "N/A"),
+                    event.get("timing", ""),
                 )
             )
     if not events:
-        return "- 14일 이내 예정된 일정이 없습니다."
+        return "- 확인 가능한 예정 일정이 없습니다."
     ordered = sorted(events, key=lambda item: (item[0], item[1], item[2]))[:8]
-    return "\n".join(f"- **{ticker}** {label}: {event_date} (D-{days_until})" for event_date, ticker, label, days_until in ordered)
+    return "\n".join(
+        _render_daily_upcoming_schedule_line(event_date, ticker, label, days_until, timing)
+        for event_date, ticker, label, days_until, timing in ordered
+    )
 
 
 def _render_daily_sec_filings(analyses: list[TickerAnalysis]) -> str:
@@ -464,22 +536,108 @@ def _render_period_changes(analysis: TickerAnalysis, period_changes: dict[str, s
     )
 
 
+def _render_earnings_setup(analysis: TickerAnalysis) -> str:
+    currency = _snapshot_currency(analysis.data_snapshot)
+    setup = build_earnings_setup(
+        analysis.fundamentals,
+        analysis.quarterly_financials,
+        analysis.upcoming_events,
+        currency=currency,
+    )
+    return "\n".join(
+        [
+            f"- Forward EPS: {setup.get('forward_eps', 'N/A')}",
+            f"- TTM EPS: {setup.get('ttm_eps', 'N/A')}",
+            f"- Forward vs TTM: {_render_directional_value(setup.get('forward_vs_ttm', 'N/A'))}",
+            f"- EPS 성장률: {setup.get('earnings_growth', 'N/A')}",
+            f"- 최근 분기 추정 EPS: {setup.get('latest_estimated_eps', 'N/A')}",
+            (
+                f"- 최근 분기 서프라이즈: {setup.get('latest_surprise_pct', 'N/A')} / "
+                f"{_display_beat_miss(setup.get('latest_beat_miss', 'N/A'))}"
+            ),
+            f"- 다음 실적 체크포인트: {setup.get('next_earnings_event', 'N/A')}",
+        ]
+    )
+
+
+def _render_earnings_setup_summary(analysis: TickerAnalysis) -> str:
+    currency = _snapshot_currency(analysis.data_snapshot)
+    setup = build_earnings_setup(
+        analysis.fundamentals,
+        analysis.quarterly_financials,
+        analysis.upcoming_events,
+        currency=currency,
+    )
+    return "\n".join(
+        [
+            "| Forward vs TTM | 최근 분기 결과 | 다음 실적 D-day | EPS 성장률 |",
+            "|---|---|---|---|",
+            (
+                f"| {_render_directional_value(setup.get('forward_vs_ttm', 'N/A'))} "
+                f"| {_render_earnings_result_summary(setup)} "
+                f"| {extract_earnings_countdown(setup.get('next_earnings_event', 'N/A'))} "
+                f"| {setup.get('earnings_growth', 'N/A')} |"
+            ),
+            (
+                f"| {setup.get('forward_eps', 'N/A')} vs {setup.get('ttm_eps', 'N/A')} "
+                f"| 컨센서스 EPS {setup.get('latest_estimated_eps', 'N/A')} "
+                f"| {setup.get('next_earnings_event', 'N/A')} "
+                f"| YoY 기준 이익 성장 체력 |"
+            ),
+        ]
+    )
+
+
+def _render_price_action(price_action: dict[str, str]) -> str:
+    if not price_action:
+        return "- 가격 행동 데이터가 없습니다."
+    return "\n".join(
+        [
+            f"- ATR(14): {_render_price_action_pair(price_action.get('atr_14d', 'N/A'), price_action.get('atr_percent', 'N/A'))}",
+            f"- Relative Volume: {price_action.get('relative_volume', 'N/A')}",
+            f"- Gap: {price_action.get('gap_percent', 'N/A')}",
+            f"- vs SMA50: {_render_directional_value(price_action.get('price_vs_sma50', 'N/A'))}",
+            f"- vs SMA200: {_render_directional_value(price_action.get('price_vs_sma200', 'N/A'))}",
+            f"- 52주 위치: {price_action.get('week52_position', 'N/A')}",
+            f"- RS vs SPY(30D): {price_action.get('rs_vs_spy', 'N/A')}",
+        ]
+    )
+
+
 def _render_quarterly_financials(rows: list[dict[str, str]]) -> str:
     display_rows = build_quarterly_financial_display_rows(rows)
     if not display_rows:
-        return "| 분기 | 매출 | 영업이익 | EPS |\n|------|------|----------|-----|\n| N/A | N/A | N/A | N/A |"
+        return (
+            "| 분기 | 매출 | 영업이익 | EPS | EPS 추정 | 서프라이즈 | 결과 |\n"
+            "|------|------|----------|-----|----------|------------|------|\n"
+            "| N/A | N/A | N/A | N/A | N/A | N/A | N/A |"
+        )
     body = "\n".join(
-        f"| {row.get('quarter', 'N/A')} | {_format_quarterly_value(row.get('revenue', 'N/A'), unit='USD', yoy=row.get('revenue_yoy', ''))} | {_format_quarterly_value(row.get('operating_income', 'N/A'), unit='USD', yoy=row.get('operating_income_yoy', ''))} | {_format_quarterly_value(row.get('eps', 'N/A'), unit='USD/share', yoy=row.get('eps_yoy', ''))} |"
+        (
+            f"| {row.get('quarter', 'N/A')} | "
+            f"{_format_quarterly_value(row.get('revenue', 'N/A'), unit='USD', yoy=row.get('revenue_yoy', ''))} | "
+            f"{_format_quarterly_value(row.get('operating_income', 'N/A'), unit='USD', yoy=row.get('operating_income_yoy', ''))} | "
+            f"{_format_quarterly_value(row.get('eps', 'N/A'), unit='USD/share', yoy=row.get('eps_yoy', ''))} | "
+            f"{_append_unit_if_missing(row.get('estimated_eps', 'N/A'), 'USD/share')} | "
+            f"{row.get('surprise_pct', 'N/A')} | "
+            f"{_display_beat_miss(row.get('beat_miss', 'N/A'))} |"
+        )
         for row in display_rows
     )
-    return "\n".join(["| 분기 | 매출 | 영업이익 | EPS |", "|------|------|----------|-----|", body])
+    return "\n".join(
+        [
+            "| 분기 | 매출 | 영업이익 | EPS | EPS 추정 | 서프라이즈 | 결과 |",
+            "|------|------|----------|-----|----------|------------|------|",
+            body,
+        ]
+    )
 
 
 def _render_upcoming_events(events: list[dict[str, str]]) -> str:
     if not events:
         return "- 예정된 일정이 없습니다."
     return "\n".join(
-        f"- {event.get('label', '일정')}: {event.get('date', 'N/A')} (D-{event.get('days_until', 'N/A')})"
+        _render_upcoming_event_line(event)
         for event in events[:5]
     )
 
@@ -489,6 +647,20 @@ def _render_recent_timeline(entries: list[dict[str, Any]]) -> str:
     if not lines:
         return "- 타임라인 데이터가 없습니다."
     return "\n".join(f"- {line}" for line in lines)
+
+
+def _render_trade_frame(trade_frame: dict[str, str]) -> str:
+    if not trade_frame:
+        return "- 트레이드 프레임 정보가 없습니다."
+    return "\n".join(
+        [
+            f"- **Bull**: {trade_frame.get('bull_scenario', 'N/A')}",
+            f"- **Base**: {trade_frame.get('base_scenario', 'N/A')}",
+            f"- **Bear**: {trade_frame.get('bear_scenario', 'N/A')}",
+            f"- **무효화**: {trade_frame.get('invalidation_price', 'N/A')}",
+            f"- **관찰 기간**: {trade_frame.get('watch_period', 'N/A')}",
+        ]
+    )
 
 
 def _render_news_line(item, translated_summary: str | None = None) -> str:
@@ -633,11 +805,116 @@ def _display_snapshot_label(label: str) -> str:
     return labels.get(label, label)
 
 
-def _render_snapshot_rows(snapshot: dict[str, str]) -> list[str]:
-    return [
+def _render_snapshot_rows(snapshot: dict[str, str], analysis: TickerAnalysis | None = None) -> list[str]:
+    rows = [
         f"| {_display_snapshot_label(key)} | {_display_snapshot_value(snapshot, key, value)} |"
         for key, value in snapshot.items()
     ]
+    if analysis is None:
+        return rows
+
+    price_action = analysis.price_action or {}
+    fundamentals = analysis.fundamentals or {}
+    rows.extend(
+        [
+            f"| ATR(14) | {_render_price_action_pair(price_action.get('atr_14d', 'N/A'), price_action.get('atr_percent', 'N/A'))} |",
+            f"| Relative Volume | {price_action.get('relative_volume', 'N/A')} |",
+            f"| Gap | {price_action.get('gap_percent', 'N/A')} |",
+            f"| vs SMA50 | {_render_directional_value(price_action.get('price_vs_sma50', 'N/A'))} |",
+            f"| vs SMA200 | {_render_directional_value(price_action.get('price_vs_sma200', 'N/A'))} |",
+            f"| 52주 위치 | {price_action.get('week52_position', 'N/A')} |",
+            f"| RS vs SPY(30D) | {price_action.get('rs_vs_spy', 'N/A')} |",
+            f"| 공매도 | {_render_short_interest(fundamentals)} |",
+            f"| 애널리스트 | {_render_analyst_view(fundamentals)} |",
+            f"| 내부자 보유 | {fundamentals.get('held_by_insiders', 'N/A')} |",
+            f"| 기관 보유 | {fundamentals.get('held_by_institutions', 'N/A')} |",
+            f"| 옵션 IV | {fundamentals.get('implied_volatility', 'N/A')} |",
+        ]
+    )
+    return rows
+
+
+def _render_positioning_data(fundamentals: dict[str, str]) -> str:
+    return "\n".join(
+        [
+            f"- 공매도: {_render_short_interest(fundamentals)}",
+            f"- 애널리스트: {_render_analyst_view(fundamentals)}",
+            f"- 내부자 보유: {fundamentals.get('held_by_insiders', 'N/A')} / 기관 보유: {fundamentals.get('held_by_institutions', 'N/A')}",
+            f"- 옵션 IV: {fundamentals.get('implied_volatility', 'N/A')}",
+        ]
+    )
+
+
+def _render_position_sizing_hint(
+    analysis: TickerAnalysis,
+    *,
+    account_size_hint: float = 10000.0,
+    risk_fraction: float = 0.01,
+) -> str:
+    price = _parse_number_from_text(analysis.data_snapshot.get("Price", ""))
+    atr = _parse_number_from_text(analysis.price_action.get("atr_14d", ""))
+    currency = _snapshot_currency(analysis.data_snapshot)
+    if price is None or atr is None or atr <= 0:
+        return "- ATR 기반 포지션 사이징 계산에 필요한 가격 데이터가 부족합니다."
+
+    one_r_risk = account_size_hint * risk_fraction
+    shares = int(one_r_risk // atr)
+    stop_price = price - (2 * atr)
+    target_price = _parse_number_from_text(analysis.fundamentals.get("analyst_target_price", ""))
+    risk_reward_text = "N/A"
+    if target_price is not None and target_price > price:
+        risk_per_share = price - stop_price
+        if risk_per_share > 0:
+            reward_per_share = target_price - price
+            risk_reward_text = f"{reward_per_share / risk_per_share:.2f}R"
+
+    return "\n".join(
+        [
+            f"- ATR(14): {analysis.price_action.get('atr_14d', 'N/A')} -> 1% 리스크 기준 포지션: {account_size_hint:,.0f} 계좌에서 약 {shares}주",
+            f"- 2ATR 스탑 기준: {price:.2f} {currency} - {2 * atr:.2f} = **{stop_price:.2f} {currency}**",
+            f"- 애널리스트 목표가 기준 리스크/리워드: {risk_reward_text}",
+        ]
+    )
+
+
+def _render_short_interest(fundamentals: dict[str, str]) -> str:
+    short_float = fundamentals.get("short_float_pct", "N/A")
+    short_ratio = fundamentals.get("short_ratio", "N/A")
+    if short_float == "N/A" and short_ratio == "N/A":
+        return "N/A"
+    if short_ratio == "N/A":
+        return f"{short_float} float"
+    if short_float == "N/A":
+        return f"커버 {short_ratio}"
+    return f"{short_float} float (커버 {short_ratio})"
+
+
+def _render_analyst_view(fundamentals: dict[str, str]) -> str:
+    recommendation = fundamentals.get("analyst_recommendation", "N/A")
+    count = fundamentals.get("analyst_count", "N/A")
+    target_price = fundamentals.get("analyst_target_price", "N/A")
+    if recommendation == "N/A" and count == "N/A" and target_price == "N/A":
+        return "N/A"
+
+    head = recommendation if recommendation != "N/A" else "Analyst"
+    tail: list[str] = []
+    if count != "N/A":
+        tail.append(count)
+    if target_price != "N/A":
+        tail.append(f"목표 {target_price}")
+    if not tail:
+        return head
+    return f"{head} ({', '.join(tail)})"
+
+
+def _parse_number_from_text(value: str) -> float | None:
+    text = str(value).strip()
+    if not text or text == "N/A":
+        return None
+    try:
+        return float(text.replace(",", "").split()[0])
+    except (IndexError, ValueError):
+        return None
 
 
 def _display_snapshot_value(snapshot: dict[str, str], label: str, value: str) -> str:
@@ -734,6 +1011,72 @@ def _append_unit_if_missing(value: str, unit: str) -> str:
     if unit and normalized_value.endswith(unit):
         return normalized_value
     return f"{normalized_value} {unit}".strip()
+
+
+def _render_price_action_pair(primary: str, secondary: str) -> str:
+    primary_value = primary or "N/A"
+    secondary_value = secondary or "N/A"
+    if primary_value == "N/A" and secondary_value == "N/A":
+        return "N/A"
+    if secondary_value == "N/A":
+        return primary_value
+    return f"{primary_value} ({secondary_value})"
+
+
+def _render_directional_value(value: str) -> str:
+    normalized_value = (value or "").strip() or "N/A"
+    if normalized_value == "N/A":
+        return normalized_value
+    try:
+        numeric_value = float(normalized_value.replace("%", ""))
+    except ValueError:
+        return normalized_value
+    direction = "위" if numeric_value >= 0 else "아래"
+    return f"{normalized_value} ({direction})"
+
+
+def _render_earnings_result_summary(setup: dict[str, str]) -> str:
+    surprise = setup.get("latest_surprise_pct", "N/A")
+    beat_miss = _display_beat_miss(setup.get("latest_beat_miss", "N/A"))
+    if surprise == "N/A" and beat_miss == "N/A":
+        return "N/A"
+    if beat_miss == "N/A":
+        return surprise
+    if surprise == "N/A":
+        return beat_miss
+    return f"{surprise} / {beat_miss}"
+
+
+def _render_upcoming_event_line(event: dict[str, str]) -> str:
+    timing = str(event.get("timing", "")).strip()
+    suffix = f"D-{event.get('days_until', 'N/A')}"
+    if timing:
+        suffix = f"{suffix} · {timing}"
+    return f"- {event.get('label', '일정')}: {event.get('date', 'N/A')} ({suffix})"
+
+
+def _render_daily_upcoming_schedule_line(
+    event_date: str,
+    ticker: str,
+    label: str,
+    days_until: str,
+    timing: str,
+) -> str:
+    suffix = f"D-{days_until}"
+    if timing:
+        suffix = f"{suffix} · {timing}"
+    return f"- **{ticker}** {label}: {event_date} ({suffix})"
+
+
+def _display_beat_miss(value: str) -> str:
+    normalized_value = (value or "").strip().lower()
+    if normalized_value == "beat":
+        return "✅ beat"
+    if normalized_value == "miss":
+        return "❌ miss"
+    if normalized_value == "in-line":
+        return "➖ in-line"
+    return "N/A"
 
 
 def _coerce_float(value: Any) -> float:

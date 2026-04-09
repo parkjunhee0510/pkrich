@@ -54,6 +54,13 @@ def _openai_entry(ticker: str) -> dict[str, object]:
         'financial_highlights': [f'{ticker} 재무'],
         'risks_or_watchpoints': [f'{ticker} 리스크'],
         'signal_or_takeaway': f'{ticker} 결론',
+        'trade_frame': {
+            'bull_scenario': f'{ticker} 상승 시나리오',
+            'base_scenario': f'{ticker} 기본 시나리오',
+            'bear_scenario': f'{ticker} 하락 시나리오',
+            'invalidation_price': '95.00 USD 아래',
+            'watch_period': '향후 5거래일',
+        },
     }
 
 

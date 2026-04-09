@@ -19,6 +19,13 @@ class AnalyzerSchemaTests(unittest.TestCase):
                         "financial_highlights": ["Market cap: 1.00T"],
                         "risks_or_watchpoints": ["Watch services growth"],
                         "signal_or_takeaway": "Monitor the next earnings print.",
+                        "trade_frame": {
+                            "bull_scenario": "Bull case",
+                            "base_scenario": "Base case",
+                            "bear_scenario": "Bear case",
+                            "invalidation_price": "Below 95",
+                            "watch_period": "Next 5 trading days",
+                        },
                     }
                 ]
             }
@@ -43,6 +50,13 @@ class AnalyzerSchemaTests(unittest.TestCase):
                         "financial_highlights": ["Market cap: 1.00T"],
                         "risks_or_watchpoints": ["Watch cloud growth"],
                         "signal_or_takeaway": "Monitor Azure demand.",
+                        "trade_frame": {
+                            "bull_scenario": "Bull case",
+                            "base_scenario": "Base case",
+                            "bear_scenario": "Bear case",
+                            "invalidation_price": "Below 95",
+                            "watch_period": "Next 5 trading days",
+                        },
                     }
                 ]
             }
@@ -65,6 +79,13 @@ class AnalyzerSchemaTests(unittest.TestCase):
                         "financial_highlights": ["Market cap: 1.00T"],
                         "risks_or_watchpoints": ["Watch services growth"],
                         "signal_or_takeaway": "Monitor the next earnings print.",
+                        "trade_frame": {
+                            "bull_scenario": "Bull case",
+                            "base_scenario": "Base case",
+                            "bear_scenario": "Bear case",
+                            "invalidation_price": "Below 95",
+                            "watch_period": "Next 5 trading days",
+                        },
                     }
                 ]
             }

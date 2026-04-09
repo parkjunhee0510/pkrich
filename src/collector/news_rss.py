@@ -51,6 +51,7 @@ _DEFAULT_SEC_FILING_TAG_PRIORITIES = {
     "주주총회": 90,
     "기타 공시": 60,
 }
+_THESIS_RECAP_TERMS = ["why ", "how ", "what is", "explained", "recap", "analysis of"]
 
 
 def collect_news_for_watchlist(
@@ -275,12 +276,13 @@ def _news_rank_key(item: WatchlistItem, news_item: NewsItem, run_date: date | No
     source_priority = _load_source_priorities().get((news_item.source or "").strip().lower(), 0)
     title = _normalize_title(news_item.title)
     company_name = _normalize_title(item.name.replace("Corporation", "").replace("Corp.", "").replace("Inc.", ""))
+    catalyst_type = _resolve_catalyst_type(news_item)
 
     score = source_priority * 100
     if published_dt != datetime.min:
         anchor_date = run_date or date.today()
         days_old = max((anchor_date - published_dt.date()).days, 0)
-        score += max(0, 30 - days_old)
+        score += _age_score_by_catalyst(catalyst_type, days_old)
     if item.ticker.lower() in title:
         score += 20
     if company_name and any(token in title for token in company_name.split() if len(token) >= 3):
@@ -293,7 +295,9 @@ def _news_rank_key(item: WatchlistItem, news_item: NewsItem, run_date: date | No
         if term in title:
             score += 5
     if is_sec_filing_reference(news_item):
-        score += _load_sec_filing_tag_priorities(item).get(extract_sec_filing_tag(news_item.title), 0)
+        score += news_item.importance_score or _load_sec_filing_tag_priorities(item).get(extract_sec_filing_tag(news_item.title), 0)
+    if any(term in title for term in _THESIS_RECAP_TERMS):
+        score -= 30
     if not news_item.link:
         score -= 15
     if (news_item.source or "").strip().lower() == "fallback":
@@ -424,3 +428,23 @@ def _is_recent_news_item(item: NewsItem, run_date: date) -> bool:
     if days_old < 0:
         return True
     return days_old <= _MAX_NEWS_AGE_DAYS
+
+
+def _resolve_catalyst_type(item: NewsItem) -> str:
+    if item.catalyst_type:
+        return item.catalyst_type
+
+    normalized_source = _normalize_source_name(item.source)
+    if normalized_source in {"sec edgar", "ir rss", "apple newsroom", "microsoft source", "nvidia newsroom"}:
+        return "hard"
+    if normalized_source in {"reuters", "associated press", "ap news", "cnbc", "marketwatch", "yahoo finance"}:
+        return "medium"
+    return "soft"
+
+
+def _age_score_by_catalyst(catalyst_type: str, days_old: int) -> int:
+    if catalyst_type == "hard":
+        return max(0, 30 - days_old)
+    if catalyst_type == "medium":
+        return max(0, 14 - days_old)
+    return max(0, 7 - days_old)

@@ -8,6 +8,7 @@ from datetime import date
 from pathlib import Path
 
 from src.utils.datastore import get_datastore
+from src.utils.signal_tracker import load_signal_stats
 
 _NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*\.?\d*")
 
@@ -39,6 +40,13 @@ class WeeklyRepeatedNews:
 
 
 @dataclass(frozen=True)
+class WeeklySectorPerformance:
+    sector: str
+    ticker_count: int
+    average_weekly_change: str
+
+
+@dataclass(frozen=True)
 class WeeklySummaryData:
     iso_year: int
     iso_week: int
@@ -48,9 +56,12 @@ class WeeklySummaryData:
     is_partial: bool
     market_moves: list[WeeklyMarketMove]
     ticker_moves: list[WeeklyTickerMove]
+    sector_performance: list[WeeklySectorPerformance]
     top_gainers: list[WeeklyTickerMove]
     top_losers: list[WeeklyTickerMove]
     repeated_news: list[WeeklyRepeatedNews]
+    signal_validation_rows: list[dict[str, str]]
+    signal_summary: list[str]
     action_items: list[str]
 
 
@@ -69,7 +80,11 @@ def load_weekly_summary(
 
     ticker_moves = _load_weekly_ticker_moves(root, week_days, run_date)
     market_moves = _build_weekly_market_moves(week_days)
+    sector_performance = _build_sector_performance(week_days, ticker_moves)
     repeated_news = _build_repeated_news(week_days)
+    signal_stats = load_signal_stats(root / "data" / "signal_tracker.csv")
+    signal_validation_rows = _build_signal_validation_rows(signal_stats)
+    signal_summary = _build_signal_summary(signal_stats)
     action_items = _build_action_items(week_days)
 
     top_gainers = sorted(
@@ -98,9 +113,12 @@ def load_weekly_summary(
         is_partial=len(week_days) < 3,
         market_moves=market_moves,
         ticker_moves=ticker_moves,
+        sector_performance=sector_performance,
         top_gainers=top_gainers,
         top_losers=top_losers,
         repeated_news=repeated_news,
+        signal_validation_rows=signal_validation_rows,
+        signal_summary=signal_summary,
         action_items=action_items,
     )
 
@@ -227,6 +245,46 @@ def _build_weekly_market_moves(week_days: list[dict]) -> list[WeeklyMarketMove]:
     return moves
 
 
+def _build_sector_performance(
+    week_days: list[dict],
+    ticker_moves: list[WeeklyTickerMove],
+) -> list[WeeklySectorPerformance]:
+    if not week_days or not ticker_moves:
+        return []
+
+    latest_day = week_days[-1]
+    sector_by_ticker: dict[str, str] = {}
+    for entry in latest_day.get("tickers", []):
+        if not isinstance(entry, dict):
+            continue
+        ticker = str(entry.get("ticker", "")).strip()
+        snapshot = entry.get("data_snapshot", {})
+        sector = ""
+        if isinstance(snapshot, dict):
+            sector = str(snapshot.get("Sector", "")).strip()
+        if ticker:
+            sector_by_ticker[ticker] = sector or "기타"
+
+    grouped: dict[str, list[float]] = defaultdict(list)
+    for move in ticker_moves:
+        grouped[sector_by_ticker.get(move.ticker, "기타")].append(move.weekly_change_value)
+
+    performance: list[WeeklySectorPerformance] = []
+    for sector, values in grouped.items():
+        if not values:
+            continue
+        average_change = sum(values) / len(values)
+        performance.append(
+            WeeklySectorPerformance(
+                sector=sector,
+                ticker_count=len(values),
+                average_weekly_change=_format_percent(average_change),
+            )
+        )
+
+    return sorted(performance, key=lambda item: (_parse_numeric(item.average_weekly_change) or 0.0, item.sector), reverse=True)
+
+
 def _build_repeated_news(week_days: list[dict]) -> list[WeeklyRepeatedNews]:
     seen_per_day: set[tuple[str, str, str]] = set()
     aggregated: dict[str, dict[str, object]] = {}
@@ -304,6 +362,40 @@ def _build_action_items(week_days: list[dict]) -> list[str]:
         if ticker and signal:
             actions.append(f"{ticker}: {signal}")
     return actions
+
+
+def _build_signal_validation_rows(signal_stats: dict[str, object]) -> list[dict[str, str]]:
+    recent_signals = signal_stats.get("recent_signals", [])
+    if not isinstance(recent_signals, list):
+        return []
+
+    rows: list[dict[str, str]] = []
+    for entry in recent_signals:
+        if not isinstance(entry, dict):
+            continue
+        if not any(str(entry.get(key, "")).strip() not in {"", "N/A"} for key in ("return_1d", "return_5d", "return_20d")):
+            continue
+        rows.append({key: str(value) for key, value in entry.items() if key})
+    return rows[:10]
+
+
+def _build_signal_summary(signal_stats: dict[str, object]) -> list[str]:
+    summary_by_direction = signal_stats.get("summary_by_direction", {})
+    if not isinstance(summary_by_direction, dict):
+        return []
+
+    lines: list[str] = []
+    for direction in ("bull", "bear", "neutral"):
+        raw_entry = summary_by_direction.get(direction, {})
+        if not isinstance(raw_entry, dict):
+            continue
+        evaluated_count = int(raw_entry.get("evaluated_5d", 0) or 0)
+        if evaluated_count <= 0:
+            continue
+        lines.append(
+            f"{direction} 시그널 5일 승률: {raw_entry.get('win_rate_5d', 'N/A')} (평균 {raw_entry.get('avg_return_5d', 'N/A')})"
+        )
+    return lines
 
 
 def _parse_numeric(value: str) -> float | None:

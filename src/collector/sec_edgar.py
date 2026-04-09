@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import re
 from datetime import date
 from typing import Any
 from urllib import request
@@ -14,14 +15,24 @@ from src.utils.pipeline_logging import record_pipeline_event
 _SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
 _SEC_USER_AGENT = "pkrich-stock-research/1.0 (contact: local-automation)"
 _DEFAULT_MAX_FILINGS = 3
+_ITEM_PATTERN = re.compile(r"item\s+(\d+\.\d+)", re.IGNORECASE)
 _RELEVANT_FORMS = {
-    "8-K": {"category": "기타 공시", "description": "중요 사항 공시용 보고서"},
-    "8-K/A": {"category": "기타 공시", "description": "중요 사항 정정 공시 보고서"},
-    "10-Q": {"category": "실적", "description": "분기 실적 관련 보고서"},
-    "10-K": {"category": "실적", "description": "연간 사업 및 재무 보고서"},
-    "6-K": {"category": "기타 공시", "description": "해외발행인 수시 보고서"},
-    "20-F": {"category": "실적", "description": "해외발행인 연간 보고서"},
-    "DEF 14A": {"category": "주주총회", "description": "주주총회 관련 위임장 설명서"},
+    "8-K": {"category": "기타 공시", "description": "중요 사항 공시용 보고서", "catalyst_type": "medium", "importance_score": 120},
+    "8-K/A": {"category": "기타 공시", "description": "중요 사항 정정 공시 보고서", "catalyst_type": "medium", "importance_score": 100},
+    "10-Q": {"category": "실적", "description": "분기 실적 관련 보고서", "catalyst_type": "hard", "importance_score": 200},
+    "10-K": {"category": "실적", "description": "연간 사업 및 재무 보고서", "catalyst_type": "hard", "importance_score": 190},
+    "6-K": {"category": "기타 공시", "description": "해외 발행사 공시 보고서", "catalyst_type": "medium", "importance_score": 110},
+    "20-F": {"category": "실적", "description": "해외 발행사 연간 보고서", "catalyst_type": "hard", "importance_score": 190},
+    "DEF 14A": {"category": "주주총회", "description": "주주총회 관련 위임장 설명서", "catalyst_type": "medium", "importance_score": 100},
+}
+_8K_ITEM_MAP: dict[str, tuple[str, str, int]] = {
+    "2.02": ("실적 발표", "hard", 200),
+    "5.02": ("임원 교체", "hard", 180),
+    "1.01": ("주요 계약", "hard", 160),
+    "8.01": ("기타 중요 공시", "medium", 120),
+    "7.01": ("Reg FD 공시", "medium", 100),
+    "1.05": ("중요 사이버보안", "hard", 150),
+    "2.01": ("자산 취득/처분", "medium", 130),
 }
 
 
@@ -92,6 +103,7 @@ def _extract_recent_filings(
     *,
     max_items: int,
 ) -> list[NewsItem]:
+    _ = run_date
     filings = payload.get("filings", {})
     recent = filings.get("recent", {}) if isinstance(filings, dict) else {}
     forms = _coerce_list(recent.get("form"))
@@ -115,44 +127,92 @@ def _extract_recent_filings(
         filed_on = str(filing_date or "").strip()
         if not filed_on:
             continue
-        title = _build_filing_title(
-            company_name,
+
+        metadata = _build_filing_metadata(
             normalized_form,
             primary_document=str(primary_document or ""),
             primary_description=str(primary_description or ""),
         )
+        title = _build_filing_title(company_name, normalized_form, metadata)
         news_items.append(
             NewsItem(
                 title=title,
                 source="SEC EDGAR",
                 published_at=filed_on,
                 link=_build_filing_link(item.cik, str(accession_number or ""), str(primary_document or "")),
+                form_type=normalized_form,
+                item_number=metadata["item_number"],
+                catalyst_type=metadata["catalyst_type"],
+                importance_score=metadata["importance_score"],
             )
         )
 
     return sorted(
         news_items,
-        key=lambda filing: (filing.published_at, filing.title),
+        key=lambda filing: (filing.published_at, filing.importance_score, filing.title),
         reverse=True,
     )[:max_items]
 
 
-def _build_filing_title(
-    company_name: str,
+def _build_filing_title(company_name: str, form: str, metadata: dict[str, Any]) -> str:
+    tag = metadata["category"]
+    description = metadata["description"]
+    item_number = metadata["item_number"]
+    if item_number:
+        return f"[{tag}] {company_name}, {form} Item {item_number} {description}를 SEC에 제출"
+    return f"[{tag}] {company_name}, {form} {description}를 SEC에 제출"
+
+
+def _build_filing_metadata(
     form: str,
     *,
-    primary_document: str = "",
-    primary_description: str = "",
-) -> str:
-    filing_meta = _RELEVANT_FORMS.get(form, {"category": "기타 공시", "description": "SEC 공시"})
+    primary_document: str,
+    primary_description: str,
+) -> dict[str, Any]:
+    base = _RELEVANT_FORMS.get(form, _RELEVANT_FORMS["8-K"])
+    normalized_text = f"{primary_document} {primary_description}".strip().lower()
+    item_number = _parse_8k_item_number(primary_document) or _parse_8k_item_number(primary_description)
+
     category = _classify_filing_category(
         form,
-        default_category=str(filing_meta.get("category", "기타 공시")),
+        default_category=str(base.get("category", "기타 공시")),
         primary_document=primary_document,
         primary_description=primary_description,
+        item_number=item_number,
     )
-    description = str(filing_meta.get("description", "SEC 공시"))
-    return f"[{category}] {company_name}, {form} {description}를 SEC에 제출"
+
+    catalyst_type = str(base.get("catalyst_type", "medium"))
+    importance_score = int(base.get("importance_score", 100))
+    description = str(base.get("description", "SEC 공시"))
+
+    if form.startswith("8-K") and item_number:
+        item_meta = _8K_ITEM_MAP.get(item_number)
+        if item_meta is not None:
+            description, catalyst_type, importance_score = item_meta
+            if item_number == "2.02":
+                category = "실적"
+    elif "dividend" in normalized_text or "distribution" in normalized_text:
+        catalyst_type = "medium"
+        importance_score = max(importance_score, 110)
+        description = "배당 관련 공시"
+    elif "proxy" in normalized_text or "annual meeting" in normalized_text or "shareholder" in normalized_text:
+        catalyst_type = "medium"
+        importance_score = max(importance_score, 100)
+
+    return {
+        "category": category,
+        "description": description,
+        "item_number": item_number,
+        "catalyst_type": catalyst_type,
+        "importance_score": importance_score,
+    }
+
+
+def _parse_8k_item_number(text: str) -> str:
+    match = _ITEM_PATTERN.search(text or "")
+    if not match:
+        return ""
+    return match.group(1)
 
 
 def _build_filing_link(cik: str, accession_number: str, primary_document: str) -> str:
@@ -181,8 +241,11 @@ def _classify_filing_category(
     default_category: str,
     primary_document: str,
     primary_description: str,
+    item_number: str,
 ) -> str:
     normalized_text = f"{primary_document} {primary_description}".strip().lower()
+    if form.startswith("8-K") and item_number == "2.02":
+        return "실적"
     if "dividend" in normalized_text or "distribution" in normalized_text:
         return "배당"
     if "proxy" in normalized_text or "annual meeting" in normalized_text or "shareholder" in normalized_text:

@@ -9,6 +9,15 @@ const Dashboard = lazy(() =>
 const TickerDetail = lazy(() =>
   import('./pages/TickerDetail').then((module) => ({ default: module.TickerDetail })),
 )
+const Portfolio = lazy(() =>
+  import('./pages/Portfolio').then((module) => ({ default: module.Portfolio })),
+)
+const Signals = lazy(() =>
+  import('./pages/Signals').then((module) => ({ default: module.Signals })),
+)
+const Calendar = lazy(() =>
+  import('./pages/Calendar').then((module) => ({ default: module.Calendar })),
+)
 
 const BASENAME = import.meta.env.BASE_URL.replace(/\/$/, '')
 
@@ -20,6 +29,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/ticker/:ticker" element={<TickerDetail />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/signals" element={<Signals />} />
+            <Route path="/calendar" element={<Calendar />} />
           </Routes>
         </Suspense>
       </Layout>

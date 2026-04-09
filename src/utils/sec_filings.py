@@ -39,7 +39,7 @@ def extract_sec_form_type(title: str) -> str:
 
 
 def collect_sec_filings(news_references: list[NewsItem]) -> list[dict[str, str]]:
-    filings: list[dict[str, str]] = []
+    filings: list[dict[str, Any]] = []
     for item in news_references:
         if not is_sec_filing_reference(item):
             continue
@@ -48,7 +48,10 @@ def collect_sec_filings(news_references: list[NewsItem]) -> list[dict[str, str]]
             {
                 "tag": extract_sec_filing_tag(item.title),
                 "title": title,
-                "form_type": extract_sec_form_type(title),
+                "form_type": item.form_type or extract_sec_form_type(title),
+                "item_number": item.item_number,
+                "catalyst_type": item.catalyst_type,
+                "importance_score": item.importance_score,
                 "published_at": item.published_at,
                 "link": item.link,
                 "source": item.source,
@@ -72,6 +75,10 @@ def collect_sec_filing_tags(news_references: list[NewsItem]) -> list[str]:
 def sort_sec_filings(filings: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(
         filings,
-        key=lambda item: (str(item.get("published_at", "")), str(item.get("title", ""))),
+        key=lambda item: (
+            str(item.get("published_at", "")),
+            int(item.get("importance_score", 0) or 0),
+            str(item.get("title", "")),
+        ),
         reverse=True,
     )

@@ -22,6 +22,10 @@ class NewsItem:
     source: str
     published_at: str = ''
     link: str = ''
+    form_type: str = ''
+    item_number: str = ''
+    catalyst_type: str = ''
+    importance_score: int = 0
 
 
 @dataclass(frozen=True)
@@ -44,10 +48,28 @@ class CollectedTickerData:
     avg_volume_3m: str = 'N/A'
     price_to_book: str = 'N/A'
     dividend_yield: str = 'N/A'
+    forward_eps: str = 'N/A'
+    earnings_growth: str = 'N/A'
+    short_float_pct: str = 'N/A'
+    short_ratio: str = 'N/A'
+    analyst_target_price: str = 'N/A'
+    analyst_recommendation: str = 'N/A'
+    analyst_count: str = 'N/A'
+    held_by_insiders: str = 'N/A'
+    held_by_institutions: str = 'N/A'
+    implied_volatility: str = 'N/A'
     quarterly_financials: list[dict[str, str]] = field(default_factory=list)
     upcoming_events: list[dict[str, str]] = field(default_factory=list)
     price_change_7d: str = 'N/A'
     price_change_30d: str = 'N/A'
+    atr_14d: str = 'N/A'
+    atr_percent: str = 'N/A'
+    relative_volume: str = 'N/A'
+    gap_percent: str = 'N/A'
+    price_vs_sma50: str = 'N/A'
+    price_vs_sma200: str = 'N/A'
+    week52_position: str = 'N/A'
+    rs_vs_spy: str = 'N/A'
 
 
 @dataclass(frozen=True)
@@ -63,9 +85,11 @@ class TickerAnalysis:
     signal_or_takeaway: str
     data_snapshot: dict[str, str]
     fundamentals: dict[str, str] = field(default_factory=dict)
+    price_action: dict[str, str] = field(default_factory=dict)
     quarterly_financials: list[dict[str, str]] = field(default_factory=list)
     upcoming_events: list[dict[str, str]] = field(default_factory=list)
     news_tone: dict[str, str | float] = field(default_factory=dict)
+    trade_frame: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
