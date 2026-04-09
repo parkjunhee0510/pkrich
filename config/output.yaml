@@ -18,10 +18,32 @@ sector_display_order:
 news_source_priority:
   Reuters: 5
   Associated Press: 4
+  The Associated Press: 4
   AP: 4
+  AP News: 4
+  SEC EDGAR: 4
   Bloomberg: 3
+  CNBC: 2
+  IR RSS: 2
+  Apple Newsroom: 2
+  Microsoft Source: 2
+  NVIDIA Newsroom: 2
   Yahoo Finance: 2
+  MarketWatch: 1
   Seeking Alpha: 1
   DuckDuckGo: 0
   RSS: 0
   fallback: -1
+
+news_source_max_items_per_source: 2
+
+sec_filing_tag_priority:
+  실적: 140
+  배당: 110
+  주주총회: 90
+  기타 공시: 60
+
+ir_source_names:
+  apple.com: Apple Newsroom
+  news.microsoft.com: Microsoft Source
+  nvidianews.nvidia.com: NVIDIA Newsroom

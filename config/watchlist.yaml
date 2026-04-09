@@ -3,11 +3,21 @@ watchlist:
     name: Apple Inc.
     sector: Technology
     keywords: ["iPhone", "services revenue", "AI"]
+    cik: "0000320193"
+    ir_rss_feeds: ["https://www.apple.com/newsroom/rss-feed.rss"]
+    sec_filing_tag_priority:
+      실적: 160
   - ticker: MSFT
     name: Microsoft Corporation
     sector: Technology
     keywords: ["Azure", "Copilot", "cloud"]
+    cik: "0000789019"
+    ir_rss_feeds: ["https://news.microsoft.com/source/feed/"]
+    ir_source_names:
+      news.microsoft.com: Microsoft Source
   - ticker: NVDA
     name: NVIDIA Corporation
     sector: Semiconductors
     keywords: ["GPU", "data center", "AI chips"]
+    cik: "0001045810"
+    ir_rss_feeds: ["https://nvidianews.nvidia.com/cats/press_release.xml"]

@@ -1,0 +1,26 @@
+﻿default_profile: economy
+profiles:
+  economy:
+    model: gpt-5.4-mini
+    context_window: 400000
+    max_output_tokens: 32000
+    monthly_cost_estimate_usd: 0.31
+    input_cost_per_1m_tokens: 0.25
+    cached_input_cost_per_1m_tokens: 0.025
+    output_cost_per_1m_tokens: 2.0
+  standard:
+    model: gpt-5.4
+    context_window: 400000
+    max_output_tokens: 32000
+    monthly_cost_estimate_usd: 3.0
+    input_cost_per_1m_tokens: 1.25
+    cached_input_cost_per_1m_tokens: 0.125
+    output_cost_per_1m_tokens: 10.0
+  deep:
+    model: o3-mini
+    context_window: 200000
+    max_output_tokens: 100000
+    monthly_cost_estimate_usd: 8.0
+    input_cost_per_1m_tokens: 1.10
+    cached_input_cost_per_1m_tokens: 0.55
+    output_cost_per_1m_tokens: 4.40

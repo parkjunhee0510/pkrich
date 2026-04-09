@@ -1,20 +1,54 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import csv
+from dataclasses import replace
 from datetime import date, datetime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
+from typing import Any
 
-from src.types import TickerAnalysis
+from src.output.json_export import write_json_outputs
+from src.output.obsidian import mirror_markdown_outputs
+from src.types import PortfolioSummary, TickerAnalysis
 from src.utils.config import load_simple_mapping
+from src.utils.datastore import get_datastore
+from src.utils.datastore_csv import append_price_history_csv
+from src.utils.news_tone import build_news_tone
+from src.utils.pipeline_logging import record_pipeline_event
+from src.utils.quarterly_financials import build_quarterly_financial_display_rows
+from src.utils.sec_filings import collect_sec_filings, sort_sec_filings
+from src.utils.ticker_timelines import summarize_recent_timeline
+from src.utils.weekly_summary import WeeklySummaryData, load_weekly_summary
 
-
+_SECTOR_DISPLAY_NAMES = {
+    "Technology": "기술",
+    "Semiconductors": "반도체",
+    "Healthcare": "헬스케어",
+    "Financials": "금융",
+    "Energy": "에너지",
+    "Consumer Discretionary": "경기소비재",
+    "Consumer Staples": "필수소비재",
+    "Industrials": "산업재",
+    "Communication Services": "커뮤니케이션 서비스",
+    "Utilities": "유틸리티",
+    "Real Estate": "부동산",
+    "Materials": "소재",
+}
 _DEFAULT_SOURCE_PRIORITIES = {
     "reuters": 5,
     "associated press": 4,
+    "the associated press": 4,
     "ap": 4,
+    "ap news": 4,
+    "sec edgar": 4,
     "bloomberg": 3,
+    "cnbc": 2,
+    "ir rss": 2,
+    "apple newsroom": 2,
+    "microsoft source": 2,
+    "nvidia newsroom": 2,
     "yahoo finance": 2,
+    "marketwatch": 1,
     "seeking alpha": 1,
     "duckduckgo": 0,
     "rss": 0,
@@ -34,199 +68,295 @@ _DEFAULT_SECTOR_DISPLAY_ORDER = [
     "Real Estate",
     "Materials",
 ]
+_MAX_DISPLAY_NEWS_AGE_DAYS = 180
 
 
-def write_outputs(analyses: list[TickerAnalysis], run_date: date) -> None:
+def write_outputs(
+    analyses: list[TickerAnalysis],
+    run_date: date,
+    *,
+    market_overview: list[dict[str, str]] | None = None,
+    direct_period_changes: dict[str, dict[str, str]] | None = None,
+    portfolio_summary: PortfolioSummary | None = None,
+) -> dict[str, Any]:
     output_root = Path("output")
     daily_dir = output_root / "daily"
+    weekly_dir = daily_dir / "weekly"
     tickers_dir = output_root / "tickers"
     data_dir = output_root / "data"
 
     daily_dir.mkdir(parents=True, exist_ok=True)
+    weekly_dir.mkdir(parents=True, exist_ok=True)
     tickers_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
 
-    daily_path = daily_dir / f"{run_date.isoformat()}.md"
-    daily_path.write_text(render_daily_markdown(analyses, run_date), encoding="utf-8")
+    enriched_analyses = [_enrich_analysis(analysis) for analysis in analyses]
+    datastore = get_datastore(output_root)
+    datastore.append_prices(enriched_analyses)
+    csv_period_changes = datastore.load_period_changes(run_date)
+    period_changes_by_ticker = _merge_period_changes(csv_period_changes, direct_period_changes or {})
+    timeline_map = write_json_outputs(
+        enriched_analyses,
+        run_date,
+        market_overview=market_overview,
+        output_root=output_root,
+        period_changes_by_ticker=period_changes_by_ticker,
+        portfolio_summary=portfolio_summary,
+    )
 
-    for analysis in analyses:
+    daily_path = daily_dir / f"{run_date.isoformat()}.md"
+    _write_text_artifact(
+        daily_path,
+        render_daily_markdown(
+            enriched_analyses,
+            run_date,
+            market_overview=market_overview or [],
+            portfolio_summary=portfolio_summary,
+        ),
+        artifact="daily_note",
+    )
+
+    ticker_paths: dict[str, Path] = {}
+    for analysis in enriched_analyses:
         ticker_dir = tickers_dir / analysis.ticker
         ticker_dir.mkdir(parents=True, exist_ok=True)
         ticker_path = ticker_dir / f"{run_date.isoformat()}.md"
-        ticker_path.write_text(render_ticker_markdown(analysis), encoding="utf-8")
+        _write_text_artifact(
+            ticker_path,
+            render_ticker_markdown(
+                analysis,
+                period_changes=period_changes_by_ticker.get(analysis.ticker),
+                recent_timeline=timeline_map.get(analysis.ticker, [])[:3],
+            ),
+            artifact="ticker_note",
+            ticker=analysis.ticker,
+        )
+        ticker_paths[analysis.ticker] = ticker_path
 
-    append_price_history(data_dir / "price_history.csv", analyses)
+    weekly_summary = load_weekly_summary(run_date, output_root=output_root)
+    weekly_path = weekly_dir / f"{weekly_summary.iso_year}-W{weekly_summary.iso_week:02d}.md"
+    _write_text_artifact(weekly_path, render_weekly_markdown(weekly_summary), artifact="weekly_note")
+
+    mirror_markdown_outputs(daily_path, ticker_paths)
+    return {
+        "daily_path": daily_path,
+        "weekly_path": weekly_path,
+        "ticker_paths": ticker_paths,
+    }
 
 
-def render_daily_markdown(analyses: list[TickerAnalysis], run_date: date) -> str:
+def render_daily_markdown(
+    analyses: list[TickerAnalysis],
+    run_date: date,
+    market_overview: list[dict[str, str]] | None = None,
+    portfolio_summary: PortfolioSummary | None = None,
+) -> str:
     watchlist_rows = "\n".join(
         f"| {analysis.ticker} | {analysis.data_snapshot['Price']} | {analysis.data_snapshot['Daily Change']} | {analysis.signal_or_takeaway} |"
         for analysis in analyses
     )
-    top_movers = sorted(
-        analyses,
-        key=lambda item: _numeric_change(item.data_snapshot["Daily Change"]),
-        reverse=True,
-    )
-    top_mover_lines = "\n".join(
-        f"- **{analysis.ticker}**: {analysis.summary}"
-        for analysis in top_movers[:3]
-    ) or "- No movers available."
     top_news_links = _render_daily_news_links(analyses)
-    action_items = "\n".join(
-        f"- [ ] Review {analysis.ticker} for any material update."
-        for analysis in analyses
-    ) or "- [ ] No action items."
+    upcoming_schedule = _render_daily_upcoming_schedule(analyses)
+    action_items = "\n".join(f"- [ ] {analysis.ticker}: {analysis.signal_or_takeaway}" for analysis in analyses) or "- [ ] 점검할 항목이 없습니다."
 
     lines = [
-        f"# Daily Research - {run_date.isoformat()}",
+        f"# 일일 리서치 - {run_date.isoformat()}",
         "",
-        "## Market Overview",
-        "Market overview is derived from collected watchlist data for this run.",
+        "## 시장 개요",
+        _render_market_overview(market_overview or []),
         "",
-        "## Watchlist Summary",
-        "| Ticker | Price | Change | Signal |",
-        "|--------|-------|--------|--------|",
+        "## 관심 종목 요약",
+        "| 티커 | 가격 | 등락률 | 한줄 판단 |",
+        "|------|------|--------|-----------|",
         watchlist_rows or "| N/A | N/A | N/A | N/A |",
-        "",
-        "## Top Movers",
-        top_mover_lines,
         "",
     ]
 
-    if not (_hide_empty_top_news_links_section() and top_news_links == "- No news links available."):
-        lines.extend(
-            [
-                "## Top News Links",
-                top_news_links,
-                "",
-            ]
-        )
+    if not (_hide_empty_top_news_links_section() and top_news_links == "- 확인 가능한 뉴스 링크가 없습니다."):
+        lines.extend(["## 주요 뉴스 링크", top_news_links, ""])
 
-    lines.extend(
-        [
-            "## Action Items",
-            action_items,
-            "",
-        ]
-    )
+    lines.extend(["## SEC 공시", _render_daily_sec_filings(analyses), ""])
 
+    if portfolio_summary and portfolio_summary.positions:
+        lines.extend(["## 포트폴리오 현황", _render_portfolio_summary(portfolio_summary), ""])
+
+    lines.extend(["## 다가오는 일정", upcoming_schedule, "", "## 점검 항목", action_items, ""])
     return "\n".join(lines)
 
 
-def render_ticker_markdown(analysis: TickerAnalysis) -> str:
+def render_ticker_markdown(
+    analysis: TickerAnalysis,
+    *,
+    period_changes: dict[str, str] | None = None,
+    recent_timeline: list[dict[str, Any]] | None = None,
+) -> str:
+    snapshot_rows = _render_snapshot_rows(analysis.data_snapshot)
     return "\n".join(
         [
             f"# {analysis.ticker} - {analysis.date}",
             "",
-            "## Summary",
-            analysis.summary or "No summary available.",
+            "## 요약",
+            analysis.summary or "요약이 없습니다.",
             "",
-            "## Key News",
+            "## 주요 뉴스",
             _render_news_items(analysis),
             "",
-            "## Financial Highlights",
+            "## 재무 하이라이트",
             _render_bullets(analysis.financial_highlights),
             "",
-            "## Risks / Watchpoints",
+            "## 리스크 / 체크포인트",
             _render_bullets(analysis.risks_or_watchpoints),
             "",
-            "## Data Snapshot",
-            "| Metric | Value |",
-            "|--------|-------|",
-            *[f"| {key} | {value} |" for key, value in analysis.data_snapshot.items()],
+            "## 데이터 스냅샷",
+            "| 항목 | 값 |",
+            "|------|----|",
+            *snapshot_rows,
             "",
-            "## Signal / Takeaway",
-            analysis.signal_or_takeaway or "No takeaway available.",
+            "## 최근 변화 비교",
+            _render_period_changes(analysis, period_changes),
+            "",
+            "## 최근 4분기 재무",
+            _render_quarterly_financials(analysis.quarterly_financials),
+            "",
+            "## 다가오는 일정",
+            _render_upcoming_events(analysis.upcoming_events),
+            "",
+            "## 최근 타임라인",
+            _render_recent_timeline(recent_timeline or []),
+            "",
+            "## 시그널 / 한줄 결론",
+            analysis.signal_or_takeaway or "요약 결론이 없습니다.",
             "",
         ]
     )
 
 
-def append_price_history(path: Path, analyses: list[TickerAnalysis]) -> None:
-    fieldnames = ["date", "ticker", "price", "daily_change", "market_cap", "trailing_pe"]
-    existing_rows: list[dict[str, str]] = []
-
-    if path.exists():
-        with path.open("r", encoding="utf-8", newline="") as csv_file:
-            reader = csv.DictReader(csv_file)
-            existing_rows = list(reader)
-
-    updated_rows = [
-        row
-        for row in existing_rows
-        if (row.get("date"), row.get("ticker"))
-        not in {(analysis.date, analysis.ticker) for analysis in analyses}
+def render_weekly_markdown(summary: WeeklySummaryData) -> str:
+    lines = [
+        f"# 주간 리서치 - {summary.iso_year}-W{summary.iso_week:02d}",
+        "",
+        f"기간: {summary.start_date} ~ {summary.end_date}",
+        f"집계 영업일 수: {summary.trading_days}일",
+        "",
     ]
-
-    updated_rows.extend(
-        {
-            "date": analysis.date,
-            "ticker": analysis.ticker,
-            "price": analysis.data_snapshot["Price"],
-            "daily_change": analysis.data_snapshot["Daily Change"],
-            "market_cap": analysis.data_snapshot["Market Cap"],
-            "trailing_pe": analysis.data_snapshot["Trailing P/E"],
-        }
-        for analysis in analyses
+    if summary.is_partial:
+        lines.extend(["> 데이터 축적 중: 이번 주 영업일 데이터가 3일 미만입니다.", ""])
+    lines.extend(
+        [
+            "## 주간 시장 개요",
+            _render_weekly_market_moves(summary),
+            "",
+            "## 종목별 주간 등락 요약",
+            _render_weekly_ticker_table(summary),
+            "",
+            "## 주간 상위 상승/하락 종목",
+            "### 상승",
+            _render_weekly_mover_list(summary.top_gainers, empty_message="- 이번 주 상승 종목이 없습니다."),
+            "",
+            "### 하락",
+            _render_weekly_mover_list(summary.top_losers, empty_message="- 이번 주 하락 종목이 없습니다."),
+            "",
+            "## 이번 주 반복 노출 뉴스 요약",
+            _render_weekly_news(summary),
+            "",
+            "## 다음 주 점검 항목",
+            _render_weekly_actions(summary),
+            "",
+        ]
     )
+    return "\n".join(lines)
 
-    updated_rows.sort(key=lambda row: (row["date"], row["ticker"]))
 
-    with path.open("w", encoding="utf-8", newline="") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(updated_rows)
+def append_price_history(path: Path, analyses: list[TickerAnalysis]) -> None:
+    append_price_history_csv(path, analyses)
+
+
+def _merge_period_changes(
+    csv: dict[str, dict[str, str]],
+    direct: dict[str, dict[str, str]],
+) -> dict[str, dict[str, str]]:
+    result: dict[str, dict[str, str]] = {}
+    for ticker in set(csv) | set(direct):
+        csv_entry = csv.get(ticker, {})
+        direct_entry = direct.get(ticker, {})
+        result[ticker] = {
+            "7d": csv_entry.get("7d") if csv_entry.get("7d") not in (None, "N/A") else direct_entry.get("7d", "N/A"),
+            "30d": csv_entry.get("30d") if csv_entry.get("30d") not in (None, "N/A") else direct_entry.get("30d", "N/A"),
+        }
+    return result
+
+
+def _enrich_analysis(analysis: TickerAnalysis) -> TickerAnalysis:
+    news_tone = analysis.news_tone or build_news_tone(analysis)
+    return replace(analysis, news_tone=news_tone)
+
+
+def _render_weekly_market_moves(summary: WeeklySummaryData) -> str:
+    if not summary.market_moves:
+        return "- 이번 주 시장 개요 데이터가 없습니다."
+    return "\n".join(f"- {move.label}: {move.start_price} -> {move.end_price} ({move.weekly_change})" for move in summary.market_moves)
+
+
+def _render_weekly_ticker_table(summary: WeeklySummaryData) -> str:
+    if not summary.ticker_moves:
+        return "| 티커 | 시작가 | 종료가 | 주간 등락률 |\n|------|--------|--------|-------------|\n| N/A | N/A | N/A | N/A |"
+    rows = "\n".join(f"| {move.ticker} | {move.start_price} | {move.end_price} | {move.weekly_change} |" for move in summary.ticker_moves)
+    return "\n".join(["| 티커 | 시작가 | 종료가 | 주간 등락률 |", "|------|--------|--------|-------------|", rows])
+
+
+def _render_weekly_mover_list(movers: list[Any], *, empty_message: str) -> str:
+    if not movers:
+        return empty_message
+    return "\n".join(f"- **{move.ticker}**: {move.weekly_change} ({move.start_price} -> {move.end_price})" for move in movers)
+
+
+def _render_weekly_news(summary: WeeklySummaryData) -> str:
+    if not summary.repeated_news:
+        return "- 이번 주 반복 노출된 뉴스가 없습니다."
+    return "\n".join(f"- {item.count}회 노출: {item.summary} ({', '.join(item.tickers)}) - {item.source}" for item in summary.repeated_news)
+
+
+def _render_weekly_actions(summary: WeeklySummaryData) -> str:
+    if not summary.action_items:
+        return "- [ ] 다음 주 점검 항목이 없습니다."
+    return "\n".join(f"- [ ] {item}" for item in summary.action_items)
 
 
 def _render_bullets(items: list[str]) -> str:
     if not items:
-        return "- None."
+        return "- 없음."
     return "\n".join(f"- {item}" for item in items)
 
 
 def _render_news_items(analysis: TickerAnalysis) -> str:
     if analysis.news_references:
-        hide_fallback_without_links = _hide_fallback_news_without_links_in_ticker_notes()
-        visible_news = [
-            item
-            for item in analysis.news_references
-            if not (
-                hide_fallback_without_links
-                and not item.link
-                and (item.source or "").strip().lower() == "fallback"
-            )
-        ]
+        visible_news = _displayable_news_items(
+            analysis.news_references,
+            anchor_date=_analysis_anchor_date(analysis),
+            hide_fallback_without_links=_hide_fallback_news_without_links_in_ticker_notes(),
+        )
         if visible_news:
-            return "\n".join(_render_news_line(item) for item in visible_news)
-        if hide_fallback_without_links:
-            return "- None."
+            return "\n".join(_render_news_line(item, _news_summary_for_reference(analysis, item)) for item in visible_news)
+        if _hide_fallback_news_without_links_in_ticker_notes():
+            return "- 없음."
     return _render_bullets(analysis.key_news)
 
 
 def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
     grouped: dict[str, list[tuple[tuple[datetime, int], str, str]]] = {}
-    hide_fallback_without_links = _hide_fallback_news_without_links()
     for analysis in analyses:
         sector = analysis.data_snapshot.get("Sector", "N/A")
         if analysis.news_references:
-            visible_news = [
-                item
-                for item in analysis.news_references
-                if not (
-                    hide_fallback_without_links
-                    and not item.link
-                    and (item.source or "").strip().lower() == "fallback"
-                )
-            ]
+            visible_news = _displayable_news_items(
+                analysis.news_references,
+                anchor_date=_analysis_anchor_date(analysis),
+                hide_fallback_without_links=_hide_fallback_news_without_links(),
+            )
             if not visible_news:
                 continue
-            first_news = sorted(
-                visible_news,
-                key=lambda item: (_news_sort_key(item.published_at), _source_priority(item.source)),
-                reverse=True,
-            )[0]
-            line = f"- **{analysis.ticker}**: {_render_news_line(first_news)[2:]}"
+            first_news = visible_news[0]
+            translated_summary = _news_summary_for_reference(analysis, first_news)
+            line = _render_daily_news_entry(analysis.ticker, first_news, translated_summary)
             sort_key = (_news_sort_key(first_news.published_at), _source_priority(first_news.source))
         elif analysis.key_news:
             line = f"- **{analysis.ticker}**: {analysis.key_news[0]}"
@@ -236,45 +366,181 @@ def _render_daily_news_links(analyses: list[TickerAnalysis]) -> str:
         grouped.setdefault(sector, []).append((sort_key, analysis.ticker, line))
 
     if not grouped:
-        return "- No news links available."
+        return "- 확인 가능한 뉴스 링크가 없습니다."
 
     sections: list[str] = []
     for sector in _ordered_sectors(grouped):
-        sections.append(f"### {sector}")
-        ordered_lines = sorted(
-            grouped[sector],
-            key=lambda entry: (entry[0][0], entry[0][1], entry[1]),
-            reverse=True,
-        )
+        sections.append(f"### {_display_sector(sector)}")
+        ordered_lines = sorted(grouped[sector], key=lambda entry: (entry[0][0], entry[0][1], entry[1]), reverse=True)
         sections.extend(entry[2] for entry in ordered_lines)
         sections.append("")
     return "\n".join(sections).rstrip()
 
 
-def _render_news_line(item) -> str:
+def _render_daily_upcoming_schedule(analyses: list[TickerAnalysis]) -> str:
+    events: list[tuple[str, str, str, str]] = []
+    for analysis in analyses:
+        for event in analysis.upcoming_events:
+            events.append(
+                (
+                    event.get("date", "9999-12-31"),
+                    analysis.ticker,
+                    event.get("label", "일정"),
+                    event.get("days_until", "N/A"),
+                )
+            )
+    if not events:
+        return "- 14일 이내 예정된 일정이 없습니다."
+    ordered = sorted(events, key=lambda item: (item[0], item[1], item[2]))[:8]
+    return "\n".join(f"- **{ticker}** {label}: {event_date} (D-{days_until})" for event_date, ticker, label, days_until in ordered)
+
+
+def _render_daily_sec_filings(analyses: list[TickerAnalysis]) -> str:
+    filings: list[tuple[str, dict[str, str]]] = []
+    for analysis in analyses:
+        for filing in sort_sec_filings(collect_sec_filings(analysis.news_references)):
+            filings.append((analysis.ticker, filing))
+
+    if not filings:
+        return "- 오늘 반영된 SEC 공시가 없습니다."
+
+    ordered = sorted(
+        filings,
+        key=lambda entry: (str(entry[1].get("published_at", "")), entry[0], str(entry[1].get("tag", ""))),
+        reverse=True,
+    )
+    lines: list[str] = []
+    for ticker, filing in ordered:
+        tag = filing.get("tag", "").strip()
+        title = filing.get("title", "").strip() or "SEC 공시"
+        published_at = filing.get("published_at", "").strip()
+        link = filing.get("link", "").strip()
+        title_text = f"[{title}]({link})" if link else title
+        suffix = f" ({published_at})" if published_at else ""
+        tag_prefix = f"[{tag}] " if tag else ""
+        lines.append(f"- **{ticker}** {tag_prefix}{title_text}{suffix}")
+    return "\n".join(lines)
+
+
+def _render_portfolio_summary(portfolio_summary: PortfolioSummary) -> str:
+    rows = [
+        "| 티커 | 수량 | 평균단가 | 현재가 | 평가금액 | 손익 | 수익률 |",
+        "|------|------|----------|--------|----------|------|--------|",
+    ]
+    for position in portfolio_summary.positions:
+        rows.append(
+            "| {ticker} | {shares} | {avg_cost} | {market_price} | {market_value} | {pnl} | {return_pct} |".format(
+                ticker=position.ticker,
+                shares=_format_decimal(position.shares),
+                avg_cost=_format_money(position.avg_cost, position.currency),
+                market_price=_format_optional_money(position.market_price, position.currency),
+                market_value=_format_optional_money(position.market_value, position.currency),
+                pnl=_format_optional_signed_money(position.unrealized_pnl, position.currency),
+                return_pct=_format_optional_percent(position.unrealized_return_pct),
+            )
+        )
+
+    rows.extend(
+        [
+            "",
+            f"- 총 매수금액: {_format_money(portfolio_summary.total_cost_basis, 'USD')}",
+            f"- 총 평가금액: {_format_optional_money(portfolio_summary.total_market_value, 'USD')}",
+            f"- 총 평가손익: {_format_optional_signed_money(portfolio_summary.total_unrealized_pnl, 'USD')}",
+            f"- 총 수익률: {_format_optional_percent(portfolio_summary.total_unrealized_return_pct)}",
+        ]
+    )
+    return "\n".join(rows)
+
+
+def _render_period_changes(analysis: TickerAnalysis, period_changes: dict[str, str] | None) -> str:
+    period_changes = period_changes or {"7d": "N/A", "30d": "N/A"}
+    return "\n".join(
+        [
+            f"- 현재가: {analysis.data_snapshot.get('Price', 'N/A')}",
+            f"- 7일 변화: {period_changes.get('7d', 'N/A')}",
+            f"- 30일 변화: {period_changes.get('30d', 'N/A')}",
+            f"- 뉴스 톤: {_display_news_tone(analysis.news_tone)}",
+        ]
+    )
+
+
+def _render_quarterly_financials(rows: list[dict[str, str]]) -> str:
+    display_rows = build_quarterly_financial_display_rows(rows)
+    if not display_rows:
+        return "| 분기 | 매출 | 영업이익 | EPS |\n|------|------|----------|-----|\n| N/A | N/A | N/A | N/A |"
+    body = "\n".join(
+        f"| {row.get('quarter', 'N/A')} | {_format_quarterly_value(row.get('revenue', 'N/A'), unit='USD', yoy=row.get('revenue_yoy', ''))} | {_format_quarterly_value(row.get('operating_income', 'N/A'), unit='USD', yoy=row.get('operating_income_yoy', ''))} | {_format_quarterly_value(row.get('eps', 'N/A'), unit='USD/share', yoy=row.get('eps_yoy', ''))} |"
+        for row in display_rows
+    )
+    return "\n".join(["| 분기 | 매출 | 영업이익 | EPS |", "|------|------|----------|-----|", body])
+
+
+def _render_upcoming_events(events: list[dict[str, str]]) -> str:
+    if not events:
+        return "- 예정된 일정이 없습니다."
+    return "\n".join(
+        f"- {event.get('label', '일정')}: {event.get('date', 'N/A')} (D-{event.get('days_until', 'N/A')})"
+        for event in events[:5]
+    )
+
+
+def _render_recent_timeline(entries: list[dict[str, Any]]) -> str:
+    lines = summarize_recent_timeline(entries, limit=3)
+    if not lines:
+        return "- 타임라인 데이터가 없습니다."
+    return "\n".join(f"- {line}" for line in lines)
+
+
+def _render_news_line(item, translated_summary: str | None = None) -> str:
+    if translated_summary:
+        return _render_collapsed_news_block(f"- {translated_summary}", item)
+    return _render_original_news_line(item)
+
+
+def _render_daily_news_entry(ticker: str, item, translated_summary: str | None) -> str:
+    if translated_summary:
+        return _render_collapsed_news_block(f"- **{ticker}**: {translated_summary}", item)
+    return f"- **{ticker}**: {_render_original_news_line(item)[2:]}"
+
+
+def _render_collapsed_news_block(summary_line: str, item) -> str:
+    original_line = _render_original_news_line(item)[2:]
+    return "\n".join([summary_line, "  <details>", "  <summary>원문 보기</summary>", "", f"  {original_line}", "  </details>"])
+
+
+def _render_original_news_line(item) -> str:
     source = item.source or "Source"
     published_suffix = f" ({item.published_at})" if item.published_at else ""
-    if item.link:
-        return f"- [{item.title}]({item.link}) - {source}{published_suffix}"
-    return f"- {item.title} - {source}{published_suffix}"
+    title_text = f"[{item.title}]({item.link})" if item.link else item.title
+    return f"- {title_text} - {source}{published_suffix}"
 
 
-def _numeric_change(raw_value: str) -> float:
+def _news_summary_for_reference(analysis: TickerAnalysis, item) -> str | None:
     try:
-        return float(raw_value.replace("%", ""))
+        index = analysis.news_references.index(item)
     except ValueError:
-        return float("-inf")
+        return None
+    if index >= len(analysis.key_news):
+        return None
+    summary = analysis.key_news[index].strip()
+    if not summary:
+        return None
+    if _normalize_text(summary) == _normalize_text(item.title):
+        return None
+    return summary
+
+
+def _normalize_text(value: str) -> str:
+    return " ".join(value.strip().lower().split())
 
 
 def _news_sort_key(raw_value: str) -> datetime:
     if not raw_value:
         return datetime.min
-
     try:
         return datetime.fromisoformat(raw_value.replace("Z", "+00:00")).replace(tzinfo=None)
     except ValueError:
         pass
-
     try:
         return parsedate_to_datetime(raw_value).replace(tzinfo=None)
     except (TypeError, ValueError):
@@ -282,9 +548,8 @@ def _news_sort_key(raw_value: str) -> datetime:
 
 
 def _source_priority(source: str) -> int:
-    normalized = (source or "").strip().lower()
     priorities = _load_source_priorities()
-    return priorities.get(normalized, 0)
+    return priorities.get((source or "").strip().lower(), 0)
 
 
 def _load_source_priorities() -> dict[str, int]:
@@ -293,10 +558,7 @@ def _load_source_priorities() -> dict[str, int]:
         configured = raw_config.get("news_source_priority", {})
         if not isinstance(configured, dict):
             return _DEFAULT_SOURCE_PRIORITIES
-        return {
-            str(key).strip().lower(): int(value)
-            for key, value in configured.items()
-        }
+        return {str(key).strip().lower(): int(value) for key, value in configured.items()}
     except Exception:
         return _DEFAULT_SOURCE_PRIORITIES
 
@@ -305,9 +567,7 @@ def _hide_fallback_news_without_links() -> bool:
     try:
         raw_config = load_simple_mapping("config/output.yaml")
         configured = raw_config.get("hide_fallback_news_without_links")
-        if isinstance(configured, bool):
-            return configured
-        return True
+        return configured if isinstance(configured, bool) else True
     except Exception:
         return True
 
@@ -316,9 +576,7 @@ def _hide_fallback_news_without_links_in_ticker_notes() -> bool:
     try:
         raw_config = load_simple_mapping("config/output.yaml")
         configured = raw_config.get("hide_fallback_news_without_links_in_ticker_notes")
-        if isinstance(configured, bool):
-            return configured
-        return False
+        return configured if isinstance(configured, bool) else False
     except Exception:
         return False
 
@@ -327,9 +585,7 @@ def _hide_empty_top_news_links_section() -> bool:
     try:
         raw_config = load_simple_mapping("config/output.yaml")
         configured = raw_config.get("hide_empty_top_news_links_section")
-        if isinstance(configured, bool):
-            return configured
-        return False
+        return configured if isinstance(configured, bool) else False
     except Exception:
         return False
 
@@ -349,3 +605,193 @@ def _load_sector_display_order() -> list[str]:
         return [str(item) for item in configured if str(item).strip()]
     except Exception:
         return _DEFAULT_SECTOR_DISPLAY_ORDER
+
+
+def _display_sector(sector: str) -> str:
+    if not sector:
+        return "기타"
+    return _SECTOR_DISPLAY_NAMES.get(sector, sector)
+
+
+def _display_snapshot_label(label: str) -> str:
+    labels = {
+        "Price": "가격",
+        "Daily Change": "일간 등락률",
+        "Market Cap": "시가총액",
+        "Trailing P/E": "최근 12개월 PER",
+        "EPS": "EPS (TTM)",
+        "52W High": "52주 최고",
+        "52W Low": "52주 최저",
+        "50D SMA": "50일 이동평균",
+        "200D SMA": "200일 이동평균",
+        "Volume": "거래량",
+        "3M Avg Volume": "3개월 평균 거래량",
+        "Price/Book": "PBR",
+        "Dividend Yield": "배당수익률",
+        "Sector": "섹터",
+    }
+    return labels.get(label, label)
+
+
+def _render_snapshot_rows(snapshot: dict[str, str]) -> list[str]:
+    return [
+        f"| {_display_snapshot_label(key)} | {_display_snapshot_value(snapshot, key, value)} |"
+        for key, value in snapshot.items()
+    ]
+
+
+def _display_snapshot_value(snapshot: dict[str, str], label: str, value: str) -> str:
+    currency = _snapshot_currency(snapshot)
+    if label == "Sector":
+        return _display_sector(value)
+    if label == "Market Cap":
+        return _append_unit_if_missing(value, "USD")
+    if label == "EPS":
+        return _append_unit_if_missing(value, "USD/share")
+    if label in {"52W High", "52W Low", "50D SMA", "200D SMA"}:
+        return _append_unit_if_missing(value, currency)
+    if label in {"Volume", "3M Avg Volume"}:
+        return _append_unit_if_missing(value, "주")
+    return value
+
+
+def _display_news_tone(news_tone: dict[str, Any]) -> str:
+    label = str(news_tone.get("label", "neutral"))
+    raw_score = _coerce_float(news_tone.get("score", 0.0))
+    display_score = max(0.0, min(10.0, 5.0 + raw_score))
+    return f"{label} ({display_score:.1f} / 10)"
+
+
+def _displayable_news_items(
+    items: list[Any],
+    *,
+    anchor_date: date,
+    hide_fallback_without_links: bool,
+) -> list[Any]:
+    visible_news = [
+        item
+        for item in items
+        if not (
+            hide_fallback_without_links
+            and not item.link
+            and (item.source or "").strip().lower() == "fallback"
+        )
+    ]
+    if not visible_news:
+        return []
+
+    recent_news = [item for item in visible_news if _is_recent_news_item(item, anchor_date)]
+    if recent_news:
+        candidate_news = recent_news
+    else:
+        candidate_news = visible_news
+
+    return sorted(
+        candidate_news,
+        key=lambda item: (_news_sort_key(item.published_at), _source_priority(item.source), item.title),
+        reverse=True,
+    )
+
+
+def _analysis_anchor_date(analysis: TickerAnalysis) -> date:
+    try:
+        return date.fromisoformat(analysis.date)
+    except ValueError:
+        return date.today()
+
+
+def _is_recent_news_item(item: Any, anchor_date: date) -> bool:
+    published_at = _news_sort_key(getattr(item, "published_at", ""))
+    if published_at == datetime.min:
+        return True
+    days_old = (anchor_date - published_at.date()).days
+    if days_old < 0:
+        return True
+    return days_old <= _MAX_DISPLAY_NEWS_AGE_DAYS
+
+
+def _format_quarterly_value(value: str, *, unit: str, yoy: str) -> str:
+    base_value = _append_unit_if_missing(value, unit)
+    if base_value == "N/A" or not yoy:
+        return base_value
+    return f"{base_value} ({yoy})"
+
+
+def _snapshot_currency(snapshot: dict[str, str]) -> str:
+    price_value = str(snapshot.get("Price", "")).strip()
+    if not price_value:
+        return "USD"
+    parts = price_value.split()
+    if len(parts) >= 2 and parts[-1].isalpha():
+        return parts[-1]
+    return "USD"
+
+
+def _append_unit_if_missing(value: str, unit: str) -> str:
+    normalized_value = str(value).strip()
+    if not normalized_value or normalized_value == "N/A":
+        return "N/A"
+    if unit and normalized_value.endswith(unit):
+        return normalized_value
+    return f"{normalized_value} {unit}".strip()
+
+
+def _coerce_float(value: Any) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _render_market_overview(overview: list[dict[str, str]]) -> str:
+    if not overview:
+        return "이번 실행에서 수집한 관심 종목 데이터를 기준으로 정리했습니다."
+    return " | ".join(f"{entry['label']}: {entry['price']} ({entry['change']})" for entry in overview)
+
+
+def _write_text_artifact(path: Path, content: str, *, artifact: str, ticker: str | None = None) -> None:
+    try:
+        path.write_text(content, encoding="utf-8")
+    except Exception as exc:
+        _record_output_failure(f"{artifact}_write_failed", exc, artifact=artifact, ticker=ticker)
+        raise
+    record_pipeline_event("output", "info", "artifact_written", artifact=artifact, path=str(path), ticker=ticker or "")
+
+
+def _record_output_failure(event: str, exc: Exception, *, artifact: str, ticker: str | None = None) -> None:
+    payload = {
+        "artifact": artifact,
+        "error_type": type(exc).__name__,
+        "error_message": str(exc),
+    }
+    if ticker:
+        payload["ticker"] = ticker
+    record_pipeline_event("output", "warning", event, **payload)
+
+
+def _format_decimal(value: float) -> str:
+    if float(value).is_integer():
+        return f"{value:.0f}"
+    return f"{value:.2f}"
+
+
+def _format_money(value: float, currency: str) -> str:
+    return f"{value:,.2f} {currency}"
+
+
+def _format_optional_money(value: float | None, currency: str) -> str:
+    if value is None:
+        return "N/A"
+    return _format_money(value, currency)
+
+
+def _format_optional_signed_money(value: float | None, currency: str) -> str:
+    if value is None:
+        return "N/A"
+    return f"{value:+,.2f} {currency}"
+
+
+def _format_optional_percent(value: float | None) -> str:
+    if value is None:
+        return "N/A"
+    return f"{value:+.2f}%"
