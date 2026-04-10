@@ -1,6 +1,27 @@
 {
   "AAPL": [
     {
+      "date": "2026-04-10",
+      "price": "260.49 USD",
+      "daily_change": "+0.61%",
+      "signal_or_takeaway": "중립 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입존 254.39–266.59 / 무효화 SMA50(260.57 USD)",
+      "top_news_summary": "[실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+      "news_tone": {
+        "label": "bullish",
+        "score": 3.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "20",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-09",
       "price": "258.90 USD",
       "daily_change": "+2.13%",
@@ -37,6 +58,27 @@
   ],
   "MSFT": [
     {
+      "date": "2026-04-10",
+      "price": "373.07 USD",
+      "daily_change": "-0.34%",
+      "signal_or_takeaway": "중립 경계 — [실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입존 364.38–381.76 / 무효화 SMA50(402.04 USD)",
+      "top_news_summary": "[실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/789019/000119312526027207/msft-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-29",
+          "days_until": "19",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-09",
       "price": "374.33 USD",
       "daily_change": "+0.55%",
@@ -72,6 +114,27 @@
     }
   ],
   "NVDA": [
+    {
+      "date": "2026-04-10",
+      "price": "183.91 USD",
+      "daily_change": "+1.01%",
+      "signal_or_takeaway": "매수 관찰 — [실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입존 178.66–189.16 / 무효화 SMA50(182.51 USD)",
+      "top_news_summary": "[실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+      "news_tone": {
+        "label": "neutral",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-20",
+          "days_until": "40",
+          "timing": "AMC"
+        }
+      ]
+    },
     {
       "date": "2026-04-09",
       "price": "182.08 USD",
