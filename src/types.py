@@ -77,6 +77,12 @@ class CollectedTickerData:
     low_price: str = 'N/A'
     close_price: str = 'N/A'
     day_volume: str = 'N/A'
+    analyst_estimate_revisions: dict[str, str] = field(default_factory=dict)
+    insider_transactions: list[dict[str, str]] = field(default_factory=list)
+    institutional_changes: dict[str, str] = field(default_factory=dict)
+    fmp_earnings_surprises: list[dict[str, str]] = field(default_factory=list)
+    options_flow: dict[str, str] = field(default_factory=dict)
+    recommendation_trends: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
