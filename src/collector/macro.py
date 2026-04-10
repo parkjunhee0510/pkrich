@@ -5,6 +5,8 @@ import logging
 from datetime import date, timedelta
 from typing import Any
 
+from src.utils.network import can_open_tcp_connection
+
 logger = logging.getLogger(__name__)
 
 # Static economic calendar — updated periodically.
@@ -56,6 +58,7 @@ def collect_macro_context(
 
     # Upcoming macro events
     context["upcoming_macro_events"] = _find_upcoming_events(run_date, lookahead_days)
+    context.update(_collect_macro_market_series())
 
     return context
 
@@ -126,3 +129,40 @@ def _safe_parse_date(date_str: str) -> date | None:
         return date.fromisoformat(date_str)
     except ValueError:
         return None
+
+
+def _collect_macro_market_series() -> dict[str, dict[str, str]]:
+    if not can_open_tcp_connection("query1.finance.yahoo.com", 443):
+        return {}
+
+    try:
+        import yfinance as yf  # type: ignore
+    except Exception:
+        return {}
+
+    symbol_map = {
+        "us10y": ("^TNX", "미국 10년물"),
+        "dxy": ("DX-Y.NYB", "달러 인덱스"),
+        "copper": ("HG=F", "구리 선물"),
+    }
+    result: dict[str, dict[str, str]] = {}
+    for key, (symbol, label) in symbol_map.items():
+        try:
+            ticker = yf.Ticker(symbol)
+            history = ticker.history(period="5d", interval="1d")
+            if history is None or history.empty:
+                continue
+            close_series = history["Close"].dropna()
+            if close_series.empty:
+                continue
+            latest = float(close_series.iloc[-1])
+            previous = float(close_series.iloc[-2]) if len(close_series) > 1 else latest
+            change_pct = ((latest - previous) / previous * 100) if previous else 0.0
+            result[key] = {
+                "label": label,
+                "price": f"{latest:,.2f}",
+                "change": f"{change_pct:+.2f}%",
+            }
+        except Exception:
+            continue
+    return result

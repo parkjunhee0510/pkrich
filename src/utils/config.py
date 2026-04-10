@@ -193,6 +193,7 @@ def _build_watchlist_item(raw: dict[str, object]) -> WatchlistItem:
         ir_rss_feeds=_normalize_string_list(raw.get('ir_rss_feeds', [])),
         ir_source_names=_normalize_string_mapping(raw.get('ir_source_names', {})),
         sec_filing_tag_priority=_normalize_int_mapping(raw.get('sec_filing_tag_priority', {})),
+        alert_rules=_normalize_alert_rules(raw.get('alert_rules', [])),
     )
 
 
@@ -238,4 +239,18 @@ def _normalize_int_mapping(value: object) -> dict[str, int]:
             normalized[normalized_key] = int(item)
         except (TypeError, ValueError):
             continue
+    return normalized
+
+
+def _normalize_alert_rules(value: object) -> list[dict[str, str]]:
+    if not isinstance(value, list):
+        return []
+    normalized: list[dict[str, str]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        condition = str(item.get('condition', '')).strip()
+        message = str(item.get('message', '')).strip()
+        if condition and message:
+            normalized.append({'condition': condition, 'message': message})
     return normalized

@@ -15,6 +15,7 @@ from src.utils.datastore import get_datastore
 from src.utils.datastore_csv import append_price_history_csv
 from src.utils.earnings_history import build_earnings_surprise_summary
 from src.utils.earnings_setup import build_earnings_setup, extract_earnings_countdown
+from src.utils.monthly_summary import load_monthly_summary
 from src.utils.news_tone import build_news_tone
 from src.utils.pipeline_logging import record_pipeline_event
 from src.utils.quarterly_financials import build_quarterly_financial_display_rows
@@ -146,11 +147,15 @@ def write_outputs(
     weekly_summary = load_weekly_summary(run_date, output_root=output_root)
     weekly_path = weekly_dir / f"{weekly_summary.iso_year}-W{weekly_summary.iso_week:02d}.md"
     _write_text_artifact(weekly_path, render_weekly_markdown(weekly_summary), artifact="weekly_note")
+    monthly_summary = load_monthly_summary(run_date, output_root=output_root)
+    monthly_path = weekly_dir / f"{run_date.strftime('%Y-%m')}.md"
+    _write_text_artifact(monthly_path, render_monthly_markdown(monthly_summary), artifact="monthly_note")
 
     mirror_markdown_outputs(daily_path, ticker_paths)
     return {
         "daily_path": daily_path,
         "weekly_path": weekly_path,
+        "monthly_path": monthly_path,
         "ticker_paths": ticker_paths,
     }
 
@@ -238,6 +243,9 @@ def render_ticker_markdown(
             "## 포지셔닝 데이터",
             _render_positioning_data(analysis.fundamentals),
             "",
+            "## 옵션 요약",
+            _render_options_summary(analysis.options_summary),
+            "",
             "## 실적 컨센서스 디테일",
             _render_earnings_setup(analysis),
             "",
@@ -307,6 +315,46 @@ def render_weekly_markdown(summary: WeeklySummaryData) -> str:
             "",
         ]
     )
+    return "\n".join(lines)
+
+
+def render_monthly_markdown(summary: dict[str, Any]) -> str:
+    if summary.get("status") != "ok":
+        return "\n".join(
+            [
+                f"# 월간 리서치 - {summary.get('month', 'N/A')}",
+                "",
+                "월간 집계를 생성할 데이터가 아직 충분하지 않습니다.",
+                "",
+            ]
+        )
+
+    lines = [
+        f"# 월간 리서치 - {summary.get('month', 'N/A')}",
+        "",
+        f"기간: {summary.get('start_date', 'N/A')} ~ {summary.get('end_date', 'N/A')}",
+        f"집계 영업일 수: {summary.get('trading_days', 0)}일",
+        "",
+        "## 상위 종목",
+    ]
+    top_tickers = summary.get("top_tickers", [])
+    if top_tickers:
+        lines.extend(
+            f"- {row.get('ticker', 'N/A')}: {row.get('avg_daily_change', 'N/A')}"
+            for row in top_tickers
+        )
+    else:
+        lines.append("- 데이터가 없습니다.")
+    lines.extend(["", "## 상위 섹터"])
+    top_sectors = summary.get("top_sectors", [])
+    if top_sectors:
+        lines.extend(
+            f"- {row.get('sector', 'N/A')}: {row.get('avg_daily_change', 'N/A')}"
+            for row in top_sectors
+        )
+    else:
+        lines.append("- 데이터가 없습니다.")
+    lines.append("")
     return "\n".join(lines)
 
 
@@ -898,6 +946,12 @@ def _render_positioning_data(fundamentals: dict[str, str]) -> str:
             f"- 옵션 IV: {fundamentals.get('implied_volatility', 'N/A')}",
         ]
     )
+
+
+def _render_options_summary(options_summary: dict[str, str]) -> str:
+    if not options_summary:
+        return "- 옵션 데이터가 없습니다."
+    return "\n".join(f"- {key}: {value}" for key, value in options_summary.items())
 
 
 def _render_position_sizing_hint(

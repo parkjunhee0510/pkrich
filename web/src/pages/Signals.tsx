@@ -124,6 +124,7 @@ export function Signals() {
     return s.signal_direction === 'bull' ? ret > 0 : s.signal_direction === 'bear' ? ret < 0 : false
   }).length
   const overallWinRate = totalEval > 0 ? ((wins5d / totalEval) * 100).toFixed(1) : '-'
+  const catalystEntries = Object.entries(signalStats.meta_analysis?.by_catalyst_tag ?? {}).slice(0, 6)
 
   return (
     <div className="signals-page">
@@ -141,6 +142,37 @@ export function Signals() {
             <SummaryCard key={dir} direction={dir} summary={summary} />
           ))}
         </div>
+      )}
+
+      {catalystEntries.length > 0 && (
+        <section className="signals-meta-section">
+          <div className="section-header-with-kicker">
+            <div>
+              <h3>촉매 유형별 성과</h3>
+              <p className="section-kicker">5일 평가 완료 시그널 기준으로 가장 자주 등장한 촉매를 비교합니다.</p>
+            </div>
+          </div>
+          <div className="signal-summary-grid">
+            {catalystEntries.map(([tag, summary]) => (
+              <div key={tag} className="signal-summary-card">
+                <div className="signal-summary-direction">{tag}</div>
+                <div className="signal-summary-count">{summary.count}건</div>
+                <div className="signal-summary-row">
+                  <span className="signal-summary-label">평균 수익률</span>
+                  <span>{summary.avg_return}</span>
+                </div>
+                <div className="signal-summary-row">
+                  <span className="signal-summary-label">승률</span>
+                  <span>{summary.win_rate}</span>
+                </div>
+                <div className="signal-summary-row">
+                  <span className="signal-summary-label">최고 / 최저</span>
+                  <span>{summary.best} / {summary.worst}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Filters */}

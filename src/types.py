@@ -14,6 +14,7 @@ class WatchlistItem:
     ir_rss_feeds: list[str] = field(default_factory=list)
     ir_source_names: dict[str, str] = field(default_factory=dict)
     sec_filing_tag_priority: dict[str, int] = field(default_factory=dict)
+    alert_rules: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,7 @@ class CollectedTickerData:
     price_vs_sma200: str = 'N/A'
     week52_position: str = 'N/A'
     rs_vs_spy: str = 'N/A'
+    options_summary: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -90,6 +92,9 @@ class TickerAnalysis:
     upcoming_events: list[dict[str, str]] = field(default_factory=list)
     news_tone: dict[str, str | float | int] = field(default_factory=dict)
     trade_frame: dict[str, str] = field(default_factory=dict)
+    options_summary: dict[str, str] = field(default_factory=dict)
+    signal_history: list[dict[str, str]] = field(default_factory=list)
+    sector_comparison: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

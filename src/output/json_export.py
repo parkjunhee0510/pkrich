@@ -8,9 +8,11 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from src.backtester.engine import build_backtest_summary
 from src.types import PortfolioSummary, TickerAnalysis
 from src.utils.earnings_history import build_earnings_surprise_summary
 from src.utils.earnings_setup import build_earnings_setup
+from src.utils.monthly_summary import load_monthly_summary
 from src.utils.sec_filings import collect_sec_filing_tags, collect_sec_filings, sort_sec_filings
 from src.utils.ticker_timelines import build_ticker_timelines
 
@@ -45,6 +47,8 @@ def write_json_outputs(
         portfolio_risk or {},
     )
     _write_price_history_json(data_dir / "price_history.json", data_dir / "price_history.csv")
+    _write_backtest_summary_json(data_dir / "backtest_summary.json", data_dir / "signal_tracker.csv")
+    _write_monthly_summary_json(data_dir / "monthly_summary.json", run_date, root)
     timelines = _write_ticker_timelines_json(data_dir / "ticker_timelines.json", merged_days)
     _sync_web_public_data(data_dir, root.parent)
     return timelines
@@ -128,6 +132,9 @@ def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]
         "upcoming_events": analysis.upcoming_events,
         "news_tone": analysis.news_tone,
         "trade_frame": analysis.trade_frame,
+        "options_summary": analysis.options_summary,
+        "signal_history": getattr(analysis, "signal_history", []),
+        "sector_comparison": getattr(analysis, "sector_comparison", {}),
         "period_changes": period_changes,
         "sec_filing_tags": collect_sec_filing_tags(analysis.news_references),
         "sec_filings": sort_sec_filings(collect_sec_filings(analysis.news_references)),
@@ -165,6 +172,16 @@ def _write_ticker_timelines_json(path: Path, days: list[dict[str, Any]]) -> dict
     return timelines
 
 
+def _write_backtest_summary_json(path: Path, signal_csv_path: Path) -> None:
+    payload = build_backtest_summary(signal_csv_path)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _write_monthly_summary_json(path: Path, run_date: date, output_root: Path) -> None:
+    payload = load_monthly_summary(run_date, output_root=output_root)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def _serialize_portfolio_summary(portfolio_summary: PortfolioSummary | None) -> dict[str, Any] | None:
     if portfolio_summary is None:
         return None
@@ -198,7 +215,7 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
     target_dir = web_root / "public" / "output" / "data"
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    for filename in ("dashboard.json", "price_history.json", "ticker_timelines.json"):
+    for filename in ("dashboard.json", "price_history.json", "ticker_timelines.json", "backtest_summary.json", "monthly_summary.json"):
         source_path = data_dir / filename
         if source_path.exists():
             shutil.copy2(source_path, target_dir / filename)

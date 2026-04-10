@@ -23,9 +23,59 @@ def send_daily_summary(
     portfolio_summary: PortfolioSummary | None = None,
     macro_context: dict | None = None,
 ) -> None:
+    _send_slack_text(
+        _build_summary_text(
+            analyses,
+            run_date,
+            market_overview=market_overview or [],
+            daily_note_path=daily_note_path,
+            weekly_note_path=weekly_note_path,
+            portfolio_summary=portfolio_summary,
+        ),
+        ticker_count=len(analyses),
+        artifact="slack_summary",
+        skipped_event="slack_skipped",
+        success_event="slack_summary_sent",
+        failure_event="slack_send_failed",
+    )
+
+
+def send_pipeline_failure_alert(run_date: date, error_message: str) -> None:
+    _send_slack_text(
+        f"[Stock Research] {run_date.isoformat()}\n파이프라인 실행 실패\n{error_message}",
+        ticker_count=0,
+        artifact="slack_failure",
+        skipped_event="slack_skipped",
+        success_event="slack_failure_sent",
+        failure_event="slack_send_failed",
+    )
+
+
+def send_signal_alerts(messages: list[str]) -> None:
+    if not messages:
+        return
+    _send_slack_text(
+        "[Stock Research] 가격/조건 알림\n" + "\n".join(f"- {message}" for message in messages),
+        ticker_count=0,
+        artifact="slack_alerts",
+        skipped_event="slack_skipped",
+        success_event="slack_alerts_sent",
+        failure_event="slack_send_failed",
+    )
+
+
+def _send_slack_text(
+    text: str,
+    *,
+    ticker_count: int,
+    artifact: str,
+    skipped_event: str,
+    success_event: str,
+    failure_event: str,
+) -> None:
     webhook_url = (os.getenv("SLACK_WEBHOOK_URL") or "").strip()
     if not webhook_url:
-        record_pipeline_event("output", "info", "slack_skipped", reason="webhook_not_configured")
+        record_pipeline_event("output", "info", skipped_event, reason="webhook_not_configured", artifact=artifact)
         return
     if not _is_valid_webhook_url(webhook_url):
         logger.warning("Slack webhook URL is not a valid http(s) URL.")
@@ -35,18 +85,10 @@ def send_daily_summary(
             "slack_invalid_webhook",
             error_type="InvalidWebhookURL",
             error_message="Slack webhook URL must start with http:// or https://",
-            artifact="slack_summary",
+            artifact=artifact,
         )
         return
 
-    text = _build_summary_text(
-        analyses,
-        run_date,
-        market_overview=market_overview or [],
-        daily_note_path=daily_note_path,
-        weekly_note_path=weekly_note_path,
-        portfolio_summary=portfolio_summary,
-    )
     payload = json.dumps({"text": text}).encode("utf-8")
     req = request.Request(
         webhook_url,
@@ -65,10 +107,10 @@ def send_daily_summary(
         record_pipeline_event(
             "output",
             "warning",
-            "slack_send_failed",
+            failure_event,
             error_type=type(exc).__name__,
             error_message=f"HTTP {exc.code}",
-            artifact="slack_summary",
+            artifact=artifact,
         )
         return
     except Exception as exc:
@@ -76,19 +118,19 @@ def send_daily_summary(
         record_pipeline_event(
             "output",
             "warning",
-            "slack_send_failed",
+            failure_event,
             error_type=type(exc).__name__,
             error_message=str(exc),
-            artifact="slack_summary",
+            artifact=artifact,
         )
         return
 
     record_pipeline_event(
         "output",
         "info",
-        "slack_summary_sent",
-        artifact="slack_summary",
-        ticker_count=len(analyses),
+        success_event,
+        artifact=artifact,
+        ticker_count=ticker_count,
     )
 
 

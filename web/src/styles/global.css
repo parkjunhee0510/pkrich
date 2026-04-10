@@ -721,6 +721,28 @@ a:hover {
   margin-bottom: 1rem;
 }
 
+.macro-context-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.macro-series-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.65rem;
+}
+
+.macro-series-card {
+  padding: 0.75rem 0.8rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
 .macro-context-summary {
   display: flex;
   flex-direction: column;
@@ -2160,6 +2182,10 @@ a:hover {
 /* ========== Signals Page ========== */
 .signals-page {
   max-width: 1100px;
+}
+
+.signals-meta-section {
+  margin-bottom: 1.5rem;
 }
 
 .signal-overall-badge {

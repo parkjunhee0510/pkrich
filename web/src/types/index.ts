@@ -93,6 +93,14 @@ export interface SectorComparison {
   price_change_30d?: SectorComparisonMetric
 }
 
+export interface OptionsSummary {
+  expiry?: string
+  atm_call_iv?: string
+  atm_put_iv?: string
+  put_call_ratio?: string
+  iv_percentile_30d?: string
+}
+
 export interface TradeFrame {
   bull_scenario: string
   base_scenario: string
@@ -130,6 +138,7 @@ export interface TickerAnalysisData {
   sec_filings: SecFilingReference[]
   signal_history?: SignalHistoryEntry[]
   sector_comparison?: SectorComparison
+  options_summary?: OptionsSummary
 }
 
 export interface PortfolioPosition {
@@ -184,6 +193,18 @@ export interface MacroEvent {
 
 export interface MacroContext {
   vix?: MacroContextVix
+  us10y?: {
+    level?: string
+    change?: string
+  }
+  dxy?: {
+    level?: string
+    change?: string
+  }
+  copper?: {
+    level?: string
+    change?: string
+  }
   upcoming_macro_events?: MacroEvent[]
 }
 
@@ -241,11 +262,44 @@ export interface SignalDirectionSummary {
 export interface SignalStats {
   recent_signals: SignalHistoryRow[]
   summary_by_direction: Record<string, SignalDirectionSummary>
+  meta_analysis?: {
+    status?: string
+    total_evaluated?: number
+    by_catalyst_tag?: Record<string, { count: number; avg_return: string; win_rate: string; best: string; worst: string }>
+    by_news_tone?: Record<string, { count: number; avg_return: string; win_rate: string; best: string; worst: string }>
+  }
 }
 
 export interface DashboardData {
   days: DailyEntry[]
   signal_stats?: SignalStats
+}
+
+export interface BacktestSummary {
+  status: string
+  strategy?: string
+  signals?: number
+  win_rate?: string
+  avg_return?: string
+  cumulative_return?: string
+  best_return?: string
+  worst_return?: string
+}
+
+export interface MonthlySummaryData {
+  month: string
+  status: string
+  trading_days?: number
+  start_date?: string
+  end_date?: string
+  top_tickers?: Array<{ ticker: string; avg_daily_change: string }>
+  top_sectors?: Array<{ sector: string; avg_daily_change: string }>
+}
+
+export interface ChatResponse {
+  answer: string
+  matched_tickers: string[]
+  sources: Array<{ ticker: string; title: string; link: string }>
 }
 
 export interface PriceHistoryRow {

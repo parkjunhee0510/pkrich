@@ -420,6 +420,33 @@ export function TickerDetail() {
         </div>
       </ResponsiveDetailSection>
 
+      {analysis.options_summary && Object.keys(analysis.options_summary).length > 0 && (
+        <ResponsiveDetailSection title="옵션 요약">
+          <div className="price-action-grid">
+            <div className="price-action-card">
+              <span className="price-action-label">가장 가까운 만기</span>
+              <strong>{analysis.options_summary.expiry ?? 'N/A'}</strong>
+            </div>
+            <div className="price-action-card">
+              <span className="price-action-label">ATM Call IV</span>
+              <strong>{analysis.options_summary.atm_call_iv ?? 'N/A'}</strong>
+            </div>
+            <div className="price-action-card">
+              <span className="price-action-label">ATM Put IV</span>
+              <strong>{analysis.options_summary.atm_put_iv ?? 'N/A'}</strong>
+            </div>
+            <div className="price-action-card">
+              <span className="price-action-label">Put/Call Ratio</span>
+              <strong>{analysis.options_summary.put_call_ratio ?? 'N/A'}</strong>
+            </div>
+            <div className="price-action-card">
+              <span className="price-action-label">30D IV Percentile</span>
+              <strong>{analysis.options_summary.iv_percentile_30d ?? 'N/A'}</strong>
+            </div>
+          </div>
+        </ResponsiveDetailSection>
+      )}
+
       <ResponsiveDetailSection title="포지션 사이징 참고">
         <div className="price-action-grid">
           <div className="price-action-card"><span className="price-action-label">1% 리스크 기준</span><strong>{positionSizing.positionShares}</strong><span className="price-action-subtext">10,000 USD 계좌 기준 예상 수량</span></div>

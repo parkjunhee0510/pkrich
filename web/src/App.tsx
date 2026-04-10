@@ -16,6 +16,15 @@ const Portfolio = lazy(() =>
 const Signals = lazy(() =>
   import('./pages/Signals').then((module) => ({ default: module.Signals })),
 )
+const Chat = lazy(() =>
+  import('./pages/Chat').then((module) => ({ default: module.Chat })),
+)
+const Scenario = lazy(() =>
+  import('./pages/Scenario').then((module) => ({ default: module.Scenario })),
+)
+const Backtest = lazy(() =>
+  import('./pages/Backtest').then((module) => ({ default: module.Backtest })),
+)
 const Calendar = lazy(() =>
   import('./pages/Calendar').then((module) => ({ default: module.Calendar })),
 )
@@ -35,6 +44,9 @@ export default function App() {
             <Route path="/ticker/:ticker" element={<TickerDetail />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/signals" element={<Signals />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/scenario" element={<Scenario />} />
+            <Route path="/backtest" element={<Backtest />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

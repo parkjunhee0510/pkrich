@@ -319,7 +319,15 @@ def _process_batch(
             )
             return
 
-        for fallback_analysis in _build_fallback_analyses(batch_items, collected, news_map, run_date):
+        for prepared_item in batch:
+            fallback_analysis = _build_fallback_analysis(
+                prepared_item.item,
+                collected,
+                news_map,
+                run_date,
+                signal_history=prepared_item.payload.get('signal_history', []),
+                sector_comparison=_format_sector_comparison(prepared_item.payload.get('sector_peer_context', {})),
+            )
             record_pipeline_event(
                 'analyzer',
                 'warning',
@@ -363,10 +371,27 @@ def _process_batch(
                 error_type='MissingTicker',
                 error_message='OpenAI batch response did not include the requested ticker.',
             )
-            analyses_by_ticker[item.ticker] = _build_fallback_analysis(item, collected, news_map, run_date)
+            payload_entry = next((entry.payload for entry in batch if entry.item.ticker == item.ticker), {})
+            analyses_by_ticker[item.ticker] = _build_fallback_analysis(
+                item,
+                collected,
+                news_map,
+                run_date,
+                signal_history=payload_entry.get('signal_history', []),
+                sector_comparison=_format_sector_comparison(payload_entry.get('sector_peer_context', {})),
+            )
             continue
 
-        analyses_by_ticker[item.ticker] = _build_openai_analysis(item, match, collected, news_map, run_date)
+        payload_entry = next((entry.payload for entry in batch if entry.item.ticker == item.ticker), {})
+        analyses_by_ticker[item.ticker] = _build_openai_analysis(
+            item,
+            match,
+            collected,
+            news_map,
+            run_date,
+            signal_history=payload_entry.get('signal_history', []),
+            sector_comparison=_format_sector_comparison(payload_entry.get('sector_peer_context', {})),
+        )
 
 
 def _split_and_retry_batch(
@@ -471,6 +496,7 @@ def _build_payload(
                     'held_by_institutions': market.held_by_institutions,
                     'implied_volatility': market.implied_volatility,
                 },
+                'options_summary': market.options_summary,
                 'quarterly_financials': market.quarterly_financials[:4],
                 'signal_history': (signal_history_map or {}).get(item.ticker, [])[:5],
                 'sector_peer_context': peer_context_map.get(item.ticker, {}),
@@ -818,6 +844,7 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
     earnings_history = _render_earnings_history(analysis_input.get('quarterly_financials', []))
     signal_history = _render_signal_history(analysis_input.get('signal_history', []))
     sector_peer_context = _render_sector_peer_context(analysis_input.get('sector_peer_context', {}))
+    options_summary = _render_options_summary(analysis_input.get('options_summary', {}))
 
     return (
         f"[Ticker] {analysis_input.get('ticker', 'N/A')} | {analysis_input.get('name', 'N/A')} | {analysis_input.get('sector', 'N/A')}\n"
@@ -835,6 +862,7 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
         f"IV: {positioning.get('implied_volatility', 'N/A')}\n"
         f"[Earnings] Forward EPS: {analysis_input.get('forward_eps', 'N/A')}, TTM EPS: {analysis_input.get('eps', 'N/A')}, "
         f"EPS Growth: {analysis_input.get('earnings_growth', 'N/A')}, Next Earnings: {next_earnings_event}\n"
+        f"[Options] {options_summary}\n"
         f"[Earnings History] {earnings_history}\n"
         f"[Signal History] {signal_history}\n"
         f"[Sector Comparison] {sector_peer_context}"
@@ -905,6 +933,23 @@ def _render_sector_peer_context(context: Any) -> str:
     )
 
 
+def _render_options_summary(summary: Any) -> str:
+    if not isinstance(summary, dict) or not summary:
+        return 'N/A'
+    parts: list[str] = []
+    for label, key in (
+        ('Expiry', 'expiry'),
+        ('Call IV', 'atm_call_iv'),
+        ('Put IV', 'atm_put_iv'),
+        ('PCR', 'put_call_ratio'),
+        ('IV Pctl', 'iv_percentile_30d'),
+    ):
+        value = str(summary.get(key, '')).strip()
+        if value and value != 'N/A':
+            parts.append(f'{label} {value}')
+    return ', '.join(parts) if parts else 'N/A'
+
+
 def _build_fallback_analyses(
     watchlist: list[WatchlistItem],
     collected: dict[str, CollectedTickerData],
@@ -920,6 +965,9 @@ def _build_openai_analysis(
     collected: dict[str, CollectedTickerData],
     news_map: dict[str, list[NewsItem]],
     run_date: date,
+    *,
+    signal_history: list[dict[str, str]] | None = None,
+    sector_comparison: dict[str, Any] | None = None,
 ) -> TickerAnalysis:
     market = collected[item.ticker]
     return TickerAnalysis(
@@ -939,6 +987,9 @@ def _build_openai_analysis(
         upcoming_events=market.upcoming_events[:5],
         news_tone=match.get('news_tone', {}),
         trade_frame=match['trade_frame'],
+        options_summary=market.options_summary,
+        signal_history=signal_history or [],
+        sector_comparison=sector_comparison or {},
     )
 
 
@@ -947,6 +998,9 @@ def _build_fallback_analysis(
     collected: dict[str, CollectedTickerData],
     news_map: dict[str, list[NewsItem]],
     run_date: date,
+    *,
+    signal_history: list[dict[str, str]] | None = None,
+    sector_comparison: dict[str, Any] | None = None,
 ) -> TickerAnalysis:
     market = collected[item.ticker]
     ticker_news = news_map.get(item.ticker, [])
@@ -994,7 +1048,52 @@ def _build_fallback_analysis(
         quarterly_financials=market.quarterly_financials,
         upcoming_events=market.upcoming_events[:5],
         trade_frame=_build_fallback_trade_frame(market),
+        options_summary=market.options_summary,
+        signal_history=signal_history or [],
+        sector_comparison=sector_comparison or {},
     )
+
+
+def _format_sector_comparison(raw_context: Any) -> dict[str, Any]:
+    if not isinstance(raw_context, dict) or not raw_context:
+        return {}
+
+    average_pe = str(raw_context.get('average_pe', 'N/A'))
+    ticker_pe = str(raw_context.get('ticker_pe', 'N/A'))
+    average_rs = str(raw_context.get('average_rs_vs_spy', 'N/A'))
+    ticker_rs = str(raw_context.get('ticker_rs_vs_spy', 'N/A'))
+    average_return = str(raw_context.get('average_price_change_30d', 'N/A'))
+    ticker_return = str(raw_context.get('ticker_price_change_30d', 'N/A'))
+    sector = str(raw_context.get('sector', 'N/A'))
+    peer_count = str(raw_context.get('peer_count', '0'))
+
+    return {
+        'summary': f'{sector} 피어 {peer_count}개 평균 대비 밸류에이션/모멘텀 비교',
+        'pe_ratio': {
+            'company': ticker_pe,
+            'peer_average': average_pe,
+            'difference': _difference_text(ticker_pe, average_pe),
+        },
+        'rs_vs_spy': {
+            'company': ticker_rs,
+            'peer_average': average_rs,
+            'difference': _difference_text(ticker_rs, average_rs),
+        },
+        'price_change_30d': {
+            'company': ticker_return,
+            'peer_average': average_return,
+            'difference': _difference_text(ticker_return, average_return),
+        },
+    }
+
+
+def _difference_text(company_value: str, peer_value: str) -> str | None:
+    company_numeric = _parse_float_from_text(company_value)
+    peer_numeric = _parse_float_from_text(peer_value)
+    if company_numeric is None or peer_numeric is None:
+        return None
+    delta = company_numeric - peer_numeric
+    return f'{delta:+.2f}'
 
 
 def _build_fallback_signal(market: CollectedTickerData, ticker_news: list[NewsItem]) -> str:

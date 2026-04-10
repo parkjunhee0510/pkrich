@@ -7,8 +7,9 @@ from src.analyzer.research_note import analyze_tickers
 from src.collector.macro import collect_macro_context
 from src.collector.news_rss import collect_news_for_watchlist
 from src.collector.price import collect_market_data, collect_market_overview
+from src.output.alert import evaluate_alert_rules
 from src.output.markdown import write_outputs
-from src.output.slack import send_daily_summary
+from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
 from src.utils.config import load_portfolio, load_watchlist
 from src.utils.datastore import get_datastore
 from src.utils.env import load_dotenv
@@ -82,9 +83,12 @@ def run_pipeline(run_date: date | None = None) -> None:
             portfolio_summary=portfolio_summary,
             macro_context=macro_context,
         )
+        signal_alerts = evaluate_alert_rules(watchlist, collected)
+        send_signal_alerts(signal_alerts)
         success = True
         record_pipeline_event("pipeline", "info", "pipeline_completed", ticker_count=len(analyses), updated_signal_rows=updated_signals)
     except Exception as exc:
+        send_pipeline_failure_alert(effective_date, str(exc))
         record_pipeline_event(
             "pipeline",
             "error",

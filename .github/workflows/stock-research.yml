@@ -38,3 +38,10 @@ jobs:
         with:
           commit_message: "daily: generate stock research outputs"
           file_pattern: output/**
+
+      - name: Send failure alert
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PIPELINE_FAILURE_MESSAGE: "GitHub Actions daily stock research workflow failed"
+        run: python -m src.cli.notify_failure

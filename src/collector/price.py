@@ -13,6 +13,7 @@ from typing import Any
 from urllib import error, parse, request
 
 from src.types import CollectedTickerData, WatchlistItem
+from src.collector.options import collect_options_summary
 from src.utils.env import is_env_flag_enabled
 from src.utils.network import can_open_tcp_connection
 from src.utils.pipeline_logging import record_pipeline_event
@@ -160,6 +161,7 @@ def _collect_single_ticker(
     price_vs_sma200 = "N/A"
     week52_position = "N/A"
     rs_vs_spy = "N/A"
+    options_summary: dict[str, str] = {}
 
     if yfinance_ready:
         try:
@@ -202,6 +204,7 @@ def _collect_single_ticker(
             held_by_insiders = _format_fractional_percent(info.get("heldPercentInsiders"))
             held_by_institutions = _format_fractional_percent(info.get("heldPercentInstitutions"))
             implied_volatility = _format_fractional_percent(info.get("impliedVolatility"))
+            options_summary = collect_options_summary(item.ticker)
             quarterly_financials = _extract_yfinance_quarterly_financials(ticker)
             if earnings_growth == "N/A":
                 earnings_growth = _derive_growth_from_quarterly_financials(quarterly_financials)
@@ -353,6 +356,7 @@ def _collect_single_ticker(
         price_vs_sma200=price_vs_sma200,
         week52_position=week52_position,
         rs_vs_spy=rs_vs_spy,
+        options_summary=options_summary,
     )
 
 
