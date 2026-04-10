@@ -40,6 +40,7 @@ jobs:
           mkdir -p web/dist/output/data
           cp output/data/dashboard.json web/dist/output/data/ 2>/dev/null || echo "No dashboard.json yet"
           cp output/data/price_history.json web/dist/output/data/ 2>/dev/null || echo "No price_history.json yet"
+          cp output/data/ticker_timelines.json web/dist/output/data/ 2>/dev/null || echo "No ticker_timelines.json yet"
 
       - uses: actions/upload-pages-artifact@v3
         with:
