@@ -14,14 +14,12 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="layout">
       <header className="header">
-        <Link to="/" className="header-title">Stock Research</Link>
+        <Link to="/" className="header-title">
+          Stock Research
+        </Link>
         <nav className="header-nav">
           {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`nav-link${location.pathname === item.to ? ' nav-active' : ''}`}
-            >
+            <Link key={item.to} to={item.to} className={`nav-link${location.pathname === item.to ? ' nav-active' : ''}`}>
               {item.label}
             </Link>
           ))}

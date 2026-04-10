@@ -1,10 +1,16 @@
-﻿import type { Dispatch, SetStateAction } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { MarketOverview } from '../components/MarketOverview'
 import { SectorSummary } from '../components/SectorSummary'
 import { DashboardSkeleton } from '../components/Skeleton'
-import { CatalystFeed, EarningsBoard, SignalPerformanceBoard, TodaySetupBoard } from '../components/TraderDashboardPanels'
+import {
+  CatalystFeed,
+  EarningsBoard,
+  SignalPerformanceBoard,
+  TodaySetupBoard,
+} from '../components/TraderDashboardPanels'
 import { WatchlistTable } from '../components/WatchlistTable'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useLocalResearchAutomation } from '../hooks/useLocalResearchAutomation'
@@ -46,10 +52,18 @@ type TraderFilters = {
 
 type WatchlistSortMode = 'score' | 'earnings' | 'catalyst'
 type DensityMode = 'compact' | 'comfortable' | 'focus'
+type ToastTone = 'success' | 'error' | 'info'
+
+type ToastItem = {
+  id: number
+  tone: ToastTone
+  message: string
+}
 
 const PRESET_ACCOUNT_SIZES = [10000, 50000, 100000]
 
 export function Dashboard() {
+  const navigate = useNavigate()
   const { data, loading, refreshing, error, refresh } = useDashboardData()
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -59,6 +73,8 @@ export function Dashboard() {
   const [density, setDensity] = useState<DensityMode>('comfortable')
   const [tickerInput, setTickerInput] = useState('')
   const [autoRunAfterAdd, setAutoRunAfterAdd] = useState(false)
+  const [pendingNavigationTicker, setPendingNavigationTicker] = useState<string | null>(null)
+  const [toasts, setToasts] = useState<ToastItem[]>([])
   const [traderFilters, setTraderFilters] = useState<TraderFilters>({
     earningsWithin30d: false,
     rvolHigh: false,
@@ -68,13 +84,34 @@ export function Dashboard() {
     strongBuyUpside: false,
   })
 
-  const { status: automationStatus, available: automationAvailable, pendingAction, addTickerToWatchlist, runResearch } =
-    useLocalResearchAutomation({
-      onRunCompleted: () => {
-        refresh()
-        setSelectedIdx(null)
-      },
-    })
+  function pushToast(tone: ToastTone, message: string) {
+    const id = Date.now() + Math.floor(Math.random() * 1000)
+    setToasts((current) => [...current, { id, tone, message }])
+    window.setTimeout(() => {
+      setToasts((current) => current.filter((toast) => toast.id !== id))
+    }, 3200)
+  }
+
+  const {
+    status: automationStatus,
+    available: automationAvailable,
+    pendingAction,
+    addTickerToWatchlist,
+    runResearch,
+  } = useLocalResearchAutomation({
+    onRunCompleted: () => {
+      refresh()
+      setSelectedIdx(null)
+      if (pendingNavigationTicker) {
+        const targetTicker = pendingNavigationTicker
+        setPendingNavigationTicker(null)
+        pushToast('success', `${targetTicker} 리서치가 끝나서 상세페이지로 이동했습니다.`)
+        navigate(`/ticker/${targetTicker}`)
+      } else {
+        pushToast('success', '리서치 실행이 완료되었습니다. 최신 결과를 불러왔습니다.')
+      }
+    },
+  })
 
   const days = data?.days ?? []
   const rawIdx = selectedIdx ?? Math.max(days.length - 1, 0)
@@ -128,22 +165,61 @@ export function Dashboard() {
   if (!data || data.days.length === 0) return <p className="status">No data available.</p>
 
   async function handleAddTicker() {
-    const result = await addTickerToWatchlist(tickerInput)
-    if (result.ok) {
-      setTickerInput('')
-      setSearchQuery(result.ticker)
-      if (autoRunAfterAdd && result.added) {
-        await runResearch()
-      }
+    const normalizedTicker = normalizeTickerInput(tickerInput)
+    if (!normalizedTicker) {
+      pushToast('error', '티커 형식이 올바르지 않습니다. 영문 대문자, 숫자, 점(.) 또는 하이픈(-)만 사용할 수 있습니다.')
+      return
     }
+
+    const result = await addTickerToWatchlist(normalizedTicker)
+    if (!result.ok) {
+      pushToast('error', result.message)
+      return
+    }
+
+    setTickerInput('')
+    setSearchQuery(result.ticker)
+
+    if (result.added) {
+      setPendingNavigationTicker(result.ticker)
+      if (autoRunAfterAdd) {
+        pushToast('info', `${result.ticker}를 추가했습니다. 바로 리서치를 실행합니다.`)
+        const runResult = await runResearch()
+        if (!runResult.ok) {
+          pushToast('error', runResult.message)
+        }
+      } else {
+        pushToast('success', `${result.ticker}를 watchlist에 추가했습니다. 리서치를 실행하면 상세페이지로 이동합니다.`)
+      }
+      return
+    }
+
+    setPendingNavigationTicker(null)
+    pushToast('info', `${result.ticker}는 이미 watchlist에 있어서 상세페이지로 바로 이동합니다.`)
+    navigate(`/ticker/${result.ticker}`)
   }
 
   async function handleRunResearch() {
-    await runResearch()
+    const result = await runResearch()
+    if (!result.ok) {
+      pushToast('error', result.message)
+      return
+    }
+    pushToast('info', '리서치를 시작했습니다. 완료되면 자동으로 새 결과를 불러옵니다.')
   }
 
   return (
     <div className="dashboard" data-density={density}>
+      {toasts.length > 0 && (
+        <div className="dashboard-toast-stack" aria-live="polite" aria-atomic="true">
+          {toasts.map((toast) => (
+            <div key={toast.id} className={`dashboard-toast dashboard-toast-${toast.tone}`}>
+              {toast.message}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="dashboard-header">
         <h2>트레이더 워크스페이스 · {day.date}</h2>
         {data.days.length > 1 && (
@@ -203,6 +279,7 @@ export function Dashboard() {
                 />
                 <span>새 티커를 추가하면 바로 리서치를 실행합니다.</span>
               </label>
+              <p className="dashboard-automation-hint">입력 형식: 영문 대문자 시작, 숫자/점/하이픈 허용. 예: TSLA, BRK-B, BF.B</p>
               <div className={`dashboard-automation-status stage-${automationStatus.stage}`}>
                 <span className="dashboard-automation-stage">{automationStatus.stageLabel}</span>
                 <p>{automationStatus.message}</p>
@@ -323,7 +400,11 @@ export function Dashboard() {
             <button type="button" className={`preset-chip ${density === 'compact' ? 'active' : ''}`} onClick={() => setDensity('compact')}>
               Compact
             </button>
-            <button type="button" className={`preset-chip ${density === 'comfortable' ? 'active' : ''}`} onClick={() => setDensity('comfortable')}>
+            <button
+              type="button"
+              className={`preset-chip ${density === 'comfortable' ? 'active' : ''}`}
+              onClick={() => setDensity('comfortable')}
+            >
               Comfortable
             </button>
             <button type="button" className={`preset-chip ${density === 'focus' ? 'active' : ''}`} onClick={() => setDensity('focus')}>
@@ -356,6 +437,11 @@ export function Dashboard() {
       )}
     </div>
   )
+}
+
+function normalizeTickerInput(value: string): string {
+  const normalized = value.trim().toUpperCase()
+  return /^[A-Z][A-Z0-9.-]{0,14}$/.test(normalized) ? normalized : ''
 }
 
 function applyTraderFilters(ticker: TickerAnalysisData, filters: TraderFilters): boolean {

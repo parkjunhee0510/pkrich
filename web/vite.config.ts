@@ -87,7 +87,7 @@ function localResearchBridge(): Plugin {
               stage: 'watchlist_updated',
               stageLabel: 'watchlist 반영',
               message: result.added
-                ? `${ticker}를 watchlist에 추가했습니다. 이제 리서치 실행을 눌러 결과를 생성하세요.`
+                ? `${ticker}를 watchlist에 추가했습니다. 이제 리서치를 실행해 결과를 생성할 수 있습니다.`
                 : `${ticker}는 이미 watchlist에 있습니다. 바로 리서치를 실행할 수 있습니다.`,
               lastTicker: ticker,
               lastResult: 'idle',
@@ -136,7 +136,7 @@ function localResearchBridge(): Plugin {
                 running: false,
                 stage: 'failed',
                 stageLabel: '실패',
-                message: `리서치 실행을 시작하지 못했습니다: ${error.message}`,
+                message: `리서치 실행을 시작하지 못했습니다. ${error.message}`,
                 finishedAt: new Date().toISOString(),
                 lastResult: 'error',
               })
@@ -151,7 +151,7 @@ function localResearchBridge(): Plugin {
                 message:
                   code === 0
                     ? '리서치 실행이 완료되었습니다. 대시보드 결과를 새로 불러옵니다.'
-                    : '리서치 실행이 실패했습니다. logs/pipeline 최신 로그를 확인해주세요.',
+                    : '리서치 실행에 실패했습니다. logs/pipeline 최신 로그를 확인해주세요.',
                 finishedAt: new Date().toISOString(),
                 lastResult: code === 0 ? 'success' : 'error',
               })
@@ -241,7 +241,7 @@ async function syncStateFromLogs(): Promise<void> {
       stageLabel: '실패',
       message: latest.error_message
         ? `리서치 실행 실패: ${String(latest.error_message)}`
-        : '리서치 실행이 실패했습니다.',
+        : '리서치 실행에 실패했습니다.',
       lastResult: 'error',
     })
     return
@@ -319,6 +319,5 @@ function formatLocalDate(date: Date): string {
 
 export default defineConfig(({ command }) => ({
   plugins: command === 'serve' ? [react(), localResearchBridge()] : [react()],
-  // Use the repository subpath only for production builds.
   base: command === 'serve' ? '/' : '/pkrich/',
 }))

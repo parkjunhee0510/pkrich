@@ -2133,6 +2133,12 @@ summary:focus-visible {
   accent-color: var(--color-accent);
 }
 
+.dashboard-automation-hint {
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
 .dashboard-ticker-input {
   min-width: 140px;
   flex: 1 1 180px;
@@ -2232,6 +2238,42 @@ summary:focus-visible {
   margin: -0.2rem 0 0.9rem;
   color: var(--color-text-secondary);
   font-size: 0.82rem;
+}
+
+.dashboard-toast-stack {
+  position: fixed;
+  top: 5.25rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  z-index: 60;
+  max-width: min(360px, calc(100vw - 2rem));
+}
+
+.dashboard-toast {
+  padding: 0.72rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: rgba(17, 21, 31, 0.96);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.dashboard-toast-success {
+  border-color: rgba(34, 197, 94, 0.35);
+  color: var(--color-text);
+}
+
+.dashboard-toast-error {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: var(--color-text);
+}
+
+.dashboard-toast-info {
+  border-color: rgba(99, 102, 241, 0.35);
+  color: var(--color-text);
 }
 
 .dashboard-quick-bar-row {
@@ -2437,6 +2479,14 @@ summary:focus-visible {
   .dashboard-quick-bar {
     top: 0.5rem;
     padding: 0.8rem 0.85rem;
+  }
+
+  .dashboard-toast-stack {
+    top: auto;
+    right: 0.75rem;
+    left: 0.75rem;
+    bottom: 0.85rem;
+    max-width: none;
   }
 
   .dashboard-automation-panel {
