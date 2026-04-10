@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "cd web && npm ci && npm run build && cd .. && mkdir -p web/dist/output/data && cp output/data/dashboard.json web/dist/output/data/ && cp output/data/price_history.json web/dist/output/data/ && cp output/data/ticker_timelines.json web/dist/output/data/",
+  "outputDirectory": "web/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

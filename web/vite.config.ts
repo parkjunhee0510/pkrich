@@ -534,7 +534,12 @@ function formatLocalDate(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-export default defineConfig(({ command }) => ({
-  plugins: command === 'serve' ? [react(), localResearchBridge()] : [react()],
-  base: command === 'serve' ? '/' : '/pkrich/',
-}))
+export default defineConfig(({ command }) => {
+  const isServe = command === 'serve'
+  const isVercel = process.env.VERCEL === '1'
+
+  return {
+    plugins: isServe ? [react(), localResearchBridge()] : [react()],
+    base: isServe || isVercel ? '/' : '/pkrich/',
+  }
+})
