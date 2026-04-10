@@ -346,8 +346,16 @@ def _future_trading_sessions(
 def _load_rows(csv_path: Path) -> list[dict[str, str]]:
     if not csv_path.exists():
         return []
-    with csv_path.open("r", encoding="utf-8", newline="") as handle:
-        return [{key: str(value) for key, value in row.items() if key} for row in csv.DictReader(handle)]
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+        rows: list[dict[str, str]] = []
+        for row in csv.DictReader(handle):
+            normalized_row: dict[str, str] = {}
+            for key, value in row.items():
+                if not key:
+                    continue
+                normalized_row[key.lstrip("\ufeff")] = str(value)
+            rows.append(normalized_row)
+        return rows
 
 
 def _write_rows(csv_path: Path, rows: list[dict[str, str]]) -> None:

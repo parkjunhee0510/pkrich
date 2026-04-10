@@ -149,9 +149,12 @@ def _write_price_history_json(json_path: Path, csv_path: Path) -> None:
         json_path.write_text("[]", encoding="utf-8")
         return
 
-    with csv_path.open("r", encoding="utf-8", newline="") as handle:
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
-        rows = list(reader)
+        rows = [
+            {key.lstrip("\ufeff") if key else "": value for key, value in row.items() if key}
+            for row in reader
+        ]
 
     json_path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
 

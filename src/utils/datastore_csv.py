@@ -27,20 +27,18 @@ class CsvDatastore(Datastore):
             return []
         ticker_filter = {ticker.upper() for ticker in tickers or []}
         rows: list[dict[str, str]] = []
-        with self.csv_path.open('r', encoding='utf-8', newline='') as csv_file:
-            reader = csv.DictReader(csv_file)
-            for row in reader:
-                row_date = _parse_date(row.get('date', ''))
-                ticker = str(row.get('ticker', '')).strip().upper()
-                if row_date is None or not ticker:
-                    continue
-                if start_date and row_date < start_date:
-                    continue
-                if end_date and row_date > end_date:
-                    continue
-                if ticker_filter and ticker not in ticker_filter:
-                    continue
-                rows.append({key: str(value) for key, value in row.items() if key})
+        for row in _read_csv_rows(self.csv_path):
+            row_date = _parse_date(row.get('date', ''))
+            ticker = str(row.get('ticker', '')).strip().upper()
+            if row_date is None or not ticker:
+                continue
+            if start_date and row_date < start_date:
+                continue
+            if end_date and row_date > end_date:
+                continue
+            if ticker_filter and ticker not in ticker_filter:
+                continue
+            rows.append(row)
         return sorted(rows, key=lambda row: (row.get('date', ''), row.get('ticker', '')))
 
     def compare_tickers(self, tickers: list[str], run_date: date) -> dict[str, dict[str, str]]:
@@ -63,10 +61,7 @@ class CsvDatastore(Datastore):
 
 
 def append_price_history_csv(path: Path, analyses: list[TickerAnalysis]) -> None:
-    existing_rows: list[dict[str, str]] = []
-    if path.exists():
-        with path.open('r', encoding='utf-8', newline='') as csv_file:
-            existing_rows = list(csv.DictReader(csv_file))
+    existing_rows = _read_csv_rows(path)
 
     replacement_keys = {(analysis.date, analysis.ticker) for analysis in analyses}
     updated_rows = [row for row in existing_rows if (row.get('date'), row.get('ticker')) not in replacement_keys]
@@ -85,3 +80,20 @@ def _parse_date(raw_value: str) -> date | None:
         return date.fromisoformat(str(raw_value))
     except ValueError:
         return None
+
+
+def _read_csv_rows(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    with path.open('r', encoding='utf-8-sig', newline='') as csv_file:
+        reader = csv.DictReader(csv_file)
+        rows: list[dict[str, str]] = []
+        for row in reader:
+            normalized_row: dict[str, str] = {}
+            for key, value in row.items():
+                if not key:
+                    continue
+                normalized_row[key.lstrip('\ufeff')] = str(value)
+            if normalized_row:
+                rows.append(normalized_row)
+        return rows

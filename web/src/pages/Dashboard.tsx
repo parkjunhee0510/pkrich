@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react'
+﻿import type { Dispatch, SetStateAction } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { ErrorState } from '../components/ErrorState'
 import { MarketOverview } from '../components/MarketOverview'
@@ -7,6 +7,7 @@ import { DashboardSkeleton } from '../components/Skeleton'
 import { CatalystFeed, EarningsBoard, SignalPerformanceBoard, TodaySetupBoard } from '../components/TraderDashboardPanels'
 import { WatchlistTable } from '../components/WatchlistTable'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { useLocalResearchAutomation } from '../hooks/useLocalResearchAutomation'
 import type { TickerAnalysisData } from '../types'
 import {
   buildCatalystFeedSections,
@@ -49,13 +50,14 @@ type DensityMode = 'compact' | 'comfortable' | 'focus'
 const PRESET_ACCOUNT_SIZES = [10000, 50000, 100000]
 
 export function Dashboard() {
-  const { data, loading, error } = useDashboardData()
+  const { data, loading, refreshing, error, refresh } = useDashboardData()
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSector, setSelectedSector] = useState('ALL')
   const [accountSize, setAccountSize] = useState(10000)
   const [watchlistSort, setWatchlistSort] = useState<WatchlistSortMode>('score')
   const [density, setDensity] = useState<DensityMode>('comfortable')
+  const [tickerInput, setTickerInput] = useState('')
   const [traderFilters, setTraderFilters] = useState<TraderFilters>({
     earningsWithin30d: false,
     rvolHigh: false,
@@ -64,6 +66,14 @@ export function Dashboard() {
     shortFloatHigh: false,
     strongBuyUpside: false,
   })
+
+  const { status: automationStatus, available: automationAvailable, pendingAction, addTickerToWatchlist, runResearch } =
+    useLocalResearchAutomation({
+      onRunCompleted: () => {
+        refresh()
+        setSelectedIdx(null)
+      },
+    })
 
   const days = data?.days ?? []
   const rawIdx = selectedIdx ?? Math.max(days.length - 1, 0)
@@ -109,12 +119,24 @@ export function Dashboard() {
   )
 
   useEffect(() => {
-    document.title = `대시보드 · Stock Research`
+    document.title = '대시보드 · Stock Research'
   }, [])
 
   if (loading) return <DashboardSkeleton />
   if (error) return <ErrorState message={error} />
   if (!data || data.days.length === 0) return <p className="status">No data available.</p>
+
+  async function handleAddTicker() {
+    const result = await addTickerToWatchlist(tickerInput)
+    if (result.ok) {
+      setTickerInput('')
+      setSearchQuery(result.ticker)
+    }
+  }
+
+  async function handleRunResearch() {
+    await runResearch()
+  }
 
   return (
     <div className="dashboard" data-density={density}>
@@ -132,6 +154,55 @@ export function Dashboard() {
       </div>
 
       <div className="dashboard-quick-bar">
+        <div className="dashboard-automation-panel">
+          <div className="dashboard-automation-copy">
+            <strong>로컬 리서치 자동화</strong>
+            <p>티커를 watchlist에 추가하고 기존 배치 파이프라인을 바로 실행할 수 있습니다.</p>
+          </div>
+
+          {automationAvailable ? (
+            <>
+              <div className="dashboard-automation-controls">
+                <input
+                  className="dashboard-search dashboard-ticker-input"
+                  type="text"
+                  inputMode="text"
+                  autoCapitalize="characters"
+                  placeholder="예: TSLA"
+                  value={tickerInput}
+                  onChange={(event) => setTickerInput(event.target.value.toUpperCase())}
+                  disabled={automationStatus.running || pendingAction === 'add'}
+                />
+                <button
+                  type="button"
+                  className="primary-action-button"
+                  onClick={handleAddTicker}
+                  disabled={!tickerInput.trim() || automationStatus.running || pendingAction === 'add'}
+                >
+                  {pendingAction === 'add' ? '추가 중...' : '티커 추가'}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-action-button"
+                  onClick={handleRunResearch}
+                  disabled={automationStatus.running || pendingAction === 'run'}
+                >
+                  {automationStatus.running || pendingAction === 'run' ? '리서치 실행 중...' : '리서치 실행'}
+                </button>
+              </div>
+              <div className={`dashboard-automation-status stage-${automationStatus.stage}`}>
+                <span className="dashboard-automation-stage">{automationStatus.stageLabel}</span>
+                <p>{automationStatus.message}</p>
+              </div>
+            </>
+          ) : (
+            <div className="dashboard-automation-status stage-idle">
+              <span className="dashboard-automation-stage">로컬 전용</span>
+              <p>이 기능은 `npm run dev`로 띄운 로컬 개발 서버에서만 사용할 수 있습니다.</p>
+            </div>
+          )}
+        </div>
+
         <div className="dashboard-controls">
           <input
             className="dashboard-search"
@@ -248,6 +319,8 @@ export function Dashboard() {
           </div>
         </div>
       </div>
+
+      {refreshing && <p className="dashboard-refresh-note">최신 output을 다시 불러오는 중입니다.</p>}
 
       <TodaySetupBoard cards={topSetupCards} />
       <EarningsBoard sections={earningsBoardSections} />
@@ -393,33 +466,33 @@ function buildEmptyStateMessage(query: string, sector: string, filters: TraderFi
   if (query.trim()) {
     return {
       title: '검색 결과가 없습니다.',
-      body: `"${query.trim()}"와 일치하는 종목이 없습니다. 티커 약어로 다시 찾거나 검색 필터를 조금 줄여보세요.`,
+      body: `"${query.trim()}"와 일치하는 종목이 없습니다. 티커 영문자로 다시 찾거나 검색어를 조금 줄여보세요.`,
     }
   }
 
   if (sector !== 'ALL' && hasFilter) {
     return {
       title: '조건이 너무 좁습니다.',
-      body: '선택한 섹터와 현재 필터 조합을 동시에 만족하는 종목이 없습니다. 섹터 또는 필터 하나를 먼저 풀고 다시 보시면 가장 빠릅니다.',
+      body: '선택한 섹터와 현재 필터 조합을 동시에 만족하는 종목이 없습니다. 섹터 또는 필터 하나를 먼저 풀어보세요.',
     }
   }
 
   if (filters.hardCatalystOnly) {
     return {
-      title: '오늘은 하드 촉매 후보가 없습니다.',
-      body: '지금 조건에서는 hard catalyst가 비어 있습니다. 정렬을 실적 임박순으로 바꾸거나 Catalyst Feed의 medium 탭을 먼저 확인해보세요.',
+      title: '오늘은 하드 촉매만으로 남은 종목이 없습니다.',
+      body: '현재 조건에서는 hard catalyst가 비어 있습니다. 실적 임박순으로 바꾸거나 Catalyst Feed에서 medium 단계까지 넓혀보세요.',
     }
   }
 
   if (hasFilter) {
     return {
-      title: '필터에 맞는 종목이 없습니다.',
-      body: '현재 필터 조합에 맞는 종목이 없습니다. 필터를 한두 개 줄이거나 카드 정렬을 바꿔 더 넓은 후보군부터 확인해보세요.',
+      title: '현재 필터에 맞는 종목이 없습니다.',
+      body: '필터 조합이 너무 타이트합니다. 필터를 한두 개 줄이거나 카드 정렬을 바꿔 다음 후보를 확인해보세요.',
     }
   }
 
   return {
     title: '표시할 종목이 없습니다.',
-    body: '데이터가 비어 있거나 아직 오늘 결과가 생성되지 않았습니다. 파이프라인 산출물을 먼저 확인해보세요.',
+    body: '아직 오늘 결과가 생성되지 않았거나 output이 비어 있습니다. 로컬 리서치를 실행한 뒤 다시 확인해보세요.',
   }
 }
