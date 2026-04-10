@@ -1389,6 +1389,10 @@ def _build_snapshot(market: CollectedTickerData) -> dict[str, str]:
         'Price/Book': market.price_to_book,
         'Dividend Yield': market.dividend_yield,
         'Sector': market.sector or 'N/A',
+        'Open': market.open_price,
+        'High': market.high_price,
+        'Low': market.low_price,
+        'Close': market.close_price,
     }
 
 

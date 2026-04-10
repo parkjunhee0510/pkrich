@@ -162,6 +162,7 @@ def _collect_single_ticker(
     week52_position = "N/A"
     rs_vs_spy = "N/A"
     options_summary: dict[str, str] = {}
+    ohlcv: dict[str, str] = {}
 
     if yfinance_ready:
         try:
@@ -223,6 +224,7 @@ def _collect_single_ticker(
                 _coerce_finite_float(info.get("fiftyTwoWeekLow")),
             )
             rs_vs_spy = _calc_rs_vs_benchmark(price_change_30d, benchmark_change_30d)
+            ohlcv = _extract_latest_ohlcv(history, price, open_price, volume)
             providers_used.append("yfinance")
             record_pipeline_event("collector", "info", "data_provider_used", ticker=item.ticker, source="yfinance")
         except Exception as exc:
@@ -357,6 +359,11 @@ def _collect_single_ticker(
         week52_position=week52_position,
         rs_vs_spy=rs_vs_spy,
         options_summary=options_summary,
+        open_price=ohlcv.get("open", "N/A") if ohlcv else "N/A",
+        high_price=ohlcv.get("high", "N/A") if ohlcv else "N/A",
+        low_price=ohlcv.get("low", "N/A") if ohlcv else "N/A",
+        close_price=ohlcv.get("close", "N/A") if ohlcv else "N/A",
+        day_volume=ohlcv.get("volume", "N/A") if ohlcv else "N/A",
     )
 
 
@@ -372,6 +379,36 @@ def _fallback_market_data(item: WatchlistItem, summary_note: str) -> CollectedTi
         pe_ratio="N/A",
         summary_note=summary_note,
     )
+
+
+def _extract_latest_ohlcv(
+    history: object,
+    price: float | None,
+    open_price: float | None,
+    volume_str: str,
+) -> dict[str, str]:
+    """Extract latest-day OHLCV from history DataFrame for candlestick charting."""
+    result: dict[str, str] = {}
+    try:
+        import pandas as pd
+        if isinstance(history, pd.DataFrame) and not history.empty:
+            last_row = history.iloc[-1]
+            result["open"] = f"{float(last_row.get('Open', 0)):.2f}" if last_row.get("Open") is not None else "N/A"
+            result["high"] = f"{float(last_row.get('High', 0)):.2f}" if last_row.get("High") is not None else "N/A"
+            result["low"] = f"{float(last_row.get('Low', 0)):.2f}" if last_row.get("Low") is not None else "N/A"
+            result["close"] = f"{float(last_row.get('Close', 0)):.2f}" if last_row.get("Close") is not None else "N/A"
+            vol = last_row.get("Volume")
+            result["volume"] = str(int(vol)) if vol is not None and vol == vol else "N/A"
+            return result
+    except Exception:
+        pass
+    # fallback from info dict
+    if open_price is not None:
+        result["open"] = f"{open_price:.2f}"
+    if price is not None:
+        result["close"] = f"{price:.2f}"
+    result["volume"] = volume_str
+    return result
 
 
 def _select_price_snapshot(history: object, info: dict[str, Any]) -> tuple[float | None, float | None]:

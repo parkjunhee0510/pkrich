@@ -312,6 +312,11 @@ export interface PriceHistoryRow {
   eps: string
   '52w_high': string
   '52w_low': string
+  open?: string
+  high?: string
+  low?: string
+  close?: string
+  volume?: string
 }
 
 export interface TickerTimelineEntry {

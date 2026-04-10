@@ -12,6 +12,7 @@ import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
 import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../types'
 import { parseNumericChange, changeColor, extractSignalDirection } from '../utils/format'
+import { EpsSurpriseChart } from '../components/EpsSurpriseChart'
 import { buildPositionSizingSummary, buildPriceActionTags, extractActionPlan, getLatestCatalystItem } from '../utils/trader'
 
 const FILING_TABS = ['실적', '배당', '주주총회', '기타 공시'] as const
@@ -473,21 +474,24 @@ export function TickerDetail() {
 
       <ResponsiveDetailSection title="최근 4분기 재무">
         {quarterlyFinancials.length > 0 ? (
-          <table className="snapshot-table">
-            <thead>
-              <tr>
-                <th>Quarter</th><th>Revenue</th><th>Operating Income</th><th>EPS</th><th>EPS 추정</th><th>서프라이즈</th><th>결과</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quarterlyFinancials.map((row) => (
-                <tr key={row.quarter}>
-                  <td>{row.quarter}</td><td>{row.revenue}</td><td>{row.operating_income}</td><td>{row.eps}</td><td>{row.estimated_eps ?? 'N/A'}</td><td>{row.surprise_pct ?? 'N/A'}</td>
-                  <td><span className={`earnings-result-chip ${toBeatMissClassName(row.beat_miss)}`}>{row.beat_miss ?? 'N/A'}</span></td>
+          <>
+            <EpsSurpriseChart quarters={quarterlyFinancials} />
+            <table className="snapshot-table">
+              <thead>
+                <tr>
+                  <th>Quarter</th><th>Revenue</th><th>Operating Income</th><th>EPS</th><th>EPS 추정</th><th>서프라이즈</th><th>결과</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {quarterlyFinancials.map((row) => (
+                  <tr key={row.quarter}>
+                    <td>{row.quarter}</td><td>{row.revenue}</td><td>{row.operating_income}</td><td>{row.eps}</td><td>{row.estimated_eps ?? 'N/A'}</td><td>{row.surprise_pct ?? 'N/A'}</td>
+                    <td><span className={`earnings-result-chip ${toBeatMissClassName(row.beat_miss)}`}>{row.beat_miss ?? 'N/A'}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         ) : (
           <p className="empty">분기 재무 데이터가 없습니다.</p>
         )}

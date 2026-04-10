@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from src.utils.datastore_csv import CsvDatastore
     from src.utils.datastore_sqlite import SqliteDatastore
 
-FIELDNAMES = ['date', 'ticker', 'price', 'daily_change', 'market_cap', 'trailing_pe', 'eps', '52w_high', '52w_low']
+FIELDNAMES = ['date', 'ticker', 'price', 'daily_change', 'market_cap', 'trailing_pe', 'eps', '52w_high', '52w_low', 'open', 'high', 'low', 'close', 'volume']
 
 
 class Datastore(ABC):
@@ -69,6 +69,11 @@ def build_price_history_rows(analyses: list[TickerAnalysis]) -> list[dict[str, s
             'eps': analysis.data_snapshot.get('EPS', 'N/A'),
             '52w_high': analysis.data_snapshot.get('52W High', 'N/A'),
             '52w_low': analysis.data_snapshot.get('52W Low', 'N/A'),
+            'open': analysis.data_snapshot.get('Open', 'N/A'),
+            'high': analysis.data_snapshot.get('High', 'N/A'),
+            'low': analysis.data_snapshot.get('Low', 'N/A'),
+            'close': analysis.data_snapshot.get('Close', 'N/A'),
+            'volume': analysis.data_snapshot.get('Volume', 'N/A'),
         }
         for analysis in analyses
     ]

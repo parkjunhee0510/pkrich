@@ -72,6 +72,11 @@ class CollectedTickerData:
     week52_position: str = 'N/A'
     rs_vs_spy: str = 'N/A'
     options_summary: dict[str, str] = field(default_factory=dict)
+    open_price: str = 'N/A'
+    high_price: str = 'N/A'
+    low_price: str = 'N/A'
+    close_price: str = 'N/A'
+    day_volume: str = 'N/A'
 
 
 @dataclass(frozen=True)

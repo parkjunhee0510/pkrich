@@ -2966,3 +2966,176 @@ summary:focus-visible {
     padding: 0.55rem 0.6rem;
   }
 }
+
+/* ── A2: Price Chart (lightweight-charts) ── */
+.price-chart-wrapper {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem 0.5rem;
+}
+
+.price-chart-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  gap: 0.75rem;
+}
+
+.price-chart-mode-toggle {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.price-chart-volume-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* ── A4: Equity Curve ── */
+.equity-curve-wrapper {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.equity-curve-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.equity-curve-header h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.equity-curve-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.equity-stat {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.equity-stat-sub {
+  font-size: 0.8rem;
+}
+
+.equity-stat.positive,
+.equity-stat-sub.positive {
+  color: var(--color-up);
+}
+
+.equity-stat.negative,
+.equity-stat-sub.negative {
+  color: var(--color-down);
+}
+
+.equity-curve-empty {
+  padding: 1rem;
+}
+
+/* ── A7: Drag-and-Drop ── */
+.watchlist-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.watchlist-dnd-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.25rem;
+}
+
+.watchlist-dnd-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.watchlist-dnd-toggle input[type='checkbox'] {
+  accent-color: var(--color-accent);
+}
+
+.watchlist-dnd-reset {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.watchlist-dnd-reset:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.watchlist-drag-handle {
+  cursor: grab;
+  user-select: none;
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  line-height: 1;
+  padding: 0 0.25rem;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.watchlist-drag-handle:hover {
+  opacity: 1;
+}
+
+.watchlist-card.dragging {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border-color: var(--color-accent);
+}
+
+/* ── A8: EPS Surprise Chart ── */
+.eps-surprise-wrapper {
+  margin-bottom: 1rem;
+}
+
+.eps-surprise-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.eps-chip {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.eps-chip.beat {
+  background: rgba(38, 166, 154, 0.15);
+  color: #26a69a;
+}
+
+.eps-chip.miss {
+  background: rgba(239, 83, 80, 0.15);
+  color: #ef5350;
+}
+
+.eps-chip.in-line,
+.eps-chip.N\/A {
+  background: rgba(136, 136, 136, 0.12);
+  color: #888;
+}

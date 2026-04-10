@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { EquityCurveChart } from '../components/EquityCurveChart'
 import { ErrorState } from '../components/ErrorState'
 import { PortfolioRiskPanel } from '../components/PortfolioRiskPanel'
 import { TablePageSkeleton } from '../components/Skeleton'
@@ -181,6 +182,8 @@ export function Portfolio() {
                 />
                 <SummaryCard label="승패" value={`${winCount}W / ${lossCount}L`} tone="var(--color-text)" />
               </div>
+
+              <EquityCurveChart days={data.days} />
 
               <PortfolioRiskPanel risk={latestDay.portfolio_risk} />
 
