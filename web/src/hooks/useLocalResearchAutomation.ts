@@ -42,7 +42,7 @@ const INITIAL_STATUS: LocalResearchStatus = {
   running: false,
   stage: 'idle',
   stageLabel: '대기',
-  message: '로컬 자동화 연결을 확인하는 중입니다.',
+  message: '로컬 자동화 연결 상태를 확인하는 중입니다.',
   lastTicker: null,
   startedAt: null,
   finishedAt: null,
@@ -66,7 +66,7 @@ export function useLocalResearchAutomation({ onRunCompleted }: { onRunCompleted?
     } catch {
       setStatus({
         ...INITIAL_STATUS,
-        message: '로컬 자동화는 개발 서버에서만 사용할 수 있습니다. `npm run dev` 환경에서 사용해보세요.',
+        message: '로컬 자동화는 개발 서버에서만 사용할 수 있습니다. `npm run dev` 환경인지 확인해보세요.',
       })
     }
   }, [])
@@ -90,45 +90,48 @@ export function useLocalResearchAutomation({ onRunCompleted }: { onRunCompleted?
     wasRunningRef.current = status.running
   }, [onRunCompleted, status.lastResult, status.running])
 
-  const addTickerToWatchlist = useCallback(async (rawTicker: string) => {
-    const ticker = rawTicker.trim().toUpperCase()
-    if (!ticker) {
-      return {
-        ok: false,
-        added: false,
-        ticker: '',
-        message: '추가할 티커를 먼저 입력해주세요.',
-        status,
+  const addTickerToWatchlist = useCallback(
+    async (rawTicker: string) => {
+      const ticker = rawTicker.trim().toUpperCase()
+      if (!ticker) {
+        return {
+          ok: false,
+          added: false,
+          ticker: '',
+          message: '추가할 티커를 먼저 입력해주세요.',
+          status,
+        }
       }
-    }
 
-    setPendingAction('add')
-    try {
-      const response = await fetch(WATCHLIST_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker }),
-      })
-      const payload = (await response.json()) as WatchlistResponse
-      setStatus(payload.status)
-      return payload
-    } catch {
-      const failedStatus = {
-        ...status,
-        message: 'watchlist 반영 요청에 실패했습니다. dev 서버가 실행 중인지 확인해주세요.',
+      setPendingAction('add')
+      try {
+        const response = await fetch(WATCHLIST_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticker }),
+        })
+        const payload = (await response.json()) as WatchlistResponse
+        setStatus(payload.status)
+        return payload
+      } catch {
+        const failedStatus = {
+          ...status,
+          message: 'watchlist 반영 요청에 실패했습니다. 개발 서버가 실행 중인지 확인해주세요.',
+        }
+        setStatus(failedStatus)
+        return {
+          ok: false,
+          added: false,
+          ticker,
+          message: failedStatus.message,
+          status: failedStatus,
+        }
+      } finally {
+        setPendingAction(null)
       }
-      setStatus(failedStatus)
-      return {
-        ok: false,
-        added: false,
-        ticker,
-        message: failedStatus.message,
-        status: failedStatus,
-      }
-    } finally {
-      setPendingAction(null)
-    }
-  }, [status])
+    },
+    [status],
+  )
 
   const runResearch = useCallback(async () => {
     setPendingAction('run')
@@ -142,7 +145,7 @@ export function useLocalResearchAutomation({ onRunCompleted }: { onRunCompleted?
         ...status,
         stage: 'failed' as const,
         stageLabel: '실패',
-        message: '리서치 실행 요청에 실패했습니다. dev 서버와 Python 환경을 확인해주세요.',
+        message: '리서치 실행 요청에 실패했습니다. 개발 서버와 Python 실행 환경을 확인해주세요.',
         lastResult: 'error' as const,
       }
       setStatus(failedStatus)

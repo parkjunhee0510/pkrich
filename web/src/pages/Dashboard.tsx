@@ -58,6 +58,7 @@ export function Dashboard() {
   const [watchlistSort, setWatchlistSort] = useState<WatchlistSortMode>('score')
   const [density, setDensity] = useState<DensityMode>('comfortable')
   const [tickerInput, setTickerInput] = useState('')
+  const [autoRunAfterAdd, setAutoRunAfterAdd] = useState(false)
   const [traderFilters, setTraderFilters] = useState<TraderFilters>({
     earningsWithin30d: false,
     rvolHigh: false,
@@ -131,6 +132,9 @@ export function Dashboard() {
     if (result.ok) {
       setTickerInput('')
       setSearchQuery(result.ticker)
+      if (autoRunAfterAdd && result.added) {
+        await runResearch()
+      }
     }
   }
 
@@ -190,6 +194,15 @@ export function Dashboard() {
                   {automationStatus.running || pendingAction === 'run' ? '리서치 실행 중...' : '리서치 실행'}
                 </button>
               </div>
+              <label className="dashboard-automation-option">
+                <input
+                  type="checkbox"
+                  checked={autoRunAfterAdd}
+                  onChange={(event) => setAutoRunAfterAdd(event.target.checked)}
+                  disabled={automationStatus.running || pendingAction === 'add' || pendingAction === 'run'}
+                />
+                <span>새 티커를 추가하면 바로 리서치를 실행합니다.</span>
+              </label>
               <div className={`dashboard-automation-status stage-${automationStatus.stage}`}>
                 <span className="dashboard-automation-stage">{automationStatus.stageLabel}</span>
                 <p>{automationStatus.message}</p>

@@ -2118,6 +2118,21 @@ summary:focus-visible {
   flex-wrap: wrap;
 }
 
+.dashboard-automation-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+}
+
+.dashboard-automation-option input {
+  width: 0.95rem;
+  height: 0.95rem;
+  accent-color: var(--color-accent);
+}
+
 .dashboard-ticker-input {
   min-width: 140px;
   flex: 1 1 180px;
@@ -2431,6 +2446,10 @@ summary:focus-visible {
   .dashboard-automation-controls {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .dashboard-automation-option {
+    align-items: flex-start;
   }
 
   .primary-action-button,
