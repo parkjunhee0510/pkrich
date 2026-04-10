@@ -7,44 +7,11 @@ from src.types import PortfolioHolding, WatchlistItem
 
 
 def load_watchlist(path: str = 'config/watchlist.yaml') -> list[WatchlistItem]:
-    config_path = Path(path)
-    try:
-        import yaml  # type: ignore
-
-        loaded = yaml.safe_load(config_path.read_text(encoding='utf-8'))
-        watchlist_entries = loaded.get('watchlist', []) if isinstance(loaded, dict) else []
-        if isinstance(watchlist_entries, list):
-            return [_build_watchlist_item(entry) for entry in watchlist_entries if isinstance(entry, dict)]
-    except Exception:
-        pass
-
-    raw_lines = config_path.read_text(encoding='utf-8').splitlines()
-    items: list[WatchlistItem] = []
-    current: dict[str, object] | None = None
-
-    for line in raw_lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith('#') or stripped == 'watchlist:':
-            continue
-
-        if stripped.startswith('- '):
-            if current:
-                items.append(_build_watchlist_item(current))
-            current = {}
-            key, value = _split_key_value(stripped[2:])
-            current[key] = _parse_value(value)
-            continue
-
-        if current is None:
-            continue
-
-        key, value = _split_key_value(stripped)
-        current[key] = _parse_value(value)
-
-    if current:
-        items.append(_build_watchlist_item(current))
-
-    return items
+    payload = load_yaml_mapping(path)
+    watchlist_entries = payload.get('watchlist', [])
+    if not isinstance(watchlist_entries, list):
+        return []
+    return [_build_watchlist_item(entry) for entry in watchlist_entries if isinstance(entry, dict)]
 
 
 def load_simple_mapping(path: str) -> dict[str, object]:
@@ -64,35 +31,11 @@ def load_yaml_mapping(path: str, *, optional: bool = False) -> dict[str, Any]:
     except Exception:
         if optional:
             return {}
-        raw_lines = config_path.read_text(encoding='utf-8').splitlines()
-        result: dict[str, object] = {}
-        current_section: str | None = None
-        current_mapping: dict[str, object] = {}
-
-        for line in raw_lines:
-            stripped = line.strip()
-            if not stripped or stripped.startswith('#'):
-                continue
-
-            if not line.startswith(' ') and stripped.endswith(':'):
-                if current_section is not None:
-                    result[current_section] = current_mapping
-                current_section = stripped[:-1]
-                current_mapping = {}
-                continue
-
-            if current_section is None:
-                key, value = _split_key_value(stripped)
-                result[key] = _parse_scalar(value)
-                continue
-
-            key, value = _split_key_value(stripped)
-            current_mapping[key] = _parse_scalar(value)
-
-        if current_section is not None:
-            result[current_section] = current_mapping
-
-        return result
+        try:
+            loaded = _load_yaml_fallback(config_path.read_text(encoding='utf-8'))
+            return loaded if isinstance(loaded, dict) else {}
+        except Exception:
+            return {}
 
 
 def load_portfolio(path: str = 'config/portfolio.yaml') -> list[PortfolioHolding]:
@@ -148,6 +91,95 @@ def _parse_scalar(value: str) -> object:
         return float(normalized)
     except ValueError:
         return normalized
+
+
+def _load_yaml_fallback(text: str) -> object:
+    lines = _tokenize_yaml_lines(text)
+    if not lines:
+        return {}
+    parsed, _ = _parse_yaml_block(lines, 0, lines[0][0])
+    return parsed
+
+
+def _tokenize_yaml_lines(text: str) -> list[tuple[int, str]]:
+    tokens: list[tuple[int, str]] = []
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith('#'):
+            continue
+        indent = len(raw_line) - len(raw_line.lstrip(' '))
+        tokens.append((indent, stripped))
+    return tokens
+
+
+def _parse_yaml_block(lines: list[tuple[int, str]], index: int, indent: int) -> tuple[object, int]:
+    if index >= len(lines):
+        return {}, index
+    _, content = lines[index]
+    if content.startswith('- '):
+        return _parse_yaml_list(lines, index, indent)
+    return _parse_yaml_dict(lines, index, indent)
+
+
+def _parse_yaml_dict(lines: list[tuple[int, str]], index: int, indent: int) -> tuple[dict[str, object], int]:
+    result: dict[str, object] = {}
+    while index < len(lines):
+        line_indent, content = lines[index]
+        if line_indent < indent or line_indent != indent or content.startswith('- '):
+            break
+        key, value = _split_key_value(content)
+        index += 1
+        if value:
+            result[key] = _parse_value(value)
+            continue
+        if index < len(lines) and lines[index][0] > line_indent:
+            nested, index = _parse_yaml_block(lines, index, lines[index][0])
+            result[key] = nested
+        else:
+            result[key] = {}
+    return result, index
+
+
+def _parse_yaml_list(lines: list[tuple[int, str]], index: int, indent: int) -> tuple[list[object], int]:
+    result: list[object] = []
+    while index < len(lines):
+        line_indent, content = lines[index]
+        if line_indent < indent or line_indent != indent or not content.startswith('- '):
+            break
+        item_content = content[2:].strip()
+        index += 1
+
+        if not item_content:
+            if index < len(lines) and lines[index][0] > line_indent:
+                nested, index = _parse_yaml_block(lines, index, lines[index][0])
+                result.append(nested)
+            else:
+                result.append({})
+            continue
+
+        if ':' in item_content:
+            key, value = _split_key_value(item_content)
+            item: dict[str, object] = {}
+            if value:
+                item[key] = _parse_value(value)
+            elif index < len(lines) and lines[index][0] > line_indent:
+                nested, index = _parse_yaml_block(lines, index, lines[index][0])
+                item[key] = nested
+            else:
+                item[key] = {}
+
+            while index < len(lines) and lines[index][0] > line_indent:
+                child_indent = lines[index][0]
+                nested, index = _parse_yaml_block(lines, index, child_indent)
+                if isinstance(nested, dict):
+                    item.update(nested)
+                else:
+                    item.setdefault('_items', nested)
+            result.append(item)
+            continue
+
+        result.append(_parse_value(item_content))
+    return result, index
 
 
 def _build_watchlist_item(raw: dict[str, object]) -> WatchlistItem:

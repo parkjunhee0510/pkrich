@@ -34,6 +34,19 @@ _MAX_BATCH_SPLIT_DEPTH = 6
 _NUMERIC_HIGHLIGHT_PATTERN = re.compile(
     r"(?:[$€₩]\s*[-+]?\d[\d,.]*(?:\.\d+)?)|(?:[-+]?\d[\d,.]*(?:\.\d+)?\s*(?:%p|%|배|x|USD|KRW|원|달러|M|B|T|억|만|조))"
 )
+_FEW_SHOT_EXAMPLE = (
+    '{"tickers":[{"ticker":"AAPL","summary":"애플은 260.49 USD 부근에서 SMA50 260.57 USD를 두고 방향성을 탐색 중이며 '
+    'RS vs SPY +4.10%와 RVOL 1.42x가 단기 수급 버팀목입니다. 2026-04-30 실적 발표 전까지 최근 4개 분기 중 3개 beat 패턴이 유지되는지와 '
+    '254.39 USD 지지 여부가 핵심 점검 포인트입니다.","key_news":["10-Q 제출로 분기 실적 재확인 필요"],'
+    '"financial_highlights":["최근 4개 분기 중 3개 beat, 최신 서프라이즈 +5.00%입니다.","Forward EPS 6.80 USD/share로 TTM EPS 6.10 대비 +11.48% 높습니다.",'
+    '"섹터 평균 PER 22.40x 대비 애플 PER 25.00x로 프리미엄이 존재합니다."],"risks_or_watchpoints":["254.39 USD 이탈 시 2×ATR 기준 단기 추세 훼손 가능성이 있습니다."],'
+    '"signal_or_takeaway":"매수 관찰 — 2026-04-30 실적과 연속 beat 유지 여부 | 진입 트리거 254.39-266.59 USD 지지 확인 | 목표 269.58 USD/295.32 USD | 손절 248.37 USD (R:R 1.4R)",'
+    '"news_tone":{"label":"neutral","confidence":3,"reasoning":"실적 기대와 밸류에이션 부담이 혼재합니다."},"trade_frame":{"entry_price":"현재가 260.49 USD 또는 254.39-256.00 USD 눌림 시",'
+    '"stop_loss":"248.37 USD (2×ATR 기준)","target_1":"269.58 USD (1.5×ATR)","target_2":"애널리스트 목표 295.32 USD","risk_reward_ratio":"1.4R",'
+    '"position_size_note":"$10,000 계좌 1% 리스크 기준 약 16주 (ATR $6.06 기반)","bull_scenario":"연속 beat와 가이던스 상향이 확인되면 295.32 USD 재시험 가능성이 있습니다.",'
+    '"base_scenario":"실적 전까지 254.39-269.58 USD 범위에서 박스권 소화 가능성이 큽니다.","bear_scenario":"가이던스 실망과 함께 248.37 USD를 이탈하면 단기 조정 압력이 커질 수 있습니다.",'
+    '"invalidation_price":"248.37 USD 종가 하회 시 단기 강세 시나리오 무효화","watch_period":"2026-04-30 실적 발표 전까지"}}]}'
+)
 
 
 @dataclass(frozen=True)
@@ -50,11 +63,20 @@ def analyze_tickers(
     run_date: date,
     *,
     macro_context: dict[str, Any] | None = None,
+    signal_history_map: dict[str, list[dict[str, str]]] | None = None,
 ) -> list[TickerAnalysis]:
     load_dotenv()
     model_profile = load_model_profile()
     if os.getenv('OPENAI_API_KEY'):
-        llm_results = _analyze_with_openai(watchlist, collected, news_map, run_date, model_profile=model_profile, macro_context=macro_context)
+        llm_results = _analyze_with_openai(
+            watchlist,
+            collected,
+            news_map,
+            run_date,
+            model_profile=model_profile,
+            macro_context=macro_context,
+            signal_history_map=signal_history_map,
+        )
         if llm_results:
             return llm_results
     return _build_fallback_analyses(watchlist, collected, news_map, run_date)
@@ -68,6 +90,7 @@ def _analyze_with_openai(
     *,
     model_profile: ModelProfile,
     macro_context: dict[str, Any] | None = None,
+    signal_history_map: dict[str, list[dict[str, str]]] | None = None,
 ) -> list[TickerAnalysis]:
     try:
         from openai import OpenAI
@@ -86,7 +109,16 @@ def _analyze_with_openai(
         return []
 
     try:
-        return _analyze_batches_with_client(client, model_profile, watchlist, collected, news_map, run_date, macro_context=macro_context)
+        return _analyze_batches_with_client(
+            client,
+            model_profile,
+            watchlist,
+            collected,
+            news_map,
+            run_date,
+            macro_context=macro_context,
+            signal_history_map=signal_history_map,
+        )
     except Exception as exc:
         _log_analyzer_event(
             'openai_analyzer_failed',
@@ -109,9 +141,10 @@ def _analyze_batches_with_client(
     run_date: date,
     *,
     macro_context: dict[str, Any] | None = None,
+    signal_history_map: dict[str, list[dict[str, str]]] | None = None,
 ) -> list[TickerAnalysis]:
     model_profile = _coerce_model_profile(model_profile_or_name)
-    prepared = _prepare_payload_items(watchlist, collected, news_map)
+    prepared = _prepare_payload_items(watchlist, collected, news_map, signal_history_map=signal_history_map)
     batches = _build_batches_for_analysis(prepared, model_profile)
     analyses_by_ticker: dict[str, TickerAnalysis] = {}
 
@@ -137,8 +170,10 @@ def _prepare_payload_items(
     watchlist: list[WatchlistItem],
     collected: dict[str, CollectedTickerData],
     news_map: dict[str, list[NewsItem]],
+    *,
+    signal_history_map: dict[str, list[dict[str, str]]] | None = None,
 ) -> list[_PreparedPayloadItem]:
-    payload = _build_payload(watchlist, collected, news_map)
+    payload = _build_payload(watchlist, collected, news_map, signal_history_map=signal_history_map)
     prepared: list[_PreparedPayloadItem] = []
     for item, payload_entry in zip(watchlist, payload, strict=False):
         prepared.append(
@@ -386,7 +421,11 @@ def _build_payload(
     batch: list[WatchlistItem],
     collected: dict[str, CollectedTickerData],
     news_map: dict[str, list[NewsItem]],
+    *,
+    signal_history_map: dict[str, list[dict[str, str]]] | None = None,
 ) -> list[dict[str, Any]]:
+    deduped_news_map = {item.ticker: _dedupe_news_items(news_map.get(item.ticker, [])) for item in batch}
+    peer_context_map = _build_sector_peer_context(batch, collected)
     payload: list[dict[str, Any]] = []
     for item in batch:
         market = collected[item.ticker]
@@ -432,6 +471,9 @@ def _build_payload(
                     'held_by_institutions': market.held_by_institutions,
                     'implied_volatility': market.implied_volatility,
                 },
+                'quarterly_financials': market.quarterly_financials[:4],
+                'signal_history': (signal_history_map or {}).get(item.ticker, [])[:5],
+                'sector_peer_context': peer_context_map.get(item.ticker, {}),
                 'upcoming_events': market.upcoming_events[:3],
                 'news': [
                     {
@@ -439,11 +481,121 @@ def _build_payload(
                         'source': article.source,
                         'published_at': article.published_at,
                     }
-                    for article in news_map.get(item.ticker, [])
+                    for article in deduped_news_map.get(item.ticker, [])
                 ],
             }
         )
     return payload
+
+
+def _build_sector_peer_context(
+    batch: list[WatchlistItem],
+    collected: dict[str, CollectedTickerData],
+) -> dict[str, dict[str, str]]:
+    grouped: dict[str, list[CollectedTickerData]] = {}
+    for item in batch:
+        sector_key = (item.sector or collected[item.ticker].sector or 'N/A').strip()
+        grouped.setdefault(sector_key, []).append(collected[item.ticker])
+
+    context_by_ticker: dict[str, dict[str, str]] = {}
+    for item in batch:
+        market = collected[item.ticker]
+        sector_key = (item.sector or market.sector or 'N/A').strip()
+        peers = [entry for entry in grouped.get(sector_key, []) if entry.ticker != item.ticker]
+        if not peers:
+            context_by_ticker[item.ticker] = {}
+            continue
+
+        avg_pe = _average_numeric([peer.pe_ratio for peer in peers], suffix='x')
+        avg_30d = _average_numeric([peer.price_change_30d for peer in peers], suffix='%')
+        avg_rs = _average_numeric([peer.rs_vs_spy for peer in peers], suffix='%')
+        context_by_ticker[item.ticker] = {
+            'sector': sector_key or 'N/A',
+            'peer_count': str(len(peers)),
+            'average_pe': avg_pe,
+            'average_price_change_30d': avg_30d,
+            'average_rs_vs_spy': avg_rs,
+            'ticker_pe': market.pe_ratio,
+            'ticker_price_change_30d': market.price_change_30d,
+            'ticker_rs_vs_spy': market.rs_vs_spy,
+        }
+    return context_by_ticker
+
+
+def _average_numeric(values: list[str], *, suffix: str) -> str:
+    parsed = [_parse_float_from_text(value) for value in values]
+    usable = [value for value in parsed if value is not None]
+    if not usable:
+        return 'N/A'
+    return f'{sum(usable) / len(usable):.2f}{suffix}'
+
+
+def _dedupe_news_items(items: list[NewsItem]) -> list[NewsItem]:
+    ranked = sorted(
+        items,
+        key=lambda article: (
+            _source_rank(article.source),
+            article.published_at,
+            article.importance_score,
+        ),
+        reverse=True,
+    )
+
+    deduped: list[NewsItem] = []
+    normalized_seen: list[str] = []
+    for article in ranked:
+        normalized_title = _normalize_news_title(article.title)
+        if not normalized_title:
+            deduped.append(article)
+            continue
+        if any(_titles_similar(normalized_title, seen_title) for seen_title in normalized_seen):
+            continue
+        normalized_seen.append(normalized_title)
+        deduped.append(article)
+    return deduped[:5]
+
+
+def _normalize_news_title(title: str) -> str:
+    normalized = re.sub(r'[^a-z0-9가-힣\s]+', ' ', title.lower())
+    normalized = re.sub(r'\s+', ' ', normalized).strip()
+    return normalized
+
+
+def _titles_similar(left: str, right: str) -> bool:
+    if left == right:
+        return True
+    left_words = left.split()
+    right_words = right.split()
+    if not left_words or not right_words:
+        return False
+    prefix_matches = sum(1 for a, b in zip(left_words[:8], right_words[:8], strict=False) if a == b)
+    prefix_threshold = min(4, len(left_words), len(right_words))
+    if prefix_matches >= prefix_threshold:
+        return True
+    left_set = set(left_words)
+    right_set = set(right_words)
+    overlap = len(left_set & right_set)
+    denominator = max(1, min(len(left_set), len(right_set)))
+    return overlap / denominator >= 0.8
+
+
+def _source_rank(source: str) -> int:
+    normalized = source.strip().lower()
+    if 'reuters' in normalized:
+        return 6
+    if normalized in {'associated press', 'the associated press', 'ap', 'ap news'}:
+        return 5
+    if 'sec edgar' in normalized:
+        return 5
+    if 'ir rss' in normalized or 'newsroom' in normalized or 'investor relations' in normalized:
+        return 4
+    if 'cnbc' in normalized:
+        return 3
+    if 'yahoo finance' in normalized:
+        return 2
+    if normalized == 'fallback':
+        return -1
+    return 1
 
 
 def _call_openai_batch(
@@ -533,8 +685,16 @@ def _build_system_prompt() -> str:
         'Include entry_price (current price or pullback zone), stop_loss (SMA50 or price - 2×ATR), '
         'target_1 (near resistance, 1-2 ATR above entry), target_2 (analyst target or 52W high), '
         'risk_reward_ratio (reward/risk as "X.XR" format), position_size_note (ATR-based 1% risk sizing hint). '
+        '- Reflect earnings surprise patterns (consecutive beat/miss, YoY acceleration/deceleration) in financial_highlights and signal_or_takeaway. '
+        '- Mention sector-relative valuation or momentum only when the provided peer comparison contains a clear numeric gap. '
+        '- Adjust risk posture by volatility regime: VIX < 15 = standard/aggressive targets allowed, '
+        'VIX 15-25 = standard posture, VIX 25-35 = tighter stop and smaller size bias, VIX > 35 = defensive and avoid aggressive long entries. '
+        '- Treat duplicated headlines about the same event as one catalyst. Do not overcount repeated coverage. '
+        '- news_tone must summarize the overall tone of the provided headlines, paying attention to negations like "no miss" or "denies". '
         '- If any input field is "N/A" or missing, do not repeat it. Instead, infer from neighboring metrics when reasonable, '
-        'or omit only that specific data point.'
+        'or omit only that specific data point. '
+        'Reference example JSON structure for style and specificity: '
+        f'{_FEW_SHOT_EXAMPLE}'
     )
 
     usage_cost = calculate_response_cost(response, model_profile)
@@ -596,6 +756,8 @@ def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_c
         '"[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격1]/[가격2] | 손절 [가격] (R:R [비율])". '
         'Direction options: 매수 관찰, 매수 유지, 중립 관찰, 중립 경계, 매도 경계. '
         'R:R = (target_1 - entry) / (entry - stop_loss), format as "X.XR".\n\n'
+        'news_tone: Return an object with label (bullish|neutral|bearish), confidence (1-5), and reasoning. '
+        'Use the combined context from headlines, SEC filings, and catalyst wording; avoid keyword-only mistakes on negations.\n\n'
         'trade_frame:\n'
         '- entry_price: Current price or optimal pullback zone (e.g. "현재가 $150.00 또는 SMA50 $145.20 눌림 시"). Use ATR for pullback range.\n'
         '- stop_loss: SMA50 price from [Key Levels], or price minus 2×ATR. Must be a specific dollar amount.\n'
@@ -616,6 +778,8 @@ def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_c
         macro_lines = []
         if vix.get("level") not in (None, "N/A"):
             macro_lines.append(f"VIX: {vix['level']} ({vix.get('change', 'N/A')}) — {vix.get('regime', 'N/A')}")
+            regime = str(vix.get('regime', 'N/A'))
+            macro_lines.append(f"Volatility guidance: {_volatility_guidance(regime, vix.get('level', 'N/A'))}")
         for evt in events[:3]:
             macro_lines.append(f"{evt.get('type', '')}: {evt.get('date', '')} (D-{evt.get('days_until', '?')})")
         if macro_lines:
@@ -651,6 +815,9 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
     week52_low = analysis_input.get('week52_low', 'N/A')
     currency = analysis_input.get('currency', 'USD')
     change_7d = analysis_input.get('price_change_7d', 'N/A')
+    earnings_history = _render_earnings_history(analysis_input.get('quarterly_financials', []))
+    signal_history = _render_signal_history(analysis_input.get('signal_history', []))
+    sector_peer_context = _render_sector_peer_context(analysis_input.get('sector_peer_context', {}))
 
     return (
         f"[Ticker] {analysis_input.get('ticker', 'N/A')} | {analysis_input.get('name', 'N/A')} | {analysis_input.get('sector', 'N/A')}\n"
@@ -667,7 +834,74 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
         f"Insiders: {positioning.get('held_by_insiders', 'N/A')}, Institutions: {positioning.get('held_by_institutions', 'N/A')}, "
         f"IV: {positioning.get('implied_volatility', 'N/A')}\n"
         f"[Earnings] Forward EPS: {analysis_input.get('forward_eps', 'N/A')}, TTM EPS: {analysis_input.get('eps', 'N/A')}, "
-        f"EPS Growth: {analysis_input.get('earnings_growth', 'N/A')}, Next Earnings: {next_earnings_event}"
+        f"EPS Growth: {analysis_input.get('earnings_growth', 'N/A')}, Next Earnings: {next_earnings_event}\n"
+        f"[Earnings History] {earnings_history}\n"
+        f"[Signal History] {signal_history}\n"
+        f"[Sector Comparison] {sector_peer_context}"
+    )
+
+
+def _volatility_guidance(regime: str, vix_level: str) -> str:
+    normalized_regime = regime.strip()
+    level = _parse_float_from_text(str(vix_level))
+    if level is not None:
+        if level < 15:
+            return '저변동 구간으로 공격적 목표 허용'
+        if level < 25:
+            return '표준 리스크 관리 유지'
+        if level < 35:
+            return '손절 타이트, 포지션 축소 권장'
+        return '방어적 접근과 신규 매수 보수화'
+    if '공포' in normalized_regime:
+        return '방어적 접근과 신규 매수 보수화'
+    if '경계' in normalized_regime:
+        return '손절 타이트, 포지션 축소 권장'
+    return '표준 리스크 관리 유지'
+
+
+def _render_earnings_history(rows: Any) -> str:
+    if not isinstance(rows, list) or not rows:
+        return 'N/A'
+    chunks: list[str] = []
+    for row in rows[:4]:
+        if not isinstance(row, dict):
+            continue
+        quarter = str(row.get('quarter', 'N/A'))
+        eps = str(row.get('eps', 'N/A'))
+        est = str(row.get('estimated_eps', 'N/A'))
+        beat_miss = str(row.get('beat_miss', 'N/A'))
+        surprise = str(row.get('surprise_pct', 'N/A'))
+        chunks.append(f"{quarter}: EPS {eps} vs est {est} ({beat_miss} {surprise})")
+    return ', '.join(chunks) if chunks else 'N/A'
+
+
+def _render_signal_history(rows: Any) -> str:
+    if not isinstance(rows, list) or not rows:
+        return 'N/A'
+    chunks: list[str] = []
+    for row in rows[:5]:
+        if not isinstance(row, dict):
+            continue
+        signal_date = str(row.get('signal_date', 'N/A'))
+        direction = str(row.get('signal_direction', 'neutral'))
+        return_5d = str(row.get('return_5d', 'N/A'))
+        catalyst = str(row.get('catalyst_tag', '일반 이슈'))
+        chunks.append(f"{signal_date} {direction} {return_5d} (5d, {catalyst})")
+    return ', '.join(chunks) if chunks else 'N/A'
+
+
+def _render_sector_peer_context(context: Any) -> str:
+    if not isinstance(context, dict) or not context:
+        return 'N/A'
+    sector = str(context.get('sector', 'N/A'))
+    peer_count = str(context.get('peer_count', '0'))
+    return (
+        f"{sector} peers {peer_count}개 평균: PE {context.get('average_pe', 'N/A')}, "
+        f"30D {context.get('average_price_change_30d', 'N/A')}, "
+        f"RS {context.get('average_rs_vs_spy', 'N/A')} "
+        f"(vs 현재 종목: PE {context.get('ticker_pe', 'N/A')}, "
+        f"30D {context.get('ticker_price_change_30d', 'N/A')}, "
+        f"RS {context.get('ticker_rs_vs_spy', 'N/A')})"
     )
 
 
@@ -703,6 +937,7 @@ def _build_openai_analysis(
         price_action=_build_price_action(market),
         quarterly_financials=market.quarterly_financials,
         upcoming_events=market.upcoming_events[:5],
+        news_tone=match.get('news_tone', {}),
         trade_frame=match['trade_frame'],
     )
 
@@ -1135,6 +1370,7 @@ def _parse_and_validate_response(content: str, watchlist: list[WatchlistItem]) -
                 ),
                 'risks_or_watchpoints': _require_string_list(entry, 'risks_or_watchpoints', item_min_length=15),
                 'signal_or_takeaway': _require_non_empty_string(entry, 'signal_or_takeaway', min_length=30),
+                'news_tone': _require_news_tone(entry),
                 'trade_frame': _require_trade_frame(entry, min_length=15),
             }
         )
@@ -1200,6 +1436,16 @@ def _response_schema() -> dict[str, Any]:
                             'maxItems': 4,
                         },
                         'signal_or_takeaway': {'type': 'string', 'minLength': 30},
+                        'news_tone': {
+                            'type': 'object',
+                            'additionalProperties': False,
+                            'properties': {
+                                'label': {'type': 'string', 'enum': ['bullish', 'neutral', 'bearish']},
+                                'confidence': {'type': 'integer', 'minimum': 1, 'maximum': 5},
+                                'reasoning': {'type': 'string', 'minLength': 10},
+                            },
+                            'required': ['label', 'confidence', 'reasoning'],
+                        },
                         'trade_frame': {
                             'type': 'object',
                             'additionalProperties': False,
@@ -1238,6 +1484,7 @@ def _response_schema() -> dict[str, Any]:
                         'financial_highlights',
                         'risks_or_watchpoints',
                         'signal_or_takeaway',
+                        'news_tone',
                         'trade_frame',
                     ],
                 },
@@ -1290,6 +1537,29 @@ def _require_trade_frame(entry: dict[str, Any], *, min_length: int = 1) -> dict[
         'bear_scenario': _require_non_empty_string(value, 'bear_scenario', min_length=min_length),
         'invalidation_price': _require_non_empty_string(value, 'invalidation_price', min_length=min_length),
         'watch_period': _require_non_empty_string(value, 'watch_period', min_length=min_length),
+    }
+
+
+def _require_news_tone(entry: dict[str, Any]) -> dict[str, str | float | int]:
+    value = entry.get('news_tone')
+    if not isinstance(value, dict):
+        raise ValueError("Field 'news_tone' must be an object.")
+
+    label = _require_non_empty_string(value, 'label')
+    if label not in {'bullish', 'neutral', 'bearish'}:
+        raise ValueError("Field 'news_tone.label' must be bullish, neutral, or bearish.")
+
+    confidence = value.get('confidence')
+    if not isinstance(confidence, int) or confidence < 1 or confidence > 5:
+        raise ValueError("Field 'news_tone.confidence' must be an integer between 1 and 5.")
+
+    reasoning = _require_non_empty_string(value, 'reasoning', min_length=10)
+    score = {'bearish': -1.0, 'neutral': 0.0, 'bullish': 1.0}[label] * float(confidence)
+    return {
+        'label': label,
+        'confidence': confidence,
+        'reasoning': reasoning,
+        'score': score,
     }
 
 

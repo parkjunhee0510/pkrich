@@ -59,9 +59,9 @@ export function TickerDetailSkeleton() {
   )
 }
 
-export function TablePageSkeleton({ title: _title }: { title: string }) {
+export function TablePageSkeleton({ title }: { title: string }) {
   return (
-    <div style={{ maxWidth: 1100, animation: 'fadeInPage 0.35s ease' }}>
+    <div style={{ maxWidth: 1100, animation: 'fadeInPage 0.35s ease' }} aria-label={`${title} loading`}>
       <Skeleton width="30%" height="1.6rem" />
       <div style={{ marginTop: '1.25rem' }} />
       <div className="skeleton-row">

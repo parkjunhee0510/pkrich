@@ -67,12 +67,42 @@ export interface EarningsSetup {
 export interface NewsTone {
   label: 'bullish' | 'neutral' | 'bearish'
   score: number
+  confidence?: number
+  reasoning?: string
+}
+
+export interface SignalHistoryEntry {
+  date: string
+  direction: 'bullish' | 'neutral' | 'bearish'
+  catalyst: string
+  return_5d?: string
+  note?: string
+}
+
+export interface SectorComparisonMetric {
+  company?: string
+  peer_average?: string
+  difference?: string
+  premium_discount?: string
+}
+
+export interface SectorComparison {
+  summary?: string
+  pe_ratio?: SectorComparisonMetric
+  rs_vs_spy?: SectorComparisonMetric
+  price_change_30d?: SectorComparisonMetric
 }
 
 export interface TradeFrame {
   bull_scenario: string
   base_scenario: string
   bear_scenario: string
+  entry_price?: string
+  stop_loss?: string
+  target_1?: string
+  target_2?: string
+  risk_reward_ratio?: string
+  position_size_note?: string
   invalidation_price: string
   watch_period: string
 }
@@ -98,6 +128,8 @@ export interface TickerAnalysisData {
   period_changes: Record<string, string>
   sec_filing_tags: string[]
   sec_filings: SecFilingReference[]
+  signal_history?: SignalHistoryEntry[]
+  sector_comparison?: SectorComparison
 }
 
 export interface PortfolioPosition {
@@ -136,9 +168,48 @@ export interface PortfolioSummaryData {
   total_unrealized_return_pct: number
 }
 
+export interface MacroContextVix {
+  level: string
+  change?: string
+  regime?: string
+}
+
+export interface MacroEvent {
+  type: string
+  date: string
+  days_until: string
+  label: string
+  impact?: 'high' | 'medium' | 'low'
+}
+
+export interface MacroContext {
+  vix?: MacroContextVix
+  upcoming_macro_events?: MacroEvent[]
+}
+
+export interface PortfolioRiskPosition {
+  ticker: string
+  weight_pct: number
+  sector?: string
+  market_value: number
+  atr_risk_usd: number
+}
+
+export interface PortfolioRisk {
+  positions_by_weight: PortfolioRiskPosition[]
+  sector_exposure?: Record<string, number>
+  concentration_warning?: string
+  total_atr_risk_usd?: number
+  max_drawdown_2atr_usd?: number
+  max_drawdown_2atr_pct?: string
+  total_market_value?: number
+}
+
 export interface DailyEntry {
   date: string
   market_overview: MarketOverviewEntry[]
+  macro_context?: MacroContext | null
+  portfolio_risk?: PortfolioRisk | null
   portfolio_summary?: PortfolioSummaryData | null
   tickers: TickerAnalysisData[]
 }

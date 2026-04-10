@@ -1,6 +1,6 @@
 ﻿import { Link } from 'react-router-dom'
 import type { TickerAnalysisData } from '../types'
-import { parseNumericChange, changeColor } from '../utils/format'
+import { parseNumericChange, changeColor, extractSignalDirection } from '../utils/format'
 import { SignalBadge } from './SignalBadge'
 import { SecFilingBadges } from './SecFilingBadges'
 import { InfoTooltip } from './InfoTooltip'
@@ -29,6 +29,7 @@ export function WatchlistTable({
     <div className="watchlist-list" data-density={density}>
       {tickers.map((ticker) => {
         const pct = parseNumericChange(ticker.data_snapshot['Daily Change'] ?? '0')
+        const signalDirection = extractSignalDirection(ticker.signal_or_takeaway)
         const setup = computeSetupScore(ticker)
         const sizingSummary = buildPositionSizingSummary(ticker, accountSize)
         const actionPlan = extractActionPlan(ticker)
@@ -37,6 +38,7 @@ export function WatchlistTable({
         const earningsEvent = getNextEarningsEvent(ticker)
         const latestCatalyst = getLatestCatalystItem(ticker)
         const positioningGrid = buildPositioningGrid(ticker)
+        const contextSummary = buildContextSummary(ticker)
 
         return (
           <article key={ticker.ticker} className={`watchlist-card ${getSetupToneClass(setup.score)}`}>
@@ -46,7 +48,7 @@ export function WatchlistTable({
                   <Link to={`/ticker/${ticker.ticker}`} className="ticker-link">
                     {ticker.ticker}
                   </Link>
-                  <SignalBadge changePercent={pct} />
+                  <SignalBadge changePercent={pct} signalDirection={signalDirection} />
                   <span className="watchlist-focus-pill">{setup.focusLabel}</span>
                   {latestCatalyst && (
                     <span className={`watchlist-catalyst-pill ${latestCatalyst.level}`}>
@@ -55,6 +57,9 @@ export function WatchlistTable({
                   )}
                 </div>
                 <div className="watchlist-card-name">{ticker.name}</div>
+                {density !== 'compact' && contextSummary ? (
+                  <div className="watchlist-card-context">{contextSummary}</div>
+                ) : null}
               </div>
               <div className="watchlist-card-score">
                 <strong>{setup.score}</strong>
@@ -256,4 +261,18 @@ function parseSignedNumber(value?: string): number | null {
   if (!match) return null
   const parsed = Number.parseFloat(match[0])
   return Number.isNaN(parsed) ? null : parsed
+}
+
+function buildContextSummary(ticker: TickerAnalysisData): string {
+  const parts: string[] = []
+
+  if (typeof ticker.news_tone?.confidence === 'number') {
+    parts.push(`톤 확신도 ${(ticker.news_tone.confidence * 100).toFixed(0)}%`)
+  }
+
+  if (ticker.sector_comparison?.summary) {
+    parts.push(ticker.sector_comparison.summary)
+  }
+
+  return parts.join(' · ')
 }

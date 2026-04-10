@@ -5,6 +5,8 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
+from src.utils.config import load_yaml_mapping
+
 _DEFAULT_CONFIG: dict[str, Any] = {
     'default_profile': 'economy',
     'profiles': {
@@ -89,12 +91,5 @@ def _load_model_config(path: str) -> dict[str, Any]:
     config_path = Path(path)
     if not config_path.exists():
         return _DEFAULT_CONFIG
-    try:
-        import yaml  # type: ignore
-
-        loaded = yaml.safe_load(config_path.read_text(encoding='utf-8'))
-        if isinstance(loaded, dict):
-            return loaded
-    except Exception:
-        pass
-    return _DEFAULT_CONFIG
+    loaded = load_yaml_mapping(path, optional=True)
+    return loaded if loaded else _DEFAULT_CONFIG

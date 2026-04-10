@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 from src.output.markdown import render_weekly_markdown
 from src.utils.weekly_summary import load_weekly_summary
@@ -57,6 +58,21 @@ class WeeklyMarkdownTests(unittest.TestCase):
 
             self.assertEqual(summary.top_losers, [])
             self.assertIn("- 이번 주 하락 종목이 없습니다.", content)
+
+    def test_render_weekly_markdown_includes_optional_weekly_insight(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "output"
+            _write_positive_week(output_root)
+
+            with patch(
+                "src.utils.weekly_summary._load_weekly_insight",
+                return_value="기술주는 강세를 보였고 다음 주에는 실적 이벤트를 점검해야 합니다.",
+            ):
+                summary = load_weekly_summary(date(2026, 4, 8), output_root=output_root)
+                content = render_weekly_markdown(summary)
+
+            self.assertEqual(summary.weekly_insight, "기술주는 강세를 보였고 다음 주에는 실적 이벤트를 점검해야 합니다.")
+            self.assertIn("## 주간 인사이트", content)
 
 
 if __name__ == "__main__":

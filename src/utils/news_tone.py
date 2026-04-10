@@ -41,7 +41,22 @@ _NEGATIVE_TERMS = {
 }
 
 
-def build_news_tone(analysis: TickerAnalysis) -> dict[str, str | float]:
+def build_news_tone(analysis: TickerAnalysis) -> dict[str, str | float | int]:
+    existing_label = str(analysis.news_tone.get("label", "")).strip().lower()
+    if existing_label in {"bullish", "neutral", "bearish"}:
+        score = analysis.news_tone.get("score")
+        confidence = analysis.news_tone.get("confidence")
+        reasoning = analysis.news_tone.get("reasoning")
+        result: dict[str, str | float | int] = {
+            "label": existing_label,
+            "score": float(score) if isinstance(score, (int, float)) else 0.0,
+        }
+        if isinstance(confidence, int):
+            result["confidence"] = confidence
+        if isinstance(reasoning, str) and reasoning.strip():
+            result["reasoning"] = reasoning.strip()
+        return result
+
     text_parts: list[str] = []
     text_parts.extend(summary for summary in analysis.key_news if summary)
     text_parts.extend(item.title for item in analysis.news_references if isinstance(item, NewsItem) and item.title)

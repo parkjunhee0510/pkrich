@@ -12,18 +12,12 @@ export function useDashboardData() {
   const hasLoadedRef = useRef(false)
 
   const refresh = useCallback(() => {
+    setError(null)
+    setRefreshing(true)
     setRefreshToken((current) => current + 1)
   }, [])
 
   useEffect(() => {
-    const initialLoad = !hasLoadedRef.current
-    if (initialLoad) {
-      setLoading(true)
-    } else {
-      setRefreshing(true)
-    }
-    setError(null)
-
     fetch(`${DATA_URL}?ts=${refreshToken}`, { cache: 'no-store' })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -32,8 +26,10 @@ export function useDashboardData() {
       .then((json: DashboardData) => setData(json))
       .catch((err) => setError(err.message))
       .finally(() => {
-        hasLoadedRef.current = true
-        setLoading(false)
+        if (!hasLoadedRef.current) {
+          hasLoadedRef.current = true
+          setLoading(false)
+        }
         setRefreshing(false)
       })
   }, [refreshToken])

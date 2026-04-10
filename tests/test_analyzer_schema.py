@@ -19,6 +19,11 @@ def _valid_entry(**overrides: object) -> dict[str, object]:
         'financial_highlights': ['영업이익률 30.2%로 전년 대비 +1.8%p 개선됐습니다.'],
         'risks_or_watchpoints': ['SMA50 190.50 USD 하향 이탈 시 단기 추세 약화로 해석합니다.'],
         'signal_or_takeaway': '매수 관찰 — 실적 기대 유지 | 진입존 192.00-197.00 / 무효화 190.50 USD',
+        'news_tone': {
+            'label': 'bullish',
+            'confidence': 4,
+            'reasoning': '실적 기대와 기술적 지지가 함께 확인됩니다.',
+        },
         'trade_frame': {
             'entry_price': '현재가 $195.20 또는 SMA50 $190.50 눌림 시',
             'stop_loss': 'SMA50 $190.50 USD',
@@ -54,6 +59,7 @@ class AnalyzerSchemaTests(unittest.TestCase):
 
         self.assertEqual(result[0]['ticker'], 'AAPL')
         self.assertEqual(result[0]['key_news'], ['10-Q 공시 제출, 실적 수치 재확인 필요'])
+        self.assertEqual(result[0]['news_tone']['label'], 'bullish')
 
     def test_parse_and_validate_response_rejects_unexpected_ticker(self) -> None:
         content = json.dumps({'tickers': [_valid_entry(ticker='MSFT')]})

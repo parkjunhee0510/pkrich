@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
+import { PortfolioRiskPanel } from '../components/PortfolioRiskPanel'
 import { TablePageSkeleton } from '../components/Skeleton'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useLocalPortfolioEditor } from '../hooks/useLocalPortfolioEditor'
@@ -68,7 +69,7 @@ export function Portfolio() {
   const latestDay: DailyEntry =
     data && data.days.length > 0
       ? data.days[data.days.length - 1]
-      : { date: '', market_overview: [], tickers: [], portfolio_summary: null }
+      : { date: '', market_overview: [], tickers: [], portfolio_summary: null, portfolio_risk: null }
   const portfolio = latestDay.portfolio_summary as PortfolioSummaryData | null | undefined
   const aggregatedDraft = useMemo(() => aggregateHoldings(draftHoldings), [draftHoldings])
   const sortedPositions = useMemo(
@@ -92,10 +93,6 @@ export function Portfolio() {
   useEffect(() => {
     document.title = '포트폴리오 · Stock Research'
   }, [])
-
-  useEffect(() => {
-    setDraftHoldings(portfolioStatus.holdings)
-  }, [portfolioStatus.holdings])
 
   if (loading || portfolioLoading) return <TablePageSkeleton title="포트폴리오" />
   if (error) return <ErrorState message={error} />
@@ -149,7 +146,10 @@ export function Portfolio() {
           <button
             type="button"
             className={`preset-chip ${viewMode === 'edit' ? 'active' : ''}`}
-            onClick={() => setViewMode('edit')}
+            onClick={() => {
+              setDraftHoldings(portfolioStatus.holdings)
+              setViewMode('edit')
+            }}
           >
             포트폴리오 편집
           </button>
@@ -181,6 +181,8 @@ export function Portfolio() {
                 />
                 <SummaryCard label="승패" value={`${winCount}W / ${lossCount}L`} tone="var(--color-text)" />
               </div>
+
+              <PortfolioRiskPanel risk={latestDay.portfolio_risk} />
 
               <div className="table-wrap">
                 <table className="watchlist-table">

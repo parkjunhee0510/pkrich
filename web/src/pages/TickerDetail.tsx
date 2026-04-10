@@ -10,7 +10,8 @@ import { SignalBadge } from '../components/SignalBadge'
 import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
 import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
-import { parseNumericChange, changeColor } from '../utils/format'
+import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../types'
+import { parseNumericChange, changeColor, extractSignalDirection } from '../utils/format'
 import { buildPositionSizingSummary, buildPriceActionTags, extractActionPlan, getLatestCatalystItem } from '../utils/trader'
 
 const FILING_TABS = ['실적', '배당', '주주총회', '기타 공시'] as const
@@ -59,8 +60,9 @@ export function TickerDetail() {
 
   const latestDay = data?.days[data.days.length - 1]
   const analysis = latestDay?.tickers.find((t) => t.ticker === ticker)
-  const signalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
+  const fallbackSignalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
   const pct = parseNumericChange(analysis?.data_snapshot['Daily Change'] ?? '0')
+  const signalDirection = extractSignalDirection(analysis?.signal_or_takeaway)
   const visibleTimeline = useMemo(() => {
     const limit = timelineWindow === '30' ? 30 : 90
     return timelineEntries.slice(0, limit)
@@ -68,13 +70,21 @@ export function TickerDetail() {
   const upcomingEvents = analysis?.upcoming_events ?? []
   const newsReferences = analysis?.news_references ?? []
   const keyNews = analysis?.key_news ?? []
-  const secFilings = analysis?.sec_filings ?? []
+  const secFilings = useMemo(() => analysis?.sec_filings ?? [], [analysis?.sec_filings])
   const financialHighlights = analysis?.financial_highlights ?? []
   const riskItems = analysis?.risks_or_watchpoints ?? []
   const quarterlyFinancials = analysis?.quarterly_financials ?? []
   const earningsSetup = analysis?.earnings_setup
   const priceAction = analysis?.price_action
   const tradeFrame = analysis?.trade_frame
+  const signalHistory = useMemo(
+    () => normalizeSignalHistory(analysis?.signal_history, fallbackSignalHistory),
+    [analysis?.signal_history, fallbackSignalHistory],
+  )
+  const sectorComparisonRows = useMemo(
+    () => buildSectorComparisonRows(analysis?.sector_comparison),
+    [analysis?.sector_comparison],
+  )
   const earningsSummaryCards = buildEarningsSummaryCards(earningsSetup)
   const positioningCards = buildPositioningCards(analysis?.fundamentals ?? {})
   const positionSizing = buildPositionSizing(analysis?.data_snapshot ?? {}, priceAction, analysis?.fundamentals ?? {})
@@ -156,9 +166,15 @@ export function TickerDetail() {
             <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
               Tone: {analysis.news_tone?.label ?? 'neutral'}
             </span>
+            {typeof analysis.news_tone?.confidence === 'number' ? (
+              <span className="period-badge">신뢰도 {(analysis.news_tone.confidence * 100).toFixed(0)}%</span>
+            ) : null}
             <span className="period-badge">7D {analysis.period_changes?.['7d'] ?? 'N/A'}</span>
             <span className="period-badge">30D {analysis.period_changes?.['30d'] ?? 'N/A'}</span>
           </div>
+          {analysis.news_tone?.reasoning ? (
+            <p className="ticker-meta-explainer">{analysis.news_tone.reasoning}</p>
+          ) : null}
           <SecFilingBadges tags={analysis.sec_filing_tags ?? []} />
           {priceActionTags.length > 0 && (
             <div className="watchlist-chip-row">
@@ -173,7 +189,7 @@ export function TickerDetail() {
           <span style={{ color: changeColor(pct), fontWeight: 600, fontSize: '1.1rem' }}>
             {analysis.data_snapshot['Daily Change']}
           </span>
-          <SignalBadge changePercent={pct} />
+          <SignalBadge changePercent={pct} signalDirection={signalDirection} />
         </div>
       </div>
 
@@ -253,6 +269,22 @@ export function TickerDetail() {
         <h3>요약</h3>
         <p>{analysis.summary}</p>
       </section>
+
+      {(analysis.news_tone?.reasoning || typeof analysis.news_tone?.confidence === 'number') && (
+        <ResponsiveDetailSection title="뉴스 톤 / 해석">
+          <div className="detail-note-card">
+            <div className="detail-note-row">
+              <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
+                {analysis.news_tone?.label ?? 'neutral'}
+              </span>
+              {typeof analysis.news_tone?.confidence === 'number' ? (
+                <span className="period-badge">확신도 {(analysis.news_tone.confidence * 100).toFixed(0)}%</span>
+              ) : null}
+            </div>
+            {analysis.news_tone?.reasoning ? <p>{analysis.news_tone.reasoning}</p> : null}
+          </div>
+        </ResponsiveDetailSection>
+      )}
 
       <ResponsiveDetailSection title="다가오는 일정" defaultOpen>
         {upcomingEvents.length > 0 ? (
@@ -396,6 +428,22 @@ export function TickerDetail() {
         </div>
       </ResponsiveDetailSection>
 
+      {sectorComparisonRows.length > 0 && (
+        <ResponsiveDetailSection title="피어 비교">
+          <div className="price-action-grid">
+            {sectorComparisonRows.map((row) => (
+              <div key={row.label} className="price-action-card">
+                <span className="price-action-label">{row.label}</span>
+                <strong>{row.company}</strong>
+                <span className="price-action-subtext">Peer 평균 {row.peerAverage}</span>
+                {row.difference ? <span className="price-action-subtext">격차 {row.difference}</span> : null}
+              </div>
+            ))}
+          </div>
+          {analysis.sector_comparison?.summary ? <p className="detail-section-summary">{analysis.sector_comparison.summary}</p> : null}
+        </ResponsiveDetailSection>
+      )}
+
       <ResponsiveDetailSection title="최근 4분기 재무">
         {quarterlyFinancials.length > 0 ? (
           <table className="snapshot-table">
@@ -435,6 +483,12 @@ export function TickerDetail() {
           <div className="trade-frame-card bull"><span className="trade-frame-label">Bull</span><p>{tradeFrame?.bull_scenario ?? 'N/A'}</p></div>
           <div className="trade-frame-card base"><span className="trade-frame-label">Base</span><p>{tradeFrame?.base_scenario ?? 'N/A'}</p></div>
           <div className="trade-frame-card bear"><span className="trade-frame-label">Bear</span><p>{tradeFrame?.bear_scenario ?? 'N/A'}</p></div>
+        </div>
+        <div className="trade-frame-detail-grid">
+          <div className="price-action-card"><span className="price-action-label">진입가</span><strong>{tradeFrame?.entry_price ?? actionPlan?.entry ?? 'N/A'}</strong></div>
+          <div className="price-action-card"><span className="price-action-label">손절가</span><strong>{tradeFrame?.stop_loss ?? tradeFrame?.invalidation_price ?? 'N/A'}</strong></div>
+          <div className="price-action-card"><span className="price-action-label">목표가</span><strong>{[tradeFrame?.target_1, tradeFrame?.target_2].filter(Boolean).join(' / ') || 'N/A'}</strong></div>
+          <div className="price-action-card"><span className="price-action-label">R / R</span><strong>{tradeFrame?.risk_reward_ratio ?? dashboardSizing.riskReward}</strong><span className="price-action-subtext">{tradeFrame?.position_size_note ?? dashboardSizing.positionShares}</span></div>
         </div>
         <div className="trade-frame-footer">
           <span><strong>무효화:</strong> {tradeFrame?.invalidation_price ?? 'N/A'}</span>
@@ -486,15 +540,13 @@ export function TickerDetail() {
         {signalHistory.length > 0 ? (
           <ul className="timeline-list">
             {signalHistory.map((row, index) => (
-              <li key={`${row.signal_date}-${row.ticker}-${index}`} className="timeline-item">
-                <div className="timeline-item-head"><strong>{row.signal_date}</strong><span>{row.signal_direction} / {row.signal_price}</span></div>
+              <li key={`${row.date}-${row.direction}-${index}`} className="timeline-item">
+                <div className="timeline-item-head"><strong>{row.date}</strong><span>{row.direction}</span></div>
                 <div className="timeline-item-meta">
-                  <span className="filing-form-chip">{row.catalyst_tag}</span>
-                  <span className="period-badge">1D {row.return_1d}</span>
-                  <span className="period-badge">5D {row.return_5d}</span>
-                  <span className="period-badge">20D {row.return_20d}</span>
+                  <span className="filing-form-chip">{row.catalyst}</span>
+                  {row.return5d ? <span className="period-badge">5D {row.return5d}</span> : null}
                 </div>
-                <p>{row.trade_frame_scenario}</p>
+                {row.note ? <p>{row.note}</p> : null}
               </li>
             ))}
           </ul>
@@ -713,4 +765,70 @@ function extractCurrency(value?: string): string {
   const parts = value.trim().split(/\s+/)
   const tail = parts[parts.length - 1]
   return /^[A-Z]{3,5}$/.test(tail) ? tail : 'USD'
+}
+
+type NormalizedSignalHistoryItem = {
+  date: string
+  direction: string
+  catalyst: string
+  return5d?: string
+  note?: string
+}
+
+function normalizeSignalHistory(
+  analysisSignalHistory?: SignalHistoryEntry[],
+  fallbackRows: SignalHistoryRow[] = [],
+): NormalizedSignalHistoryItem[] {
+  if (analysisSignalHistory && analysisSignalHistory.length > 0) {
+    return analysisSignalHistory.map((row) => ({
+      date: row.date,
+      direction: row.direction,
+      catalyst: row.catalyst,
+      return5d: row.return_5d,
+      note: row.note,
+    }))
+  }
+
+  return fallbackRows.map((row) => ({
+    date: row.signal_date,
+    direction: row.signal_direction,
+    catalyst: row.catalyst_tag,
+    return5d: row.return_5d,
+    note: row.trade_frame_scenario,
+  }))
+}
+
+function buildSectorComparisonRows(comparison?: SectorComparison): Array<{
+  label: string
+  company: string
+  peerAverage: string
+  difference?: string
+}> {
+  if (!comparison) {
+    return []
+  }
+
+  const metricMap: Array<{ key: 'pe_ratio' | 'rs_vs_spy' | 'price_change_30d'; label: string }> = [
+    { key: 'pe_ratio', label: 'P/E' },
+    { key: 'rs_vs_spy', label: 'RS vs SPY' },
+    { key: 'price_change_30d', label: '30D Return' },
+  ]
+
+  const rows: Array<{ label: string; company: string; peerAverage: string; difference?: string }> = []
+
+  for (const { key, label } of metricMap) {
+    const metric = comparison[key]
+    if (!metric || (!metric.company && !metric.peer_average)) {
+      continue
+    }
+
+    rows.push({
+      label,
+      company: metric.company ?? 'N/A',
+      peerAverage: metric.peer_average ?? 'N/A',
+      difference: metric.difference ?? metric.premium_discount,
+    })
+  }
+
+  return rows
 }

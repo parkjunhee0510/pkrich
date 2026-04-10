@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-import certifi
+try:
+    import certifi  # type: ignore
+except Exception:  # pragma: no cover - fallback path for minimal envs
+    certifi = None  # type: ignore
+
 from urllib.parse import quote_plus
 
 from src.types import NewsItem, WatchlistItem
@@ -94,6 +98,6 @@ def _normalize_keywords(keywords: list[str]) -> list[str]:
 
 def _ddgs_verify_setting() -> str | bool:
     try:
-        return certifi.where()
+        return certifi.where() if certifi is not None else True
     except Exception:
         return True

@@ -63,6 +63,7 @@ class WeeklySummaryData:
     signal_validation_rows: list[dict[str, str]]
     signal_summary: list[str]
     action_items: list[str]
+    weekly_insight: str = ""
 
 
 def load_weekly_summary(
@@ -96,6 +97,19 @@ def load_weekly_summary(
         [move for move in ticker_moves if move.weekly_change_value < 0],
         key=lambda item: (item.weekly_change_value, item.ticker),
     )[:3]
+    weekly_insight = _load_weekly_insight(
+        iso_year,
+        iso_week,
+        week_start.isoformat(),
+        min(run_date, week_end).isoformat(),
+        market_moves,
+        sector_performance,
+        top_gainers=top_gainers,
+        top_losers=top_losers,
+        repeated_news=repeated_news,
+        signal_summary=signal_summary,
+        action_items=action_items,
+    )
 
     if week_days:
         start_date = week_days[0]["date"]
@@ -120,7 +134,41 @@ def load_weekly_summary(
         signal_validation_rows=signal_validation_rows,
         signal_summary=signal_summary,
         action_items=action_items,
+        weekly_insight=weekly_insight,
     )
+
+
+def _load_weekly_insight(
+    iso_year: int,
+    iso_week: int,
+    start_date: str,
+    end_date: str,
+    market_moves: list[WeeklyMarketMove],
+    sector_performance: list[WeeklySectorPerformance],
+    top_gainers: list[WeeklyTickerMove],
+    top_losers: list[WeeklyTickerMove],
+    repeated_news: list[WeeklyRepeatedNews],
+    signal_summary: list[str],
+    action_items: list[str],
+) -> str:
+    try:
+        from src.analyzer.weekly_insight import generate_weekly_insight
+
+        return generate_weekly_insight(
+            iso_year=iso_year,
+            iso_week=iso_week,
+            start_date=start_date,
+            end_date=end_date,
+            market_moves=market_moves,
+            sector_performance=sector_performance,
+            top_gainers=top_gainers,
+            top_losers=top_losers,
+            repeated_news=repeated_news,
+            signal_summary=signal_summary,
+            action_items=action_items,
+        )
+    except Exception:
+        return ""
 
 
 def _load_dashboard_days(path: Path) -> list[dict]:

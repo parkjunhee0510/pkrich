@@ -45,6 +45,26 @@ class NewsToneTests(unittest.TestCase):
         self.assertEqual(tone['label'], 'bearish')
         self.assertLess(float(tone['score']), 0)
 
+    def test_build_news_tone_prefers_llm_result_when_present(self) -> None:
+        analysis = TickerAnalysis(
+            ticker='AAPL',
+            name='Apple Inc.',
+            date='2026-04-08',
+            summary='summary',
+            key_news=['miss 라는 단어가 있어도 문맥상 부정이 아닙니다'],
+            news_references=[NewsItem(title='Apple denies any miss concerns', source='Reuters')],
+            financial_highlights=[],
+            risks_or_watchpoints=[],
+            signal_or_takeaway='watch',
+            data_snapshot={},
+            news_tone={'label': 'neutral', 'score': 0.0, 'confidence': 4, 'reasoning': '부정형 문맥입니다.'},
+        )
+
+        tone = build_news_tone(analysis)
+
+        self.assertEqual(tone['label'], 'neutral')
+        self.assertEqual(tone['confidence'], 4)
+
 
 if __name__ == '__main__':
     unittest.main()

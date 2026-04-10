@@ -140,6 +140,33 @@ def load_signal_stats(csv_path: Path) -> dict[str, Any]:
     }
 
 
+def load_recent_signals(csv_path: Path, ticker: str, limit: int = 5) -> list[dict[str, str]]:
+    normalized_ticker = ticker.strip().upper()
+    if not normalized_ticker or limit <= 0:
+        return []
+
+    rows = _load_rows(csv_path)
+    matched_rows = [
+        row for row in rows
+        if str(row.get("ticker", "")).strip().upper() == normalized_ticker
+    ]
+    matched_rows.sort(key=lambda row: (row.get("signal_date", ""), row.get("ticker", "")), reverse=True)
+
+    history: list[dict[str, str]] = []
+    for row in matched_rows[:limit]:
+        history.append(
+            {
+                "signal_date": str(row.get("signal_date", "")).strip(),
+                "signal_direction": str(row.get("signal_direction", "neutral")).strip() or "neutral",
+                "catalyst_tag": str(row.get("catalyst_tag", "일반 이슈")).strip() or "일반 이슈",
+                "news_tone": str(row.get("news_tone", "neutral")).strip() or "neutral",
+                "return_5d": str(row.get("return_5d", "N/A")).strip() or "N/A",
+                "trade_frame_scenario": str(row.get("trade_frame_scenario", "")).strip(),
+            }
+        )
+    return history
+
+
 def _build_meta_analysis(rows: list[dict[str, str]]) -> dict[str, Any]:
     """Deeper signal meta-analysis: by news_tone, catalyst_tag, streaks."""
     evaluated_rows = [r for r in rows if str(r.get("evaluated_5d", "False")).lower() == "true"]

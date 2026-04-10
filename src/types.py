@@ -88,7 +88,7 @@ class TickerAnalysis:
     price_action: dict[str, str] = field(default_factory=dict)
     quarterly_financials: list[dict[str, str]] = field(default_factory=list)
     upcoming_events: list[dict[str, str]] = field(default_factory=list)
-    news_tone: dict[str, str | float] = field(default_factory=dict)
+    news_tone: dict[str, str | float | int] = field(default_factory=dict)
     trade_frame: dict[str, str] = field(default_factory=dict)
 
 

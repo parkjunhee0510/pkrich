@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 
 from src.types import NewsItem, TickerAnalysis
-from src.utils.signal_tracker import load_signal_stats, record_signals, update_signal_returns
+from src.utils.signal_tracker import load_recent_signals, load_signal_stats, record_signals, update_signal_returns
 
 
 def _analysis() -> TickerAnalysis:
@@ -117,6 +117,30 @@ class SignalTrackerTests(unittest.TestCase):
             self.assertEqual(bull_summary["evaluated_5d"], 1)
             self.assertEqual(bull_summary["win_rate_5d"], "+100.00%")
             self.assertEqual(bull_summary["avg_return_5d"], "+5.00%")
+
+    def test_load_recent_signals_returns_latest_prompt_friendly_rows(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "signal_tracker.csv"
+            record_signals([_analysis()], date(2026, 4, 1), {"AAPL": 100.0}, csv_path)
+            update_signal_returns(
+                csv_path,
+                date(2026, 4, 9),
+                {"AAPL": 105.0},
+                price_history_rows=[
+                    {"date": "2026-04-01", "ticker": "AAPL", "price": "100.00 USD"},
+                    {"date": "2026-04-02", "ticker": "AAPL", "price": "101.00 USD"},
+                    {"date": "2026-04-03", "ticker": "AAPL", "price": "102.00 USD"},
+                    {"date": "2026-04-06", "ticker": "AAPL", "price": "103.00 USD"},
+                    {"date": "2026-04-07", "ticker": "AAPL", "price": "104.00 USD"},
+                ],
+            )
+
+            history = load_recent_signals(csv_path, "AAPL", limit=1)
+
+            self.assertEqual(len(history), 1)
+            self.assertEqual(history[0]["signal_date"], "2026-04-01")
+            self.assertEqual(history[0]["signal_direction"], "bull")
+            self.assertEqual(history[0]["return_5d"], "+5.00%")
 
 
 if __name__ == "__main__":

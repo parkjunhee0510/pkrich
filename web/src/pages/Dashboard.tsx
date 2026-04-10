@@ -1,7 +1,8 @@
 import type { Dispatch, SetStateAction } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
+import { MacroContextBar } from '../components/MacroContextBar'
 import { MarketOverview } from '../components/MarketOverview'
 import { SectorSummary } from '../components/SectorSummary'
 import { DashboardSkeleton } from '../components/Skeleton'
@@ -65,6 +66,8 @@ const PRESET_ACCOUNT_SIZES = [10000, 50000, 100000]
 export function Dashboard() {
   const navigate = useNavigate()
   const { data, loading, refreshing, error, refresh } = useDashboardData()
+  const searchInputRef = useRef<HTMLInputElement | null>(null)
+  const tickerInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSector, setSelectedSector] = useState('ALL')
@@ -160,6 +163,46 @@ export function Dashboard() {
     document.title = '대시보드 · Stock Research'
   }, [])
 
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement | null
+      const tagName = target?.tagName ?? ''
+      const isTyping =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        tagName === 'SELECT' ||
+        target?.isContentEditable
+
+      if (event.key === '/' && !isTyping) {
+        event.preventDefault()
+        searchInputRef.current?.focus()
+        searchInputRef.current?.select()
+        return
+      }
+
+      if (event.key === 'Escape') {
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur()
+        }
+        if (searchQuery) {
+          setSearchQuery('')
+        }
+        if (tickerInput) {
+          setTickerInput('')
+        }
+        return
+      }
+
+      if (event.key.toLowerCase() === 'r' && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping) {
+        event.preventDefault()
+        refresh()
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [refresh, searchQuery, tickerInput])
+
   if (loading) return <DashboardSkeleton />
   if (error) return <ErrorState message={error} />
   if (!data || data.days.length === 0) return <p className="status">No data available.</p>
@@ -244,6 +287,7 @@ export function Dashboard() {
             <>
               <div className="dashboard-automation-controls">
                 <input
+                  ref={tickerInputRef}
                   className="dashboard-search dashboard-ticker-input"
                   type="text"
                   inputMode="text"
@@ -295,6 +339,7 @@ export function Dashboard() {
 
         <div className="dashboard-controls">
           <input
+            ref={searchInputRef}
             className="dashboard-search"
             type="search"
             placeholder="티커 또는 종목명 검색"
@@ -424,6 +469,7 @@ export function Dashboard() {
         <SignalPerformanceBoard highlights={signalHighlights} />
       </div>
 
+      <MacroContextBar macroContext={day.macro_context} />
       <MarketOverview entries={day.market_overview} />
       <SectorSummary tickers={day.tickers} />
 

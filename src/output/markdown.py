@@ -276,6 +276,8 @@ def render_weekly_markdown(summary: WeeklySummaryData) -> str:
     ]
     if summary.is_partial:
         lines.extend(["> 데이터 축적 중: 이번 주 영업일 데이터가 3일 미만입니다.", ""])
+    if summary.weekly_insight:
+        lines.extend(["## 주간 인사이트", summary.weekly_insight, ""])
     lines.extend(
         [
             "## 주간 시장 개요",
