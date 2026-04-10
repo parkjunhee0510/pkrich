@@ -457,6 +457,10 @@ def _fetch_alpha_vantage_bundle(
     if not key:
         return {}
 
+    if not can_open_tcp_connection("www.alphavantage.co", 443, timeout=5):
+        record_pipeline_event("collector", "warning", "alpha_vantage_unreachable", ticker=ticker)
+        return {}
+
     bundle = {
         "overview": _fetch_alpha_vantage_json("OVERVIEW", ticker, key),
         "earnings": _fetch_alpha_vantage_json("EARNINGS", ticker, key),
@@ -505,7 +509,7 @@ def _fetch_alpha_vantage_json(function_name: str, ticker: str, api_key: str) -> 
 
 
 def _download_text(url: str) -> str:
-    with request.urlopen(url, timeout=15) as response:
+    with request.urlopen(url, timeout=10) as response:
         return response.read().decode("utf-8")
 
 
