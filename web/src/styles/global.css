@@ -1802,6 +1802,144 @@ a:hover {
   margin-top: 0.15rem;
 }
 
+.portfolio-mode-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.portfolio-editor-status {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.9rem;
+  background: rgba(255, 255, 255, 0.02);
+  margin-bottom: 1rem;
+}
+
+.portfolio-editor-status p {
+  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+  margin-top: 0.35rem;
+}
+
+.portfolio-editor-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.portfolio-editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  padding: 0.95rem 1rem;
+}
+
+.portfolio-editor-toolbar p,
+.portfolio-editor-note {
+  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.portfolio-editor-note {
+  padding: 0.8rem 0.95rem;
+  border: 1px dashed rgba(148, 163, 184, 0.24);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.portfolio-editor-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.portfolio-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.portfolio-group-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.portfolio-group-head {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.portfolio-group-head p {
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  margin-top: 0.2rem;
+}
+
+.portfolio-lot-list {
+  padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.portfolio-lot-editor {
+  display: grid;
+  grid-template-columns: minmax(110px, 1.1fr) minmax(90px, 0.8fr) minmax(120px, 0.9fr) minmax(90px, 0.7fr) auto;
+  gap: 0.55rem;
+}
+
+.portfolio-lot-editor input,
+.portfolio-lot-editor select {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.7rem;
+}
+
+.portfolio-delete-lot-button,
+.portfolio-add-lot-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.portfolio-delete-lot-button {
+  border-color: rgba(239, 68, 68, 0.28);
+  color: var(--color-down);
+}
+
+.portfolio-add-lot-button {
+  align-self: flex-start;
+}
+
+.portfolio-add-lot-button.standalone {
+  margin-top: 0.25rem;
+}
+
 /* ========== Signals Page ========== */
 .signals-page {
   max-width: 1100px;
@@ -2065,6 +2203,14 @@ a:hover {
     grid-template-columns: repeat(2, 1fr);
   }
   .calendar-events {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-editor-toolbar {
+    flex-direction: column;
+  }
+
+  .portfolio-lot-editor {
     grid-template-columns: 1fr;
   }
 }

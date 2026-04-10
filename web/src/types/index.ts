@@ -112,6 +112,22 @@ export interface PortfolioPosition {
   unrealized_return_pct: number
 }
 
+export interface PortfolioHoldingInput {
+  ticker: string
+  shares: number
+  avg_cost: number
+  currency: string
+}
+
+export interface LocalPortfolioStatus {
+  available: boolean
+  stage: 'idle' | 'saved' | 'failed'
+  stageLabel: string
+  message: string
+  updatedAt: string | null
+  holdings: PortfolioHoldingInput[]
+}
+
 export interface PortfolioSummaryData {
   positions: PortfolioPosition[]
   total_market_value: number
