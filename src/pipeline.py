@@ -12,7 +12,7 @@ from src.output.markdown import write_outputs
 from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
 from src.utils.config import load_portfolio, load_watchlist
 from src.utils.datastore import get_datastore
-from src.utils.env import load_dotenv
+from src.utils.env import is_env_flag_enabled, load_dotenv
 from src.utils.portfolio import calculate_portfolio_summary
 from src.utils.portfolio_risk import build_portfolio_risk_report
 from src.utils.pipeline_logging import finalize_pipeline_logging, record_pipeline_event, start_pipeline_logging
@@ -39,14 +39,42 @@ def run_pipeline(run_date: date | None = None) -> None:
             item.ticker: load_recent_signals(signal_csv_path, item.ticker)
             for item in watchlist
         }
-        analyses = analyze_tickers(
-            watchlist,
-            collected,
-            news_map,
-            effective_date,
-            macro_context=macro_context,
-            signal_history_map=signal_history_map,
-        )
+        if is_env_flag_enabled("ENABLE_CONVICTION_ROUTING", default=False):
+            high_conviction = [
+                item for item in watchlist
+                if _score_conviction(collected[item.ticker]) >= 2
+            ]
+            normal_items = [item for item in watchlist if item not in high_conviction]
+            analyses = analyze_tickers(
+                normal_items,
+                collected,
+                news_map,
+                effective_date,
+                macro_context=macro_context,
+                signal_history_map=signal_history_map,
+                model_profile_name="standard",
+            )
+            if high_conviction:
+                analyses.extend(
+                    analyze_tickers(
+                        high_conviction,
+                        collected,
+                        news_map,
+                        effective_date,
+                        macro_context=macro_context,
+                        signal_history_map=signal_history_map,
+                        model_profile_name="deep",
+                    )
+                )
+        else:
+            analyses = analyze_tickers(
+                watchlist,
+                collected,
+                news_map,
+                effective_date,
+                macro_context=macro_context,
+                signal_history_map=signal_history_map,
+            )
         portfolio_summary = calculate_portfolio_summary(portfolio_holdings, collected)
         portfolio_risk = build_portfolio_risk_report(portfolio_summary, collected)
         price_lookup = {ticker: data.price for ticker, data in collected.items() if data.price is not None}
@@ -109,3 +137,20 @@ def _extract_vix_from_overview(market_overview: list[dict[str, str]]) -> dict[st
                 "change_percent": entry.get("change_percent", "N/A"),
             }
     return None
+
+
+def _score_conviction(data: object) -> int:
+    from src.types import CollectedTickerData
+
+    if not isinstance(data, CollectedTickerData):
+        return 0
+
+    score = 0
+    flow = data.options_flow or {}
+    if flow.get("flow_sentiment") == "bullish" and flow.get("unusual_activity"):
+        score += 1
+    if any(transaction.get("type") == "buy" for transaction in (data.insider_transactions or [])):
+        score += 1
+    if (data.analyst_estimate_revisions or {}).get("direction") == "up":
+        score += 1
+    return score

@@ -12,8 +12,18 @@ from time import sleep
 from typing import Any
 from urllib import error, parse, request
 
+from src.collector.finnhub import collect_finnhub_recommendations, is_finnhub_ready
+from src.collector.fmp import (
+    collect_fmp_analyst_estimates,
+    collect_fmp_earnings_surprises,
+    collect_fmp_institutional_holders,
+    collect_fmp_insider_trading,
+    is_fmp_ready,
+)
 from src.types import CollectedTickerData, WatchlistItem
 from src.collector.options import collect_options_summary
+from src.collector.polygon_options import collect_options_flow, is_polygon_ready
+from src.collector.sec_form4 import collect_insider_transactions
 from src.utils.env import is_env_flag_enabled
 from src.utils.network import can_open_tcp_connection
 from src.utils.pipeline_logging import record_pipeline_event
@@ -162,6 +172,12 @@ def _collect_single_ticker(
     week52_position = "N/A"
     rs_vs_spy = "N/A"
     options_summary: dict[str, str] = {}
+    recommendation_trends: list[dict[str, str]] = []
+    insider_transactions: list[dict[str, str]] = []
+    analyst_estimate_revisions: dict[str, str] = {}
+    institutional_changes: dict[str, str] = {}
+    fmp_earnings_surprises: list[dict[str, str]] = []
+    options_flow: dict[str, str] = {}
     ohlcv: dict[str, str] = {}
 
     if yfinance_ready:
@@ -316,6 +332,47 @@ def _collect_single_ticker(
     if price is None and not providers_used:
         return _fallback_market_data(item, "시장 데이터를 불러오지 못해 기본값을 사용했습니다.")
 
+    if is_finnhub_ready():
+        try:
+            recommendation_trends = collect_finnhub_recommendations(item.ticker)
+        except Exception:
+            recommendation_trends = []
+
+    if is_fmp_ready():
+        try:
+            insider_transactions = collect_fmp_insider_trading(item.ticker, run_date)
+        except Exception:
+            insider_transactions = []
+    if not insider_transactions and item.cik:
+        try:
+            insider_transactions = collect_insider_transactions(item.cik, run_date)
+        except Exception:
+            insider_transactions = []
+
+    if is_fmp_ready():
+        try:
+            analyst_estimate_revisions = collect_fmp_analyst_estimates(item.ticker, run_date)
+        except Exception:
+            analyst_estimate_revisions = {}
+
+    if is_fmp_ready():
+        try:
+            institutional_changes = collect_fmp_institutional_holders(item.ticker)
+        except Exception:
+            institutional_changes = {}
+
+    if is_fmp_ready():
+        try:
+            fmp_earnings_surprises = collect_fmp_earnings_surprises(item.ticker)
+        except Exception:
+            fmp_earnings_surprises = []
+
+    if is_polygon_ready():
+        try:
+            options_flow = collect_options_flow(item.ticker, run_date)
+        except Exception:
+            options_flow = {}
+
     summary_note = _build_summary_note(run_date, providers_used)
     return CollectedTickerData(
         ticker=item.ticker,
@@ -364,6 +421,12 @@ def _collect_single_ticker(
         low_price=ohlcv.get("low", "N/A") if ohlcv else "N/A",
         close_price=ohlcv.get("close", "N/A") if ohlcv else "N/A",
         day_volume=ohlcv.get("volume", "N/A") if ohlcv else "N/A",
+        analyst_estimate_revisions=analyst_estimate_revisions,
+        insider_transactions=insider_transactions,
+        institutional_changes=institutional_changes,
+        fmp_earnings_surprises=fmp_earnings_surprises,
+        options_flow=options_flow,
+        recommendation_trends=recommendation_trends,
     )
 
 

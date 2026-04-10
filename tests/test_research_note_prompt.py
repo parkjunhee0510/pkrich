@@ -49,6 +49,10 @@ class ResearchNotePromptTests(unittest.TestCase):
                 'quarterly_financials': [
                     {'quarter': '2025-Q4', 'eps': '2.10', 'estimated_eps': '2.00', 'beat_miss': 'beat', 'surprise_pct': '+5.00%'}
                 ],
+                'analyst_estimate_revisions': {'revision_pct': '+3.2%', 'direction': 'up', 'current_eps': '6.80'},
+                'insider_transactions': [{'title': 'CEO', 'type': 'buy', 'value': '$1.2M', 'date': '2026-03-15'}],
+                'options_flow': {'put_call_volume_ratio': '0.42', 'flow_sentiment': 'bullish', 'avg_iv': '34.2%', 'unusual_activity': 'CALL vol=8500'},
+                'recommendation_trends': [{'period': '2026-03', 'consensus': 'Strong Buy', 'trend': 'upgrading', 'strong_buy': '10', 'buy': '4', 'hold': '2', 'sell': '1', 'strong_sell': '0'}],
                 'signal_history': [
                     {'signal_date': '2026-04-03', 'signal_direction': 'bull', 'return_5d': '+2.30%', 'catalyst_tag': '실적'}
                 ],
@@ -80,6 +84,14 @@ class ResearchNotePromptTests(unittest.TestCase):
         self.assertIn('Next Earnings: 2026-04-30 실적 발표 (D-21)', context)
         self.assertIn('[Earnings History]', context)
         self.assertIn('2025-Q4: EPS 2.10 vs est 2.00 (beat +5.00%)', context)
+        self.assertIn('[Analyst Revisions]', context)
+        self.assertIn('EPS revision +3.2% (up)', context)
+        self.assertIn('[Insider Activity]', context)
+        self.assertIn('CEO buy $1.2M (2026-03-15)', context)
+        self.assertIn('[Options Flow]', context)
+        self.assertIn('PCR 0.42 (bullish)', context)
+        self.assertIn('[Recommendation]', context)
+        self.assertIn('2026-03 Strong Buy (upgrading): 14B/2H/1S', context)
         self.assertIn('[Signal History]', context)
         self.assertIn('2026-04-03 bull +2.30% (5d, 실적)', context)
         self.assertIn('[Sector Comparison]', context)
@@ -110,6 +122,9 @@ class ResearchNotePromptTests(unittest.TestCase):
         self.assertIn('Structured input JSON:', prompt)
         self.assertIn('## Field Requirements', prompt)
         self.assertIn('news_tone: Return an object with label', prompt)
+        self.assertIn('## New Signal Integration (신규 시그널 활용 지침)', prompt)
+        self.assertIn('analyst_estimate_revisions direction="up"', prompt)
+        self.assertIn('fmp_earnings_surprises가 있으면 기존 quarterly_financials보다 우선', prompt)
 
     def test_build_system_prompt_contains_na_avoidance_rule(self) -> None:
         prompt = _build_system_prompt()
@@ -137,6 +152,12 @@ class ResearchNotePromptTests(unittest.TestCase):
                 price_change_30d='+6.00%',
                 rs_vs_spy='+3.00%',
                 quarterly_financials=[{'quarter': '2025-Q4'}],
+                analyst_estimate_revisions={'direction': 'up'},
+                insider_transactions=[{'type': 'buy'}],
+                institutional_changes={'net_change': '+1M shares'},
+                fmp_earnings_surprises=[{'surprise_pct': '+8.1%'}],
+                options_flow={'put_call_volume_ratio': '0.42'},
+                recommendation_trends=[{'consensus': 'Buy'}],
             ),
             'MSFT': CollectedTickerData(
                 ticker='MSFT',
@@ -167,6 +188,12 @@ class ResearchNotePromptTests(unittest.TestCase):
         )
 
         self.assertEqual(payload[0]['quarterly_financials'], [{'quarter': '2025-Q4'}])
+        self.assertEqual(payload[0]['analyst_estimate_revisions']['direction'], 'up')
+        self.assertEqual(payload[0]['insider_transactions'][0]['type'], 'buy')
+        self.assertEqual(payload[0]['institutional_changes']['net_change'], '+1M shares')
+        self.assertEqual(payload[0]['fmp_earnings_surprises'][0]['surprise_pct'], '+8.1%')
+        self.assertEqual(payload[0]['options_flow']['put_call_volume_ratio'], '0.42')
+        self.assertEqual(payload[0]['recommendation_trends'][0]['consensus'], 'Buy')
         self.assertEqual(payload[0]['signal_history'][0]['signal_date'], '2026-04-03')
         self.assertEqual(payload[0]['sector_peer_context']['average_pe'], '20.00x')
         self.assertEqual(len(payload[0]['news']), 1)

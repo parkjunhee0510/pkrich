@@ -88,11 +88,12 @@ export function EquityCurveChart({ days }: Props) {
               borderRadius: 8,
               fontSize: 12,
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'value') return [formatCurrency(value), '평가금액']
-              return [value, name]
+            formatter={(value, name) => {
+              const numericValue = typeof value === 'number' ? value : Number(value ?? 0)
+              if (name === 'value') return [formatCurrency(numericValue), '평가금액']
+              return [numericValue, String(name)]
             }}
-            labelFormatter={(label: string) => `날짜: ${label}`}
+            labelFormatter={(label) => `날짜: ${String(label ?? '')}`}
           />
           {costBasis > 0 && (
             <ReferenceLine

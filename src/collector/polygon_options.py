@@ -17,7 +17,7 @@ from src.utils.network import can_open_tcp_connection
 from src.utils.pipeline_logging import record_pipeline_event
 
 _POLYGON_BASE = "https://api.polygon.io"
-_REQUEST_DELAY = 1.2  # Polygon Starter: 5 calls/min
+_REQUEST_DELAY = 12.0  # Polygon Starter: 5 calls/min (12s between calls)
 _LAST_REQUEST_AT: float = 0.0
 
 

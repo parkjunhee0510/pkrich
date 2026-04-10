@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  CandlestickSeries,
   createChart,
+  ColorType,
+  HistogramSeries,
+  LineSeries,
   type IChartApi,
   type ISeriesApi,
-  ColorType,
   type CandlestickData,
   type LineData,
   type Time,
@@ -69,7 +72,7 @@ export function PriceChart({ rows }: Props) {
     chartRef.current = chart
 
     // Volume series (always shown)
-    const volumeSeries = chart.addHistogramSeries({
+    const volumeSeries = chart.addSeries(HistogramSeries, {
       priceFormat: { type: 'volume' },
       priceScaleId: 'volume',
     })
@@ -81,7 +84,7 @@ export function PriceChart({ rows }: Props) {
     const sortedRows = [...rows].sort((a, b) => a.date.localeCompare(b.date))
 
     if (mode === 'candle' && ohlcAvailable) {
-      const candleSeries = chart.addCandlestickSeries({
+      const candleSeries = chart.addSeries(CandlestickSeries, {
         upColor: '#26a69a',
         downColor: '#ef5350',
         borderDownColor: '#ef5350',
@@ -101,7 +104,7 @@ export function PriceChart({ rows }: Props) {
       candleSeries.setData(candleData)
       candleSeriesRef.current = candleSeries
     } else {
-      const lineSeries = chart.addLineSeries({
+      const lineSeries = chart.addSeries(LineSeries, {
         color: isDark ? '#7c8cf8' : '#5b6abf',
         lineWidth: 2,
       })

@@ -64,9 +64,10 @@ def analyze_tickers(
     *,
     macro_context: dict[str, Any] | None = None,
     signal_history_map: dict[str, list[dict[str, str]]] | None = None,
+    model_profile_name: str | None = None,
 ) -> list[TickerAnalysis]:
     load_dotenv()
-    model_profile = load_model_profile()
+    model_profile = load_model_profile(profile_name=model_profile_name)
     if os.getenv('OPENAI_API_KEY'):
         llm_results = _analyze_with_openai(
             watchlist,
@@ -497,6 +498,12 @@ def _build_payload(
                     'implied_volatility': market.implied_volatility,
                 },
                 'options_summary': market.options_summary,
+                'analyst_estimate_revisions': market.analyst_estimate_revisions,
+                'insider_transactions': market.insider_transactions[:6],
+                'institutional_changes': market.institutional_changes,
+                'fmp_earnings_surprises': market.fmp_earnings_surprises[:4],
+                'options_flow': market.options_flow,
+                'recommendation_trends': market.recommendation_trends[:3],
                 'quarterly_financials': market.quarterly_financials[:4],
                 'signal_history': (signal_history_map or {}).get(item.ticker, [])[:5],
                 'sector_peer_context': peer_context_map.get(item.ticker, {}),
@@ -795,7 +802,16 @@ def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_c
         '- bull_scenario: Reference target_2 or analyst target. Max 2 sentences.\n'
         '- base_scenario: Most likely range-bound action. Reference current price ± 1 ATR. Max 2 sentences.\n'
         '- bear_scenario: Specify downside trigger (SMA break, earnings miss). Max 2 sentences.\n'
-        '- watch_period: Use next earnings date from [Earnings] if within 60 days; otherwise "다음 주요 catalyst".'
+        '- watch_period: Use next earnings date from [Earnings] if within 60 days; otherwise "다음 주요 catalyst".\n\n'
+        '## New Signal Integration (신규 시그널 활용 지침)\n'
+        '- analyst_estimate_revisions direction="up"이면 financial_highlights에 EPS 컨센서스 상향 조정 문구를 포함합니다.\n'
+        '- analyst_estimate_revisions direction="down"이면 risks_or_watchpoints에 하향 조정 리스크를 반영합니다.\n'
+        '- insider_transactions에서 최근 30일 C-suite buy는 bullish 구조 신호로 해석하고, 대규모 매도는 리스크로 반영합니다.\n'
+        '- insider_transactions의 option exercise는 bearish 신호로 과해석하지 않습니다.\n'
+        '- options_flow에서 PCR < 0.5는 bullish 포지셔닝, unusual call activity는 스마트머니 가능성으로 해석하되 가격 확인 조건을 명시합니다.\n'
+        '- options_flow의 avg IV가 높으면 stop 범위를 ATR 기준보다 다소 넓게 허용할 수 있습니다.\n'
+        '- recommendation_trends trend="upgrading"은 컨센서스 이동을 financial_highlights에, trend="downgrading"은 risks_or_watchpoints에 반영합니다.\n'
+        '- fmp_earnings_surprises가 있으면 기존 quarterly_financials보다 우선해서 earnings surprise pattern을 해석합니다.'
     )
     macro_section = ""
     if macro_context:
@@ -845,6 +861,10 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
     signal_history = _render_signal_history(analysis_input.get('signal_history', []))
     sector_peer_context = _render_sector_peer_context(analysis_input.get('sector_peer_context', {}))
     options_summary = _render_options_summary(analysis_input.get('options_summary', {}))
+    analyst_revisions = _render_analyst_revisions(analysis_input.get('analyst_estimate_revisions', {}))
+    insider_activity = _render_insider_transactions(analysis_input.get('insider_transactions', []))
+    options_flow = _render_options_flow(analysis_input.get('options_flow', {}))
+    recommendation = _render_recommendation_trends(analysis_input.get('recommendation_trends', []))
 
     return (
         f"[Ticker] {analysis_input.get('ticker', 'N/A')} | {analysis_input.get('name', 'N/A')} | {analysis_input.get('sector', 'N/A')}\n"
@@ -864,6 +884,10 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
         f"EPS Growth: {analysis_input.get('earnings_growth', 'N/A')}, Next Earnings: {next_earnings_event}\n"
         f"[Options] {options_summary}\n"
         f"[Earnings History] {earnings_history}\n"
+        f"[Analyst Revisions] {analyst_revisions}\n"
+        f"[Insider Activity] {insider_activity}\n"
+        f"[Options Flow] {options_flow}\n"
+        f"[Recommendation] {recommendation}\n"
         f"[Signal History] {signal_history}\n"
         f"[Sector Comparison] {sector_peer_context}"
     )
@@ -948,6 +972,56 @@ def _render_options_summary(summary: Any) -> str:
         if value and value != 'N/A':
             parts.append(f'{label} {value}')
     return ', '.join(parts) if parts else 'N/A'
+
+
+def _render_analyst_revisions(revisions: Any) -> str:
+    if not isinstance(revisions, dict) or not revisions:
+        return 'N/A'
+    return (
+        f"EPS revision {revisions.get('revision_pct', 'N/A')} "
+        f"({revisions.get('direction', 'N/A')}) | current ${revisions.get('current_eps', 'N/A')}"
+    )
+
+
+def _render_insider_transactions(transactions: Any) -> str:
+    if not isinstance(transactions, list) or not transactions:
+        return 'N/A'
+    parts = [
+        f"{transaction.get('title', '?')} {transaction.get('type', '?')} {transaction.get('value', '?')} ({transaction.get('date', '')})"
+        for transaction in transactions[:3]
+        if isinstance(transaction, dict)
+    ]
+    return '; '.join(parts) if parts else 'N/A'
+
+
+def _render_options_flow(flow: Any) -> str:
+    if not isinstance(flow, dict) or not flow:
+        return 'N/A'
+    parts: list[str] = []
+    pcr = flow.get('put_call_volume_ratio')
+    if pcr:
+        parts.append(f"PCR {pcr} ({flow.get('flow_sentiment', '')})")
+    unusual = flow.get('unusual_activity')
+    if unusual:
+        parts.append(f"unusual: {unusual}")
+    avg_iv = flow.get('avg_iv')
+    if avg_iv:
+        parts.append(f"avg IV {avg_iv}")
+    return ' | '.join(parts) if parts else 'N/A'
+
+
+def _render_recommendation_trends(trends: Any) -> str:
+    if not isinstance(trends, list) or not trends:
+        return 'N/A'
+    trend = trends[0]
+    if not isinstance(trend, dict):
+        return 'N/A'
+    buys = int(str(trend.get('strong_buy', 0))) + int(str(trend.get('buy', 0)))
+    sells = int(str(trend.get('sell', 0))) + int(str(trend.get('strong_sell', 0)))
+    return (
+        f"{trend.get('period', '')} {trend.get('consensus', 'N/A')} "
+        f"({trend.get('trend', '')}): {buys}B/{trend.get('hold', '0')}H/{sells}S"
+    )
 
 
 def _build_fallback_analyses(

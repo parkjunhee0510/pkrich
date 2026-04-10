@@ -53,11 +53,11 @@ class ModelProfile:
     output_cost_per_1m_tokens: float
 
 
-def load_model_profile(path: str = 'config/models.yaml') -> ModelProfile:
+def load_model_profile(path: str = 'config/models.yaml', *, profile_name: str | None = None) -> ModelProfile:
     config = _load_model_config(path)
     profiles = config.get('profiles', {})
     default_profile_name = str(config.get('default_profile', 'economy'))
-    requested_profile_name = os.getenv('OPENAI_MODEL_PROFILE', '').strip() or default_profile_name
+    requested_profile_name = profile_name or os.getenv('OPENAI_MODEL_PROFILE', '').strip() or default_profile_name
     raw_profile = profiles.get(requested_profile_name) or profiles.get(default_profile_name) or next(iter(profiles.values()), {})
 
     profile = ModelProfile(

@@ -68,13 +68,14 @@ export function EpsSurpriseChart({ quarters }: Props) {
               borderRadius: 8,
               fontSize: 12,
             }}
-            formatter={(value: number, name: string) => {
+            formatter={(value, name) => {
+              const numericValue = typeof value === 'number' ? value : Number(value ?? 0)
               const label = name === 'estimatedEps' ? 'EPS 추정' : 'EPS 실제'
-              return [`$${value.toFixed(2)}`, label]
+              return [`$${numericValue.toFixed(2)}`, label]
             }}
           />
           <Legend
-            formatter={(value: string) => (value === 'estimatedEps' ? 'EPS 추정' : 'EPS 실제')}
+            formatter={(value) => (value === 'estimatedEps' ? 'EPS 추정' : 'EPS 실제')}
             wrapperStyle={{ fontSize: 11 }}
           />
           <ReferenceLine y={0} stroke="var(--color-neutral)" strokeDasharray="2 2" />
