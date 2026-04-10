@@ -4,6 +4,7 @@ from datetime import date
 from pathlib import Path
 
 from src.analyzer.research_note import analyze_tickers
+from src.collector.macro import collect_macro_context
 from src.collector.news_rss import collect_news_for_watchlist
 from src.collector.price import collect_market_data, collect_market_overview
 from src.output.markdown import write_outputs
@@ -12,6 +13,7 @@ from src.utils.config import load_portfolio, load_watchlist
 from src.utils.datastore import get_datastore
 from src.utils.env import load_dotenv
 from src.utils.portfolio import calculate_portfolio_summary
+from src.utils.portfolio_risk import build_portfolio_risk_report
 from src.utils.pipeline_logging import finalize_pipeline_logging, record_pipeline_event, start_pipeline_logging
 from src.utils.signal_tracker import load_signal_stats, record_signals, update_signal_returns
 
@@ -28,9 +30,12 @@ def run_pipeline(run_date: date | None = None) -> None:
         portfolio_holdings = load_portfolio()
         collected = collect_market_data(watchlist, effective_date)
         market_overview = collect_market_overview()
+        vix_data = _extract_vix_from_overview(market_overview)
+        macro_context = collect_macro_context(effective_date, vix_data=vix_data)
         news_map = collect_news_for_watchlist(watchlist, effective_date)
-        analyses = analyze_tickers(watchlist, collected, news_map, effective_date)
+        analyses = analyze_tickers(watchlist, collected, news_map, effective_date, macro_context=macro_context)
         portfolio_summary = calculate_portfolio_summary(portfolio_holdings, collected)
+        portfolio_risk = build_portfolio_risk_report(portfolio_summary, collected)
         signal_csv_path = Path("output") / "data" / "signal_tracker.csv"
         price_lookup = {ticker: data.price for ticker, data in collected.items() if data.price is not None}
         datastore = get_datastore(output_root=Path("output"))
@@ -54,6 +59,8 @@ def run_pipeline(run_date: date | None = None) -> None:
             direct_period_changes=direct_period_changes,
             portfolio_summary=portfolio_summary,
             signal_stats=signal_stats,
+            macro_context=macro_context,
+            portfolio_risk=portfolio_risk,
         )
         send_daily_summary(
             analyses,
@@ -62,6 +69,7 @@ def run_pipeline(run_date: date | None = None) -> None:
             daily_note_path=output_paths.get("daily_path"),
             weekly_note_path=output_paths.get("weekly_path"),
             portfolio_summary=portfolio_summary,
+            macro_context=macro_context,
         )
         success = True
         record_pipeline_event("pipeline", "info", "pipeline_completed", ticker_count=len(analyses), updated_signal_rows=updated_signals)
@@ -76,3 +84,13 @@ def run_pipeline(run_date: date | None = None) -> None:
         raise
     finally:
         finalize_pipeline_logging(success)
+
+
+def _extract_vix_from_overview(market_overview: list[dict[str, str]]) -> dict[str, str] | None:
+    for entry in market_overview:
+        if entry.get("label") == "VIX" or entry.get("symbol") == "^VIX":
+            return {
+                "price": entry.get("price", "N/A"),
+                "change_percent": entry.get("change_percent", "N/A"),
+            }
+    return None

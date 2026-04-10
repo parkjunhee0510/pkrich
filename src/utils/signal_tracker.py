@@ -136,7 +136,144 @@ def load_signal_stats(csv_path: Path) -> dict[str, Any]:
     return {
         "recent_signals": sorted_rows[:30],
         "summary_by_direction": summary_by_direction,
+        "meta_analysis": _build_meta_analysis(rows),
     }
+
+
+def _build_meta_analysis(rows: list[dict[str, str]]) -> dict[str, Any]:
+    """Deeper signal meta-analysis: by news_tone, catalyst_tag, streaks."""
+    evaluated_rows = [r for r in rows if str(r.get("evaluated_5d", "False")).lower() == "true"]
+    if len(evaluated_rows) < 5:
+        return {"status": "insufficient_data", "total_evaluated": len(evaluated_rows)}
+
+    # By news_tone
+    tone_stats = _group_stats(evaluated_rows, "news_tone")
+
+    # By catalyst_tag
+    catalyst_stats = _group_stats(evaluated_rows, "catalyst_tag")
+
+    # Streak analysis
+    streak = _calculate_streaks(evaluated_rows)
+
+    # Best/worst performing tickers
+    ticker_performance = _ticker_performance(evaluated_rows)
+
+    return {
+        "status": "ok",
+        "total_evaluated": len(evaluated_rows),
+        "by_news_tone": tone_stats,
+        "by_catalyst_tag": catalyst_stats,
+        "streak": streak,
+        "ticker_performance": ticker_performance,
+    }
+
+
+def _group_stats(rows: list[dict[str, str]], group_key: str) -> dict[str, dict[str, Any]]:
+    groups: dict[str, list[float]] = {}
+    directions: dict[str, list[str]] = {}
+    for row in rows:
+        group = str(row.get(group_key, "unknown")).strip() or "unknown"
+        ret = _parse_float(row.get("return_5d", ""))
+        direction = str(row.get("signal_direction", "neutral"))
+        if ret is None:
+            continue
+        groups.setdefault(group, []).append(ret)
+        directions.setdefault(group, []).append(direction)
+
+    result: dict[str, dict[str, Any]] = {}
+    for group, returns in groups.items():
+        if not returns:
+            continue
+        dir_list = directions.get(group, [])
+        wins = sum(
+            1 for ret, d in zip(returns, dir_list, strict=False)
+            if _is_signal_win(d, ret)
+        )
+        result[group] = {
+            "count": len(returns),
+            "avg_return": _format_percent(sum(returns) / len(returns)),
+            "win_rate": _format_percent(wins / len(returns) * 100),
+            "best": _format_percent(max(returns)),
+            "worst": _format_percent(min(returns)),
+        }
+    return dict(sorted(result.items(), key=lambda x: -x[1]["count"]))
+
+
+def _calculate_streaks(rows: list[dict[str, str]]) -> dict[str, Any]:
+    sorted_rows = sorted(rows, key=lambda r: (r.get("signal_date", ""), r.get("ticker", "")), reverse=True)
+    current_streak = 0
+    current_type = ""
+    max_win_streak = 0
+    max_loss_streak = 0
+    temp_win = 0
+    temp_loss = 0
+
+    for row in sorted_rows:
+        ret = _parse_float(row.get("return_5d", ""))
+        direction = str(row.get("signal_direction", "neutral"))
+        if ret is None:
+            continue
+        is_win = _is_signal_win(direction, ret)
+        if is_win:
+            temp_win += 1
+            max_win_streak = max(max_win_streak, temp_win)
+            temp_loss = 0
+        else:
+            temp_loss += 1
+            max_loss_streak = max(max_loss_streak, temp_loss)
+            temp_win = 0
+
+    # Current streak from most recent
+    for row in sorted_rows:
+        ret = _parse_float(row.get("return_5d", ""))
+        direction = str(row.get("signal_direction", "neutral"))
+        if ret is None:
+            continue
+        is_win = _is_signal_win(direction, ret)
+        streak_label = "win" if is_win else "loss"
+        if not current_type:
+            current_type = streak_label
+            current_streak = 1
+        elif streak_label == current_type:
+            current_streak += 1
+        else:
+            break
+
+    return {
+        "current_streak": current_streak,
+        "current_streak_type": current_type,
+        "max_win_streak": max_win_streak,
+        "max_loss_streak": max_loss_streak,
+    }
+
+
+def _ticker_performance(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    ticker_returns: dict[str, list[float]] = {}
+    ticker_directions: dict[str, list[str]] = {}
+    for row in rows:
+        ticker = str(row.get("ticker", "")).strip()
+        ret = _parse_float(row.get("return_5d", ""))
+        direction = str(row.get("signal_direction", "neutral"))
+        if not ticker or ret is None:
+            continue
+        ticker_returns.setdefault(ticker, []).append(ret)
+        ticker_directions.setdefault(ticker, []).append(direction)
+
+    result: list[dict[str, Any]] = []
+    for ticker, returns in ticker_returns.items():
+        if not returns:
+            continue
+        dirs = ticker_directions.get(ticker, [])
+        wins = sum(1 for r, d in zip(returns, dirs, strict=False) if _is_signal_win(d, r))
+        result.append({
+            "ticker": ticker,
+            "signals": len(returns),
+            "avg_return": _format_percent(sum(returns) / len(returns)),
+            "win_rate": _format_percent(wins / len(returns) * 100),
+        })
+
+    result.sort(key=lambda x: float(x["avg_return"].replace("%", "").replace("+", "")), reverse=True)
+    return result
 
 
 def row_default() -> str:

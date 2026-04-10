@@ -1037,9 +1037,252 @@
           "symbol": "^NDX",
           "price": "25,082.09",
           "change": "+0.72%"
+        },
+        {
+          "label": "VIX",
+          "symbol": "^VIX",
+          "price": "19.49",
+          "change": "-7.37%"
         }
       ],
-      "portfolio_summary": null,
+      "macro_context": {
+        "vix": {
+          "level": "19.49",
+          "change": "N/A",
+          "regime": "정상 범위"
+        },
+        "upcoming_macro_events": [
+          {
+            "type": "CPI",
+            "date": "2026-04-14",
+            "days_until": "4",
+            "label": "CPI 물가지표 발표",
+            "impact": "high"
+          }
+        ]
+      },
+      "portfolio_risk": {
+        "positions_by_weight": [
+          {
+            "ticker": "AAPL",
+            "weight_pct": 40.3,
+            "sector": "Technology",
+            "market_value": 24225.57,
+            "atr_risk_usd": 567.3
+          },
+          {
+            "ticker": "CAT",
+            "weight_pct": 21.0,
+            "sector": "Industrials",
+            "market_value": 12593.12,
+            "atr_risk_usd": 439.52
+          },
+          {
+            "ticker": "XOM",
+            "weight_pct": 17.0,
+            "sector": "Energy",
+            "market_value": 10232.64,
+            "atr_risk_usd": 411.84
+          },
+          {
+            "ticker": "AMD",
+            "weight_pct": 8.3,
+            "sector": "Technology",
+            "market_value": 4969.44,
+            "atr_risk_usd": 220.5
+          },
+          {
+            "ticker": "KO",
+            "weight_pct": 6.1,
+            "sector": "Consumer Staples",
+            "market_value": 3674.46,
+            "atr_risk_usd": 65.33
+          },
+          {
+            "ticker": "T",
+            "weight_pct": 3.1,
+            "sector": "Communication Services",
+            "market_value": 1878.8,
+            "atr_risk_usd": 47.6
+          },
+          {
+            "ticker": "IONQ",
+            "weight_pct": 2.3,
+            "sector": "Technology",
+            "market_value": 1404.0,
+            "atr_risk_usd": 109.0
+          },
+          {
+            "ticker": "AAPL",
+            "weight_pct": 0.9,
+            "sector": "Technology",
+            "market_value": 520.98,
+            "atr_risk_usd": 12.2
+          },
+          {
+            "ticker": "IONQ",
+            "weight_pct": 0.4,
+            "sector": "Technology",
+            "market_value": 252.72,
+            "atr_risk_usd": 19.62
+          },
+          {
+            "ticker": "T",
+            "weight_pct": 0.3,
+            "sector": "Communication Services",
+            "market_value": 187.88,
+            "atr_risk_usd": 4.76
+          },
+          {
+            "ticker": "KO",
+            "weight_pct": 0.3,
+            "sector": "Consumer Staples",
+            "market_value": 156.36,
+            "atr_risk_usd": 2.78
+          }
+        ],
+        "sector_exposure": {
+          "Technology": 52.2,
+          "Industrials": 21.0,
+          "Energy": 17.0,
+          "Consumer Staples": 6.4,
+          "Communication Services": 3.4
+        },
+        "concentration_warning": "AAPL이(가) 포트폴리오의 40%를 차지 — 집중도 높음 | 상위 3종목(AAPL/CAT/XOM)이 78% — 분산 부족",
+        "total_atr_risk_usd": 1900.45,
+        "max_drawdown_2atr_usd": 3800.9,
+        "max_drawdown_2atr_pct": "6.3%",
+        "total_market_value": 60095.97
+      },
+      "portfolio_summary": {
+        "positions": [
+          {
+            "ticker": "AAPL",
+            "shares": 93.0,
+            "avg_cost": 208.12,
+            "currency": "USD",
+            "market_price": 260.489990234375,
+            "market_value": 24225.569091796875,
+            "cost_basis": 19355.16,
+            "unrealized_pnl": 4870.409091796875,
+            "unrealized_return_pct": 25.163362595798098
+          },
+          {
+            "ticker": "CAT",
+            "shares": 16.0,
+            "avg_cost": 221.04,
+            "currency": "USD",
+            "market_price": 787.0700073242188,
+            "market_value": 12593.1201171875,
+            "cost_basis": 3536.64,
+            "unrealized_pnl": 9056.4801171875,
+            "unrealized_return_pct": 256.0758266939101
+          },
+          {
+            "ticker": "XOM",
+            "shares": 66.0,
+            "avg_cost": 91.57,
+            "currency": "USD",
+            "market_price": 155.0399932861328,
+            "market_value": 10232.639556884766,
+            "cost_basis": 6043.62,
+            "unrealized_pnl": 4189.019556884766,
+            "unrealized_return_pct": 69.3130864760651
+          },
+          {
+            "ticker": "AMD",
+            "shares": 21.0,
+            "avg_cost": 128.7,
+            "currency": "USD",
+            "market_price": 236.63999938964844,
+            "market_value": 4969.439987182617,
+            "cost_basis": 2702.7,
+            "unrealized_pnl": 2266.7399871826174,
+            "unrealized_return_pct": 83.86946339522025
+          },
+          {
+            "ticker": "KO",
+            "shares": 47.0,
+            "avg_cost": 58.2,
+            "currency": "USD",
+            "market_price": 78.18000030517578,
+            "market_value": 3674.4600143432617,
+            "cost_basis": 2735.4,
+            "unrealized_pnl": 939.0600143432616,
+            "unrealized_return_pct": 34.3298974315735
+          },
+          {
+            "ticker": "T",
+            "shares": 70.0,
+            "avg_cost": 22.47,
+            "currency": "USD",
+            "market_price": 26.84000015258789,
+            "market_value": 1878.8000106811523,
+            "cost_basis": 1572.8999999999999,
+            "unrealized_pnl": 305.9000106811525,
+            "unrealized_return_pct": 19.44815377208675
+          },
+          {
+            "ticker": "IONQ",
+            "shares": 50.0,
+            "avg_cost": 12.0,
+            "currency": "USD",
+            "market_price": 28.079999923706055,
+            "market_value": 1403.9999961853027,
+            "cost_basis": 600.0,
+            "unrealized_pnl": 803.9999961853027,
+            "unrealized_return_pct": 133.9999993642171
+          },
+          {
+            "ticker": "AAPL",
+            "shares": 2.0,
+            "avg_cost": 175.47,
+            "currency": "USD",
+            "market_price": 260.489990234375,
+            "market_value": 520.97998046875,
+            "cost_basis": 350.94,
+            "unrealized_pnl": 170.03998046875,
+            "unrealized_return_pct": 48.45272139646378
+          },
+          {
+            "ticker": "IONQ",
+            "shares": 9.0,
+            "avg_cost": 13.68,
+            "currency": "USD",
+            "market_price": 28.079999923706055,
+            "market_value": 252.7199993133545,
+            "cost_basis": 123.12,
+            "unrealized_pnl": 129.5999993133545,
+            "unrealized_return_pct": 105.26315733703255
+          },
+          {
+            "ticker": "T",
+            "shares": 7.0,
+            "avg_cost": 23.62,
+            "currency": "USD",
+            "market_price": 26.84000015258789,
+            "market_value": 187.88000106811523,
+            "cost_basis": 165.34,
+            "unrealized_pnl": 22.54000106811523,
+            "unrealized_return_pct": 13.632515463962278
+          },
+          {
+            "ticker": "KO",
+            "shares": 2.0,
+            "avg_cost": 60.06,
+            "currency": "USD",
+            "market_price": 78.18000030517578,
+            "market_value": 156.36000061035156,
+            "cost_basis": 120.12,
+            "unrealized_pnl": 36.24000061035156,
+            "unrealized_return_pct": 30.16983067794835
+          }
+        ],
+        "total_market_value": 60095.968755722046,
+        "total_cost_basis": 37305.94,
+        "total_unrealized_pnl": 22790.028755722044,
+        "total_unrealized_return_pct": 61.0895443345538
+      },
       "tickers": [
         {
           "ticker": "AAPL",
@@ -1095,7 +1338,7 @@
           "risks_or_watchpoints": [
             "의사결정 전 최근 실적 일정과 주요 헤드라인을 다시 확인하세요."
           ],
-          "signal_or_takeaway": "중립 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입존 254.39–266.59 / 무효화 SMA50(260.57 USD)",
+          "signal_or_takeaway": "중립 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 254.39–266.59 | 손절 SMA50(260.57 USD)",
           "data_snapshot": {
             "Price": "260.49 USD",
             "Daily Change": "+0.61%",
@@ -1142,6 +1385,15 @@
             "latest_surprise_pct": "+0.06%",
             "latest_beat_miss": "beat",
             "next_earnings_event": "2026-04-30 실적 발표 (D-20 · AMC)"
+          },
+          "earnings_surprise_history": {
+            "consecutive_beats": 2,
+            "consecutive_misses": 0,
+            "beat_rate": "100%",
+            "avg_surprise_pct": "+0.1%",
+            "pattern": "mostly_beat",
+            "post_earnings_hint": "최근 2분기 중 2분기 beat (100%) — 실적 발표 전후 긍정적 반응 가능성",
+            "quarters_analyzed": 2
           },
           "price_action": {
             "atr_14d": "6.10",
@@ -1209,6 +1461,12 @@
             "score": 3.0
           },
           "trade_frame": {
+            "entry_price": "현재가 260.49 또는 눌림 시 254.39 USD",
+            "stop_loss": "SMA50 260.57 USD",
+            "target_1": "269.64 USD (1.5×ATR)",
+            "target_2": "애널리스트 목표 296.12 USD",
+            "risk_reward_ratio": "N/A",
+            "position_size_note": "$10,000 계좌 1% 리스크 기준 약 16주 (ATR $6.10 기반)",
             "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
             "base_scenario": "260.49 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
             "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
@@ -1249,389 +1507,1099 @@
           ]
         },
         {
-          "ticker": "MSFT",
-          "name": "Microsoft Corporation",
+          "ticker": "CAT",
+          "name": "Caterpillar Inc.",
           "date": "2026-04-10",
-          "summary": "Microsoft Corporation(MSFT)는 373.07 USD (-0.34%)에 거래 중이며, 52주 범위 11% 위치, SMA50 402.04 USD 수준입니다. 주요 헤드라인: [실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+          "summary": "Caterpillar Inc.(CAT)는 787.07 USD (+2.01%)에 거래 중이며, 52주 범위 98% 위치, SMA50 712.73 USD 수준입니다. 주요 헤드라인: [실적] CATERPILLAR INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
           "key_news": [
-            "[실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
-            "[기타 공시] MICROSOFT CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-            "Microsoft capital spending jumps, cloud revenue fails to impress, shares drop after hours - Reuters",
-            "Microsoft's massive AI spending draws investor concerns as cloud business booms - Reuters",
-            "Microsoft Corporation (MSFT) Stock Price, News, Quote & History - Yahoo Finance"
+            "[실적] CATERPILLAR INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+            "[기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+            "Caterpillar beats estimates as AI boom drives energy equipment demand; shares surge - Reuters",
+            "Are Wall Street Analysts Predicting Caterpillar Stock Will Climb or Sink? - Yahoo Finance",
+            "Caterpillar Inc. stock: What you need to know before Q1 earnings - AD HOC NEWS"
           ],
           "news_references": [
             {
-              "title": "[실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+              "title": "[실적] CATERPILLAR INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
               "source": "SEC EDGAR",
-              "published_at": "2026-01-28",
-              "link": "https://www.sec.gov/Archives/edgar/data/789019/000119312526027207/msft-20251231.htm"
+              "published_at": "2026-02-13",
+              "link": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000008/cat-20251231.htm"
             },
             {
-              "title": "[기타 공시] MICROSOFT CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "title": "[기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
               "source": "SEC EDGAR",
-              "published_at": "2026-01-28",
-              "link": "https://www.sec.gov/Archives/edgar/data/789019/000119312526027198/msft-20260128.htm"
+              "published_at": "2026-03-26",
+              "link": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000013/cat-20260326.htm"
             },
             {
-              "title": "Microsoft capital spending jumps, cloud revenue fails to impress, shares drop after hours - Reuters",
+              "title": "Caterpillar beats estimates as AI boom drives energy equipment demand; shares surge - Reuters",
               "source": "Reuters",
-              "published_at": "Wed, 28 Jan 2026 08:00:00 GMT",
-              "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOUXdhWDhtLV9TUmRDMWxxTXpVVFFsZkFjWnFha0V6cjJwOWk5c1J6Z2RNQmJEenNkVnBzdHZJMURobTdFeVhNRmpkNVRDLXU3NXoxdEpSeDQxakZmMEwweFFNbW9wU0FiWklDYkFnTldvejdpZk83M0tSQXpFUllaMFo1ZUw0U0FTcE1NNW1UTkt4TXh1NWZXMWFjRktMdXNqV016RDg1NkVJak0?oc=5"
+              "published_at": "Wed, 29 Oct 2025 07:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPODk4V0oySTFkbXozRm9tOUczZDluZmV2cVBnYUU3Zy1iY0hFQ0xRTjhvenhoVmZxdG5XVktWdXRXS1ZPdjZxSWtkNldwV2FmNzVVRW9feDlVSUxCc3VaUWtlMDV0SHVHMmpFejlIeWZfeHVhVmNzSkRpNHU5S3c0SFdfYU1aRUYwOGVmQzJha1lya2R5ZHdhWmg3LUpieVkwVmhXX0xpSzdKRnVmWXNfbVFkdGo2SnpUQXFLWl9B?oc=5"
             },
             {
-              "title": "Microsoft's massive AI spending draws investor concerns as cloud business booms - Reuters",
-              "source": "Reuters",
-              "published_at": "Thu, 30 Oct 2025 07:00:00 GMT",
-              "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNemdueFhQRk5wcVlMc25PMkpiUHNFWVVQWWxnazdvYnh1bXEtRUgxNXZBU1R0bnBXMlp6OGRCTjJIeEhiWlM2aHVnQU9FODNCb1dEM3ZyY2huYlYtWVpHaV80THFmR1l3UHJHSVRkejRaYTI2Z3l1bDgtT0h0UTdXTTNJT1pJQXJoZUZIekVyVDF3SFRVNUljU0JCWXlKN29uenc?oc=5"
-            },
-            {
-              "title": "Microsoft Corporation (MSFT) Stock Price, News, Quote & History - Yahoo Finance",
+              "title": "Are Wall Street Analysts Predicting Caterpillar Stock Will Climb or Sink? - Yahoo Finance",
               "source": "Yahoo Finance",
-              "published_at": "Tue, 07 Apr 2026 01:01:24 GMT",
-              "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE02aDBpUWN4ZVp0ajliNXhvdWpuVWc1Z1B4eEVyUUFmN2RoazgzbUlUaU9kR1JTU2Q0bVR6ck45M2szN28wUWVmcmRoZlRnQQ?oc=5"
+              "published_at": "Tue, 10 Feb 2026 08:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPejE1Tjc0OTVLWmFQc0VVY09xNy1xYklUZC1vUThwN19oeWtzMTFUZGVMOVZlMDZEMFJkRjJPQmwyWWNLeEx2Q3ZQUHYyR002LTR5dEdiY25odnh2blM0VTItNEs0M3c2dmlVZlFDTGJLVnVoUVpOWWp4TVdsWDZ3MWsxblFtaXQ4RnI2ZWN3dTZMN0k?oc=5"
+            },
+            {
+              "title": "Caterpillar Inc. stock: What you need to know before Q1 earnings - AD HOC NEWS",
+              "source": "AD HOC NEWS",
+              "published_at": "Wed, 08 Apr 2026 10:04:58 GMT",
+              "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQdVh6dGVRUDRxb0R4ZkRNUFBTTWNGRzA3WGdZYlpjOUJ3eVJZY3U1dnVnUEVMWVJUMXhNMFdlNUZwb185cFhQQ0ZSNS1fTUFZZnpYRDdCXzVEVk1HdmhRUlBTallKeGhPa1JOYUJ3dFNsaFd3c3VGd2h2ODh3SUdRWWpid3hhb0NGWE51cFBkMmJDOENiOEt6Rm1GNlBsSnBKeTVYelhfRGtqUmJobGdHTUpsNnR4ZXc?oc=5"
             }
           ],
           "financial_highlights": [
-            "PER 23.35배 (EPS 15.98)",
-            "Forward EPS 18.85, 성장률 +59.80% YoY",
-            "시가총액 2.77T / 배당 0.98%",
-            "52주 범위 11% 위치, SMA50 402.04 USD",
-            "애널리스트 Strong Buy (목표 587.31 USD) / 기관 75.95%"
+            "PER 41.84배 (EPS 18.81)",
+            "Forward EPS 27.77, 성장률 -11.40% YoY",
+            "시가총액 368.33B / 배당 0.77%",
+            "52주 범위 98% 위치, SMA50 712.73 USD",
+            "애널리스트 Buy (목표 742.56 USD) / 기관 72.57%"
           ],
           "risks_or_watchpoints": [
-            "200일 이평선(476.39) 대비 -21.7% 하회 — 중기 추세 약화."
+            "PER 41.8배로 밸류에이션 부담. 실적 miss 시 급락 리스크."
           ],
-          "signal_or_takeaway": "중립 경계 — [실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입존 364.38–381.76 / 무효화 SMA50(402.04 USD)",
+          "signal_or_takeaway": "매수 관찰 — [실적] CATERPILLAR INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 759.60–814.54 | 손절 SMA50(712.73 USD) (R:R 0.6R)",
           "data_snapshot": {
-            "Price": "373.07 USD",
-            "Daily Change": "-0.34%",
-            "Market Cap": "2.77T",
-            "Trailing P/E": "23.35",
-            "EPS": "15.98",
-            "52W High": "555.45",
-            "52W Low": "350.25",
-            "50D SMA": "402.04",
-            "200D SMA": "476.39",
-            "Volume": "28.42M",
-            "3M Avg Volume": "36.66M",
-            "Price/Book": "7.09",
-            "Dividend Yield": "0.98%",
-            "Sector": "Technology"
+            "Price": "787.07 USD",
+            "Daily Change": "+2.01%",
+            "Market Cap": "368.33B",
+            "Trailing P/E": "41.84",
+            "EPS": "18.81",
+            "52W High": "795.52",
+            "52W Low": "268.27",
+            "50D SMA": "712.73",
+            "200D SMA": "551.49",
+            "Volume": "2.78M",
+            "3M Avg Volume": "2.81M",
+            "Price/Book": "17.18",
+            "Dividend Yield": "0.77%",
+            "Sector": "Industrials"
           },
           "fundamentals": {
-            "market_cap": "2.77T",
-            "trailing_pe": "23.35",
-            "eps": "15.98",
-            "forward_eps": "18.85",
-            "earnings_growth": "+59.80% YoY",
-            "price_to_book": "7.09",
-            "dividend_yield": "0.98%",
-            "volume": "28.42M",
-            "avg_volume_3m": "36.66M",
-            "52w_high": "555.45",
-            "52w_low": "350.25",
-            "short_float_pct": "1.08%",
-            "short_ratio": "2.50일",
-            "analyst_target_price": "587.31 USD",
-            "analyst_recommendation": "Strong Buy",
-            "analyst_count": "54명",
-            "held_by_insiders": "0.08%",
-            "held_by_institutions": "75.95%",
+            "market_cap": "368.33B",
+            "trailing_pe": "41.84",
+            "eps": "18.81",
+            "forward_eps": "27.77",
+            "earnings_growth": "-11.40% YoY",
+            "price_to_book": "17.18",
+            "dividend_yield": "0.77%",
+            "volume": "2.78M",
+            "avg_volume_3m": "2.81M",
+            "52w_high": "795.52",
+            "52w_low": "268.27",
+            "short_float_pct": "1.65%",
+            "short_ratio": "2.64일",
+            "analyst_target_price": "742.56 USD",
+            "analyst_recommendation": "Buy",
+            "analyst_count": "26명",
+            "held_by_insiders": "0.22%",
+            "held_by_institutions": "72.57%",
             "implied_volatility": "N/A"
           },
           "earnings_setup": {
-            "forward_eps": "18.85 USD/share",
-            "ttm_eps": "15.98 USD/share",
-            "forward_vs_ttm": "+17.96%",
-            "earnings_growth": "+59.80% YoY",
-            "latest_estimated_eps": "3.85 USD/share",
-            "latest_surprise_pct": "+0.34%",
+            "forward_eps": "27.77 USD/share",
+            "ttm_eps": "18.81 USD/share",
+            "forward_vs_ttm": "+47.63%",
+            "earnings_growth": "-11.40% YoY",
+            "latest_estimated_eps": "4.71 USD/share",
+            "latest_surprise_pct": "+0.10%",
             "latest_beat_miss": "beat",
-            "next_earnings_event": "2026-04-29 실적 발표 (D-19 · AMC)"
+            "next_earnings_event": "2026-04-30 실적 발표 (D-20 · BMO)"
+          },
+          "earnings_surprise_history": {
+            "consecutive_beats": 2,
+            "consecutive_misses": 0,
+            "beat_rate": "100%",
+            "avg_surprise_pct": "+0.1%",
+            "pattern": "mostly_beat",
+            "post_earnings_hint": "최근 2분기 중 2분기 beat (100%) — 실적 발표 전후 긍정적 반응 가능성",
+            "quarters_analyzed": 2
           },
           "price_action": {
-            "atr_14d": "8.69",
-            "atr_percent": "2.33%",
-            "relative_volume": "0.78x",
-            "gap_percent": "-0.49%",
-            "price_vs_sma50": "-7.21%",
-            "price_vs_sma200": "-21.69%",
-            "week52_position": "11%",
-            "rs_vs_spy": "-8.66%"
+            "atr_14d": "27.47",
+            "atr_percent": "3.49%",
+            "relative_volume": "0.99x",
+            "gap_percent": "+0.18%",
+            "price_vs_sma50": "+10.43%",
+            "price_vs_sma200": "+42.72%",
+            "week52_position": "98%",
+            "rs_vs_spy": "+10.43%"
           },
           "quarterly_financials": [
             {
               "fiscal_date": "2025-12-31",
               "quarter": "2025-Q4",
-              "revenue": "81.27B",
-              "operating_income": "38.27B",
-              "eps": "5.16",
-              "estimated_eps": "3.85",
-              "surprise_pct": "+0.34%",
+              "revenue": "19.13B",
+              "operating_income": "2.66B",
+              "eps": "5.12",
+              "estimated_eps": "4.71",
+              "surprise_pct": "+0.10%",
               "beat_miss": "beat"
             },
             {
               "fiscal_date": "2025-09-30",
               "quarter": "2025-Q3",
-              "revenue": "77.67B",
-              "operating_income": "37.96B",
-              "eps": "3.72",
-              "estimated_eps": "3.66",
+              "revenue": "17.64B",
+              "operating_income": "3.05B",
+              "eps": "4.88",
+              "estimated_eps": "4.52",
+              "surprise_pct": "+0.09%",
+              "beat_miss": "beat"
+            },
+            {
+              "fiscal_date": "2025-06-30",
+              "quarter": "2025-Q2",
+              "revenue": "16.57B",
+              "operating_income": "2.86B",
+              "eps": "4.62",
+              "estimated_eps": "4.90",
+              "surprise_pct": "-0.04%",
+              "beat_miss": "in-line"
+            },
+            {
+              "fiscal_date": "2025-03-31",
+              "quarter": "2025-Q1",
+              "revenue": "14.25B",
+              "operating_income": "2.58B",
+              "eps": "4.20",
+              "estimated_eps": "4.34",
+              "surprise_pct": "-0.02%",
+              "beat_miss": "in-line"
+            }
+          ],
+          "upcoming_events": [
+            {
+              "type": "ex_dividend",
+              "label": "배당락일",
+              "date": "2026-04-20",
+              "days_until": "10",
+              "timing": ""
+            },
+            {
+              "type": "earnings",
+              "label": "실적 발표",
+              "date": "2026-04-30",
+              "days_until": "20",
+              "timing": "BMO"
+            }
+          ],
+          "news_tone": {
+            "label": "bullish",
+            "score": 5.0
+          },
+          "trade_frame": {
+            "entry_price": "현재가 787.07 또는 눌림 시 759.60 USD",
+            "stop_loss": "SMA50 712.73 USD",
+            "target_1": "828.28 USD (1.5×ATR)",
+            "target_2": "애널리스트 목표 742.56 USD",
+            "risk_reward_ratio": "0.6R",
+            "position_size_note": "$10,000 계좌 1% 리스크 기준 약 3주 (ATR $27.47 기반)",
+            "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
+            "base_scenario": "787.07 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+            "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
+            "invalidation_price": "50일 이동평균선인 712.73 USD 아래로 밀리면 약세 시나리오 확인",
+            "watch_period": "2026-04-20 배당락일 전까지"
+          },
+          "period_changes": {
+            "7d": "+9.74%",
+            "30d": "+11.23%"
+          },
+          "sec_filing_tags": [
+            "실적",
+            "기타 공시"
+          ],
+          "sec_filings": [
+            {
+              "tag": "기타 공시",
+              "title": "CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "form_type": "8-K",
+              "item_number": "",
+              "catalyst_type": "medium",
+              "importance_score": 120,
+              "published_at": "2026-03-26",
+              "link": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000013/cat-20260326.htm",
+              "source": "SEC EDGAR"
+            },
+            {
+              "tag": "실적",
+              "title": "CATERPILLAR INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+              "form_type": "10-K",
+              "item_number": "",
+              "catalyst_type": "hard",
+              "importance_score": 190,
+              "published_at": "2026-02-13",
+              "link": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000008/cat-20251231.htm",
+              "source": "SEC EDGAR"
+            }
+          ]
+        },
+        {
+          "ticker": "XOM",
+          "name": "Exxon Mobil Corporation",
+          "date": "2026-04-10",
+          "summary": "Exxon Mobil Corporation(XOM)는 155.04 USD (-0.76%)에 거래 중이며, 52주 범위 73% 위치, SMA50 152.28 USD 수준입니다. 주요 헤드라인: [기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "key_news": [
+            "[기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+            "[주주총회] EXXON MOBIL CORP, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+            "Exxon boosts forecast, aims for $25 billion earnings growth by 2030 - Reuters",
+            "Exxon Mobil Golden Pass LNG Startup And What It Might Mean For XOM - Yahoo Finance",
+            "What Exxon Mobil (XOM)'s Helium Edge and New Debt Deal Mean For Shareholders - Yahoo Finance"
+          ],
+          "news_references": [
+            {
+              "title": "[기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "source": "SEC EDGAR",
+              "published_at": "2026-04-08",
+              "link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm"
+            },
+            {
+              "title": "[주주총회] EXXON MOBIL CORP, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+              "source": "SEC EDGAR",
+              "published_at": "2026-04-08",
+              "link": "https://www.sec.gov/Archives/edgar/data/34088/000119312526147614/d16317ddef14a.htm"
+            },
+            {
+              "title": "Exxon boosts forecast, aims for $25 billion earnings growth by 2030 - Reuters",
+              "source": "Reuters",
+              "published_at": "Tue, 09 Dec 2025 08:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQc19PSmREVk5Sa0dMYTdXTnFab1g0bmZlMUlPa2gwOW1OV0diZi1qNENMZzM4WHk0UHl3VERrQ2pvSnNmek1jSG9TNkZBaGFjYnJUQko4NmV6REd0clJUanhoMVZuU3U0UGxsM0V2bzRCSllLMnhzNVdBNzJVelFvcE4tU2lHMnF1YlQwdXpMZXR6dXZQQjR0ckx2bm1CdjgwcnRWQk9n?oc=5"
+            },
+            {
+              "title": "Exxon Mobil Golden Pass LNG Startup And What It Might Mean For XOM - Yahoo Finance",
+              "source": "Yahoo Finance",
+              "published_at": "Wed, 01 Apr 2026 07:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOX2o4X2ZzdmNsQXNzeTdyRWhDSW5TS1YyNnF4SmJfVEo3UmkxdF85ZDhfNGZWNzFEOG4wZHlHWlJVdnZTSGxEVUtuc0owaGVTRDdxaWhVTG1IUEZ3akpwaVZfWnh5VHNEQUFscDVzR01tWmRwOWNLaHF3YVZJZ1Z0MVlyLUcwNGJmcDYxaFpGWDR3dnprUzFZ?oc=5"
+            },
+            {
+              "title": "What Exxon Mobil (XOM)'s Helium Edge and New Debt Deal Mean For Shareholders - Yahoo Finance",
+              "source": "Yahoo Finance",
+              "published_at": "Tue, 07 Apr 2026 03:08:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNRnBiblVRYXcwbFVwajB3R0FhbExiZXE4b3lBUzNzU1VkYi00Y29PUlNBanh5YVFxenlXN2hOMDZJZFBSazBHb2tpcnpkdEkwSHlBOFEzZGtveHpENjZuV1l4TnFmOXh3VkZVSW8wNDVUeTdSTHNudENLYXNFQS1HY0g2VUphM2V4XzNBWGYzeWY0NVlkRDg0?oc=5"
+            }
+          ],
+          "financial_highlights": [
+            "PER 23.14배 (EPS 6.70)",
+            "Forward EPS 9.59, 성장률 -11.00% YoY",
+            "시가총액 644.43B / 배당 2.66%",
+            "52주 범위 73% 위치, SMA50 152.28 USD",
+            "애널리스트 Buy (목표 160.88 USD) / 기관 67.41%"
+          ],
+          "risks_or_watchpoints": [
+            "의사결정 전 최근 실적 일정과 주요 헤드라인을 다시 확인하세요."
+          ],
+          "signal_or_takeaway": "중립 관찰 — [기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 148.80–161.28 | 손절 SMA50(152.28 USD) (R:R 3.4R)",
+          "data_snapshot": {
+            "Price": "155.04 USD",
+            "Daily Change": "-0.76%",
+            "Market Cap": "644.43B",
+            "Trailing P/E": "23.14",
+            "EPS": "6.70",
+            "52W High": "176.41",
+            "52W Low": "97.80",
+            "50D SMA": "152.28",
+            "200D SMA": "124.04",
+            "Volume": "18.85M",
+            "3M Avg Volume": "22.74M",
+            "Price/Book": "2.50",
+            "Dividend Yield": "2.66%",
+            "Sector": "Energy"
+          },
+          "fundamentals": {
+            "market_cap": "644.43B",
+            "trailing_pe": "23.14",
+            "eps": "6.70",
+            "forward_eps": "9.59",
+            "earnings_growth": "-11.00% YoY",
+            "price_to_book": "2.50",
+            "dividend_yield": "2.66%",
+            "volume": "18.85M",
+            "avg_volume_3m": "22.74M",
+            "52w_high": "176.41",
+            "52w_low": "97.80",
+            "short_float_pct": "1.30%",
+            "short_ratio": "2.30일",
+            "analyst_target_price": "160.88 USD",
+            "analyst_recommendation": "Buy",
+            "analyst_count": "24명",
+            "held_by_insiders": "0.10%",
+            "held_by_institutions": "67.41%",
+            "implied_volatility": "N/A"
+          },
+          "earnings_setup": {
+            "forward_eps": "9.59 USD/share",
+            "ttm_eps": "6.70 USD/share",
+            "forward_vs_ttm": "+43.13%",
+            "earnings_growth": "-11.00% YoY",
+            "latest_estimated_eps": "1.69 USD/share",
+            "latest_surprise_pct": "+0.01%",
+            "latest_beat_miss": "in-line",
+            "next_earnings_event": "2026-05-01 실적 발표 (D-21 · BMO)"
+          },
+          "earnings_surprise_history": {
+            "consecutive_beats": 0,
+            "consecutive_misses": 0,
+            "beat_rate": "N/A",
+            "avg_surprise_pct": "N/A",
+            "pattern": "insufficient_data",
+            "post_earnings_hint": "실적 서프라이즈 데이터 부족으로 패턴 판단 불가",
+            "quarters_analyzed": 0
+          },
+          "price_action": {
+            "atr_14d": "6.24",
+            "atr_percent": "4.02%",
+            "relative_volume": "0.83x",
+            "gap_percent": "+0.41%",
+            "price_vs_sma50": "+1.81%",
+            "price_vs_sma200": "+24.99%",
+            "week52_position": "73%",
+            "rs_vs_spy": "+1.48%"
+          },
+          "quarterly_financials": [
+            {
+              "fiscal_date": "2025-12-31",
+              "quarter": "2025-Q4",
+              "revenue": "80.04B",
+              "operating_income": "6.00B",
+              "eps": "1.53",
+              "estimated_eps": "1.69",
+              "surprise_pct": "+0.01%",
+              "beat_miss": "in-line"
+            },
+            {
+              "fiscal_date": "2025-09-30",
+              "quarter": "2025-Q3",
+              "revenue": "83.33B",
+              "operating_income": "9.18B",
+              "eps": "1.76",
+              "estimated_eps": "1.82",
+              "surprise_pct": "+0.03%",
+              "beat_miss": "in-line"
+            },
+            {
+              "fiscal_date": "2025-06-30",
+              "quarter": "2025-Q2",
+              "revenue": "79.48B",
+              "operating_income": "8.91B",
+              "eps": "1.64",
+              "estimated_eps": "1.56",
+              "surprise_pct": "+0.05%",
+              "beat_miss": "in-line"
+            },
+            {
+              "fiscal_date": "2025-03-31",
+              "quarter": "2025-Q1",
+              "revenue": "81.06B",
+              "operating_income": "9.85B",
+              "eps": "1.76",
+              "estimated_eps": "1.74",
+              "surprise_pct": "+0.01%",
+              "beat_miss": "in-line"
+            }
+          ],
+          "upcoming_events": [
+            {
+              "type": "earnings",
+              "label": "실적 발표",
+              "date": "2026-05-01",
+              "days_until": "21",
+              "timing": "BMO"
+            }
+          ],
+          "news_tone": {
+            "label": "neutral",
+            "score": 1.0
+          },
+          "trade_frame": {
+            "entry_price": "현재가 155.04 또는 눌림 시 148.80 USD",
+            "stop_loss": "SMA50 152.28 USD",
+            "target_1": "164.40 USD (1.5×ATR)",
+            "target_2": "애널리스트 목표 160.88 USD",
+            "risk_reward_ratio": "3.4R",
+            "position_size_note": "$10,000 계좌 1% 리스크 기준 약 16주 (ATR $6.24 기반)",
+            "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
+            "base_scenario": "155.04 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+            "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
+            "invalidation_price": "50일 이동평균선인 152.28 USD 아래로 밀리면 약세 시나리오 확인",
+            "watch_period": "2026-05-01 실적 발표 전까지"
+          },
+          "period_changes": {
+            "7d": "-3.52%",
+            "30d": "+2.28%"
+          },
+          "sec_filing_tags": [
+            "기타 공시",
+            "주주총회"
+          ],
+          "sec_filings": [
+            {
+              "tag": "기타 공시",
+              "title": "EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "form_type": "8-K",
+              "item_number": "",
+              "catalyst_type": "medium",
+              "importance_score": 120,
+              "published_at": "2026-04-08",
+              "link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
+              "source": "SEC EDGAR"
+            },
+            {
+              "tag": "주주총회",
+              "title": "EXXON MOBIL CORP, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+              "form_type": "DEF 14A",
+              "item_number": "",
+              "catalyst_type": "medium",
+              "importance_score": 100,
+              "published_at": "2026-04-08",
+              "link": "https://www.sec.gov/Archives/edgar/data/34088/000119312526147614/d16317ddef14a.htm",
+              "source": "SEC EDGAR"
+            }
+          ]
+        },
+        {
+          "ticker": "AMD",
+          "name": "Advanced Micro Devices, Inc.",
+          "date": "2026-04-10",
+          "summary": "Advanced Micro Devices, Inc.(AMD)는 236.64 USD (+2.08%)에 거래 중이며, 52주 범위 84% 위치, SMA50 210.97 USD 수준입니다. 주요 헤드라인: [기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "key_news": [
+            "[기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+            "AMD expects profit to triple by 2030, data center chip market to grow to $1 trillion - Reuters",
+            "AMD forecasts fourth-quarter revenue above estimates on strong AI chip demand - Reuters",
+            "[주주총회] ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+            "Oracle and AMD expand a partnership with deals in the artificial intelligence sector booming - AP News"
+          ],
+          "news_references": [
+            {
+              "title": "[기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "source": "SEC EDGAR",
+              "published_at": "2026-02-24",
+              "link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm"
+            },
+            {
+              "title": "AMD expects profit to triple by 2030, data center chip market to grow to $1 trillion - Reuters",
+              "source": "Reuters",
+              "published_at": "Tue, 11 Nov 2025 08:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxONllLb1hDQUkzQVVLZUV0TE1BYmF6ZkVlVzU4OW1VSWgwR3kwdS1ZWVltaUxoVVFIbEZId20wSE1QYmhaX19qVlpldHNrQVNjTU9sWk1DUndoWE4zTS1SZXRzWkJWVllXQmZmWFI0QkxQZ20zbXFMZWNwR0owVEFycHVDLVROYkNHc2llSHUteDMybElwOUZhVkdMdE1iejlONkE?oc=5"
+            },
+            {
+              "title": "AMD forecasts fourth-quarter revenue above estimates on strong AI chip demand - Reuters",
+              "source": "Reuters",
+              "published_at": "Tue, 04 Nov 2025 08:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNS0g1dEZaNHBMZHpORFRlMTJ0S1E2T3o5c05IRHpDd1Z2Q1pjNTd2S0R3TS02bFp3RDFGVUdkUkdrbzUtZzBpY3lzdUVWV29LSldVOXI1dlQyX28xZ3hPazN3ejhGOVRINkxQd2hEY3hxdzdaWmZPS2xfNDJpeFZCR1J4RG1LV1BvQWRjUzBfOGxfU25WUHJtaGFDNTZNZw?oc=5"
+            },
+            {
+              "title": "[주주총회] ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+              "source": "SEC EDGAR",
+              "published_at": "2026-03-27",
+              "link": "https://www.sec.gov/Archives/edgar/data/2488/000119312526129057/d85856ddef14a.htm"
+            },
+            {
+              "title": "Oracle and AMD expand a partnership with deals in the artificial intelligence sector booming - AP News",
+              "source": "AP News",
+              "published_at": "Tue, 14 Oct 2025 07:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPbEtyQ1g2bU1JZjlOVnh1emtIZVpSZmNncGpoTXdPTnlVMU1sVXM3dnNxYTVUVHpSQ19yalF2Q3M3d251MHdZMzZGUEdTY3JJX3Bpd3NveGdNVDZYUGhERDI5a05sd19fMDNjNHRoVDF4QzdocEUwcURPMVdwemxhbzM4eXRYa21nTGV3Zk1wTmplRnlOcWs3Yk8wZEs2VmRPVXVBYlg0dFFCV0RMMGh0V3FSSER0UWc?oc=5"
+            }
+          ],
+          "financial_highlights": [
+            "PER 91.02배 (EPS 2.60)",
+            "Forward EPS 10.80, 성장률 +2.17% YoY",
+            "시가총액 385.82B",
+            "52주 범위 84% 위치, SMA50 210.97 USD",
+            "애널리스트 Buy (목표 289.35 USD) / 기관 72.20%"
+          ],
+          "risks_or_watchpoints": [
+            "PER 91.0배로 밸류에이션 부담. 실적 miss 시 급락 리스크."
+          ],
+          "signal_or_takeaway": "매수 관찰 — [기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 226.14–247.14 | 손절 SMA50(210.97 USD) (R:R 0.6R)",
+          "data_snapshot": {
+            "Price": "236.64 USD",
+            "Daily Change": "+2.08%",
+            "Market Cap": "385.82B",
+            "Trailing P/E": "91.02",
+            "EPS": "2.60",
+            "52W High": "267.08",
+            "52W Low": "76.48",
+            "50D SMA": "210.97",
+            "200D SMA": "197.35",
+            "Volume": "26.92M",
+            "3M Avg Volume": "38.39M",
+            "Price/Book": "6.12",
+            "Dividend Yield": "N/A",
+            "Sector": "Technology"
+          },
+          "fundamentals": {
+            "market_cap": "385.82B",
+            "trailing_pe": "91.02",
+            "eps": "2.60",
+            "forward_eps": "10.80",
+            "earnings_growth": "+2.17% YoY",
+            "price_to_book": "6.12",
+            "dividend_yield": "N/A",
+            "volume": "26.92M",
+            "avg_volume_3m": "38.39M",
+            "52w_high": "267.08",
+            "52w_low": "76.48",
+            "short_float_pct": "1.99%",
+            "short_ratio": "0.97일",
+            "analyst_target_price": "289.35 USD",
+            "analyst_recommendation": "Buy",
+            "analyst_count": "46명",
+            "held_by_insiders": "0.44%",
+            "held_by_institutions": "72.20%",
+            "implied_volatility": "N/A"
+          },
+          "earnings_setup": {
+            "forward_eps": "10.80 USD/share",
+            "ttm_eps": "2.60 USD/share",
+            "forward_vs_ttm": "+315.38%",
+            "earnings_growth": "+2.17% YoY",
+            "latest_estimated_eps": "1.32 USD/share",
+            "latest_surprise_pct": "+0.16%",
+            "latest_beat_miss": "beat",
+            "next_earnings_event": "2026-05-05 실적 발표 (D-25 · AMC)"
+          },
+          "earnings_surprise_history": {
+            "consecutive_beats": 0,
+            "consecutive_misses": 0,
+            "beat_rate": "N/A",
+            "avg_surprise_pct": "N/A",
+            "pattern": "insufficient_data",
+            "post_earnings_hint": "실적 서프라이즈 데이터 부족으로 패턴 판단 불가",
+            "quarters_analyzed": 1
+          },
+          "price_action": {
+            "atr_14d": "10.50",
+            "atr_percent": "4.44%",
+            "relative_volume": "0.70x",
+            "gap_percent": "+0.52%",
+            "price_vs_sma50": "+12.17%",
+            "price_vs_sma200": "+19.91%",
+            "week52_position": "84%",
+            "rs_vs_spy": "+14.73%"
+          },
+          "quarterly_financials": [
+            {
+              "fiscal_date": "2025-12-31",
+              "quarter": "2025-Q4",
+              "revenue": "10.27B",
+              "operating_income": "1.75B",
+              "eps": "0.92",
+              "estimated_eps": "1.32",
+              "surprise_pct": "+0.16%",
+              "beat_miss": "beat"
+            },
+            {
+              "fiscal_date": "2025-09-30",
+              "quarter": "2025-Q3",
+              "revenue": "9.25B",
+              "operating_income": "1.27B",
+              "eps": "0.75",
+              "estimated_eps": "1.17",
               "surprise_pct": "+0.02%",
               "beat_miss": "in-line"
             },
             {
               "fiscal_date": "2025-06-30",
               "quarter": "2025-Q2",
-              "revenue": "76.44B",
-              "operating_income": "34.32B",
-              "eps": "3.65",
-              "estimated_eps": "3.38",
-              "surprise_pct": "+0.08%",
-              "beat_miss": "beat"
+              "revenue": "7.68B",
+              "operating_income": "-134,000,000",
+              "eps": "0.54",
+              "estimated_eps": "0.48",
+              "surprise_pct": "-0.01%",
+              "beat_miss": "in-line"
             },
             {
               "fiscal_date": "2025-03-31",
               "quarter": "2025-Q1",
-              "revenue": "70.07B",
-              "operating_income": "32.00B",
-              "eps": "3.46",
-              "estimated_eps": "3.22",
-              "surprise_pct": "+0.08%",
-              "beat_miss": "beat"
+              "revenue": "7.44B",
+              "operating_income": "806.00M",
+              "eps": "0.44",
+              "estimated_eps": "0.93",
+              "surprise_pct": "+0.03%",
+              "beat_miss": "in-line"
             }
           ],
           "upcoming_events": [
             {
               "type": "earnings",
               "label": "실적 발표",
-              "date": "2026-04-29",
-              "days_until": "19",
+              "date": "2026-05-05",
+              "days_until": "25",
               "timing": "AMC"
             }
           ],
           "news_tone": {
-            "label": "neutral",
-            "score": 0.0
+            "label": "bullish",
+            "score": 3.0
           },
           "trade_frame": {
+            "entry_price": "현재가 236.64 또는 눌림 시 226.14 USD",
+            "stop_loss": "SMA50 210.97 USD",
+            "target_1": "252.39 USD (1.5×ATR)",
+            "target_2": "애널리스트 목표 289.35 USD",
+            "risk_reward_ratio": "0.6R",
+            "position_size_note": "$10,000 계좌 1% 리스크 기준 약 9주 (ATR $10.50 기반)",
             "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-            "base_scenario": "373.07 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+            "base_scenario": "236.64 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
             "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-            "invalidation_price": "50일 이동평균선인 402.04 USD 아래로 밀리면 약세 시나리오 확인",
-            "watch_period": "2026-04-29 실적 발표 전까지"
+            "invalidation_price": "50일 이동평균선인 210.97 USD 아래로 밀리면 약세 시나리오 확인",
+            "watch_period": "2026-05-05 실적 발표 전까지"
           },
           "period_changes": {
-            "7d": "-0.10%",
-            "30d": "-7.86%"
+            "7d": "+8.80%",
+            "30d": "+15.53%"
           },
           "sec_filing_tags": [
-            "실적",
-            "기타 공시"
+            "기타 공시",
+            "주주총회"
           ],
           "sec_filings": [
             {
-              "tag": "실적",
-              "title": "MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
-              "form_type": "10-Q",
+              "tag": "주주총회",
+              "title": "ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+              "form_type": "DEF 14A",
               "item_number": "",
-              "catalyst_type": "hard",
-              "importance_score": 200,
-              "published_at": "2026-01-28",
-              "link": "https://www.sec.gov/Archives/edgar/data/789019/000119312526027207/msft-20251231.htm",
+              "catalyst_type": "medium",
+              "importance_score": 100,
+              "published_at": "2026-03-27",
+              "link": "https://www.sec.gov/Archives/edgar/data/2488/000119312526129057/d85856ddef14a.htm",
               "source": "SEC EDGAR"
             },
             {
               "tag": "기타 공시",
-              "title": "MICROSOFT CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "title": "ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
               "form_type": "8-K",
               "item_number": "",
               "catalyst_type": "medium",
               "importance_score": 120,
-              "published_at": "2026-01-28",
-              "link": "https://www.sec.gov/Archives/edgar/data/789019/000119312526027198/msft-20260128.htm",
+              "published_at": "2026-02-24",
+              "link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
               "source": "SEC EDGAR"
             }
           ]
         },
         {
-          "ticker": "NVDA",
-          "name": "NVIDIA Corporation",
+          "ticker": "KO",
+          "name": "The Coca-Cola Company",
           "date": "2026-04-10",
-          "summary": "NVIDIA Corporation(NVDA)는 183.91 USD (+1.01%)에 거래 중이며, 52주 범위 76% 위치, SMA50 182.51 USD 수준입니다. 주요 헤드라인: [실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+          "summary": "The Coca-Cola Company(KO)는 78.18 USD (+1.15%)에 거래 중이며, 52주 범위 77% 위치, SMA50 77.19 USD 수준입니다. 주요 헤드라인: [실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
           "key_news": [
-            "[실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
-            "[기타 공시] NVIDIA CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-            "Nvidia-backed CoreWeave's shares fall as data center delay hits annual revenue forecast - Reuters",
-            "Nvidia's strong forecast calms AI bubble jitters, for now - Reuters",
-            "NVIDIA AI Ecosystem Expands as Marvell Joins Forces Through NVLink Fusion"
+            "[실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+            "[기타 공시] COCA COLA CO, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+            "Consumer megadeals make a rare comeback in the first quarter - Reuters",
+            "Coca-Cola's incoming CEO seeks faster innovation as low-sugar, weight-loss trends grow - Reuters",
+            "Coca-Cola demand rises in fourth quarter but shares slide on tepid outlook - AP News"
           ],
           "news_references": [
             {
-              "title": "[실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+              "title": "[실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
               "source": "SEC EDGAR",
-              "published_at": "2026-02-25",
-              "link": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm"
+              "published_at": "2026-02-20",
+              "link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm"
             },
             {
-              "title": "[기타 공시] NVIDIA CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "title": "[기타 공시] COCA COLA CO, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
               "source": "SEC EDGAR",
-              "published_at": "2026-03-06",
-              "link": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000024/nvda-20260302.htm"
+              "published_at": "2026-02-20",
+              "link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010052/ko-20260219.htm"
             },
             {
-              "title": "Nvidia-backed CoreWeave's shares fall as data center delay hits annual revenue forecast - Reuters",
+              "title": "Consumer megadeals make a rare comeback in the first quarter - Reuters",
               "source": "Reuters",
-              "published_at": "Tue, 11 Nov 2025 08:00:00 GMT",
-              "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNTUttYUMtUDZKNHJPRFl4ampvVTNlVUZ3RG1ZalN1RDJnZVYxak4wWmtZUFFQUVBvcmlFVVVQU016RURFTzdqdDFWY3VNNmV4VHpNVmRSUlZVa1Y0WlVpQnM5ZTdQS2tzN2ZFZGNmZWFfOFVvZ1pCa0RRbmtVMjlGQUR4QkxnX2JqWGQwbnpaVHc4MmZ3RmxjcXZNT3NobWZ4TWdBUjRUNXdOOTFhNmV5V2dYUm4xS2k1WGY0?oc=5"
+              "published_at": "Fri, 03 Apr 2026 19:04:26 GMT",
+              "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOTVhPa0d6RUdROTVkdDByZTM5S1hEaW9BRTA5c1FYSzhBV05vV2t4ZmdIR29iVmc2NG1IV1dEMl9vbW5rV2dsYTlRMFJoeUlBazQ3bW9GU1pwWFlRZDJQdlVLTzRmbkJqd0Y4cERWVmVPdDhFcGFSQ1RVQVlxaWx6NmJkMnl5Wmd4SEUyMEV0amtxVWhwd0NoaXUzVWc4MW9zaXJOZWZSNA?oc=5"
             },
             {
-              "title": "Nvidia's strong forecast calms AI bubble jitters, for now - Reuters",
+              "title": "Coca-Cola's incoming CEO seeks faster innovation as low-sugar, weight-loss trends grow - Reuters",
               "source": "Reuters",
-              "published_at": "Wed, 19 Nov 2025 08:00:00 GMT",
-              "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNR1hkMW1tRm5pQ0ZCNVNGYWVmRW5NQWFLbU85YVVnRjNTTDFFNEJpN2h6N0VCTlBra3poaHhCUkpZcl9QWjNweS1RUHhFdmN0bEpIcDh6YjB3SFMxR3ppcnNGcHNFRk96OTlKRzl0dHFNRHlCc2tkV09IX3VBaVJTZXlZYVRVc1ZTeTJnbThuZl9iRkRnSGFxVjF6aGZmeTVhN2hZVDNzQkFYUVNyTXJJZ1ZxMA?oc=5"
+              "published_at": "Tue, 10 Feb 2026 08:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxQWmtfTHJSTENYM3ljVm9iMG1HdFNKWlpKYkZXS01hY2tKNUxnaXBsNW5FdHNRQk1Tb3AyMFI5cFE3RFVLTUxqX0hqcXFZQVZmbVhfY3FZeWh2RlM3M1JhM0ZrUGl5bWFLdk04MWVFakhKajFqSFBndlZXTTE3TTRnRHIxaXF4RVdGYVZHbTBNclpuYldmdWVGSlVCYXpuQQ?oc=5"
             },
             {
-              "title": "NVIDIA AI Ecosystem Expands as Marvell Joins Forces Through NVLink Fusion",
-              "source": "NVIDIA Newsroom",
-              "published_at": "Tue, 31 Mar 2026 12:00:00 GMT",
-              "link": "http://nvidianews.nvidia.com/news/nvidia-ai-ecosystem-expands-as-marvell-joins-forces-through-nvlink-fusion"
+              "title": "Coca-Cola demand rises in fourth quarter but shares slide on tepid outlook - AP News",
+              "source": "AP News",
+              "published_at": "Tue, 10 Feb 2026 08:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOU0tQXzFYTi1GUEo2ZlU2MHV3c1d5dGxnZHZJaXRneDQ0NWJvTkdDbHAwQTByZkRUOEhYeG1OblluZGdtU1c4ZjY2OTBsX1pvV3JBaWNvTUlGUzQwRVI4c1Z2MGh6ZlYwV2VDZmc4OHNobW9TU3oxdGphVU1pajZULW5POTVGTGpCTTJpSW1QVXFJQTB1?oc=5"
             }
           ],
           "financial_highlights": [
-            "PER 37.15배 (EPS 4.95)",
-            "Forward EPS 11.12, 성장률 +95.60% YoY",
-            "시가총액 4.47T / 배당 2.00%",
-            "52주 범위 76% 위치, SMA50 182.51 USD",
-            "애널리스트 Strong Buy (목표 268.22 USD) / 기관 69.72%"
+            "PER 25.72배 (EPS 3.04)",
+            "Forward EPS 3.45, 성장률 +3.60% YoY",
+            "시가총액 336.50B / 배당 2.63%",
+            "52주 범위 77% 위치, SMA50 77.19 USD",
+            "애널리스트 Buy (목표 83.67 USD) / 기관 66.61%"
           ],
           "risks_or_watchpoints": [
             "의사결정 전 최근 실적 일정과 주요 헤드라인을 다시 확인하세요."
           ],
-          "signal_or_takeaway": "매수 관찰 — [실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입존 178.66–189.16 / 무효화 SMA50(182.51 USD)",
+          "signal_or_takeaway": "매수 관찰 — [실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 76.79–79.57 | 손절 SMA50(77.19 USD) (R:R 2.1R)",
           "data_snapshot": {
-            "Price": "183.91 USD",
-            "Daily Change": "+1.01%",
-            "Market Cap": "4.47T",
-            "Trailing P/E": "37.15",
-            "EPS": "4.95",
-            "52W High": "212.19",
-            "52W Low": "94.46",
-            "50D SMA": "182.51",
-            "200D SMA": "179.99",
-            "Volume": "115.70M",
-            "3M Avg Volume": "180.35M",
-            "Price/Book": "28.42",
-            "Dividend Yield": "2.00%",
-            "Sector": "Semiconductors"
+            "Price": "78.18 USD",
+            "Daily Change": "+1.15%",
+            "Market Cap": "336.50B",
+            "Trailing P/E": "25.72",
+            "EPS": "3.04",
+            "52W High": "82.00",
+            "52W Low": "65.35",
+            "50D SMA": "77.19",
+            "200D SMA": "71.33",
+            "Volume": "14.29M",
+            "3M Avg Volume": "18.27M",
+            "Price/Book": "10.45",
+            "Dividend Yield": "2.63%",
+            "Sector": "Consumer Staples"
           },
           "fundamentals": {
-            "market_cap": "4.47T",
-            "trailing_pe": "37.15",
-            "eps": "4.95",
-            "forward_eps": "11.12",
-            "earnings_growth": "+95.60% YoY",
-            "price_to_book": "28.42",
-            "dividend_yield": "2.00%",
-            "volume": "115.70M",
-            "avg_volume_3m": "180.35M",
-            "52w_high": "212.19",
-            "52w_low": "94.46",
-            "short_float_pct": "0.98%",
-            "short_ratio": "1.28일",
-            "analyst_target_price": "268.22 USD",
-            "analyst_recommendation": "Strong Buy",
-            "analyst_count": "56명",
-            "held_by_insiders": "4.21%",
-            "held_by_institutions": "69.72%",
+            "market_cap": "336.50B",
+            "trailing_pe": "25.72",
+            "eps": "3.04",
+            "forward_eps": "3.45",
+            "earnings_growth": "+3.60% YoY",
+            "price_to_book": "10.45",
+            "dividend_yield": "2.63%",
+            "volume": "14.29M",
+            "avg_volume_3m": "18.27M",
+            "52w_high": "82.00",
+            "52w_low": "65.35",
+            "short_float_pct": "1.26%",
+            "short_ratio": "3.17일",
+            "analyst_target_price": "83.67 USD",
+            "analyst_recommendation": "Buy",
+            "analyst_count": "23명",
+            "held_by_insiders": "9.89%",
+            "held_by_institutions": "66.61%",
             "implied_volatility": "N/A"
           },
           "earnings_setup": {
-            "forward_eps": "11.12 USD/share",
-            "ttm_eps": "4.95 USD/share",
-            "forward_vs_ttm": "+124.65%",
-            "earnings_growth": "+95.60% YoY",
-            "latest_estimated_eps": "1.54 USD/share",
-            "latest_surprise_pct": "+0.05%",
-            "latest_beat_miss": "beat",
-            "next_earnings_event": "2026-05-20 실적 발표 (D-40 · AMC)"
+            "forward_eps": "3.45 USD/share",
+            "ttm_eps": "3.04 USD/share",
+            "forward_vs_ttm": "+13.49%",
+            "earnings_growth": "+3.60% YoY",
+            "latest_estimated_eps": "0.56 USD/share",
+            "latest_surprise_pct": "+0.03%",
+            "latest_beat_miss": "in-line",
+            "next_earnings_event": "2026-04-28 실적 발표 (D-18 · BMO)"
+          },
+          "earnings_surprise_history": {
+            "consecutive_beats": 0,
+            "consecutive_misses": 0,
+            "beat_rate": "N/A",
+            "avg_surprise_pct": "N/A",
+            "pattern": "insufficient_data",
+            "post_earnings_hint": "실적 서프라이즈 데이터 부족으로 패턴 판단 불가",
+            "quarters_analyzed": 1
           },
           "price_action": {
-            "atr_14d": "5.25",
-            "atr_percent": "2.85%",
-            "relative_volume": "0.64x",
-            "gap_percent": "-0.13%",
-            "price_vs_sma50": "+0.77%",
-            "price_vs_sma200": "+2.18%",
-            "week52_position": "76%",
-            "rs_vs_spy": "-1.94%"
+            "atr_14d": "1.39",
+            "atr_percent": "1.78%",
+            "relative_volume": "0.78x",
+            "gap_percent": "-0.83%",
+            "price_vs_sma50": "+1.28%",
+            "price_vs_sma200": "+9.60%",
+            "week52_position": "77%",
+            "rs_vs_spy": "+0.60%"
           },
           "quarterly_financials": [
             {
-              "fiscal_date": "2026-01-31",
-              "quarter": "2026-Q1",
-              "revenue": "68.13B",
-              "operating_income": "44.30B",
-              "eps": "1.76",
-              "estimated_eps": "1.54",
-              "surprise_pct": "+0.05%",
-              "beat_miss": "beat"
-            },
-            {
-              "fiscal_date": "2025-10-31",
+              "fiscal_date": "2025-12-31",
               "quarter": "2025-Q4",
-              "revenue": "57.01B",
-              "operating_income": "36.01B",
-              "eps": "1.30",
-              "estimated_eps": "1.26",
+              "revenue": "11.82B",
+              "operating_income": "2.86B",
+              "eps": "0.53",
+              "estimated_eps": "0.56",
               "surprise_pct": "+0.03%",
               "beat_miss": "in-line"
             },
             {
-              "fiscal_date": "2025-07-31",
+              "fiscal_date": "2025-09-30",
               "quarter": "2025-Q3",
-              "revenue": "46.74B",
-              "operating_income": "28.44B",
-              "eps": "1.08",
-              "estimated_eps": "1.01",
+              "revenue": "12.46B",
+              "operating_income": "4.01B",
+              "eps": "0.86",
+              "estimated_eps": "0.78",
+              "surprise_pct": "+0.05%",
+              "beat_miss": "beat"
+            },
+            {
+              "fiscal_date": "2025-06-30",
+              "quarter": "2025-Q2",
+              "revenue": "12.54B",
+              "operating_income": "4.32B",
+              "eps": "0.88",
+              "estimated_eps": "0.84",
               "surprise_pct": "+0.04%",
               "beat_miss": "in-line"
             },
             {
-              "fiscal_date": "2025-04-30",
-              "quarter": "2025-Q2",
-              "revenue": "44.06B",
-              "operating_income": "21.64B",
-              "eps": "0.76",
-              "estimated_eps": "0.75",
-              "surprise_pct": "+0.08%",
-              "beat_miss": "beat"
+              "fiscal_date": "2025-03-31",
+              "quarter": "2025-Q1",
+              "revenue": "11.13B",
+              "operating_income": "3.72B",
+              "eps": "0.77",
+              "estimated_eps": "0.72",
+              "surprise_pct": "+0.02%",
+              "beat_miss": "in-line"
             }
           ],
           "upcoming_events": [
             {
               "type": "earnings",
               "label": "실적 발표",
-              "date": "2026-05-20",
-              "days_until": "40",
-              "timing": "AMC"
+              "date": "2026-04-28",
+              "days_until": "18",
+              "timing": "BMO"
             }
           ],
           "news_tone": {
             "label": "neutral",
-            "score": 0.0
+            "score": 1.0
           },
           "trade_frame": {
+            "entry_price": "현재가 78.18 또는 눌림 시 76.79 USD",
+            "stop_loss": "SMA50 77.19 USD",
+            "target_1": "80.27 USD (1.5×ATR)",
+            "target_2": "애널리스트 목표 83.67 USD",
+            "risk_reward_ratio": "2.1R",
+            "position_size_note": "$10,000 계좌 1% 리스크 기준 약 71주 (ATR $1.39 기반)",
             "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-            "base_scenario": "183.91 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+            "base_scenario": "78.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
             "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-            "invalidation_price": "50일 이동평균선인 182.51 USD 아래로 밀리면 약세 시나리오 확인",
-            "watch_period": "2026-05-20 실적 발표 전까지"
+            "invalidation_price": "50일 이동평균선인 77.19 USD 아래로 밀리면 약세 시나리오 확인",
+            "watch_period": "2026-04-28 실적 발표 전까지"
           },
           "period_changes": {
-            "7d": "+3.68%",
-            "30d": "-1.14%"
+            "7d": "+1.90%",
+            "30d": "+1.40%"
+          },
+          "sec_filing_tags": [
+            "실적",
+            "기타 공시"
+          ],
+          "sec_filings": [
+            {
+              "tag": "실적",
+              "title": "COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+              "form_type": "10-K",
+              "item_number": "",
+              "catalyst_type": "hard",
+              "importance_score": 190,
+              "published_at": "2026-02-20",
+              "link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+              "source": "SEC EDGAR"
+            },
+            {
+              "tag": "기타 공시",
+              "title": "COCA COLA CO, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "form_type": "8-K",
+              "item_number": "",
+              "catalyst_type": "medium",
+              "importance_score": 120,
+              "published_at": "2026-02-20",
+              "link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010052/ko-20260219.htm",
+              "source": "SEC EDGAR"
+            }
+          ]
+        },
+        {
+          "ticker": "T",
+          "name": "AT&T Inc.",
+          "date": "2026-04-10",
+          "summary": "AT&T Inc.(T)는 26.84 USD (-1.86%)에 거래 중이며, 52주 범위 57% 위치, SMA50 27.61 USD 수준입니다. 주요 헤드라인: [실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+          "key_news": [
+            "[실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+            "[기타 공시] AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+            "Crown Castle slashes 20% workforce, forecasts dour annual site rental revenue - Reuters",
+            "AT&T Just Delivered for Investors. It's Not Too Late to Buy the Stock. - Yahoo Finance",
+            "3 Energy Stocks to Buy as AI Power Demand Surges—and 2 to Avoid - Yahoo Finance"
+          ],
+          "news_references": [
+            {
+              "title": "[실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+              "source": "SEC EDGAR",
+              "published_at": "2026-02-09",
+              "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm"
+            },
+            {
+              "title": "[기타 공시] AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "source": "SEC EDGAR",
+              "published_at": "2026-03-12",
+              "link": "https://www.sec.gov/Archives/edgar/data/732717/000119312526104098/d25847d8k.htm"
+            },
+            {
+              "title": "Crown Castle slashes 20% workforce, forecasts dour annual site rental revenue - Reuters",
+              "source": "Reuters",
+              "published_at": "Wed, 04 Feb 2026 08:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOZmNYa0pyNE9ZSDlJZ3FtWFZrYk9PNWwzZWZ6b2Y0MmcwQUdZVjdnV1dOZ21UUXliTnhqTXpBRV9SNk83SUNDcGVqdGRETDVWbl9hZTdfWGs1SHpPaFgzbWhkelF0TG9wMWxUWjVNY1JiTkVMWnQ0RlpJSkw4RlJvM25wMGg5WVVSeW9WMnJsQW9idw?oc=5"
+            },
+            {
+              "title": "AT&T Just Delivered for Investors. It's Not Too Late to Buy the Stock. - Yahoo Finance",
+              "source": "Yahoo Finance",
+              "published_at": "Wed, 22 Oct 2025 07:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPSUhrcloyVklOSjlMV2JzWFI3SkgwNERhYkdJRDl6RGVZU1dXb1p5V3FQa2xweFowNU9HVVNWT2tMMl8wRmxuZk9EYVFQVk5RY0N2VjVEYVp4YncxNlpvY0tSYVpzVzJXcDlKd282dUp0b1l6TDZkR2djT2l3X3pyWXhR?oc=5"
+            },
+            {
+              "title": "3 Energy Stocks to Buy as AI Power Demand Surges—and 2 to Avoid - Yahoo Finance",
+              "source": "Yahoo Finance",
+              "published_at": "Sun, 05 Apr 2026 12:32:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNMUM1b21xcTVKVGtxNGJSTDJ3NVhxQ093MlZIWUFrcm1iYW8zY3U4N2puSDVwMko0Nm5GbFZhblJ5d09Od2lId1pxWnY5RTNrckJZbURJczN6Z0FTUFYxTmhiYXZCY3FZclFyRDJ5aXZJUUxwX1JBbndSa090QVdYMGdubUh4dEtfb3V0LTltc0M?oc=5"
+            }
+          ],
+          "financial_highlights": [
+            "PER 8.83배 (EPS 3.04)",
+            "Forward EPS 2.54, 성장률 -5.60% YoY",
+            "시가총액 187.90B / 배당 4.14%",
+            "52주 범위 57% 위치, SMA50 27.61 USD",
+            "애널리스트 Buy (목표 30.39 USD) / 기관 67.97%"
+          ],
+          "risks_or_watchpoints": [
+            "의사결정 전 최근 실적 일정과 주요 헤드라인을 다시 확인하세요."
+          ],
+          "signal_or_takeaway": "중립 관찰 — [실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 26.16–27.52 | 손절 SMA50(27.61 USD)",
+          "data_snapshot": {
+            "Price": "26.84 USD",
+            "Daily Change": "-1.86%",
+            "Market Cap": "187.90B",
+            "Trailing P/E": "8.83",
+            "EPS": "3.04",
+            "52W High": "29.79",
+            "52W Low": "22.95",
+            "50D SMA": "27.61",
+            "200D SMA": "26.88",
+            "Volume": "33.55M",
+            "3M Avg Volume": "45.32M",
+            "Price/Book": "1.71",
+            "Dividend Yield": "4.14%",
+            "Sector": "Communication Services"
+          },
+          "fundamentals": {
+            "market_cap": "187.90B",
+            "trailing_pe": "8.83",
+            "eps": "3.04",
+            "forward_eps": "2.54",
+            "earnings_growth": "-5.60% YoY",
+            "price_to_book": "1.71",
+            "dividend_yield": "4.14%",
+            "volume": "33.55M",
+            "avg_volume_3m": "45.32M",
+            "52w_high": "29.79",
+            "52w_low": "22.95",
+            "short_float_pct": "1.40%",
+            "short_ratio": "2.56일",
+            "analyst_target_price": "30.39 USD",
+            "analyst_recommendation": "Buy",
+            "analyst_count": "23명",
+            "held_by_insiders": "0.09%",
+            "held_by_institutions": "67.97%",
+            "implied_volatility": "N/A"
+          },
+          "earnings_setup": {
+            "forward_eps": "2.54 USD/share",
+            "ttm_eps": "3.04 USD/share",
+            "forward_vs_ttm": "-16.45%",
+            "earnings_growth": "-5.60% YoY",
+            "latest_estimated_eps": "0.47 USD/share",
+            "latest_surprise_pct": "+0.12%",
+            "latest_beat_miss": "beat",
+            "next_earnings_event": "2026-04-22 실적 발표 (D-12 · BMO)"
+          },
+          "earnings_surprise_history": {
+            "consecutive_beats": 0,
+            "consecutive_misses": 0,
+            "beat_rate": "N/A",
+            "avg_surprise_pct": "N/A",
+            "pattern": "insufficient_data",
+            "post_earnings_hint": "실적 서프라이즈 데이터 부족으로 패턴 판단 불가",
+            "quarters_analyzed": 1
+          },
+          "price_action": {
+            "atr_14d": "0.68",
+            "atr_percent": "2.53%",
+            "relative_volume": "0.74x",
+            "gap_percent": "-0.44%",
+            "price_vs_sma50": "-2.78%",
+            "price_vs_sma200": "-0.17%",
+            "week52_position": "57%",
+            "rs_vs_spy": "-1.98%"
+          },
+          "quarterly_financials": [
+            {
+              "fiscal_date": "2025-12-31",
+              "quarter": "2025-Q4",
+              "revenue": "33.47B",
+              "operating_income": "6.12B",
+              "eps": "0.53",
+              "estimated_eps": "0.47",
+              "surprise_pct": "+0.12%",
+              "beat_miss": "beat"
+            },
+            {
+              "fiscal_date": "2025-09-30",
+              "quarter": "2025-Q3",
+              "revenue": "30.71B",
+              "operating_income": "6.12B",
+              "eps": "1.29",
+              "estimated_eps": "0.54",
+              "surprise_pct": "+0.00%",
+              "beat_miss": "in-line"
+            },
+            {
+              "fiscal_date": "2025-06-30",
+              "quarter": "2025-Q2",
+              "revenue": "30.85B",
+              "operating_income": "6.50B",
+              "eps": "0.62",
+              "estimated_eps": "0.53",
+              "surprise_pct": "+0.02%",
+              "beat_miss": "in-line"
+            },
+            {
+              "fiscal_date": "2025-03-31",
+              "quarter": "2025-Q1",
+              "revenue": "30.63B",
+              "operating_income": "6.26B",
+              "eps": "0.61",
+              "estimated_eps": "0.51",
+              "surprise_pct": "-0.01%",
+              "beat_miss": "in-line"
+            }
+          ],
+          "upcoming_events": [
+            {
+              "type": "ex_dividend",
+              "label": "배당락일",
+              "date": "2026-04-10",
+              "days_until": "0",
+              "timing": ""
+            },
+            {
+              "type": "earnings",
+              "label": "실적 발표",
+              "date": "2026-04-22",
+              "days_until": "12",
+              "timing": "BMO"
+            }
+          ],
+          "news_tone": {
+            "label": "bullish",
+            "score": 3.0
+          },
+          "trade_frame": {
+            "entry_price": "현재가 26.84 또는 눌림 시 26.16 USD",
+            "stop_loss": "SMA50 27.61 USD",
+            "target_1": "27.86 USD (1.5×ATR)",
+            "target_2": "애널리스트 목표 30.39 USD",
+            "risk_reward_ratio": "N/A",
+            "position_size_note": "$10,000 계좌 1% 리스크 기준 약 147주 (ATR $0.68 기반)",
+            "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
+            "base_scenario": "26.84 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+            "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
+            "invalidation_price": "50일 이동평균선인 27.61 USD 아래로 밀리면 약세 시나리오 확인",
+            "watch_period": "2026-04-10 배당락일 전까지"
+          },
+          "period_changes": {
+            "7d": "-5.26%",
+            "30d": "-1.18%"
           },
           "sec_filing_tags": [
             "실적",
@@ -1640,24 +2608,235 @@
           "sec_filings": [
             {
               "tag": "기타 공시",
-              "title": "NVIDIA CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "title": "AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
               "form_type": "8-K",
               "item_number": "",
               "catalyst_type": "medium",
               "importance_score": 120,
-              "published_at": "2026-03-06",
-              "link": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000024/nvda-20260302.htm",
+              "published_at": "2026-03-12",
+              "link": "https://www.sec.gov/Archives/edgar/data/732717/000119312526104098/d25847d8k.htm",
               "source": "SEC EDGAR"
             },
             {
               "tag": "실적",
-              "title": "NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+              "title": "AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
               "form_type": "10-K",
               "item_number": "",
               "catalyst_type": "hard",
               "importance_score": 190,
-              "published_at": "2026-02-25",
-              "link": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+              "published_at": "2026-02-09",
+              "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm",
+              "source": "SEC EDGAR"
+            }
+          ]
+        },
+        {
+          "ticker": "IONQ",
+          "name": "IonQ, Inc.",
+          "date": "2026-04-10",
+          "summary": "IonQ, Inc.(IONQ)는 28.08 USD (-3.14%)에 거래 중이며, 52주 범위 12% 위치, SMA50 34.68 USD 수준입니다. 주요 헤드라인: [기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "key_news": [
+            "[기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+            "Stocks making the biggest moves premarket: IonQ, Molina Healthcare, Tesla, Hasbro, Beyond Meat, IBM - CNBC",
+            "Sandisk Corporation (SNDK) Stock Price, News, Quote & History - Yahoo Finance",
+            "AI-Quantum Supercycle: 4 Stocks to Watch in April With 50%+ Upside - Yahoo Finance",
+            "Stocks making the biggest moves premarket: Nvidia, J.M. Smucker, Trade Desk, Nutanix & more - CNBC"
+          ],
+          "news_references": [
+            {
+              "title": "[기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "source": "SEC EDGAR",
+              "published_at": "2026-03-25",
+              "link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm"
+            },
+            {
+              "title": "Stocks making the biggest moves premarket: IonQ, Molina Healthcare, Tesla, Hasbro, Beyond Meat, IBM - CNBC",
+              "source": "CNBC",
+              "published_at": "Thu, 23 Oct 2025 07:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOTm5nbFg0UnVDQ01XRkdXME1mNXBWcWducENiNnR2SGVHeURBNlE0R0RKSnFjdGhYc2NScm5qd2xYU3RDUVc2SEFsOXctSkVqNWxoWmNPQkctdUh0VFo5bFUtVTZTT0gySjBvNUZaak1EREFIWmd0M20zbUV1MHFWN2dkZmR6M2dXVzA5WXNQR2xhMkplTjl1Y29xQ3NkcUpaSDZkYWFGR1U3bmJZZm9KOTNFRUpSUExSTnZ1dXRBZVBHeDVySW1CTkV3?oc=5"
+            },
+            {
+              "title": "Sandisk Corporation (SNDK) Stock Price, News, Quote & History - Yahoo Finance",
+              "source": "Yahoo Finance",
+              "published_at": "Wed, 08 Apr 2026 05:41:08 GMT",
+              "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE4xQ1NKM2RUYWVMenRSd1BNSGJKbEUxSXprVGNBek5Wdi14M1RobEhUNkR2SER0VWpVSlFSb0pKcjcxbG5OdXRLVzNHV3dIdw?oc=5"
+            },
+            {
+              "title": "AI-Quantum Supercycle: 4 Stocks to Watch in April With 50%+ Upside - Yahoo Finance",
+              "source": "Yahoo Finance",
+              "published_at": "Mon, 06 Apr 2026 18:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOS09lZHdLMkItU1A2cEdMWUVnR3Rvb29ZTHI3X084WTkwUTVZWFJXVDNEdmJyVElqanRINldvQllXWkVSSmQxTlNmc0JOZk0zaUhhYkNQekd1U2VUa3F4TGhrcnRfa2N0S3h0bk1mMlNQOVBIUUd5dy04Mmt1ZnRXbmhKZnRNLWRwOURkREppbVh2LU45T1B3Z0lXSQ?oc=5"
+            },
+            {
+              "title": "Stocks making the biggest moves premarket: Nvidia, J.M. Smucker, Trade Desk, Nutanix & more - CNBC",
+              "source": "CNBC",
+              "published_at": "Thu, 26 Feb 2026 08:00:00 GMT",
+              "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPVGp5Vl81alIwV0h3NUI2N2pyMHFfdVVYQUREMTI3UmUwRXZDQmFHaDdBalh1MWpCVFhjVDJvdmhMbzMwc1JmaGxZbHpYZFM1VXY0Z2hSMmo3R2dlamZyNGdPRVZrMVh2ejJ5T2MtVmF5c3NSRy1ZME1oaHpMV3N4ZUY4cHQycUk5SnYyMWZBV25TSDd1NjRrSFJWcks?oc=5"
+            }
+          ],
+          "financial_highlights": [
+            "Forward EPS -0.91, 성장률 -1391.67% YoY",
+            "시가총액 10.32B",
+            "52주 범위 12% 위치, SMA50 34.68 USD",
+            "애널리스트 Buy (목표 65.29 USD) / 기관 53.74%"
+          ],
+          "risks_or_watchpoints": [
+            "일간 -3.1% 하락 — 추가 하락 또는 데드캣 바운스 주의.",
+            "200일 이평선(46.74) 대비 -39.9% 하회 — 중기 추세 약화.",
+            "공매도 비율 21.9%로 높음 — 숏 스퀴즈 또는 추가 하락 양면 리스크."
+          ],
+          "signal_or_takeaway": "매도 경계 — [기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 25.90–30.26 | 손절 SMA50(34.68 USD)",
+          "data_snapshot": {
+            "Price": "28.08 USD",
+            "Daily Change": "-3.14%",
+            "Market Cap": "10.32B",
+            "Trailing P/E": "N/A",
+            "EPS": "-1.82",
+            "52W High": "84.64",
+            "52W Low": "20.65",
+            "50D SMA": "34.68",
+            "200D SMA": "46.74",
+            "Volume": "16.22M",
+            "3M Avg Volume": "21.18M",
+            "Price/Book": "2.68",
+            "Dividend Yield": "N/A",
+            "Sector": "Technology"
+          },
+          "fundamentals": {
+            "market_cap": "10.32B",
+            "trailing_pe": "N/A",
+            "eps": "-1.82",
+            "forward_eps": "-0.91",
+            "earnings_growth": "-1391.67% YoY",
+            "price_to_book": "2.68",
+            "dividend_yield": "N/A",
+            "volume": "16.22M",
+            "avg_volume_3m": "21.18M",
+            "52w_high": "84.64",
+            "52w_low": "20.65",
+            "short_float_pct": "21.92%",
+            "short_ratio": "3.51일",
+            "analyst_target_price": "65.29 USD",
+            "analyst_recommendation": "Buy",
+            "analyst_count": "13명",
+            "held_by_insiders": "2.55%",
+            "held_by_institutions": "53.74%",
+            "implied_volatility": "N/A"
+          },
+          "earnings_setup": {
+            "forward_eps": "-0.91 USD/share",
+            "ttm_eps": "-1.82 USD/share",
+            "forward_vs_ttm": "+50.00%",
+            "earnings_growth": "-1391.67% YoY",
+            "latest_estimated_eps": "-0.47 USD/share",
+            "latest_surprise_pct": "+5.08%",
+            "latest_beat_miss": "beat",
+            "next_earnings_event": "2026-05-06 실적 발표 (D-26 · AMC)"
+          },
+          "earnings_surprise_history": {
+            "consecutive_beats": 1,
+            "consecutive_misses": 0,
+            "beat_rate": "67%",
+            "avg_surprise_pct": "+1.4%",
+            "pattern": "mostly_beat",
+            "post_earnings_hint": "최근 3분기 중 2분기 beat (67%) — 실적 발표 전후 긍정적 반응 가능성",
+            "quarters_analyzed": 3
+          },
+          "price_action": {
+            "atr_14d": "2.18",
+            "atr_percent": "7.77%",
+            "relative_volume": "0.77x",
+            "gap_percent": "-0.83%",
+            "price_vs_sma50": "-19.04%",
+            "price_vs_sma200": "-39.92%",
+            "week52_position": "12%",
+            "rs_vs_spy": "-18.86%"
+          },
+          "quarterly_financials": [
+            {
+              "fiscal_date": "2025-12-31",
+              "quarter": "2025-Q4",
+              "revenue": "61.89M",
+              "operating_income": "-228,631,000",
+              "eps": "1.93",
+              "estimated_eps": "-0.47",
+              "surprise_pct": "+5.08%",
+              "beat_miss": "beat"
+            },
+            {
+              "fiscal_date": "2025-09-30",
+              "quarter": "2025-Q3",
+              "revenue": "39.87M",
+              "operating_income": "-168,813,000",
+              "eps": "-3.58",
+              "estimated_eps": "N/A",
+              "surprise_pct": "N/A",
+              "beat_miss": "N/A"
+            },
+            {
+              "fiscal_date": "2025-06-30",
+              "quarter": "2025-Q2",
+              "revenue": "20.69M",
+              "operating_income": "-160,592,000",
+              "eps": "-0.70",
+              "estimated_eps": "-0.29",
+              "surprise_pct": "-1.39%",
+              "beat_miss": "miss"
+            },
+            {
+              "fiscal_date": "2025-03-31",
+              "quarter": "2025-Q1",
+              "revenue": "7.57M",
+              "operating_income": "-75,679,000",
+              "eps": "-0.14",
+              "estimated_eps": "-0.29",
+              "surprise_pct": "+0.53%",
+              "beat_miss": "beat"
+            }
+          ],
+          "upcoming_events": [
+            {
+              "type": "earnings",
+              "label": "실적 발표",
+              "date": "2026-05-06",
+              "days_until": "26",
+              "timing": "AMC"
+            }
+          ],
+          "news_tone": {
+            "label": "neutral",
+            "score": 1.0
+          },
+          "trade_frame": {
+            "entry_price": "현재가 28.08 또는 눌림 시 25.90 USD",
+            "stop_loss": "SMA50 34.68 USD",
+            "target_1": "31.35 USD (1.5×ATR)",
+            "target_2": "애널리스트 목표 65.29 USD",
+            "risk_reward_ratio": "N/A",
+            "position_size_note": "$10,000 계좌 1% 리스크 기준 약 45주 (ATR $2.18 기반)",
+            "bull_scenario": "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다.",
+            "base_scenario": "28.08 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
+            "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
+            "invalidation_price": "50일 이동평균선인 34.68 USD 아래로 밀리면 약세 시나리오 확인",
+            "watch_period": "2026-05-06 실적 발표 전까지"
+          },
+          "period_changes": {
+            "7d": "-4.16%",
+            "30d": "-18.06%"
+          },
+          "sec_filing_tags": [
+            "기타 공시"
+          ],
+          "sec_filings": [
+            {
+              "tag": "기타 공시",
+              "title": "IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+              "form_type": "8-K",
+              "item_number": "",
+              "catalyst_type": "medium",
+              "importance_score": 120,
+              "published_at": "2026-03-25",
+              "link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
               "source": "SEC EDGAR"
             }
           ]
@@ -1667,6 +2846,38 @@
   ],
   "signal_stats": {
     "recent_signals": [
+      {
+        "signal_date": "2026-04-10",
+        "ticker": "XOM",
+        "signal_type": "8-K",
+        "signal_direction": "neutral",
+        "signal_price": "155.04",
+        "catalyst_tag": "기타 공시",
+        "news_tone": "neutral",
+        "trade_frame_scenario": "155.04 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+        "return_1d": "N/A",
+        "return_5d": "N/A",
+        "return_20d": "N/A",
+        "evaluated_1d": "False",
+        "evaluated_5d": "False",
+        "evaluated_20d": "False"
+      },
+      {
+        "signal_date": "2026-04-10",
+        "ticker": "T",
+        "signal_type": "10-K",
+        "signal_direction": "neutral",
+        "signal_price": "26.84",
+        "catalyst_tag": "실적",
+        "news_tone": "neutral",
+        "trade_frame_scenario": "26.84 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+        "return_1d": "N/A",
+        "return_5d": "N/A",
+        "return_20d": "N/A",
+        "evaluated_1d": "False",
+        "evaluated_5d": "False",
+        "evaluated_20d": "False"
+      },
       {
         "signal_date": "2026-04-10",
         "ticker": "NVDA",
@@ -1692,6 +2903,70 @@
         "catalyst_tag": "실적",
         "news_tone": "neutral",
         "trade_frame_scenario": "373.07 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+        "return_1d": "N/A",
+        "return_5d": "N/A",
+        "return_20d": "N/A",
+        "evaluated_1d": "False",
+        "evaluated_5d": "False",
+        "evaluated_20d": "False"
+      },
+      {
+        "signal_date": "2026-04-10",
+        "ticker": "KO",
+        "signal_type": "10-K",
+        "signal_direction": "neutral",
+        "signal_price": "78.18",
+        "catalyst_tag": "실적",
+        "news_tone": "neutral",
+        "trade_frame_scenario": "78.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+        "return_1d": "N/A",
+        "return_5d": "N/A",
+        "return_20d": "N/A",
+        "evaluated_1d": "False",
+        "evaluated_5d": "False",
+        "evaluated_20d": "False"
+      },
+      {
+        "signal_date": "2026-04-10",
+        "ticker": "IONQ",
+        "signal_type": "8-K",
+        "signal_direction": "bull",
+        "signal_price": "28.08",
+        "catalyst_tag": "기타 공시",
+        "news_tone": "neutral",
+        "trade_frame_scenario": "28.08 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
+        "return_1d": "N/A",
+        "return_5d": "N/A",
+        "return_20d": "N/A",
+        "evaluated_1d": "False",
+        "evaluated_5d": "False",
+        "evaluated_20d": "False"
+      },
+      {
+        "signal_date": "2026-04-10",
+        "ticker": "CAT",
+        "signal_type": "10-K",
+        "signal_direction": "neutral",
+        "signal_price": "787.07",
+        "catalyst_tag": "실적",
+        "news_tone": "neutral",
+        "trade_frame_scenario": "787.07 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+        "return_1d": "N/A",
+        "return_5d": "N/A",
+        "return_20d": "N/A",
+        "evaluated_1d": "False",
+        "evaluated_5d": "False",
+        "evaluated_20d": "False"
+      },
+      {
+        "signal_date": "2026-04-10",
+        "ticker": "AMD",
+        "signal_type": "8-K",
+        "signal_direction": "neutral",
+        "signal_price": "236.64",
+        "catalyst_tag": "기타 공시",
+        "news_tone": "neutral",
+        "trade_frame_scenario": "236.64 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
         "return_1d": "N/A",
         "return_5d": "N/A",
         "return_20d": "N/A",
@@ -1766,7 +3041,7 @@
     ],
     "summary_by_direction": {
       "bull": {
-        "count": 0,
+        "count": 1,
         "evaluated_5d": 0,
         "win_rate_5d": "N/A",
         "avg_return_5d": "N/A"
@@ -1778,11 +3053,15 @@
         "avg_return_5d": "N/A"
       },
       "neutral": {
-        "count": 6,
+        "count": 11,
         "evaluated_5d": 0,
         "win_rate_5d": "N/A",
         "avg_return_5d": "N/A"
       }
+    },
+    "meta_analysis": {
+      "status": "insufficient_data",
+      "total_evaluated": 0
     }
   }
 }

@@ -13,6 +13,7 @@ from src.types import PortfolioSummary, TickerAnalysis
 from src.utils.config import load_simple_mapping
 from src.utils.datastore import get_datastore
 from src.utils.datastore_csv import append_price_history_csv
+from src.utils.earnings_history import build_earnings_surprise_summary
 from src.utils.earnings_setup import build_earnings_setup, extract_earnings_countdown
 from src.utils.news_tone import build_news_tone
 from src.utils.pipeline_logging import record_pipeline_event
@@ -80,6 +81,8 @@ def write_outputs(
     direct_period_changes: dict[str, dict[str, str]] | None = None,
     portfolio_summary: PortfolioSummary | None = None,
     signal_stats: dict[str, Any] | None = None,
+    macro_context: dict[str, Any] | None = None,
+    portfolio_risk: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     output_root = Path("output")
     daily_dir = output_root / "daily"
@@ -105,6 +108,8 @@ def write_outputs(
         period_changes_by_ticker=period_changes_by_ticker,
         portfolio_summary=portfolio_summary,
         signal_stats=signal_stats,
+        macro_context=macro_context,
+        portfolio_risk=portfolio_risk,
     )
 
     daily_path = daily_dir / f"{run_date.isoformat()}.md"
@@ -115,6 +120,8 @@ def write_outputs(
             run_date,
             market_overview=market_overview or [],
             portfolio_summary=portfolio_summary,
+            macro_context=macro_context,
+            portfolio_risk=portfolio_risk,
         ),
         artifact="daily_note",
     )
@@ -153,6 +160,8 @@ def render_daily_markdown(
     run_date: date,
     market_overview: list[dict[str, str]] | None = None,
     portfolio_summary: PortfolioSummary | None = None,
+    macro_context: dict[str, Any] | None = None,
+    portfolio_risk: dict[str, Any] | None = None,
 ) -> str:
     watchlist_rows = "\n".join(
         f"| {analysis.ticker} | {analysis.data_snapshot['Price']} | {analysis.data_snapshot['Daily Change']} | {analysis.signal_or_takeaway} |"
@@ -168,12 +177,18 @@ def render_daily_markdown(
         "## 시장 개요",
         _render_market_overview(market_overview or []),
         "",
+    ]
+
+    if macro_context:
+        lines.extend(["## 매크로 환경", _render_macro_context(macro_context), ""])
+
+    lines.extend([
         "## 관심 종목 요약",
         "| 티커 | 가격 | 등락률 | 한줄 판단 |",
         "|------|------|--------|-----------|",
         watchlist_rows or "| N/A | N/A | N/A | N/A |",
         "",
-    ]
+    ])
 
     if not (_hide_empty_top_news_links_section() and top_news_links == "- 확인 가능한 뉴스 링크가 없습니다."):
         lines.extend(["## 주요 뉴스 링크", top_news_links, ""])
@@ -182,6 +197,8 @@ def render_daily_markdown(
 
     if portfolio_summary and portfolio_summary.positions:
         lines.extend(["## 포트폴리오 현황", _render_portfolio_summary(portfolio_summary), ""])
+        if portfolio_risk and portfolio_risk.get("positions_by_weight"):
+            lines.extend(["## 포트폴리오 리스크", _render_portfolio_risk(portfolio_risk), ""])
 
     lines.extend(["## 다가오는 일정", upcoming_schedule, "", "## 점검 항목", action_items, ""])
     return "\n".join(lines)
@@ -227,6 +244,9 @@ def render_ticker_markdown(
             "## 최근 변화 비교",
             _render_period_changes(analysis, period_changes),
             "",
+            "## 실적 서프라이즈 패턴",
+            _render_earnings_surprise_pattern(analysis.quarterly_financials),
+            "",
             "## 최근 4분기 재무",
             _render_quarterly_financials(analysis.quarterly_financials),
             "",
@@ -238,9 +258,6 @@ def render_ticker_markdown(
             "",
             "## 트레이드 프레임",
             _render_trade_frame(analysis.trade_frame),
-            "",
-            "## 포지션 사이징 참고",
-            _render_position_sizing_hint(analysis),
             "",
             "## 시그널 / 한줄 결론",
             analysis.signal_or_takeaway or "요약 결론이 없습니다.",
@@ -604,6 +621,22 @@ def _render_price_action(price_action: dict[str, str]) -> str:
     )
 
 
+def _render_earnings_surprise_pattern(quarterly_financials: list[dict[str, str]]) -> str:
+    summary = build_earnings_surprise_summary(quarterly_financials)
+    if summary["pattern"] == "insufficient_data":
+        return "- 실적 서프라이즈 데이터가 2분기 미만으로 패턴 분석 불가"
+    lines = [
+        f"- **패턴**: {summary['pattern']} (최근 {summary['quarters_analyzed']}분기 분석)",
+        f"- **Beat 비율**: {summary['beat_rate']} | 평균 서프라이즈: {summary['avg_surprise_pct']}",
+    ]
+    if summary["consecutive_beats"] > 0:
+        lines.append(f"- **연속 Beat**: {summary['consecutive_beats']}분기")
+    if summary["consecutive_misses"] > 0:
+        lines.append(f"- **연속 Miss**: {summary['consecutive_misses']}분기")
+    lines.append(f"- **힌트**: {summary['post_earnings_hint']}")
+    return "\n".join(lines)
+
+
 def _render_quarterly_financials(rows: list[dict[str, str]]) -> str:
     display_rows = build_quarterly_financial_display_rows(rows)
     if not display_rows:
@@ -652,15 +685,35 @@ def _render_recent_timeline(entries: list[dict[str, Any]]) -> str:
 def _render_trade_frame(trade_frame: dict[str, str]) -> str:
     if not trade_frame:
         return "- 트레이드 프레임 정보가 없습니다."
-    return "\n".join(
-        [
-            f"- **Bull**: {trade_frame.get('bull_scenario', 'N/A')}",
-            f"- **Base**: {trade_frame.get('base_scenario', 'N/A')}",
-            f"- **Bear**: {trade_frame.get('bear_scenario', 'N/A')}",
-            f"- **무효화**: {trade_frame.get('invalidation_price', 'N/A')}",
-            f"- **관찰 기간**: {trade_frame.get('watch_period', 'N/A')}",
-        ]
-    )
+    lines = []
+    # Trade plan table
+    entry = trade_frame.get('entry_price', '')
+    stop = trade_frame.get('stop_loss', '')
+    t1 = trade_frame.get('target_1', '')
+    t2 = trade_frame.get('target_2', '')
+    rr = trade_frame.get('risk_reward_ratio', '')
+    if entry or stop or t1:
+        lines.extend([
+            "| 항목 | 값 |",
+            "|------|----|",
+            f"| 진입가 | {entry or 'N/A'} |",
+            f"| 손절가 | {stop or 'N/A'} |",
+            f"| 목표 1 | {t1 or 'N/A'} |",
+            f"| 목표 2 | {t2 or 'N/A'} |",
+            f"| R:R | {rr or 'N/A'} |",
+            "",
+        ])
+    position_note = trade_frame.get('position_size_note', '')
+    if position_note:
+        lines.append(f"- **포지션 사이징**: {position_note}")
+    lines.extend([
+        f"- **Bull**: {trade_frame.get('bull_scenario', 'N/A')}",
+        f"- **Base**: {trade_frame.get('base_scenario', 'N/A')}",
+        f"- **Bear**: {trade_frame.get('bear_scenario', 'N/A')}",
+        f"- **무효화**: {trade_frame.get('invalidation_price', 'N/A')}",
+        f"- **관찰 기간**: {trade_frame.get('watch_period', 'N/A')}",
+    ])
+    return "\n".join(lines)
 
 
 def _render_news_line(item, translated_summary: str | None = None) -> str:
@@ -1090,6 +1143,57 @@ def _render_market_overview(overview: list[dict[str, str]]) -> str:
     if not overview:
         return "이번 실행에서 수집한 관심 종목 데이터를 기준으로 정리했습니다."
     return " | ".join(f"{entry['label']}: {entry['price']} ({entry['change']})" for entry in overview)
+
+
+def _render_portfolio_risk(risk: dict[str, Any]) -> str:
+    lines: list[str] = []
+    # Sector exposure
+    sector_exp = risk.get("sector_exposure", {})
+    if sector_exp:
+        lines.append("**섹터 비중**:")
+        for sector, weight in sector_exp.items():
+            lines.append(f"- {sector}: {weight:.1f}%")
+        lines.append("")
+
+    # Top positions by weight
+    positions = risk.get("positions_by_weight", [])
+    if positions:
+        lines.append("| 종목 | 비중 | 섹터 | ATR 리스크($) |")
+        lines.append("|------|------|------|--------------|")
+        for pos in positions[:10]:
+            lines.append(
+                f"| {pos['ticker']} | {pos['weight_pct']:.1f}% | {pos.get('sector', 'N/A')} | ${pos.get('atr_risk_usd', 0):,.0f} |"
+            )
+        lines.append("")
+
+    # Concentration warning
+    warning = risk.get("concentration_warning", "")
+    if warning:
+        lines.append(f"> **집중도 경고**: {warning}")
+        lines.append("")
+
+    # Risk metrics
+    lines.append(f"- **일간 ATR 리스크 합계**: ${risk.get('total_atr_risk_usd', 0):,.0f}")
+    lines.append(f"- **2×ATR 최대 손실 추정**: ${risk.get('max_drawdown_2atr_usd', 0):,.0f} ({risk.get('max_drawdown_2atr_pct', 'N/A')})")
+
+    return "\n".join(lines)
+
+
+def _render_macro_context(macro: dict[str, Any]) -> str:
+    lines: list[str] = []
+    vix = macro.get("vix", {})
+    if vix.get("level") not in (None, "N/A"):
+        lines.append(f"- **VIX**: {vix['level']} ({vix.get('change', 'N/A')}) — {vix.get('regime', 'N/A')}")
+
+    events = macro.get("upcoming_macro_events", [])
+    if events:
+        lines.append("- **향후 매크로 일정**:")
+        for event in events[:5]:
+            lines.append(f"  - {event.get('date', '')} {event.get('label', '')} (D-{event.get('days_until', '?')}, 영향: {event.get('impact', 'N/A')})")
+    else:
+        lines.append("- 향후 14일 내 주요 매크로 이벤트 없음")
+
+    return "\n".join(lines) if lines else "매크로 데이터가 없습니다."
 
 
 def _write_text_artifact(path: Path, content: str, *, artifact: str, ticker: str | None = None) -> None:

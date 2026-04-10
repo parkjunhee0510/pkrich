@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from src.types import PortfolioSummary, TickerAnalysis
+from src.utils.earnings_history import build_earnings_surprise_summary
 from src.utils.earnings_setup import build_earnings_setup
 from src.utils.sec_filings import collect_sec_filing_tags, collect_sec_filings, sort_sec_filings
 from src.utils.ticker_timelines import build_ticker_timelines
@@ -25,6 +26,8 @@ def write_json_outputs(
     period_changes_by_ticker: dict[str, dict[str, str]] | None = None,
     portfolio_summary: PortfolioSummary | None = None,
     signal_stats: dict[str, Any] | None = None,
+    macro_context: dict[str, Any] | None = None,
+    portfolio_risk: dict[str, Any] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     root = output_root or Path("output")
     data_dir = root / "data"
@@ -38,6 +41,8 @@ def write_json_outputs(
         period_changes_by_ticker or {},
         portfolio_summary,
         signal_stats or {},
+        macro_context or {},
+        portfolio_risk or {},
     )
     _write_price_history_json(data_dir / "price_history.json", data_dir / "price_history.csv")
     timelines = _write_ticker_timelines_json(data_dir / "ticker_timelines.json", merged_days)
@@ -53,6 +58,8 @@ def _write_dashboard_json(
     period_changes_by_ticker: dict[str, dict[str, str]],
     portfolio_summary: PortfolioSummary | None,
     signal_stats: dict[str, Any],
+    macro_context: dict[str, Any] | None = None,
+    portfolio_risk: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     existing_days: list[dict[str, Any]] = []
     if path.exists():
@@ -65,6 +72,8 @@ def _write_dashboard_json(
     new_day = {
         "date": run_date.isoformat(),
         "market_overview": market_overview,
+        "macro_context": macro_context or {},
+        "portfolio_risk": portfolio_risk or {},
         "portfolio_summary": _serialize_portfolio_summary(portfolio_summary),
         "tickers": [
             _serialize_analysis(a, period_changes_by_ticker.get(a.ticker, {"7d": "N/A", "30d": "N/A"}))
@@ -113,6 +122,7 @@ def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]
             analysis.upcoming_events,
             currency=currency,
         ),
+        "earnings_surprise_history": build_earnings_surprise_summary(analysis.quarterly_financials),
         "price_action": analysis.price_action,
         "quarterly_financials": analysis.quarterly_financials[:4],
         "upcoming_events": analysis.upcoming_events,

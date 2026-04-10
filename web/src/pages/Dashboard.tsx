@@ -1,11 +1,13 @@
 import type { Dispatch, SetStateAction } from 'react'
-import { useMemo, useState } from 'react'
-import type { TickerAnalysisData } from '../types'
-import { useDashboardData } from '../hooks/useDashboardData'
+import { useEffect, useMemo, useState } from 'react'
+import { ErrorState } from '../components/ErrorState'
 import { MarketOverview } from '../components/MarketOverview'
 import { SectorSummary } from '../components/SectorSummary'
-import { WatchlistTable } from '../components/WatchlistTable'
+import { DashboardSkeleton } from '../components/Skeleton'
 import { CatalystFeed, EarningsBoard, SignalPerformanceBoard, TodaySetupBoard } from '../components/TraderDashboardPanels'
+import { WatchlistTable } from '../components/WatchlistTable'
+import { useDashboardData } from '../hooks/useDashboardData'
+import type { TickerAnalysisData } from '../types'
 import {
   buildCatalystFeedSections,
   buildEarningsBoardSections,
@@ -26,7 +28,7 @@ const SECTOR_LABELS: Record<string, string> = {
   'Consumer Discretionary': '경기소비재',
   'Consumer Staples': '필수소비재',
   Industrials: '산업재',
-  'Communication Services': '커뮤니케이션 서비스',
+  'Communication Services': '커뮤니케이션',
   Utilities: '유틸리티',
   'Real Estate': '부동산',
   Materials: '소재',
@@ -41,6 +43,9 @@ type TraderFilters = {
   strongBuyUpside: boolean
 }
 
+type WatchlistSortMode = 'score' | 'earnings' | 'catalyst'
+type DensityMode = 'compact' | 'comfortable' | 'focus'
+
 const PRESET_ACCOUNT_SIZES = [10000, 50000, 100000]
 
 export function Dashboard() {
@@ -49,6 +54,8 @@ export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSector, setSelectedSector] = useState('ALL')
   const [accountSize, setAccountSize] = useState(10000)
+  const [watchlistSort, setWatchlistSort] = useState<WatchlistSortMode>('score')
+  const [density, setDensity] = useState<DensityMode>('comfortable')
   const [traderFilters, setTraderFilters] = useState<TraderFilters>({
     earningsWithin30d: false,
     rvolHigh: false,
@@ -57,6 +64,7 @@ export function Dashboard() {
     shortFloatHigh: false,
     strongBuyUpside: false,
   })
+
   const days = data?.days ?? []
   const rawIdx = selectedIdx ?? Math.max(days.length - 1, 0)
   const idx = days.length > 0 ? Math.min(rawIdx, days.length - 1) : 0
@@ -73,119 +81,172 @@ export function Dashboard() {
 
   const filteredTickers = useMemo(
     () =>
-      day.tickers
-        .filter((ticker) => {
-          const matchesQuery =
-            normalizedQuery.length === 0 ||
-            ticker.ticker.toLowerCase().includes(normalizedQuery) ||
-            ticker.name.toLowerCase().includes(normalizedQuery)
+      day.tickers.filter((ticker) => {
+        const matchesQuery =
+          normalizedQuery.length === 0 ||
+          ticker.ticker.toLowerCase().includes(normalizedQuery) ||
+          ticker.name.toLowerCase().includes(normalizedQuery)
 
-          const sector = ticker.data_snapshot['Sector'] || '기타'
-          const matchesSector = selectedSector === 'ALL' || sector === selectedSector
-          const matchesTraderFilters = applyTraderFilters(ticker, traderFilters)
-          return matchesQuery && matchesSector && matchesTraderFilters
-        })
-        .sort(
-          (left, right) =>
-            computeSetupScore(right).score - computeSetupScore(left).score || left.ticker.localeCompare(right.ticker),
-        ),
+        const sector = ticker.data_snapshot['Sector'] || '기타'
+        const matchesSector = selectedSector === 'ALL' || sector === selectedSector
+        const matchesTraderFilters = applyTraderFilters(ticker, traderFilters)
+        return matchesQuery && matchesSector && matchesTraderFilters
+      }),
     [day.tickers, normalizedQuery, selectedSector, traderFilters],
   )
 
+  const sortedWatchlistTickers = useMemo(
+    () => sortWatchlistTickers(filteredTickers, watchlistSort),
+    [filteredTickers, watchlistSort],
+  )
   const topSetupCards = useMemo(() => buildSetupCards(filteredTickers, 5), [filteredTickers])
   const earningsBoardSections = useMemo(() => buildEarningsBoardSections(day.tickers), [day.tickers])
   const catalystFeedSections = useMemo(() => buildCatalystFeedSections(day.tickers), [day.tickers])
   const signalHighlights = useMemo(() => buildSignalPerformanceHighlights(data?.signal_stats), [data?.signal_stats])
+  const emptyState = useMemo(
+    () => buildEmptyStateMessage(searchQuery, selectedSector, traderFilters),
+    [searchQuery, selectedSector, traderFilters],
+  )
 
-  if (loading) return <p className="status">Loading...</p>
-  if (error) return <p className="status error">Failed to load data: {error}</p>
+  useEffect(() => {
+    document.title = `대시보드 · Stock Research`
+  }, [])
+
+  if (loading) return <DashboardSkeleton />
+  if (error) return <ErrorState message={error} />
   if (!data || data.days.length === 0) return <p className="status">No data available.</p>
 
   return (
-    <div className="dashboard">
+    <div className="dashboard" data-density={density}>
       <div className="dashboard-header">
         <h2>트레이더 워크스페이스 · {day.date}</h2>
         {data.days.length > 1 && (
           <select className="date-select" value={idx} onChange={(e) => setSelectedIdx(Number(e.target.value))}>
             {data.days.map((entry, index) => (
-              <option key={entry.date} value={index}>{entry.date}</option>
+              <option key={entry.date} value={index}>
+                {entry.date}
+              </option>
             ))}
           </select>
         )}
       </div>
 
-      <div className="dashboard-controls">
-        <input
-          className="dashboard-search"
-          type="search"
-          placeholder="티커 또는 종목명 검색"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <select className="dashboard-filter" value={selectedSector} onChange={(e) => setSelectedSector(e.target.value)}>
-          <option value="ALL">전체 섹터</option>
-          {sectors.map((sector) => (
-            <option key={sector} value={sector}>
-              {SECTOR_LABELS[sector] ?? sector}
-            </option>
-          ))}
-        </select>
-        <label className="account-size-control">
-          <span>계좌 크기</span>
+      <div className="dashboard-quick-bar">
+        <div className="dashboard-controls">
           <input
-            type="number"
-            min={1000}
-            step={1000}
-            value={accountSize}
-            onChange={(e) => setAccountSize(Number(e.target.value) || 10000)}
+            className="dashboard-search"
+            type="search"
+            placeholder="티커 또는 종목명 검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </label>
-      </div>
+          <select className="dashboard-filter" value={selectedSector} onChange={(e) => setSelectedSector(e.target.value)}>
+            <option value="ALL">전체 섹터</option>
+            {sectors.map((sector) => (
+              <option key={sector} value={sector}>
+                {SECTOR_LABELS[sector] ?? sector}
+              </option>
+            ))}
+          </select>
+          <label className="account-size-control">
+            <span>계좌 크기</span>
+            <input
+              type="number"
+              min={1000}
+              step={1000}
+              value={accountSize}
+              onChange={(e) => setAccountSize(Number(e.target.value) || 10000)}
+            />
+          </label>
+        </div>
 
-      <div className="preset-chip-row">
-        {PRESET_ACCOUNT_SIZES.map((preset) => (
-          <button
-            key={preset}
-            type="button"
-            className={`preset-chip ${accountSize === preset ? 'active' : ''}`}
-            onClick={() => setAccountSize(preset)}
-          >
-            {preset.toLocaleString()} USD
-          </button>
-        ))}
-      </div>
+        <div className="dashboard-quick-bar-row">
+          <div className="preset-chip-row compact-row">
+            {PRESET_ACCOUNT_SIZES.map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                className={`preset-chip ${accountSize === preset ? 'active' : ''}`}
+                onClick={() => setAccountSize(preset)}
+              >
+                {preset.toLocaleString()} USD
+              </button>
+            ))}
+          </div>
 
-      <div className="trader-filter-row">
-        <FilterChip
-          label="실적 30일 이내"
-          active={traderFilters.earningsWithin30d}
-          onClick={() => toggleTraderFilter(setTraderFilters, 'earningsWithin30d')}
-        />
-        <FilterChip
-          label="RVOL > 1.2"
-          active={traderFilters.rvolHigh}
-          onClick={() => toggleTraderFilter(setTraderFilters, 'rvolHigh')}
-        />
-        <FilterChip
-          label="RS > 0"
-          active={traderFilters.rsPositive}
-          onClick={() => toggleTraderFilter(setTraderFilters, 'rsPositive')}
-        />
-        <FilterChip
-          label="Hard catalyst only"
-          active={traderFilters.hardCatalystOnly}
-          onClick={() => toggleTraderFilter(setTraderFilters, 'hardCatalystOnly')}
-        />
-        <FilterChip
-          label="공매도 > 5%"
-          active={traderFilters.shortFloatHigh}
-          onClick={() => toggleTraderFilter(setTraderFilters, 'shortFloatHigh')}
-        />
-        <FilterChip
-          label="Strong Buy + 목표가 15%+"
-          active={traderFilters.strongBuyUpside}
-          onClick={() => toggleTraderFilter(setTraderFilters, 'strongBuyUpside')}
-        />
+          <div className="watchlist-sort-row compact-row">
+            <span className="watchlist-sort-label">카드 정렬</span>
+            <button
+              type="button"
+              className={`preset-chip ${watchlistSort === 'score' ? 'active' : ''}`}
+              onClick={() => setWatchlistSort('score')}
+            >
+              점수순
+            </button>
+            <button
+              type="button"
+              className={`preset-chip ${watchlistSort === 'earnings' ? 'active' : ''}`}
+              onClick={() => setWatchlistSort('earnings')}
+            >
+              실적 임박순
+            </button>
+            <button
+              type="button"
+              className={`preset-chip ${watchlistSort === 'catalyst' ? 'active' : ''}`}
+              onClick={() => setWatchlistSort('catalyst')}
+            >
+              하드 촉매순
+            </button>
+          </div>
+        </div>
+
+        <div className="dashboard-quick-bar-row">
+          <div className="trader-filter-row compact-row">
+            <FilterChip
+              label="실적 30일 이내"
+              active={traderFilters.earningsWithin30d}
+              onClick={() => toggleTraderFilter(setTraderFilters, 'earningsWithin30d')}
+            />
+            <FilterChip
+              label="RVOL > 1.2"
+              active={traderFilters.rvolHigh}
+              onClick={() => toggleTraderFilter(setTraderFilters, 'rvolHigh')}
+            />
+            <FilterChip
+              label="RS > 0"
+              active={traderFilters.rsPositive}
+              onClick={() => toggleTraderFilter(setTraderFilters, 'rsPositive')}
+            />
+            <FilterChip
+              label="Hard catalyst only"
+              active={traderFilters.hardCatalystOnly}
+              onClick={() => toggleTraderFilter(setTraderFilters, 'hardCatalystOnly')}
+            />
+            <FilterChip
+              label="공매도 > 5%"
+              active={traderFilters.shortFloatHigh}
+              onClick={() => toggleTraderFilter(setTraderFilters, 'shortFloatHigh')}
+            />
+            <FilterChip
+              label="Strong Buy + 목표가 15%+"
+              active={traderFilters.strongBuyUpside}
+              onClick={() => toggleTraderFilter(setTraderFilters, 'strongBuyUpside')}
+            />
+          </div>
+
+          <div className="density-chip-row compact-row">
+            <span className="watchlist-sort-label">밀도</span>
+            <button type="button" className={`preset-chip ${density === 'compact' ? 'active' : ''}`} onClick={() => setDensity('compact')}>
+              Compact
+            </button>
+            <button type="button" className={`preset-chip ${density === 'comfortable' ? 'active' : ''}`} onClick={() => setDensity('comfortable')}>
+              Comfortable
+            </button>
+            <button type="button" className={`preset-chip ${density === 'focus' ? 'active' : ''}`} onClick={() => setDensity('focus')}>
+              Focus
+            </button>
+          </div>
+        </div>
       </div>
 
       <TodaySetupBoard cards={topSetupCards} />
@@ -199,10 +260,13 @@ export function Dashboard() {
       <MarketOverview entries={day.market_overview} />
       <SectorSummary tickers={day.tickers} />
 
-      {filteredTickers.length > 0 ? (
-        <WatchlistTable tickers={filteredTickers} accountSize={accountSize} />
+      {sortedWatchlistTickers.length > 0 ? (
+        <WatchlistTable tickers={sortedWatchlistTickers} accountSize={accountSize} density={density} />
       ) : (
-        <p className="status">조건에 맞는 종목이 없습니다.</p>
+        <div className="dashboard-empty-state">
+          <strong>{emptyState.title}</strong>
+          <p>{emptyState.body}</p>
+        </div>
       )}
     </div>
   )
@@ -211,7 +275,7 @@ export function Dashboard() {
 function applyTraderFilters(ticker: TickerAnalysisData, filters: TraderFilters): boolean {
   if (filters.earningsWithin30d) {
     const earnings = getNextEarningsEvent(ticker)
-    const daysUntil = earnings ? parseInt(earnings.days_until, 10) : NaN
+    const daysUntil = earnings ? parseInt(earnings.days_until, 10) : Number.NaN
     if (Number.isNaN(daysUntil) || daysUntil > 30) {
       return false
     }
@@ -276,4 +340,86 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
       {label}
     </button>
   )
+}
+
+function sortWatchlistTickers(tickers: TickerAnalysisData[], mode: WatchlistSortMode): TickerAnalysisData[] {
+  return [...tickers].sort((left, right) => {
+    if (mode === 'earnings') {
+      const leftDays = parseEventDays(getNextEarningsEvent(left)?.days_until)
+      const rightDays = parseEventDays(getNextEarningsEvent(right)?.days_until)
+      if (leftDays !== rightDays) {
+        return leftDays - rightDays
+      }
+    }
+
+    if (mode === 'catalyst') {
+      const leftCatalyst = getLatestCatalystItem(left)
+      const rightCatalyst = getLatestCatalystItem(right)
+      const leftRank = catalystLevelRank(leftCatalyst?.level)
+      const rightRank = catalystLevelRank(rightCatalyst?.level)
+      if (leftRank !== rightRank) {
+        return rightRank - leftRank
+      }
+      const sortScoreDiff = (rightCatalyst?.sortScore ?? 0) - (leftCatalyst?.sortScore ?? 0)
+      if (sortScoreDiff !== 0) {
+        return sortScoreDiff
+      }
+    }
+
+    const scoreDiff = computeSetupScore(right).score - computeSetupScore(left).score
+    if (scoreDiff !== 0) {
+      return scoreDiff
+    }
+
+    return left.ticker.localeCompare(right.ticker)
+  })
+}
+
+function parseEventDays(value?: string): number {
+  if (!value) return Number.POSITIVE_INFINITY
+  const parsed = Number.parseInt(value, 10)
+  return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed
+}
+
+function catalystLevelRank(level?: string): number {
+  if (level === 'hard') return 3
+  if (level === 'medium') return 2
+  if (level === 'soft') return 1
+  return 0
+}
+
+function buildEmptyStateMessage(query: string, sector: string, filters: TraderFilters): { title: string; body: string } {
+  const hasFilter = Object.values(filters).some(Boolean)
+  if (query.trim()) {
+    return {
+      title: '검색 결과가 없습니다.',
+      body: `"${query.trim()}"와 일치하는 종목이 없습니다. 티커 약어로 다시 찾거나 검색 필터를 조금 줄여보세요.`,
+    }
+  }
+
+  if (sector !== 'ALL' && hasFilter) {
+    return {
+      title: '조건이 너무 좁습니다.',
+      body: '선택한 섹터와 현재 필터 조합을 동시에 만족하는 종목이 없습니다. 섹터 또는 필터 하나를 먼저 풀고 다시 보시면 가장 빠릅니다.',
+    }
+  }
+
+  if (filters.hardCatalystOnly) {
+    return {
+      title: '오늘은 하드 촉매 후보가 없습니다.',
+      body: '지금 조건에서는 hard catalyst가 비어 있습니다. 정렬을 실적 임박순으로 바꾸거나 Catalyst Feed의 medium 탭을 먼저 확인해보세요.',
+    }
+  }
+
+  if (hasFilter) {
+    return {
+      title: '필터에 맞는 종목이 없습니다.',
+      body: '현재 필터 조합에 맞는 종목이 없습니다. 필터를 한두 개 줄이거나 카드 정렬을 바꿔 더 넓은 후보군부터 확인해보세요.',
+    }
+  }
+
+  return {
+    title: '표시할 종목이 없습니다.',
+    body: '데이터가 비어 있거나 아직 오늘 결과가 생성되지 않았습니다. 파이프라인 산출물을 먼저 확인해보세요.',
+  }
 }

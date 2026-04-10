@@ -68,8 +68,8 @@ class FallbackSignalTests(unittest.TestCase):
     def test_strong_rally_signal_uses_trader_format(self) -> None:
         signal = _build_fallback_signal(_market(change=4.5, price_vs_sma50="+5.0%", rs_vs_spy="+3.0%"), _news())
         self.assertIn("매수 관찰", signal)
-        self.assertIn("진입존", signal)
-        self.assertIn("무효화", signal)
+        self.assertIn("진입 트리거", signal)
+        self.assertIn("손절", signal)
 
     def test_flat_signal_uses_neutral_observation(self) -> None:
         signal = _build_fallback_signal(_market(change=0.2), [])

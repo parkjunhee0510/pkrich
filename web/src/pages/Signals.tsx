@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { TablePageSkeleton } from '../components/Skeleton'
+import { ErrorState } from '../components/ErrorState'
 import type { SignalHistoryRow, SignalDirectionSummary } from '../types'
 import { changeColor } from '../utils/format'
 
@@ -59,9 +62,9 @@ function SignalRow({ signal }: { signal: SignalHistoryRow }) {
     <tr>
       <td>{signal.signal_date}</td>
       <td>
-        <a href={`${import.meta.env.BASE_URL}ticker/${signal.ticker}`} className="ticker-link">
+        <Link to={`/ticker/${signal.ticker}`} className="ticker-link">
           {signal.ticker}
-        </a>
+        </Link>
       </td>
       <td>
         <span
@@ -85,8 +88,12 @@ export function Signals() {
   const [directionFilter, setDirectionFilter] = useState<string>('ALL')
   const [tickerFilter, setTickerFilter] = useState('')
 
-  if (loading) return <p className="status">Loading...</p>
-  if (error) return <p className="status error">Failed to load data: {error}</p>
+  useEffect(() => {
+    document.title = '시그널 검증 · Stock Research'
+  }, [])
+
+  if (loading) return <TablePageSkeleton title="시그널 검증 통계" />
+  if (error) return <ErrorState message={error} />
   if (!data) return <p className="status">No data available.</p>
 
   const signalStats = data.signal_stats

@@ -25,6 +25,7 @@ _ALPHA_VANTAGE_DELAY_SECONDS = 12.0
 _MARKET_INDICES = [
     ("^GSPC", "S&P 500", ["^spx", "^spx.us", "spx.us"]),
     ("^NDX", "NASDAQ 100", ["^ndx", "^ndx.us", "ndx.us"]),
+    ("^VIX", "VIX", ["^vix", "^vix.us", "vix.us"]),
 ]
 _SPY_BENCHMARK = ("SPY", ["spy.us"])
 _EVENT_LOOKAHEAD_DAYS = 14

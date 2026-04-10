@@ -113,6 +113,12 @@ def _sample_analysis() -> TickerAnalysis:
         ],
         news_tone={'label': 'bullish', 'score': 1.0},
         trade_frame={
+            'entry_price': '현재가 $100.50 또는 SMA50 $98.50 눌림 시',
+            'stop_loss': 'SMA50 $98.50',
+            'target_1': '$105.00 (1.5×ATR)',
+            'target_2': '애널리스트 목표 $120.00',
+            'risk_reward_ratio': '2.3R',
+            'position_size_note': '$10,000 계좌 1% 리스크 기준 약 30주',
             'bull_scenario': '실적 beat와 거래량 확대가 이어지면 상단 돌파를 시도할 수 있습니다.',
             'base_scenario': '실적 전까지 현재 구간에서 방향성 탐색이 이어질 가능성이 큽니다.',
             'bear_scenario': '50일선 이탈 시 단기 조정 압력이 커질 수 있습니다.',
@@ -205,9 +211,6 @@ class OutputTests(unittest.TestCase):
         self.assertIn('## 트레이드 프레임', content)
         self.assertIn('- **Bull**: 실적 beat와 거래량 확대가 이어지면 상단 돌파를 시도할 수 있습니다.', content)
         self.assertIn('- **무효화**: 50일 이동평균선인 98.50 USD 하향 이탈 시', content)
-        self.assertIn('## 포지션 사이징 참고', content)
-        self.assertIn('- ATR(14): 5.23 -> 1% 리스크 기준 포지션: 10,000 계좌에서 약 19주', content)
-        self.assertIn('- 애널리스트 목표가 기준 리스크/리워드: 2.87R', content)
         self.assertIn('| 거래량 | 12.30M 주 |', content)
         self.assertIn('| 3개월 평균 거래량 | 18.50M 주 |', content)
         self.assertIn('| EPS (TTM) | 6.10 USD/share |', content)

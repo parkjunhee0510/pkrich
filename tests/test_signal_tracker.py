@@ -33,6 +33,12 @@ def _analysis() -> TickerAnalysis:
         signal_or_takeaway="상승 모멘텀이 유지되는지 점검",
         data_snapshot={"Price": "100.00 USD", "Daily Change": "+1.00%"},
         trade_frame={
+            "entry_price": "현재가 $100.00",
+            "stop_loss": "SMA50 $98.50",
+            "target_1": "$105.00 (1.5×ATR)",
+            "target_2": "애널리스트 목표 $120.00",
+            "risk_reward_ratio": "1.5R",
+            "position_size_note": "$10,000 계좌 1% 리스크 기준 약 30주",
             "bull_scenario": "상승 지속",
             "base_scenario": "박스권 소화",
             "bear_scenario": "이동평균 이탈",

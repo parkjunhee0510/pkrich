@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+import re
 from dataclasses import dataclass
 from datetime import date
 from typing import Any
@@ -30,6 +31,9 @@ _SECTOR_TRANSLATIONS = {
     'Materials': '소재',
 }
 _MAX_BATCH_SPLIT_DEPTH = 6
+_NUMERIC_HIGHLIGHT_PATTERN = re.compile(
+    r"(?:[$€₩]\s*[-+]?\d[\d,.]*(?:\.\d+)?)|(?:[-+]?\d[\d,.]*(?:\.\d+)?\s*(?:%p|%|배|x|USD|KRW|원|달러|M|B|T|억|만|조))"
+)
 
 
 @dataclass(frozen=True)
@@ -44,11 +48,13 @@ def analyze_tickers(
     collected: dict[str, CollectedTickerData],
     news_map: dict[str, list[NewsItem]],
     run_date: date,
+    *,
+    macro_context: dict[str, Any] | None = None,
 ) -> list[TickerAnalysis]:
     load_dotenv()
     model_profile = load_model_profile()
     if os.getenv('OPENAI_API_KEY'):
-        llm_results = _analyze_with_openai(watchlist, collected, news_map, run_date, model_profile=model_profile)
+        llm_results = _analyze_with_openai(watchlist, collected, news_map, run_date, model_profile=model_profile, macro_context=macro_context)
         if llm_results:
             return llm_results
     return _build_fallback_analyses(watchlist, collected, news_map, run_date)
@@ -61,6 +67,7 @@ def _analyze_with_openai(
     run_date: date,
     *,
     model_profile: ModelProfile,
+    macro_context: dict[str, Any] | None = None,
 ) -> list[TickerAnalysis]:
     try:
         from openai import OpenAI
@@ -79,7 +86,7 @@ def _analyze_with_openai(
         return []
 
     try:
-        return _analyze_batches_with_client(client, model_profile, watchlist, collected, news_map, run_date)
+        return _analyze_batches_with_client(client, model_profile, watchlist, collected, news_map, run_date, macro_context=macro_context)
     except Exception as exc:
         _log_analyzer_event(
             'openai_analyzer_failed',
@@ -100,6 +107,8 @@ def _analyze_batches_with_client(
     collected: dict[str, CollectedTickerData],
     news_map: dict[str, list[NewsItem]],
     run_date: date,
+    *,
+    macro_context: dict[str, Any] | None = None,
 ) -> list[TickerAnalysis]:
     model_profile = _coerce_model_profile(model_profile_or_name)
     prepared = _prepare_payload_items(watchlist, collected, news_map)
@@ -118,6 +127,7 @@ def _analyze_batches_with_client(
             batch_number=batch_number,
             total_batches=len(batches),
             retry_depth=0,
+            macro_context=macro_context,
         )
 
     return [analyses_by_ticker[item.ticker] for item in watchlist if item.ticker in analyses_by_ticker]
@@ -205,6 +215,7 @@ def _process_batch(
     batch_number: int,
     total_batches: int,
     retry_depth: int,
+    macro_context: dict[str, Any] | None = None,
 ) -> None:
     payload = [entry.payload for entry in batch]
     batch_items = [entry.item for entry in batch]
@@ -238,6 +249,7 @@ def _process_batch(
             total_batches=total_batches,
             retry_depth=retry_depth + 1,
             reason='estimated_token_budget_exceeded',
+            macro_context=macro_context,
         )
         return
 
@@ -252,6 +264,7 @@ def _process_batch(
         estimated_tokens=estimated_tokens,
         token_budget=token_budget,
         retry_depth=retry_depth,
+        macro_context=macro_context,
     )
     if parsed is None:
         if len(batch) > 1 and retry_depth < _MAX_BATCH_SPLIT_DEPTH:
@@ -267,6 +280,7 @@ def _process_batch(
                 total_batches=total_batches,
                 retry_depth=retry_depth + 1,
                 reason='batch_request_failed',
+                macro_context=macro_context,
             )
             return
 
@@ -333,6 +347,7 @@ def _split_and_retry_batch(
     total_batches: int,
     retry_depth: int,
     reason: str,
+    macro_context: dict[str, Any] | None = None,
 ) -> None:
     midpoint = max(1, len(batch) // 2)
     left = batch[:midpoint]
@@ -363,6 +378,7 @@ def _split_and_retry_batch(
             batch_number=batch_number,
             total_batches=total_batches,
             retry_depth=retry_depth,
+            macro_context=macro_context,
         )
 
 
@@ -442,9 +458,10 @@ def _call_openai_batch(
     estimated_tokens: int,
     token_budget: int,
     retry_depth: int,
+    macro_context: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]] | None:
     try:
-        user_prompt = _build_user_prompt(payload, run_date)
+        user_prompt = _build_user_prompt(payload, run_date, macro_context=macro_context)
         response = client.responses.create(
             model=model_profile.model,
             max_output_tokens=model_profile.max_output_tokens,
@@ -454,22 +471,7 @@ def _call_openai_batch(
                     'content': [
                         {
                             'type': 'input_text',
-                            'text': (
-                                'You are a professional equity research analyst writing actionable trading notes. '
-                                'Your audience is an active swing trader who needs: (1) concrete price levels for entries and stops, '
-                                '(2) catalyst timelines, (3) quantitative evidence over qualitative narratives. '
-                                'Use only the provided data. Return strict JSON with key \'tickers\'. '
-                                'All human-readable field values must be written in Korean. '
-                                'Keep ticker symbols and company names unchanged. '
-                                'Rules: '
-                                '- Every price-related statement MUST include a specific dollar amount or percentage. '
-                                '- summary must be exactly 2 sentences: first sentence = current situation with price context, '
-                                'second sentence = upcoming catalyst or key risk with timeline. '
-                                '- financial_highlights: max 5 items, each MUST contain a number (margin %, growth rate, ratio). '
-                                '- risks_or_watchpoints: max 4 items, each must specify a measurable trigger (price level, date, or threshold). '
-                                '- signal_or_takeaway: one actionable sentence with direction, entry zone, and invalidation price. '
-                                '- trade_frame: use provided ATR and SMA values for stop loss and target calculations.'
-                            ),
+                            'text': _build_system_prompt(),
                         }
                     ],
                 },
@@ -510,6 +512,31 @@ def _call_openai_batch(
         )
         return None
 
+
+def _build_system_prompt() -> str:
+    return (
+        'You are a professional equity research analyst writing actionable trading notes. '
+        'Your audience is an active swing trader who needs: (1) concrete price levels for entries and stops, '
+        '(2) catalyst timelines, (3) quantitative evidence over qualitative narratives. '
+        'Use only the provided data. Return strict JSON with key \'tickers\'. '
+        'All human-readable field values must be written in Korean. '
+        'Keep ticker symbols and company names unchanged. '
+        'Rules: '
+        '- Every price-related statement MUST include a specific dollar amount or percentage. '
+        '- summary must be exactly 2 sentences: first sentence = current situation with price context, '
+        'second sentence = upcoming catalyst or key risk with timeline. '
+        '- financial_highlights: max 5 items, each MUST contain a number (margin %, growth rate, ratio). '
+        '- risks_or_watchpoints: max 4 items, each must specify a measurable trigger (price level, date, or threshold). '
+        '- signal_or_takeaway: one structured sentence: "[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격1]/[가격2] | 손절 [가격] (R:R [비율])" '
+        'Direction options: 매수 관찰, 매수 유지, 중립 관찰, 중립 경계, 매도 경계. '
+        '- trade_frame: use provided ATR and SMA values for stop loss and target calculations. '
+        'Include entry_price (current price or pullback zone), stop_loss (SMA50 or price - 2×ATR), '
+        'target_1 (near resistance, 1-2 ATR above entry), target_2 (analyst target or 52W high), '
+        'risk_reward_ratio (reward/risk as "X.XR" format), position_size_note (ATR-based 1% risk sizing hint). '
+        '- If any input field is "N/A" or missing, do not repeat it. Instead, infer from neighboring metrics when reasonable, '
+        'or omit only that specific data point.'
+    )
+
     usage_cost = calculate_response_cost(response, model_profile)
     record_pipeline_event(
         'analyzer',
@@ -548,7 +575,7 @@ def _call_openai_batch(
         return None
 
 
-def _build_user_prompt(payload: list[dict[str, Any]], run_date: date) -> str:
+def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_context: dict[str, Any] | None = None) -> str:
     compact_context = "\n\n".join(_build_ticker_context(entry) for entry in payload)
     instructions = (
         'Create structured research notes for each ticker in Korean.\n'
@@ -565,18 +592,38 @@ def _build_user_prompt(payload: list[dict[str, Any]], run_date: date) -> str:
         'Include: margin %, growth rates, PE/PB vs sector average, FCF yield, debt ratio when available.\n\n'
         'risks_or_watchpoints: Max 4 items. Each must specify a MEASURABLE trigger. '
         'Good: "SMA200($230.50) 하향 이탈 시 중기 추세 전환 확인". Bad: "시장 변동성에 유의".\n\n'
-        'signal_or_takeaway: One sentence in Korean: "[방향] — [핵심 catalyst] | 진입존 [가격범위] / 무효화 [가격]". '
-        'Direction options: 매수 관찰, 매수 유지, 중립 관찰, 중립 경계, 매도 경계.\n\n'
+        'signal_or_takeaway: One structured sentence in Korean: '
+        '"[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격1]/[가격2] | 손절 [가격] (R:R [비율])". '
+        'Direction options: 매수 관찰, 매수 유지, 중립 관찰, 중립 경계, 매도 경계. '
+        'R:R = (target_1 - entry) / (entry - stop_loss), format as "X.XR".\n\n'
         'trade_frame:\n'
-        '- invalidation_price: Use [Key Levels] SMA50 price from data. If unavailable, use price minus 2×ATR from [Price Action].\n'
-        '- bull_scenario: Reference analyst target price or 52W high as upside target. Max 2 sentences.\n'
+        '- entry_price: Current price or optimal pullback zone (e.g. "현재가 $150.00 또는 SMA50 $145.20 눌림 시"). Use ATR for pullback range.\n'
+        '- stop_loss: SMA50 price from [Key Levels], or price minus 2×ATR. Must be a specific dollar amount.\n'
+        '- target_1: Near-term resistance. Use price + 1-2 ATR, or recent swing high.\n'
+        '- target_2: Extended target. Use analyst target price or 52W high.\n'
+        '- risk_reward_ratio: Calculate (target_1 - entry) / (entry - stop_loss). Format as "X.XR".\n'
+        '- position_size_note: "$10,000 계좌 1% 리스크 기준 약 N주 (ATR $X.XX 기반)" — calculate shares = $100 / ATR.\n'
+        '- invalidation_price: Same as stop_loss but with context (e.g. "SMA50 $145.20 종가 하회 시 추세 전환 확인").\n'
+        '- bull_scenario: Reference target_2 or analyst target. Max 2 sentences.\n'
         '- base_scenario: Most likely range-bound action. Reference current price ± 1 ATR. Max 2 sentences.\n'
         '- bear_scenario: Specify downside trigger (SMA break, earnings miss). Max 2 sentences.\n'
         '- watch_period: Use next earnings date from [Earnings] if within 60 days; otherwise "다음 주요 catalyst".'
     )
+    macro_section = ""
+    if macro_context:
+        vix = macro_context.get("vix", {})
+        events = macro_context.get("upcoming_macro_events", [])
+        macro_lines = []
+        if vix.get("level") not in (None, "N/A"):
+            macro_lines.append(f"VIX: {vix['level']} ({vix.get('change', 'N/A')}) — {vix.get('regime', 'N/A')}")
+        for evt in events[:3]:
+            macro_lines.append(f"{evt.get('type', '')}: {evt.get('date', '')} (D-{evt.get('days_until', '?')})")
+        if macro_lines:
+            macro_section = "\n\n[Macro Context]\n" + "\n".join(macro_lines)
+
     return (
         f'{instructions}\n'
-        f'Data date: {run_date.isoformat()}\n\n'
+        f'Data date: {run_date.isoformat()}{macro_section}\n\n'
         'Compact context:\n'
         f'{compact_context}\n\n'
         'Structured input JSON:\n'
@@ -788,24 +835,90 @@ def _build_fallback_signal(market: CollectedTickerData, ticker_news: list[NewsIt
         if not headline:
             catalyst = '방향성 미확정, 추가 재료 대기'
 
-    return f'{direction} — {catalyst} | 진입존 {entry_zone} / 무효화 {invalidation}'
+    # Compute R:R for signal line
+    rr_text = ""
+    atr_value = _parse_float_from_text(market.atr_14d)
+    sma50_value = _parse_float_from_text(market.sma_50)
+    if market.price is not None and atr_value is not None and atr_value > 0:
+        stop_val = sma50_value if sma50_value is not None else (market.price - 2 * atr_value)
+        target_val = market.price + 1.5 * atr_value
+        risk = market.price - stop_val
+        reward = target_val - market.price
+        if risk > 0 and reward > 0:
+            rr_text = f" (R:R {reward / risk:.1f}R)"
+
+    return f'{direction} — {catalyst} | 진입 트리거 {entry_zone} | 손절 {invalidation}{rr_text}'
 
 
 def _build_fallback_trade_frame(market: CollectedTickerData) -> dict[str, str]:
-    price_text = f"{market.price:.2f} {market.currency}" if market.price is not None else "현재 가격 기준"
+    price = market.price
+    price_text = f"{price:.2f} {market.currency}" if price is not None else "현재 가격 기준"
     sma50_text = _with_currency(market.sma_50, market.currency)
-    sma200_text = _with_currency(market.sma_200, market.currency)
-    invalidation_anchor = sma50_text if sma50_text != "N/A" else price_text
+    sma50_val = _parse_float_from_text(market.sma_50)
+    atr_val = _parse_float_from_text(market.atr_14d)
+    target_val = _parse_float_from_text(market.analyst_target_price)
+    w52_high_val = _parse_float_from_text(market.week52_high)
     watch_period = _build_watch_period(market.upcoming_events)
 
-    bull_scenario = "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다."
-    base_scenario = f"{price_text} 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-    bear_scenario = "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다."
+    # Entry price
+    entry_price = price_text
+    if price is not None and atr_val is not None and atr_val > 0:
+        pullback = price - atr_val
+        entry_price = f"현재가 {price:.2f} 또는 눌림 시 {pullback:.2f} {market.currency}"
+
+    # Stop loss
+    if sma50_val is not None and sma50_val > 0:
+        stop_loss = f"SMA50 {sma50_val:.2f} {market.currency}"
+    elif price is not None and atr_val is not None and atr_val > 0:
+        stop_loss = f"{(price - 2 * atr_val):.2f} {market.currency} (2×ATR)"
+    else:
+        stop_loss = "데이터 부족"
+
+    stop_val = sma50_val if sma50_val is not None else (price - 2 * atr_val if price is not None and atr_val is not None else None)
+
+    # Targets
+    if price is not None and atr_val is not None and atr_val > 0:
+        t1_val = price + 1.5 * atr_val
+        target_1 = f"{t1_val:.2f} {market.currency} (1.5×ATR)"
+    else:
+        t1_val = None
+        target_1 = "데이터 부족"
+
+    if target_val is not None and target_val > 0:
+        target_2 = f"애널리스트 목표 {target_val:.2f} {market.currency}"
+        t2_val = target_val
+    elif w52_high_val is not None:
+        target_2 = f"52주 고점 {w52_high_val:.2f} {market.currency}"
+        t2_val = w52_high_val
+    else:
+        target_2 = "데이터 부족"
+        t2_val = None
+
+    # R:R ratio
+    rr_text = "N/A"
+    if price is not None and stop_val is not None and t1_val is not None:
+        risk = price - stop_val
+        reward = t1_val - price
+        if risk > 0 and reward > 0:
+            rr_text = f"{reward / risk:.1f}R"
+
+    # Position sizing (1% risk on $10,000)
+    if atr_val is not None and atr_val > 0:
+        shares = int(100.0 // atr_val)
+        position_size_note = f"$10,000 계좌 1% 리스크 기준 약 {shares}주 (ATR ${atr_val:.2f} 기반)"
+    else:
+        position_size_note = "ATR 데이터 부족으로 포지션 사이징 계산 불가"
+
+    invalidation_anchor = sma50_text if sma50_text != "N/A" else price_text
     invalidation_price = (
         f"50일 이동평균선인 {invalidation_anchor} 아래로 밀리면 약세 시나리오 확인"
         if sma50_text != "N/A"
         else f"{invalidation_anchor} 아래로 이탈하면 약세 시나리오 확인"
     )
+
+    bull_scenario = "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다."
+    base_scenario = f"{price_text} 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+    bear_scenario = "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다."
 
     if market.change_percent is not None and market.change_percent <= -3:
         bull_scenario = "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다."
@@ -815,6 +928,12 @@ def _build_fallback_trade_frame(market: CollectedTickerData) -> dict[str, str]:
         base_scenario = f"{price_text} 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
 
     return {
+        "entry_price": entry_price,
+        "stop_loss": stop_loss,
+        "target_1": target_1,
+        "target_2": target_2,
+        "risk_reward_ratio": rr_text,
+        "position_size_note": position_size_note,
         "bull_scenario": bull_scenario,
         "base_scenario": base_scenario,
         "bear_scenario": bear_scenario,
@@ -1009,26 +1128,31 @@ def _parse_and_validate_response(content: str, watchlist: list[WatchlistItem]) -
         validated.append(
             {
                 'ticker': ticker,
-                'summary': _require_non_empty_string(entry, 'summary'),
+                'summary': _require_non_empty_string(entry, 'summary', min_length=40),
                 'key_news': _require_string_list(entry, 'key_news'),
-                'financial_highlights': _require_string_list(entry, 'financial_highlights'),
-                'risks_or_watchpoints': _require_string_list(entry, 'risks_or_watchpoints'),
-                'signal_or_takeaway': _require_non_empty_string(entry, 'signal_or_takeaway'),
-                'trade_frame': _require_trade_frame(entry),
+                'financial_highlights': _require_quantitative_highlights(
+                    _require_string_list(entry, 'financial_highlights', item_min_length=15)
+                ),
+                'risks_or_watchpoints': _require_string_list(entry, 'risks_or_watchpoints', item_min_length=15),
+                'signal_or_takeaway': _require_non_empty_string(entry, 'signal_or_takeaway', min_length=30),
+                'trade_frame': _require_trade_frame(entry, min_length=15),
             }
         )
 
     return validated
 
 
-def _require_non_empty_string(entry: dict[str, Any], key: str) -> str:
+def _require_non_empty_string(entry: dict[str, Any], key: str, *, min_length: int = 1) -> str:
     value = entry.get(key)
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"Field '{key}' must be a non-empty string.")
-    return value.strip()
+    normalized = value.strip()
+    if len(normalized) < min_length:
+        raise ValueError(f"Field '{key}' must be at least {min_length} characters long.")
+    return normalized
 
 
-def _require_string_list(entry: dict[str, Any], key: str) -> list[str]:
+def _require_string_list(entry: dict[str, Any], key: str, *, item_min_length: int = 1) -> list[str]:
     value = entry.get(key)
     if not isinstance(value, list):
         raise ValueError(f"Field '{key}' must be a list.")
@@ -1037,8 +1161,18 @@ def _require_string_list(entry: dict[str, Any], key: str) -> list[str]:
     for item in value:
         if not isinstance(item, str) or not item.strip():
             raise ValueError(f"Field '{key}' must contain non-empty strings.")
-        normalized.append(item.strip())
+        stripped = item.strip()
+        if len(stripped) < item_min_length:
+            raise ValueError(f"Field '{key}' items must be at least {item_min_length} characters long.")
+        normalized.append(stripped)
     return normalized
+
+
+def _require_quantitative_highlights(items: list[str]) -> list[str]:
+    for item in items:
+        if not _NUMERIC_HIGHLIGHT_PATTERN.search(item):
+            raise ValueError(f"financial_highlights item missing quantitative data: {item!r}")
+    return items
 
 
 def _response_schema() -> dict[str, Any]:
@@ -1053,22 +1187,42 @@ def _response_schema() -> dict[str, Any]:
                     'additionalProperties': False,
                     'properties': {
                         'ticker': {'type': 'string'},
-                        'summary': {'type': 'string'},
+                        'summary': {'type': 'string', 'minLength': 40},
                         'key_news': {'type': 'array', 'items': {'type': 'string'}, 'maxItems': 5},
-                        'financial_highlights': {'type': 'array', 'items': {'type': 'string'}, 'maxItems': 5},
-                        'risks_or_watchpoints': {'type': 'array', 'items': {'type': 'string'}, 'maxItems': 4},
-                        'signal_or_takeaway': {'type': 'string'},
+                        'financial_highlights': {
+                            'type': 'array',
+                            'items': {'type': 'string', 'minLength': 15},
+                            'maxItems': 5,
+                        },
+                        'risks_or_watchpoints': {
+                            'type': 'array',
+                            'items': {'type': 'string', 'minLength': 15},
+                            'maxItems': 4,
+                        },
+                        'signal_or_takeaway': {'type': 'string', 'minLength': 30},
                         'trade_frame': {
                             'type': 'object',
                             'additionalProperties': False,
                             'properties': {
-                                'bull_scenario': {'type': 'string'},
-                                'base_scenario': {'type': 'string'},
-                                'bear_scenario': {'type': 'string'},
-                                'invalidation_price': {'type': 'string'},
-                                'watch_period': {'type': 'string'},
+                                'entry_price': {'type': 'string', 'minLength': 5},
+                                'stop_loss': {'type': 'string', 'minLength': 5},
+                                'target_1': {'type': 'string', 'minLength': 5},
+                                'target_2': {'type': 'string', 'minLength': 5},
+                                'risk_reward_ratio': {'type': 'string', 'minLength': 2},
+                                'position_size_note': {'type': 'string', 'minLength': 10},
+                                'bull_scenario': {'type': 'string', 'minLength': 15},
+                                'base_scenario': {'type': 'string', 'minLength': 15},
+                                'bear_scenario': {'type': 'string', 'minLength': 15},
+                                'invalidation_price': {'type': 'string', 'minLength': 15},
+                                'watch_period': {'type': 'string', 'minLength': 15},
                             },
                             'required': [
+                                'entry_price',
+                                'stop_loss',
+                                'target_1',
+                                'target_2',
+                                'risk_reward_ratio',
+                                'position_size_note',
                                 'bull_scenario',
                                 'base_scenario',
                                 'bear_scenario',
@@ -1120,16 +1274,22 @@ def _build_log_message(event: str, **fields: Any) -> str:
     return json.dumps(payload, ensure_ascii=True, sort_keys=True)
 
 
-def _require_trade_frame(entry: dict[str, Any]) -> dict[str, str]:
+def _require_trade_frame(entry: dict[str, Any], *, min_length: int = 1) -> dict[str, str]:
     value = entry.get('trade_frame')
     if not isinstance(value, dict):
         raise ValueError("Field 'trade_frame' must be an object.")
     return {
-        'bull_scenario': _require_non_empty_string(value, 'bull_scenario'),
-        'base_scenario': _require_non_empty_string(value, 'base_scenario'),
-        'bear_scenario': _require_non_empty_string(value, 'bear_scenario'),
-        'invalidation_price': _require_non_empty_string(value, 'invalidation_price'),
-        'watch_period': _require_non_empty_string(value, 'watch_period'),
+        'entry_price': _require_non_empty_string(value, 'entry_price', min_length=min_length),
+        'stop_loss': _require_non_empty_string(value, 'stop_loss', min_length=min_length),
+        'target_1': _require_non_empty_string(value, 'target_1', min_length=min_length),
+        'target_2': _require_non_empty_string(value, 'target_2', min_length=min_length),
+        'risk_reward_ratio': _require_non_empty_string(value, 'risk_reward_ratio', min_length=min_length),
+        'position_size_note': _require_non_empty_string(value, 'position_size_note', min_length=min_length),
+        'bull_scenario': _require_non_empty_string(value, 'bull_scenario', min_length=min_length),
+        'base_scenario': _require_non_empty_string(value, 'base_scenario', min_length=min_length),
+        'bear_scenario': _require_non_empty_string(value, 'bear_scenario', min_length=min_length),
+        'invalidation_price': _require_non_empty_string(value, 'invalidation_price', min_length=min_length),
+        'watch_period': _require_non_empty_string(value, 'watch_period', min_length=min_length),
     }
 
 

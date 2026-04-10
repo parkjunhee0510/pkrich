@@ -193,7 +193,7 @@ Before completion:
 * verify paths and structure unchanged
 * ensure no secrets are logged
 * ensure API calls are not increased unnecessarily
-
+  
 ---
 
 ## Safe Change Policy

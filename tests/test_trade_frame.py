@@ -26,6 +26,10 @@ class TradeFrameTests(unittest.TestCase):
 
         self.assertIn("145.30 USD", trade_frame["invalidation_price"])
         self.assertEqual(trade_frame["watch_period"], "2026-04-30 실적 발표 전까지")
+        self.assertIn("SMA50", trade_frame["stop_loss"])
+        self.assertIn("entry_price", trade_frame)
+        self.assertIn("risk_reward_ratio", trade_frame)
+        self.assertIn("position_size_note", trade_frame)
 
     def test_fallback_trade_frame_defaults_watch_period_when_no_event_exists(self) -> None:
         market = CollectedTickerData(

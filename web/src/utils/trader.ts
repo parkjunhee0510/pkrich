@@ -1,4 +1,11 @@
-import type { NewsReference, SecFilingReference, SignalHistoryRow, SignalStats, TickerAnalysisData, UpcomingEvent } from '../types'
+﻿import type {
+  NewsReference,
+  SecFilingReference,
+  SignalHistoryRow,
+  SignalStats,
+  TickerAnalysisData,
+  UpcomingEvent,
+} from '../types'
 import { parsePrice } from './format'
 
 export type SetupFocusLabel = '집중 모니터' | '관찰 우선' | '보류'
@@ -74,10 +81,17 @@ export interface PositionSizingSummary {
   riskReward: string
 }
 
+export interface PositioningGridItem {
+  label: string
+  value: string
+  note: string
+}
+
 const THESIS_RECAP_PATTERN = /\b(why|how|what is|explained|recap|analysis of)\b/i
 const OFFICIAL_SOURCE_PATTERN = /(newsroom|investor|ir|official|source)/i
 const WIRES_SOURCE_PATTERN = /(reuters|associated press|ap news|ap\b|bloomberg)/i
-const IMPORTANT_NEWS_PATTERN = /\b(earnings|guidance|outlook|forecast|results|upgrade|downgrade|buyback|dividend|contract|ceo|cfo|launch|approval)\b/i
+const IMPORTANT_NEWS_PATTERN =
+  /\b(earnings|guidance|outlook|forecast|results|upgrade|downgrade|buyback|dividend|contract|ceo|cfo|launch|approval)\b/i
 
 export function buildSetupCards(tickers: TickerAnalysisData[], limit = 5): SetupScoreCard[] {
   return [...tickers]
@@ -180,10 +194,11 @@ export function computeSetupScore(ticker: TickerAnalysisData): { score: number; 
 
 export function extractActionPlan(ticker: TickerAnalysisData): TraderActionPlan {
   const signalText = (ticker.signal_or_takeaway ?? '').trim()
-  const [headPart, detailPart = ''] = signalText.split('|').map((part) => part.trim())
-  const dashIndex = headPart.indexOf('—')
-  const direction = dashIndex >= 0 ? headPart.slice(0, dashIndex).trim() : '중립 관찰'
-  const thesis = dashIndex >= 0 ? headPart.slice(dashIndex + 1).trim() : headPart || '핵심 촉매 확인'
+  const [headPart, ...detailParts] = signalText.split('|').map((part) => part.trim())
+  const detailPart = detailParts.join(' | ')
+  const dashMatch = headPart.match(/^(.*?)\s*[—-]\s*(.+)$/)
+  const direction = dashMatch?.[1]?.trim() || '중립 관찰'
+  const thesis = dashMatch?.[2]?.trim() || headPart || '핵심 촉매 확인'
   const entry = extractMatchedValue(detailPart, /진입존\s*([^/|]+)/i) || inferEntryZone(ticker)
   const invalidation =
     extractMatchedValue(detailPart, /무효화\s*(.+)$/i) ||
@@ -207,22 +222,27 @@ export function buildPriceActionTags(ticker: TickerAnalysisData): string[] {
     if (vsSma50 > 2 && vsSma200 > 0) tags.push('추세 우위')
     else if (vsSma50 < -2 && vsSma200 < 0) tags.push('추세 약세')
   }
+
   if (week52 !== null) {
     if (week52 >= 85) tags.push('상단 돌파권')
     else if (week52 <= 20) tags.push('저점 반등권')
   }
+
   if (rvol !== null) {
     if (rvol >= 1.2) tags.push('거래량 유입')
     else if (rvol < 0.8) tags.push('거래량 부진')
   }
+
   if (gap !== null) {
     if (gap >= 3) tags.push('갭 업')
     else if (gap <= -3) tags.push('갭 다운')
   }
+
   if (rs !== null) {
     if (rs >= 2) tags.push('상대강도 우위')
     else if (rs <= -2) tags.push('상대약세')
   }
+
   return tags.slice(0, 4)
 }
 
@@ -314,7 +334,7 @@ export function buildSignalPerformanceHighlights(signalStats?: SignalStats): Sig
     highlights.push({
       label: 'Hard Catalyst 1D 평균',
       value: formatAverageReturn(hardSignals, 'return_1d'),
-      note: `${hardSignals.length}건 기반`,
+      note: `${hardSignals.length}건 기준`,
     })
   }
 
@@ -322,7 +342,7 @@ export function buildSignalPerformanceHighlights(signalStats?: SignalStats): Sig
     highlights.push({
       label: 'Beat Setup 5D 평균',
       value: formatAverageReturn(beatSignals, 'return_5d'),
-      note: `${beatSignals.length}건 기반`,
+      note: `${beatSignals.length}건 기준`,
     })
   }
 
@@ -335,6 +355,40 @@ export function buildDashboardPositioningSummary(ticker: TickerAnalysisData): st
   const analyst = fundamentals.analyst_recommendation ?? 'N/A'
   const target = fundamentals.analyst_target_price ?? 'N/A'
   return `${shortFloat} | ${analyst} | 목표 ${target}`
+}
+
+export function buildPositioningGrid(ticker: TickerAnalysisData): PositioningGridItem[] {
+  const fundamentals = ticker.fundamentals ?? {}
+  const shortFloat = fundamentals.short_float_pct ?? 'N/A'
+  const shortRatio = fundamentals.short_ratio ?? 'N/A'
+  const analyst = fundamentals.analyst_recommendation ?? 'N/A'
+  const analystCount = fundamentals.analyst_count ?? 'N/A'
+  const target = fundamentals.analyst_target_price ?? 'N/A'
+  const institutions = fundamentals.held_by_institutions ?? 'N/A'
+  const impliedVolatility = fundamentals.implied_volatility ?? 'N/A'
+
+  return [
+    {
+      label: '공매도',
+      value: shortFloat,
+      note: shortRatio !== 'N/A' ? `커버 ${shortRatio}` : '커버링 일수 미확인',
+    },
+    {
+      label: '애널리스트',
+      value: analyst,
+      note: `${analystCount}, 목표 ${target}`,
+    },
+    {
+      label: '기관 보유',
+      value: institutions,
+      note: '스마트머니 포지션',
+    },
+    {
+      label: '옵션 IV',
+      value: impliedVolatility,
+      note: '연환산 내재변동성',
+    },
+  ]
 }
 
 export function buildPositionSizingSummary(ticker: TickerAnalysisData, accountSize = 10000): PositionSizingSummary {
@@ -502,9 +556,9 @@ function inferEntryZone(ticker: TickerAnalysisData): string {
   const price = parsePrice(ticker.data_snapshot['Price'] ?? 'N/A')
   const atr = parseNumericValue(ticker.price_action?.atr_14d)
   if (!price || !atr) {
-    return '가격대 재확인'
+    return '가격대 확인 필요'
   }
-  return `${(price - atr).toFixed(2)}–${(price + atr).toFixed(2)}`
+  return `${(price - atr).toFixed(2)}-${(price + atr).toFixed(2)}`
 }
 
 function extractMatchedValue(source: string, pattern: RegExp): string {

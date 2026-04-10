@@ -1,4 +1,8 @@
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { TablePageSkeleton } from '../components/Skeleton'
+import { ErrorState } from '../components/ErrorState'
 import type { PortfolioSummaryData } from '../types'
 import { parseNumericChange, changeColor } from '../utils/format'
 
@@ -15,8 +19,12 @@ function pnlColor(value: number): string {
 export function Portfolio() {
   const { data, loading, error } = useDashboardData()
 
-  if (loading) return <p className="status">Loading...</p>
-  if (error) return <p className="status error">Failed to load data: {error}</p>
+  useEffect(() => {
+    document.title = '포트폴리오 · Stock Research'
+  }, [])
+
+  if (loading) return <TablePageSkeleton title="포트폴리오" />
+  if (error) return <ErrorState message={error} />
   if (!data || data.days.length === 0) return <p className="status">No data available.</p>
 
   const latestDay = data.days[data.days.length - 1]
@@ -100,9 +108,9 @@ export function Portfolio() {
               return (
                 <tr key={pos.ticker}>
                   <td>
-                    <a href={`${import.meta.env.BASE_URL}ticker/${pos.ticker}`} className="ticker-link">
+                    <Link to={`/ticker/${pos.ticker}`} className="ticker-link">
                       {pos.ticker}
-                    </a>
+                    </Link>
                   </td>
                   <td style={{ textAlign: 'right' }}>{pos.shares}</td>
                   <td style={{ textAlign: 'right' }}>{formatCurrency(pos.avg_cost, pos.currency)}</td>

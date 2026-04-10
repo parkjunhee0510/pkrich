@@ -55,6 +55,12 @@ def _openai_entry(ticker: str) -> dict[str, object]:
         'risks_or_watchpoints': [f'{ticker} 리스크'],
         'signal_or_takeaway': f'{ticker} 결론',
         'trade_frame': {
+            'entry_price': f'현재가 ${ticker}',
+            'stop_loss': f'SMA50 ${ticker}',
+            'target_1': f'$100.00 (1.5×ATR)',
+            'target_2': f'애널리스트 목표 $120.00',
+            'risk_reward_ratio': '1.5R',
+            'position_size_note': f'$10,000 계좌 1% 리스크 기준 약 30주',
             'bull_scenario': f'{ticker} 상승 시나리오',
             'base_scenario': f'{ticker} 기본 시나리오',
             'bear_scenario': f'{ticker} 하락 시나리오',

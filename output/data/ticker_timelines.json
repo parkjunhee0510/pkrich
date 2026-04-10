@@ -4,7 +4,7 @@
       "date": "2026-04-10",
       "price": "260.49 USD",
       "daily_change": "+0.61%",
-      "signal_or_takeaway": "중립 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입존 254.39–266.59 / 무효화 SMA50(260.57 USD)",
+      "signal_or_takeaway": "중립 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 254.39–266.59 | 손절 SMA50(260.57 USD)",
       "top_news_summary": "[실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
       "news_tone": {
@@ -56,28 +56,159 @@
       "upcoming_events": []
     }
   ],
-  "MSFT": [
+  "CAT": [
     {
       "date": "2026-04-10",
-      "price": "373.07 USD",
-      "daily_change": "-0.34%",
-      "signal_or_takeaway": "중립 경계 — [실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입존 364.38–381.76 / 무효화 SMA50(402.04 USD)",
-      "top_news_summary": "[실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
-      "top_news_link": "https://www.sec.gov/Archives/edgar/data/789019/000119312526027207/msft-20251231.htm",
+      "price": "787.07 USD",
+      "daily_change": "+2.01%",
+      "signal_or_takeaway": "매수 관찰 — [실적] CATERPILLAR INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 759.60–814.54 | 손절 SMA50(712.73 USD) (R:R 0.6R)",
+      "top_news_summary": "[실적] CATERPILLAR INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000008/cat-20251231.htm",
+      "news_tone": {
+        "label": "bullish",
+        "score": 5.0
+      },
+      "upcoming_events": [
+        {
+          "type": "ex_dividend",
+          "label": "배당락일",
+          "date": "2026-04-20",
+          "days_until": "10",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "20",
+          "timing": "BMO"
+        }
+      ]
+    }
+  ],
+  "XOM": [
+    {
+      "date": "2026-04-10",
+      "price": "155.04 USD",
+      "daily_change": "-0.76%",
+      "signal_or_takeaway": "중립 관찰 — [기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 148.80–161.28 | 손절 SMA50(152.28 USD) (R:R 3.4R)",
+      "top_news_summary": "[기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
       "news_tone": {
         "label": "neutral",
-        "score": 0.0
+        "score": 1.0
       },
       "upcoming_events": [
         {
           "type": "earnings",
           "label": "실적 발표",
-          "date": "2026-04-29",
-          "days_until": "19",
+          "date": "2026-05-01",
+          "days_until": "21",
+          "timing": "BMO"
+        }
+      ]
+    }
+  ],
+  "AMD": [
+    {
+      "date": "2026-04-10",
+      "price": "236.64 USD",
+      "daily_change": "+2.08%",
+      "signal_or_takeaway": "매수 관찰 — [기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 226.14–247.14 | 손절 SMA50(210.97 USD) (R:R 0.6R)",
+      "top_news_summary": "[기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
+      "news_tone": {
+        "label": "bullish",
+        "score": 3.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "25",
           "timing": "AMC"
         }
       ]
-    },
+    }
+  ],
+  "KO": [
+    {
+      "date": "2026-04-10",
+      "price": "78.18 USD",
+      "daily_change": "+1.15%",
+      "signal_or_takeaway": "매수 관찰 — [실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 76.79–79.57 | 손절 SMA50(77.19 USD) (R:R 2.1R)",
+      "top_news_summary": "[실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "score": 1.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-28",
+          "days_until": "18",
+          "timing": "BMO"
+        }
+      ]
+    }
+  ],
+  "T": [
+    {
+      "date": "2026-04-10",
+      "price": "26.84 USD",
+      "daily_change": "-1.86%",
+      "signal_or_takeaway": "중립 관찰 — [실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 26.16–27.52 | 손절 SMA50(27.61 USD)",
+      "top_news_summary": "[실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm",
+      "news_tone": {
+        "label": "bullish",
+        "score": 3.0
+      },
+      "upcoming_events": [
+        {
+          "type": "ex_dividend",
+          "label": "배당락일",
+          "date": "2026-04-10",
+          "days_until": "0",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-22",
+          "days_until": "12",
+          "timing": "BMO"
+        }
+      ]
+    }
+  ],
+  "IONQ": [
+    {
+      "date": "2026-04-10",
+      "price": "28.08 USD",
+      "daily_change": "-3.14%",
+      "signal_or_takeaway": "매도 경계 — [기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 25.90–30.26 | 손절 SMA50(34.68 USD)",
+      "top_news_summary": "[기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
+      "news_tone": {
+        "label": "neutral",
+        "score": 1.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "26",
+          "timing": "AMC"
+        }
+      ]
+    }
+  ],
+  "MSFT": [
     {
       "date": "2026-04-09",
       "price": "374.33 USD",
@@ -114,27 +245,6 @@
     }
   ],
   "NVDA": [
-    {
-      "date": "2026-04-10",
-      "price": "183.91 USD",
-      "daily_change": "+1.01%",
-      "signal_or_takeaway": "매수 관찰 — [실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입존 178.66–189.16 / 무효화 SMA50(182.51 USD)",
-      "top_news_summary": "[실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
-      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
-      "news_tone": {
-        "label": "neutral",
-        "score": 0.0
-      },
-      "upcoming_events": [
-        {
-          "type": "earnings",
-          "label": "실적 발표",
-          "date": "2026-05-20",
-          "days_until": "40",
-          "timing": "AMC"
-        }
-      ]
-    },
     {
       "date": "2026-04-09",
       "price": "182.08 USD",

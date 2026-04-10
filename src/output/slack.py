@@ -21,6 +21,7 @@ def send_daily_summary(
     daily_note_path: Path | None = None,
     weekly_note_path: Path | None = None,
     portfolio_summary: PortfolioSummary | None = None,
+    macro_context: dict | None = None,
 ) -> None:
     webhook_url = (os.getenv("SLACK_WEBHOOK_URL") or "").strip()
     if not webhook_url:

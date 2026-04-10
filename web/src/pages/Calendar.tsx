@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { TablePageSkeleton } from '../components/Skeleton'
+import { ErrorState } from '../components/ErrorState'
 import type { UpcomingEvent } from '../types'
 
 interface CalendarEvent extends UpcomingEvent {
@@ -36,8 +39,12 @@ export function Calendar() {
   const [eventTypeFilter, setEventTypeFilter] = useState<string>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
 
-  if (loading) return <p className="status">Loading...</p>
-  if (error) return <p className="status error">Failed to load data: {error}</p>
+  useEffect(() => {
+    document.title = '이벤트 캘린더 · Stock Research'
+  }, [])
+
+  if (loading) return <TablePageSkeleton title="이벤트 캘린더" />
+  if (error) return <ErrorState message={error} />
   if (!data || data.days.length === 0) return <p className="status">No data available.</p>
 
   const latestDay = data.days[data.days.length - 1]
@@ -145,9 +152,9 @@ export function Calendar() {
                         {event.timing && <span className="calendar-event-timing">{event.timing}</span>}
                       </div>
                       <div className="calendar-event-ticker">
-                        <a href={`${import.meta.env.BASE_URL}ticker/${event.ticker}`} className="ticker-link">
+                        <Link to={`/ticker/${event.ticker}`} className="ticker-link">
                           {event.ticker}
-                        </a>
+                        </Link>
                         <span className="calendar-event-name">{event.name}</span>
                       </div>
                       <div className="calendar-event-meta">
