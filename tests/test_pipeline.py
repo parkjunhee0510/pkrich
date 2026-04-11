@@ -103,6 +103,35 @@ class PipelineTests(unittest.TestCase):
                 mirrored_daily.read_text(encoding='utf-8'),
             )
 
+    def test_run_pipeline_supports_sqlite_backend(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            config_dir = temp_path / 'config'
+            config_dir.mkdir(parents=True, exist_ok=True)
+            (config_dir / 'watchlist.yaml').write_text(
+                '\n'.join(
+                    [
+                        'watchlist:',
+                        '  - ticker: AAPL',
+                        '    name: Apple Inc.',
+                        '    sector: Technology',
+                        '    keywords: ["iPhone", "AI"]',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            with patch.dict(os.environ, {'ENABLE_EXTERNAL_FETCH': 'false', 'DATASTORE_BACKEND': 'sqlite'}, clear=False):
+                current_dir = os.getcwd()
+                try:
+                    os.chdir(temp_path)
+                    run_pipeline(run_date=date(2026, 4, 8))
+                finally:
+                    os.chdir(current_dir)
+
+            sqlite_path = temp_path / 'output' / 'data' / 'price_history.sqlite'
+            self.assertTrue(sqlite_path.exists())
+
 
 if __name__ == '__main__':
     unittest.main()

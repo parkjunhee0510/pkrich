@@ -4,7 +4,7 @@ import os
 from abc import ABC, abstractmethod
 from datetime import date
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from src.types import TickerAnalysis
 
@@ -43,6 +43,24 @@ class Datastore(ABC):
     @abstractmethod
     def compare_tickers(self, tickers: list[str], run_date: date) -> dict[str, dict[str, str]]:
         raise NotImplementedError
+
+    def sync_signal_history(self, csv_path: Path) -> None:
+        return None
+
+    def append_analysis_snapshots(self, analyses: list[TickerAnalysis]) -> None:
+        return None
+
+    def record_analysis_run(self, *, run_date: date, success: bool, logger: Any | None = None) -> None:
+        return None
+
+    def get_ticker_history(self, ticker: str, *, limit: int = 90) -> list[dict[str, Any]]:
+        return []
+
+    def get_signal_stats(self) -> dict[str, Any] | None:
+        return None
+
+    def get_analysis_quality(self, *, limit: int = 30) -> list[dict[str, Any]]:
+        return []
 
 
 def get_datastore(output_root: Path | None = None, backend: str | None = None) -> Datastore:

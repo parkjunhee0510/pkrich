@@ -1,0 +1,532 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775860293264,
+  "projectRoot": "C:\\Users\\pc\\Documents\\pkrich",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "requirements.txt"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "pip",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "scripts",
+      "src",
+      "tests"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "analyzer": {
+      "path": "analyzer",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775860293242,
+      "keyFiles": [
+        "AGENTS.md"
+      ]
+    },
+    "config": {
+      "path": "config",
+      "purpose": "Configuration files",
+      "fileCount": 4,
+      "lastAccessed": 1775860293242,
+      "keyFiles": [
+        "models.yaml",
+        "output.yaml",
+        "portfolio.yaml",
+        "watchlist.yaml"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 0,
+      "lastAccessed": 1775860293243,
+      "keyFiles": []
+    },
+    "logs": {
+      "path": "logs",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775860293244,
+      "keyFiles": []
+    },
+    "output": {
+      "path": "output",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775860293244,
+      "keyFiles": [
+        "AGENTS.md"
+      ]
+    },
+    "plans": {
+      "path": "plans",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1775860293245,
+      "keyFiles": [
+        "plan-a-ui-ux.md",
+        "plan-b-llm-quality.md",
+        "plan-c-expansion.md",
+        "quality-upgrade-plan.md"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1775860293245,
+      "keyFiles": [
+        "check-actions.ps1"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 3,
+      "lastAccessed": 1775860293245,
+      "keyFiles": [
+        "pipeline.py",
+        "types.py",
+        "__init__.py"
+      ]
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 37,
+      "lastAccessed": 1775860293246,
+      "keyFiles": [
+        "test_alerts.py",
+        "test_analyzer_batching.py",
+        "test_analyzer_logging.py",
+        "test_analyzer_schema.py",
+        "test_backtester.py"
+      ]
+    },
+    "web": {
+      "path": "web",
+      "purpose": null,
+      "fileCount": 11,
+      "lastAccessed": 1775860293246,
+      "keyFiles": [
+        "eslint.config.js",
+        "index.html",
+        "package-lock.json",
+        "package.json",
+        "README.md"
+      ]
+    },
+    "__pycache__": {
+      "path": "__pycache__",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775860293247,
+      "keyFiles": [
+        "main.cpython-311.pyc"
+      ]
+    },
+    "output\\data": {
+      "path": "output\\data",
+      "purpose": "Data files",
+      "fileCount": 7,
+      "lastAccessed": 1775860293249,
+      "keyFiles": [
+        "backtest_summary.json",
+        "dashboard.json",
+        "monthly_summary.json"
+      ]
+    },
+    "src\\api": {
+      "path": "src\\api",
+      "purpose": "API routes",
+      "fileCount": 1,
+      "lastAccessed": 1775860293250,
+      "keyFiles": [
+        "main.py"
+      ]
+    },
+    "src\\utils": {
+      "path": "src\\utils",
+      "purpose": "Utility functions",
+      "fileCount": 24,
+      "lastAccessed": 1775860293250,
+      "keyFiles": [
+        "config.py",
+        "cost_tracker.py",
+        "datastore.py"
+      ]
+    },
+    "web\\dist": {
+      "path": "web\\dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 4,
+      "lastAccessed": 1775860293251,
+      "keyFiles": [
+        "404.html",
+        "favicon.svg",
+        "icons.svg"
+      ]
+    },
+    "web\\node_modules": {
+      "path": "web\\node_modules",
+      "purpose": "Dependencies",
+      "fileCount": 1,
+      "lastAccessed": 1775860293251,
+      "keyFiles": []
+    },
+    "web\\public": {
+      "path": "web\\public",
+      "purpose": "Public files",
+      "fileCount": 2,
+      "lastAccessed": 1775860293252,
+      "keyFiles": [
+        "favicon.svg",
+        "icons.svg"
+      ]
+    },
+    "web\\scripts": {
+      "path": "web\\scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1775860293252,
+      "keyFiles": [
+        "copy-spa-fallback.mjs"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src\\analyzer\\research_note.py",
+      "accessCount": 56,
+      "lastAccessed": 1775901601896,
+      "type": "file"
+    },
+    {
+      "path": "src\\collector\\price.py",
+      "accessCount": 30,
+      "lastAccessed": 1775901578570,
+      "type": "file"
+    },
+    {
+      "path": "src\\collector\\fmp.py",
+      "accessCount": 13,
+      "lastAccessed": 1775901554981,
+      "type": "file"
+    },
+    {
+      "path": "src\\types.py",
+      "accessCount": 8,
+      "lastAccessed": 1775901340487,
+      "type": "file"
+    },
+    {
+      "path": "web\\src\\pages\\TickerDetail.tsx",
+      "accessCount": 8,
+      "lastAccessed": 1775901664119,
+      "type": "file"
+    },
+    {
+      "path": "src\\output\\markdown.py",
+      "accessCount": 6,
+      "lastAccessed": 1775901493390,
+      "type": "file"
+    },
+    {
+      "path": "web\\src\\types\\index.ts",
+      "accessCount": 6,
+      "lastAccessed": 1775901704339,
+      "type": "file"
+    },
+    {
+      "path": "src\\utils\\portfolio_risk.py",
+      "accessCount": 5,
+      "lastAccessed": 1775901311982,
+      "type": "file"
+    },
+    {
+      "path": "src\\output\\json_export.py",
+      "accessCount": 5,
+      "lastAccessed": 1775901470210,
+      "type": "file"
+    },
+    {
+      "path": "src\\pipeline.py",
+      "accessCount": 4,
+      "lastAccessed": 1775899746518,
+      "type": "file"
+    },
+    {
+      "path": "src\\collector\\finnhub.py",
+      "accessCount": 4,
+      "lastAccessed": 1775900923518,
+      "type": "file"
+    },
+    {
+      "path": "main.py",
+      "accessCount": 3,
+      "lastAccessed": 1775860692875,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 3,
+      "lastAccessed": 1775860716799,
+      "type": "file"
+    },
+    {
+      "path": ".env.example",
+      "accessCount": 2,
+      "lastAccessed": 1775860685841,
+      "type": "file"
+    },
+    {
+      "path": "src\\analyzer\\weekly_insight.py",
+      "accessCount": 2,
+      "lastAccessed": 1775860689445,
+      "type": "file"
+    },
+    {
+      "path": "config\\models.yaml",
+      "accessCount": 2,
+      "lastAccessed": 1775860696405,
+      "type": "file"
+    },
+    {
+      "path": "architecture.md",
+      "accessCount": 2,
+      "lastAccessed": 1775860710576,
+      "type": "file"
+    },
+    {
+      "path": "config\\watchlist.yaml",
+      "accessCount": 2,
+      "lastAccessed": 1775899746995,
+      "type": "file"
+    },
+    {
+      "path": "web\\src\\pages\\Dashboard.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1775899790244,
+      "type": "file"
+    },
+    {
+      "path": "web\\src",
+      "accessCount": 2,
+      "lastAccessed": 1775901692622,
+      "type": "directory"
+    },
+    {
+      "path": "src\\collector\\polygon_options.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860681958,
+      "type": "file"
+    },
+    {
+      "path": "src\\collector\\options.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860685106,
+      "type": "file"
+    },
+    {
+      "path": "src\\collector\\macro.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860685658,
+      "type": "file"
+    },
+    {
+      "path": "src\\collector\\news_search.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860685887,
+      "type": "file"
+    },
+    {
+      "path": "requirements.txt",
+      "accessCount": 1,
+      "lastAccessed": 1775860686037,
+      "type": "file"
+    },
+    {
+      "path": "src\\collector\\sec_form4.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860688345,
+      "type": "file"
+    },
+    {
+      "path": "output\\data\\signal_tracker.csv",
+      "accessCount": 1,
+      "lastAccessed": 1775860688605,
+      "type": "file"
+    },
+    {
+      "path": "src\\collector\\sec_edgar.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860688845,
+      "type": "file"
+    },
+    {
+      "path": "src\\utils\\config.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860688990,
+      "type": "file"
+    },
+    {
+      "path": "src\\utils\\model_config.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860689474,
+      "type": "file"
+    },
+    {
+      "path": "output\\data\\dashboard.json",
+      "accessCount": 1,
+      "lastAccessed": 1775860691038,
+      "type": "file"
+    },
+    {
+      "path": "output\\daily\\2026-04-11.md",
+      "accessCount": 1,
+      "lastAccessed": 1775860691290,
+      "type": "file"
+    },
+    {
+      "path": "output\\tickers\\AAPL\\2026-04-11.md",
+      "accessCount": 1,
+      "lastAccessed": 1775860691519,
+      "type": "file"
+    },
+    {
+      "path": "web\\src\\App.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775860693110,
+      "type": "file"
+    },
+    {
+      "path": "output\\data\\backtest_summary.json",
+      "accessCount": 1,
+      "lastAccessed": 1775860694660,
+      "type": "file"
+    },
+    {
+      "path": "config\\portfolio.yaml",
+      "accessCount": 1,
+      "lastAccessed": 1775860696415,
+      "type": "file"
+    },
+    {
+      "path": "config\\output.yaml",
+      "accessCount": 1,
+      "lastAccessed": 1775860696631,
+      "type": "file"
+    },
+    {
+      "path": "src\\utils\\signal_tracker.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860704123,
+      "type": "file"
+    },
+    {
+      "path": "web\\tsconfig.json",
+      "accessCount": 1,
+      "lastAccessed": 1775860704249,
+      "type": "file"
+    },
+    {
+      "path": "web\\vite.config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775860704396,
+      "type": "file"
+    },
+    {
+      "path": "src\\backtester\\engine.py",
+      "accessCount": 1,
+      "lastAccessed": 1775860704619,
+      "type": "file"
+    },
+    {
+      "path": "output\\daily\\weekly\\2026-W15.md",
+      "accessCount": 1,
+      "lastAccessed": 1775860704933,
+      "type": "file"
+    },
+    {
+      "path": "web\\src\\pages\\Signals.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775860707721,
+      "type": "file"
+    },
+    {
+      "path": "web\\src\\pages\\Backtest.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775860708156,
+      "type": "file"
+    },
+    {
+      "path": "output\\data\\monthly_summary.json",
+      "accessCount": 1,
+      "lastAccessed": 1775860708345,
+      "type": "file"
+    },
+    {
+      "path": "web\\src\\utils\\trader.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775860713867,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 1,
+      "lastAccessed": 1775899779566,
+      "type": "directory"
+    },
+    {
+      "path": "src",
+      "accessCount": 1,
+      "lastAccessed": 1775899792369,
+      "type": "directory"
+    },
+    {
+      "path": "src\\collector\\technicals.py",
+      "accessCount": 1,
+      "lastAccessed": 1775900710105,
+      "type": "file"
+    },
+    {
+      "path": "src\\output",
+      "accessCount": 1,
+      "lastAccessed": 1775901462580,
+      "type": "directory"
+    }
+  ],
+  "userDirectives": []
+}

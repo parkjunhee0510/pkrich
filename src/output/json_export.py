@@ -135,6 +135,7 @@ def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]
         "options_summary": analysis.options_summary,
         "signal_history": getattr(analysis, "signal_history", []),
         "sector_comparison": getattr(analysis, "sector_comparison", {}),
+        "valuation_score": getattr(analysis, "valuation_score", {}),
         "period_changes": period_changes,
         "sec_filing_tags": collect_sec_filing_tags(analysis.news_references),
         "sec_filings": sort_sec_filings(collect_sec_filings(analysis.news_references)),

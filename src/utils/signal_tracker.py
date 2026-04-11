@@ -110,7 +110,15 @@ def update_signal_returns(
 
 
 def load_signal_stats(csv_path: Path) -> dict[str, Any]:
-    rows = _load_rows(csv_path)
+    rows = load_signal_rows(csv_path)
+    return build_signal_stats_from_rows(rows)
+
+
+def load_signal_rows(csv_path: Path) -> list[dict[str, str]]:
+    return _load_rows(csv_path)
+
+
+def build_signal_stats_from_rows(rows: list[dict[str, str]]) -> dict[str, Any]:
     sorted_rows = sorted(rows, key=lambda row: (row.get("signal_date", ""), row.get("ticker", "")), reverse=True)
     summary_by_direction: dict[str, dict[str, Any]] = {}
     for direction in ("bull", "bear", "neutral"):

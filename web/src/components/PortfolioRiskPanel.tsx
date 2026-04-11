@@ -30,6 +30,33 @@ export function PortfolioRiskPanel({ risk }: { risk?: PortfolioRisk | null }) {
 
       {risk.concentration_warning ? <p className="portfolio-risk-warning">{risk.concentration_warning}</p> : null}
 
+      {(risk.sector_concentration_alerts ?? []).length > 0 && (
+        <div className="portfolio-risk-alerts">
+          {risk.sector_concentration_alerts!.map((alert, i) => (
+            <p key={i} className="portfolio-risk-warning">{alert}</p>
+          ))}
+        </div>
+      )}
+
+      {(risk.correlation_pairs ?? []).length > 0 && (
+        <div className="portfolio-risk-card" style={{ marginBottom: '1rem' }}>
+          <span className="price-action-label">High Correlation Pairs</span>
+          <div className="portfolio-risk-list">
+            {risk.correlation_pairs!.map((pair) => (
+              <div key={`${pair.ticker_1}-${pair.ticker_2}`} className="portfolio-risk-row">
+                <div>
+                  <strong>{pair.ticker_1} / {pair.ticker_2}</strong>
+                  <small>{pair.warning}</small>
+                </div>
+                <div className="portfolio-risk-values">
+                  <span className="correlation-badge">{pair.correlation}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="portfolio-risk-grid">
         <div className="portfolio-risk-card">
           <span className="price-action-label">Top Risk Contributors</span>

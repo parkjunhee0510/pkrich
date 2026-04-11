@@ -37,6 +37,11 @@ def _valid_entry(**overrides: object) -> dict[str, object]:
             'invalidation_price': 'SMA50 190.50 USD 아래로 내려가면 약세 시나리오 확인입니다.',
             'watch_period': '2026-04-30 실적 발표 전까지 유효합니다.',
         },
+        'valuation_score': {
+            'score': '6/10',
+            'factors': ['PER 25.0x', '목표가 상단 여력 존재'],
+            'assessment': '현재 밸류에이션은 대체로 적정 범위로 보입니다.',
+        },
     }
     entry.update(overrides)
     return entry
@@ -50,7 +55,7 @@ class AnalyzerSchemaTests(unittest.TestCase):
         self.assertEqual(ticker_schema['properties']['signal_or_takeaway']['minLength'], 30)
         self.assertEqual(ticker_schema['properties']['financial_highlights']['items']['minLength'], 15)
         self.assertEqual(ticker_schema['properties']['risks_or_watchpoints']['items']['minLength'], 15)
-        self.assertEqual(ticker_schema['properties']['trade_frame']['properties']['bull_scenario']['minLength'], 15)
+        self.assertEqual(ticker_schema['properties']['trade_frame']['properties']['bull_scenario']['minLength'], 10)
 
     def test_parse_and_validate_response_accepts_valid_payload(self) -> None:
         content = json.dumps({'tickers': [_valid_entry()]})
@@ -90,8 +95,53 @@ class AnalyzerSchemaTests(unittest.TestCase):
             }
         )
 
-        with self.assertRaisesRegex(ValueError, 'financial_highlights item missing quantitative data'):
+        with self.assertRaisesRegex(ValueError, 'financial_highlights'):
             _parse_and_validate_response(content, _watchlist())
+
+    def test_parse_and_validate_response_accepts_missing_data_financial_highlight(self) -> None:
+        content = json.dumps(
+            {
+                'tickers': [
+                    _valid_entry(
+                        financial_highlights=[
+                            'PE 데이터가 없어 동종 대비 밸류에이션 판단이 제한됩니다.',
+                            'Forward EPS와 TTM EPS가 모두 N/A라 성장률 비교가 어렵습니다.',
+                        ]
+                    )
+                ]
+            }
+        )
+
+        result = _parse_and_validate_response(content, _watchlist())
+
+        self.assertEqual(len(result[0]['financial_highlights']), 2)
+
+    def test_parse_and_validate_response_accepts_compact_trade_frame_values(self) -> None:
+        content = json.dumps(
+            {
+                'tickers': [
+                    _valid_entry(
+                        trade_frame={
+                            'entry_price': '195',
+                            'stop_loss': '190',
+                            'target_1': '200',
+                            'target_2': '210',
+                            'risk_reward_ratio': '1.4R',
+                            'position_size_note': '약 20주 기준',
+                            'bull_scenario': '상승 추세 지속 가능성',
+                            'base_scenario': '박스권 유지 가능성 높음',
+                            'bear_scenario': '지지 이탈 주의가 필요함',
+                            'invalidation_price': '190 이탈 확인',
+                            'watch_period': '향후 5거래일',
+                        }
+                    )
+                ]
+            }
+        )
+
+        result = _parse_and_validate_response(content, _watchlist())
+
+        self.assertEqual(result[0]['trade_frame']['risk_reward_ratio'], '1.4R')
 
 
 if __name__ == '__main__':

@@ -1299,6 +1299,19 @@ a:hover {
   margin-bottom: 0.45rem;
 }
 
+.earnings-hero-label-row,
+.price-action-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+}
+
+.earnings-hero-label-row > span:first-child,
+.price-action-label-row > span:first-child {
+  min-width: 0;
+}
+
 .earnings-hero-value {
   display: block;
   font-size: 1.35rem;
@@ -2758,6 +2771,16 @@ summary:focus-visible {
   transform: translateX(-50%) translateY(-2px);
 }
 
+.metric-tooltip-copy {
+  display: block;
+}
+
+.metric-tooltip-copy strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--color-text);
+}
+
 .watchlist-detail-head {
   display: flex;
   align-items: center;
@@ -3138,4 +3161,91 @@ summary:focus-visible {
 .eps-chip.N\/A {
   background: rgba(136, 136, 136, 0.12);
   color: #888;
+}
+
+/* ── Valuation Score Panel ─────────────────────────── */
+.valuation-score-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.valuation-score-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.valuation-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.2rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.valuation-score-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.valuation-undervalued {
+  background: var(--tone-positive-bg);
+  border: 1px solid var(--tone-positive-border);
+  color: var(--color-up);
+}
+
+.valuation-fair {
+  background: var(--tone-caution-bg);
+  border: 1px solid var(--tone-caution-border);
+  color: var(--color-caution);
+}
+
+.valuation-overvalued {
+  background: var(--tone-negative-bg);
+  border: 1px solid var(--tone-negative-border);
+  color: var(--color-down);
+}
+
+.valuation-factors {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.valuation-factors li {
+  padding: 0.25rem 0.6rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  color: var(--color-text);
+  font-size: 0.82rem;
+}
+
+/* ── Correlation Badge ─────────────────────────── */
+.correlation-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--tone-caution-bg);
+  border: 1px solid var(--tone-caution-border);
+  color: var(--color-caution);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.portfolio-risk-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }

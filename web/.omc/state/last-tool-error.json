@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"python -c \\\"from src.collector.fmp import collect_fmp_dividend_history, collect_fmp_company_profile; print('fmp imports OK')\\\" && python -c \\\"from src.utils.portfolio_risk import compute_c...",
+  "error": "Exit code 1\nTraceback (most recent call last):\r\n  File \"<string>\", line 1, in <module>\r\nModuleNotFoundError: No module named 'src.collector'\n[rerun: b16]",
+  "timestamp": "2026-04-11T10:04:07.576Z",
+  "retry_count": 1
+}

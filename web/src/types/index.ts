@@ -139,6 +139,13 @@ export interface TickerAnalysisData {
   signal_history?: SignalHistoryEntry[]
   sector_comparison?: SectorComparison
   options_summary?: OptionsSummary
+  valuation_score?: ValuationScore
+}
+
+export interface ValuationScore {
+  score: string
+  factors: string[]
+  assessment: string
 }
 
 export interface PortfolioPosition {
@@ -216,10 +223,20 @@ export interface PortfolioRiskPosition {
   atr_risk_usd: number
 }
 
+export interface CorrelationPair {
+  ticker_1: string
+  ticker_2: string
+  correlation: string
+  warning: string
+}
+
 export interface PortfolioRisk {
   positions_by_weight: PortfolioRiskPosition[]
   sector_exposure?: Record<string, number>
   concentration_warning?: string
+  sector_concentration_alerts?: string[]
+  correlation_pairs?: CorrelationPair[]
+  position_sizing?: Array<{ ticker: string; recommended_shares: string; max_risk_usd: string; stop_distance: string }>
   total_atr_risk_usd?: number
   max_drawdown_2atr_usd?: number
   max_drawdown_2atr_pct?: string

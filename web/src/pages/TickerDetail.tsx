@@ -7,6 +7,7 @@ import { DataSnapshot } from '../components/DataSnapshot'
 import { NewsItem } from '../components/NewsItem'
 import { SecFilingBadges } from '../components/SecFilingBadges'
 import { SignalBadge } from '../components/SignalBadge'
+import { InfoTooltip } from '../components/InfoTooltip'
 import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
 import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
@@ -29,12 +30,14 @@ type EarningsSummaryCard = {
   tone: EarningsCardTone
   chip?: string
   chipValue?: string
+  tooltip?: ReactNode
 }
 
 type PositioningCard = {
   label: string
   value: string
   note: string
+  tooltip?: ReactNode
 }
 
 type PositionSizingSummary = {
@@ -214,7 +217,10 @@ export function TickerDetail() {
         <div className="earnings-hero-grid">
           {earningsSummaryCards.map((card) => (
             <div key={card.label} className={`earnings-hero-card ${card.tone}`}>
-              <span className="earnings-hero-label">{card.label}</span>
+              <span className="earnings-hero-label earnings-hero-label-row">
+                <span>{card.label}</span>
+                {card.tooltip ? <InfoTooltip content={card.tooltip} /> : null}
+              </span>
               <strong className="earnings-hero-value">{card.value}</strong>
               {card.chip && (
                 <span className={`earnings-result-chip ${toBeatMissClassName(card.chipValue ?? card.chip)}`}>{card.chip}</span>
@@ -388,35 +394,40 @@ export function TickerDetail() {
 
       <ResponsiveDetailSection title="실적 컨센서스 디테일">
         <div className="price-action-grid">
-          <div className="price-action-card"><span className="price-action-label">Forward EPS</span><strong>{earningsSetup?.forward_eps ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">TTM EPS</span><strong>{earningsSetup?.ttm_eps ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">Forward vs TTM</span><strong>{formatDirectionalPriceAction(earningsSetup?.forward_vs_ttm)}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">EPS Growth</span><strong>{earningsSetup?.earnings_growth ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">최근 분기 추정 EPS</span><strong>{earningsSetup?.latest_estimated_eps ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">최근 분기 결과</span><strong className="earnings-setup-stack"><span>{earningsSetup?.latest_surprise_pct ?? 'N/A'}</span><span className={`earnings-result-chip ${toBeatMissClassName(earningsSetup?.latest_beat_miss)}`}>{earningsSetup?.latest_beat_miss ?? 'N/A'}</span></strong></div>
-          <div className="price-action-card"><span className="price-action-label">다음 실적 체크포인트</span><strong>{earningsSetup?.next_earnings_event ?? 'N/A'}</strong></div>
+          <DetailMetricCard label="Forward EPS" value={earningsSetup?.forward_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.forwardEps} />
+          <DetailMetricCard label="TTM EPS" value={earningsSetup?.ttm_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.ttmEps} />
+          <DetailMetricCard label="Forward vs TTM" value={formatDirectionalPriceAction(earningsSetup?.forward_vs_ttm)} tooltip={METRIC_TOOLTIPS.forwardVsTtm} />
+          <DetailMetricCard label="EPS Growth" value={earningsSetup?.earnings_growth ?? 'N/A'} tooltip={METRIC_TOOLTIPS.epsGrowth} />
+          <DetailMetricCard label="최근 분기 추정 EPS" value={earningsSetup?.latest_estimated_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.latestEstimatedEps} />
+          <DetailMetricCard
+            label="최근 분기 결과"
+            tooltip={METRIC_TOOLTIPS.latestQuarterResult}
+            value={
+              <strong className="earnings-setup-stack">
+                <span>{earningsSetup?.latest_surprise_pct ?? 'N/A'}</span>
+                <span className={`earnings-result-chip ${toBeatMissClassName(earningsSetup?.latest_beat_miss)}`}>{earningsSetup?.latest_beat_miss ?? 'N/A'}</span>
+              </strong>
+            }
+          />
+          <DetailMetricCard label="다음 실적 체크포인트" value={earningsSetup?.next_earnings_event ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nextEarningsEvent} />
         </div>
       </ResponsiveDetailSection>
       <ResponsiveDetailSection title="가격 행동 맥락">
         <div className="price-action-grid">
-          <div className="price-action-card"><span className="price-action-label">ATR(14)</span><strong>{formatPriceActionPair(priceAction?.atr_14d, priceAction?.atr_percent)}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">Relative Volume</span><strong>{priceAction?.relative_volume ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">Gap</span><strong>{priceAction?.gap_percent ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">vs SMA50</span><strong>{formatDirectionalPriceAction(priceAction?.price_vs_sma50)}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">vs SMA200</span><strong>{formatDirectionalPriceAction(priceAction?.price_vs_sma200)}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">52주 위치</span><strong>{priceAction?.week52_position ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">RS vs SPY(30D)</span><strong>{priceAction?.rs_vs_spy ?? 'N/A'}</strong></div>
+          <DetailMetricCard label="ATR(14)" value={formatPriceActionPair(priceAction?.atr_14d, priceAction?.atr_percent)} tooltip={METRIC_TOOLTIPS.atr14} />
+          <DetailMetricCard label="Relative Volume" value={priceAction?.relative_volume ?? 'N/A'} tooltip={METRIC_TOOLTIPS.relativeVolume} />
+          <DetailMetricCard label="Gap" value={priceAction?.gap_percent ?? 'N/A'} tooltip={METRIC_TOOLTIPS.gapPercent} />
+          <DetailMetricCard label="vs SMA50" value={formatDirectionalPriceAction(priceAction?.price_vs_sma50)} tooltip={METRIC_TOOLTIPS.vsSma50} />
+          <DetailMetricCard label="vs SMA200" value={formatDirectionalPriceAction(priceAction?.price_vs_sma200)} tooltip={METRIC_TOOLTIPS.vsSma200} />
+          <DetailMetricCard label="52주 위치" value={priceAction?.week52_position ?? 'N/A'} tooltip={METRIC_TOOLTIPS.week52Position} />
+          <DetailMetricCard label="RS vs SPY(30D)" value={priceAction?.rs_vs_spy ?? 'N/A'} tooltip={METRIC_TOOLTIPS.rsVsSpy} />
         </div>
       </ResponsiveDetailSection>
 
       <ResponsiveDetailSection title="포지셔닝 데이터">
         <div className="price-action-grid">
           {positioningCards.map((card) => (
-            <div key={card.label} className="price-action-card">
-              <span className="price-action-label">{card.label}</span>
-              <strong>{card.value}</strong>
-              <span className="price-action-subtext">{card.note}</span>
-            </div>
+            <DetailMetricCard key={card.label} label={card.label} value={card.value} note={card.note} tooltip={card.tooltip} />
           ))}
         </div>
       </ResponsiveDetailSection>
@@ -424,37 +435,45 @@ export function TickerDetail() {
       {analysis.options_summary && Object.keys(analysis.options_summary).length > 0 && (
         <ResponsiveDetailSection title="옵션 요약">
           <div className="price-action-grid">
-            <div className="price-action-card">
-              <span className="price-action-label">가장 가까운 만기</span>
-              <strong>{analysis.options_summary.expiry ?? 'N/A'}</strong>
-            </div>
-            <div className="price-action-card">
-              <span className="price-action-label">ATM Call IV</span>
-              <strong>{analysis.options_summary.atm_call_iv ?? 'N/A'}</strong>
-            </div>
-            <div className="price-action-card">
-              <span className="price-action-label">ATM Put IV</span>
-              <strong>{analysis.options_summary.atm_put_iv ?? 'N/A'}</strong>
-            </div>
-            <div className="price-action-card">
-              <span className="price-action-label">Put/Call Ratio</span>
-              <strong>{analysis.options_summary.put_call_ratio ?? 'N/A'}</strong>
-            </div>
-            <div className="price-action-card">
-              <span className="price-action-label">30D IV Percentile</span>
-              <strong>{analysis.options_summary.iv_percentile_30d ?? 'N/A'}</strong>
-            </div>
+            <DetailMetricCard label="가장 가까운 만기" value={analysis.options_summary.expiry ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nearestExpiry} />
+            <DetailMetricCard label="ATM Call IV" value={analysis.options_summary.atm_call_iv ?? 'N/A'} tooltip={METRIC_TOOLTIPS.atmCallIv} />
+            <DetailMetricCard label="ATM Put IV" value={analysis.options_summary.atm_put_iv ?? 'N/A'} tooltip={METRIC_TOOLTIPS.atmPutIv} />
+            <DetailMetricCard label="Put/Call Ratio" value={analysis.options_summary.put_call_ratio ?? 'N/A'} tooltip={METRIC_TOOLTIPS.putCallRatio} />
+            <DetailMetricCard label="30D IV Percentile" value={analysis.options_summary.iv_percentile_30d ?? 'N/A'} tooltip={METRIC_TOOLTIPS.ivPercentile30d} />
           </div>
         </ResponsiveDetailSection>
       )}
 
       <ResponsiveDetailSection title="포지션 사이징 참고">
         <div className="price-action-grid">
-          <div className="price-action-card"><span className="price-action-label">1% 리스크 기준</span><strong>{positionSizing.positionShares}</strong><span className="price-action-subtext">10,000 USD 계좌 기준 예상 수량</span></div>
-          <div className="price-action-card"><span className="price-action-label">2ATR 스탑</span><strong>{positionSizing.stopPrice}</strong><span className="price-action-subtext">{positionSizing.stopNote}</span></div>
-          <div className="price-action-card"><span className="price-action-label">리스크/리워드</span><strong>{positionSizing.riskReward}</strong><span className="price-action-subtext">애널리스트 목표가 기준</span></div>
+          <DetailMetricCard label="1% 리스크 기준" value={positionSizing.positionShares} note="10,000 USD 계좌 기준 예상 수량" tooltip={METRIC_TOOLTIPS.positionSizing1pct} />
+          <DetailMetricCard label="2ATR 스탑" value={positionSizing.stopPrice} note={positionSizing.stopNote} tooltip={METRIC_TOOLTIPS.stopByAtr} />
+          <DetailMetricCard label="리스크/리워드" value={positionSizing.riskReward} note="애널리스트 목표가 기준" tooltip={METRIC_TOOLTIPS.riskReward} />
         </div>
       </ResponsiveDetailSection>
+
+      {analysis.valuation_score?.score && (
+        <ResponsiveDetailSection title="밸류에이션 점수">
+          <div className="valuation-score-panel">
+            <div className="valuation-score-header">
+              <span className={`valuation-score-badge ${getValuationScoreClass(analysis.valuation_score.score)}`}>
+                {analysis.valuation_score.score}
+              </span>
+              <span className="valuation-score-label">{getValuationLabel(analysis.valuation_score.score)}</span>
+            </div>
+            {analysis.valuation_score.factors?.length > 0 && (
+              <ul className="valuation-factors">
+                {analysis.valuation_score.factors.map((factor, i) => (
+                  <li key={i}>{factor}</li>
+                ))}
+              </ul>
+            )}
+            {analysis.valuation_score.assessment && (
+              <p className="detail-section-summary">{analysis.valuation_score.assessment}</p>
+            )}
+          </div>
+        </ResponsiveDetailSection>
+      )}
 
       {sectorComparisonRows.length > 0 && (
         <ResponsiveDetailSection title="피어 비교">
@@ -516,10 +535,10 @@ export function TickerDetail() {
           <div className="trade-frame-card bear"><span className="trade-frame-label">Bear</span><p>{tradeFrame?.bear_scenario ?? 'N/A'}</p></div>
         </div>
         <div className="trade-frame-detail-grid">
-          <div className="price-action-card"><span className="price-action-label">진입가</span><strong>{tradeFrame?.entry_price ?? actionPlan?.entry ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">손절가</span><strong>{tradeFrame?.stop_loss ?? tradeFrame?.invalidation_price ?? 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">목표가</span><strong>{[tradeFrame?.target_1, tradeFrame?.target_2].filter(Boolean).join(' / ') || 'N/A'}</strong></div>
-          <div className="price-action-card"><span className="price-action-label">R / R</span><strong>{tradeFrame?.risk_reward_ratio ?? dashboardSizing.riskReward}</strong><span className="price-action-subtext">{tradeFrame?.position_size_note ?? dashboardSizing.positionShares}</span></div>
+          <DetailMetricCard label="진입가" value={tradeFrame?.entry_price ?? actionPlan?.entry ?? 'N/A'} tooltip={METRIC_TOOLTIPS.entryPrice} />
+          <DetailMetricCard label="손절가" value={tradeFrame?.stop_loss ?? tradeFrame?.invalidation_price ?? 'N/A'} tooltip={METRIC_TOOLTIPS.stopLoss} />
+          <DetailMetricCard label="목표가" value={[tradeFrame?.target_1, tradeFrame?.target_2].filter(Boolean).join(' / ') || 'N/A'} tooltip={METRIC_TOOLTIPS.targetPrice} />
+          <DetailMetricCard label="R / R" value={tradeFrame?.risk_reward_ratio ?? dashboardSizing.riskReward} note={tradeFrame?.position_size_note ?? dashboardSizing.positionShares} tooltip={METRIC_TOOLTIPS.riskReward} />
         </div>
         <div className="trade-frame-footer">
           <span><strong>무효화:</strong> {tradeFrame?.invalidation_price ?? 'N/A'}</span>
@@ -625,6 +644,206 @@ function ResponsiveDetailSection({ title, children, defaultOpen = false }: { tit
     </section>
   )
 }
+
+function DetailMetricCard({
+  label,
+  value,
+  note,
+  tooltip,
+}: {
+  label: string
+  value: ReactNode
+  note?: string
+  tooltip?: ReactNode
+}) {
+  return (
+    <div className="price-action-card">
+      <span className="price-action-label price-action-label-row">
+        <span>{label}</span>
+        {tooltip ? <InfoTooltip content={tooltip} /> : null}
+      </span>
+      {typeof value === 'string' ? <strong>{value}</strong> : value}
+      {note ? <span className="price-action-subtext">{note}</span> : null}
+    </div>
+  )
+}
+
+const METRIC_TOOLTIPS = {
+  forwardEps: (
+    <span className="metric-tooltip-copy">
+      <strong>Forward EPS</strong>
+      시장이 앞으로 벌 거라고 보는 이익입니다. TTM EPS보다 높으면 "앞으로 더 좋아질 것"이라는 기대가 들어간 상태이고, 너무 높으면 기대가 과열됐을 수 있습니다.
+    </span>
+  ),
+  ttmEps: (
+    <span className="metric-tooltip-copy">
+      <strong>TTM EPS</strong>
+      지난 12개월 동안 실제로 벌어들인 이익입니다. 쉽게 말해 지금까지 확인된 실적 체력이고, Forward EPS와 같이 보면 기대가 현실보다 앞서 있는지 판단하기 좋습니다.
+    </span>
+  ),
+  forwardVsTtm: (
+    <span className="metric-tooltip-copy">
+      <strong>Forward vs TTM</strong>
+      앞으로의 이익 기대가 현재 실적보다 얼마나 센지 보여줍니다. 크게 플러스면 성장 기대가 강한 종목이고, 너무 과하면 실적 발표 때 눈높이 미달 리스크가 커집니다.
+    </span>
+  ),
+  epsGrowth: (
+    <span className="metric-tooltip-copy">
+      <strong>EPS Growth</strong>
+      이익이 전년보다 얼마나 늘었는지 보는 숫자입니다. 플러스가 이어지면 실적 추세가 좋다고 볼 수 있고, 마이너스가 커지면 밸류에이션 부담이 커질 수 있습니다.
+    </span>
+  ),
+  latestEstimatedEps: (
+    <span className="metric-tooltip-copy">
+      <strong>최근 분기 추정 EPS</strong>
+      시장이 직전 분기에 기대했던 숫자입니다. 실제 결과가 이걸 넘었는지 못 미쳤는지에 따라 실적 반응의 출발점이 결정됩니다.
+    </span>
+  ),
+  latestQuarterResult: (
+    <span className="metric-tooltip-copy">
+      <strong>최근 분기 결과</strong>
+      직전 실적이 기대치를 넘겼는지 보여줍니다. beat가 반복되면 매수 쪽 심리가 붙기 쉽고, miss가 이어지면 좋은 뉴스에도 주가가 둔하게 반응할 수 있습니다.
+    </span>
+  ),
+  nextEarningsEvent: (
+    <span className="metric-tooltip-copy">
+      <strong>다음 실적 체크포인트</strong>
+      다음 실적 발표 일정입니다. 날짜가 가까울수록 기대와 불안이 같이 커져서, 방향이 맞아도 변동성이 훨씬 거칠어질 수 있습니다.
+    </span>
+  ),
+  atr14: (
+    <span className="metric-tooltip-copy">
+      <strong>ATR(14)</strong>
+      최근 14일 동안 하루에 평균 얼마나 흔들렸는지를 보여줍니다. ATR이 크면 손절을 넓게 잡아야 하고, 같은 금액을 넣더라도 수량은 줄여서 들어가는 게 보통 더 안전합니다.
+    </span>
+  ),
+  relativeVolume: (
+    <span className="metric-tooltip-copy">
+      <strong>Relative Volume</strong>
+      오늘 거래량이 평소보다 얼마나 강한지 보는 숫자입니다. 1배를 크게 넘으면 "진짜 돈이 붙었다"는 해석이 가능하고, 낮으면 움직임이 나와도 신뢰도가 떨어질 수 있습니다.
+    </span>
+  ),
+  gapPercent: (
+    <span className="metric-tooltip-copy">
+      <strong>Gap</strong>
+      시가가 전일 종가보다 얼마나 위나 아래에서 시작했는지입니다. 큰 갭은 뉴스가 가격에 바로 반영됐다는 뜻이고, 갭을 메우는지 유지하는지가 당일 강도를 판단하는 포인트입니다.
+    </span>
+  ),
+  vsSma50: (
+    <span className="metric-tooltip-copy">
+      <strong>vs SMA50</strong>
+      현재가가 50일선보다 얼마나 위나 아래에 있는지입니다. 단기 추세가 살아 있는지 보는 기준이고, 50일선 이탈은 단기 모멘텀 약화 신호로 자주 해석됩니다.
+    </span>
+  ),
+  vsSma200: (
+    <span className="metric-tooltip-copy">
+      <strong>vs SMA200</strong>
+      현재가가 200일선보다 얼마나 위나 아래에 있는지입니다. 장기 추세의 기준선이라서, 200일선 위에 있으면 구조적으로 강한 종목으로 보는 경우가 많습니다.
+    </span>
+  ),
+  week52Position: (
+    <span className="metric-tooltip-copy">
+      <strong>52주 위치</strong>
+      현재가가 지난 1년 범위에서 어디쯤 있는지 보여줍니다. 높을수록 강한 추세일 수 있지만, 동시에 고점 부담과 차익실현 매물도 의식해야 합니다.
+    </span>
+  ),
+  rsVsSpy: (
+    <span className="metric-tooltip-copy">
+      <strong>RS vs SPY(30D)</strong>
+      최근 30일 동안 시장보다 더 강했는지 보는 비교 수치입니다. 플러스면 시장보다 잘 버티거나 더 강하게 오른 종목이고, 리더주인지 확인할 때 유용합니다.
+    </span>
+  ),
+  shortFloat: (
+    <span className="metric-tooltip-copy">
+      <strong>공매도</strong>
+      시장에서 이 종목 하락에 베팅한 물량 비중입니다. 높으면 악재에 취약할 수 있지만, 반대로 예상 밖 호재가 나오면 숏 스퀴즈가 강하게 나올 수도 있습니다.
+    </span>
+  ),
+  analystRating: (
+    <span className="metric-tooltip-copy">
+      <strong>애널리스트</strong>
+      시장의 평균 기대와 목표가 수준입니다. 이 숫자 자체보다, 최근에 상향이 이어지는지 하향이 늘어나는지를 보는 쪽이 실전에 더 도움이 됩니다.
+    </span>
+  ),
+  smartMoneyOwnership: (
+    <span className="metric-tooltip-copy">
+      <strong>스마트머니 보유</strong>
+      기관과 내부자가 얼마나 들고 있는지 보는 항목입니다. 기관 비중이 높으면 수급이 안정적인 편이고, 내부자 보유가 높으면 경영진이 회사 가치와 더 밀접하게 묶여 있다고 볼 수 있습니다.
+    </span>
+  ),
+  optionIv: (
+    <span className="metric-tooltip-copy">
+      <strong>옵션 IV</strong>
+      옵션 시장이 예상하는 앞으로의 흔들림입니다. IV가 높으면 방향을 맞혀도 등락이 크기 때문에, 진입 타이밍과 손절 폭을 더 보수적으로 잡는 편이 좋습니다.
+    </span>
+  ),
+  nearestExpiry: (
+    <span className="metric-tooltip-copy">
+      <strong>가장 가까운 만기</strong>
+      가장 빨리 도래하는 옵션 만기입니다. 만기가 가까우면 작은 움직임에도 수급이 예민하게 반응해서 단기 변동성이 커질 수 있습니다.
+    </span>
+  ),
+  atmCallIv: (
+    <span className="metric-tooltip-copy">
+      <strong>ATM Call IV</strong>
+      현재가 근처 콜옵션에 반영된 기대 변동성입니다. 콜 IV가 빠르게 오르면 상승 기대나 이벤트 앞둔 투기 수요가 붙는 경우가 많습니다.
+    </span>
+  ),
+  atmPutIv: (
+    <span className="metric-tooltip-copy">
+      <strong>ATM Put IV</strong>
+      현재가 근처 풋옵션에 반영된 기대 변동성입니다. 풋 IV가 높아지면 하락 방어 수요가 커지고 있다는 뜻으로 볼 수 있습니다.
+    </span>
+  ),
+  putCallRatio: (
+    <span className="metric-tooltip-copy">
+      <strong>Put/Call Ratio</strong>
+      풋 대비 콜이 얼마나 거래됐는지 보는 비율입니다. 낮으면 낙관적 베팅, 높으면 방어적이거나 하락 쪽 대비가 강하다고 해석하는 경우가 많습니다.
+    </span>
+  ),
+  ivPercentile30d: (
+    <span className="metric-tooltip-copy">
+      <strong>30D IV Percentile</strong>
+      최근 30일 기준으로 지금 IV가 높은 편인지 낮은 편인지 보여줍니다. 높으면 옵션 가격이 비싼 구간일 수 있고, 이벤트 기대가 과열됐는지도 같이 봐야 합니다.
+    </span>
+  ),
+  positionSizing1pct: (
+    <span className="metric-tooltip-copy">
+      <strong>1% 리스크 기준</strong>
+      한 번 틀렸을 때 계좌 손실을 1% 안쪽으로 제한한다고 가정한 수량입니다. 좋은 종목이라도 손절 폭이 넓으면 비중을 줄여야 오래 살아남을 수 있습니다.
+    </span>
+  ),
+  stopByAtr: (
+    <span className="metric-tooltip-copy">
+      <strong>2ATR 스탑</strong>
+      평균 변동폭의 2배 정도를 손절 거리로 잡은 예시입니다. 너무 타이트한 손절로 흔들림에 잘리지 않도록, 변동성이 큰 종목에 여유를 주는 방식입니다.
+    </span>
+  ),
+  riskReward: (
+    <span className="metric-tooltip-copy">
+      <strong>리스크/리워드</strong>
+      손절까지 감수하는 손실 대비, 목표가까지 기대하는 보상의 비율입니다. 보통 숫자가 높을수록 좋지만, 도달 가능성이 낮은 과한 목표는 의미가 약합니다.
+    </span>
+  ),
+  entryPrice: (
+    <span className="metric-tooltip-copy">
+      <strong>진입가</strong>
+      어디에서 들어갈지 정하는 가격대입니다. 같은 종목이라도 진입가가 나쁘면 손절은 멀어지고 기대수익은 줄어들어서 전체 매매가 불리해질 수 있습니다.
+    </span>
+  ),
+  stopLoss: (
+    <span className="metric-tooltip-copy">
+      <strong>손절가</strong>
+      내 시나리오가 틀렸다고 인정하는 가격입니다. 손절은 예측 실패의 확인선이지, 희망으로 버티는 구간이 아니라는 점이 중요합니다.
+    </span>
+  ),
+  targetPrice: (
+    <span className="metric-tooltip-copy">
+      <strong>목표가</strong>
+      수익 실현을 고려하는 가격대입니다. 너무 멀면 도달 확률이 떨어지고, 너무 짧으면 좋은 추세를 놓칠 수 있어서 저항선과 기대치의 균형이 중요합니다.
+    </span>
+  ),
+} satisfies Record<string, ReactNode>
 function compareFilingsByDate(left: string, right: string, sort: FilingSort): number {
   const leftMs = parseFilingDate(left)
   const rightMs = parseFilingDate(right)
@@ -706,10 +925,10 @@ function buildEarningsSummaryCards(earningsSetup?: {
   const nextEvent = earningsSetup?.next_earnings_event ?? 'N/A'
   const dday = extractDday(nextEvent)
   return [
-    { label: 'Forward vs TTM', value: forwardVsTtm, note: `${earningsSetup?.forward_eps ?? 'N/A'} vs ${earningsSetup?.ttm_eps ?? 'N/A'}`, tone: classifyDirectionalTone(forwardVsTtm) },
-    { label: '최근 분기 결과', value: earningsSetup?.latest_surprise_pct ?? 'N/A', note: `컨센서스 EPS ${earningsSetup?.latest_estimated_eps ?? 'N/A'}`, tone: classifyBeatMissTone(beatMiss), chip: formatBeatMissLabel(beatMiss), chipValue: beatMiss },
-    { label: '다음 실적 D-day', value: dday, note: nextEvent, tone: classifyDdayTone(dday) },
-    { label: 'EPS 성장률', value: earningsSetup?.earnings_growth ?? 'N/A', note: 'YoY 기준 이익 성장 체력', tone: classifyDirectionalTone(earningsSetup?.earnings_growth ?? 'N/A') },
+    { label: 'Forward vs TTM', value: forwardVsTtm, note: `${earningsSetup?.forward_eps ?? 'N/A'} vs ${earningsSetup?.ttm_eps ?? 'N/A'}`, tone: classifyDirectionalTone(forwardVsTtm), tooltip: METRIC_TOOLTIPS.forwardVsTtm },
+    { label: '최근 분기 결과', value: earningsSetup?.latest_surprise_pct ?? 'N/A', note: `컨센서스 EPS ${earningsSetup?.latest_estimated_eps ?? 'N/A'}`, tone: classifyBeatMissTone(beatMiss), chip: formatBeatMissLabel(beatMiss), chipValue: beatMiss, tooltip: METRIC_TOOLTIPS.latestQuarterResult },
+    { label: '다음 실적 D-day', value: dday, note: nextEvent, tone: classifyDdayTone(dday), tooltip: METRIC_TOOLTIPS.nextEarningsEvent },
+    { label: 'EPS 성장률', value: earningsSetup?.earnings_growth ?? 'N/A', note: 'YoY 기준 이익 성장 체력', tone: classifyDirectionalTone(earningsSetup?.earnings_growth ?? 'N/A'), tooltip: METRIC_TOOLTIPS.epsGrowth },
   ]
 }
 
@@ -723,10 +942,10 @@ function buildPositioningCards(fundamentals: Record<string, string>): Positionin
   const institutions = fundamentals.held_by_institutions ?? 'N/A'
   const impliedVolatility = fundamentals.implied_volatility ?? 'N/A'
   return [
-    { label: '공매도', value: shortFloat, note: shortRatio !== 'N/A' ? `커버 ${shortRatio}` : '커버링 일수 미확인' },
-    { label: '애널리스트', value: analystRecommendation, note: `${analystCount}, 목표 ${analystTarget}` },
-    { label: '스마트머니 보유', value: institutions, note: `내부자 ${insiders}` },
-    { label: '옵션 IV', value: impliedVolatility, note: '연환산 기준 내재변동성' },
+    { label: '공매도', value: shortFloat, note: shortRatio !== 'N/A' ? `커버 ${shortRatio}` : '커버링 일수 미확인', tooltip: METRIC_TOOLTIPS.shortFloat },
+    { label: '애널리스트', value: analystRecommendation, note: `${analystCount}, 목표 ${analystTarget}`, tooltip: METRIC_TOOLTIPS.analystRating },
+    { label: '스마트머니 보유', value: institutions, note: `내부자 ${insiders}`, tooltip: METRIC_TOOLTIPS.smartMoneyOwnership },
+    { label: '옵션 IV', value: impliedVolatility, note: '연환산 기준 내재변동성', tooltip: METRIC_TOOLTIPS.optionIv },
   ]
 }
 
@@ -862,4 +1081,20 @@ function buildSectorComparisonRows(comparison?: SectorComparison): Array<{
   }
 
   return rows
+}
+
+function getValuationScoreClass(score: string): string {
+  const num = parseInt(score, 10)
+  if (isNaN(num)) return ''
+  if (num >= 8) return 'valuation-undervalued'
+  if (num >= 5) return 'valuation-fair'
+  return 'valuation-overvalued'
+}
+
+function getValuationLabel(score: string): string {
+  const num = parseInt(score, 10)
+  if (isNaN(num)) return ''
+  if (num >= 8) return '저평가'
+  if (num >= 5) return '적정'
+  return '고평가'
 }

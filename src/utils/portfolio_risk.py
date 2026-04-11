@@ -68,10 +68,30 @@ def build_portfolio_risk_report(
     # Round sector exposure
     sector_exposure_rounded = {k: round(v, 1) for k, v in sorted(sector_exposure.items(), key=lambda x: -x[1])}
 
+    # Sector concentration alerts
+    sector_alerts = _check_sector_concentration(sector_exposure_rounded)
+
+    # Correlation analysis from price history
+    correlation_pairs = compute_correlation_warnings(collected_data)
+
+    # Position sizing recommendations
+    sizing_recs: list[dict[str, str]] = []
+    for pos in positions_by_weight:
+        atr = _parse_float(collected_data.get(pos["ticker"], CollectedTickerData(
+            ticker="", name="", sector="", price=None, change_percent=None,
+            currency="USD", market_cap="N/A", pe_ratio="N/A", summary_note="",
+        )).atr_14d) if pos["ticker"] in collected_data else None
+        if atr and atr > 0:
+            sizing = compute_position_sizing(pos["ticker"], atr)
+            sizing_recs.append(sizing)
+
     return {
         "positions_by_weight": positions_by_weight,
         "sector_exposure": sector_exposure_rounded,
         "concentration_warning": concentration_warning,
+        "sector_concentration_alerts": sector_alerts,
+        "correlation_pairs": correlation_pairs,
+        "position_sizing": sizing_recs,
         "total_atr_risk_usd": round(total_atr_risk, 2),
         "max_drawdown_2atr_usd": round(max_drawdown_2atr, 2),
         "max_drawdown_2atr_pct": f"{max_drawdown_pct:.1f}%",
@@ -96,11 +116,96 @@ def _check_concentration(positions: list[dict[str, Any]]) -> str:
     return " | ".join(warnings) if warnings else ""
 
 
+def compute_correlation_warnings(
+    collected_data: dict[str, CollectedTickerData],
+) -> list[dict[str, str]]:
+    """Compute pairwise return correlations and warn on high correlation (>0.7).
+
+    Uses price_history.csv if available, otherwise returns empty.
+    """
+    import os
+    csv_path = os.path.join("output", "data", "price_history.csv")
+    if not os.path.exists(csv_path):
+        return []
+    try:
+        import pandas as pd
+    except ImportError:
+        return []
+
+    try:
+        df = pd.read_csv(csv_path)
+        if "date" not in df.columns:
+            return []
+
+        tickers = [t for t in collected_data if t in df.columns]
+        if len(tickers) < 2:
+            return []
+
+        prices = df[["date"] + tickers].dropna()
+        if len(prices) < 20:
+            return []
+
+        returns = prices[tickers].pct_change().dropna()
+        corr_matrix = returns.corr()
+
+        warnings: list[dict[str, str]] = []
+        seen: set[tuple[str, str]] = set()
+        for i, t1 in enumerate(tickers):
+            for j, t2 in enumerate(tickers):
+                if i >= j:
+                    continue
+                pair = (t1, t2)
+                if pair in seen:
+                    continue
+                seen.add(pair)
+                corr_val = corr_matrix.loc[t1, t2]
+                if abs(corr_val) > 0.7:
+                    warnings.append({
+                        "ticker_1": t1,
+                        "ticker_2": t2,
+                        "correlation": f"{corr_val:.2f}",
+                        "warning": f"{t1}/{t2} 상관계수 {corr_val:.2f} — 동조화 높음, 분산 효과 제한",
+                    })
+        return warnings
+    except Exception:
+        return []
+
+
+def compute_position_sizing(
+    ticker: str,
+    atr: float,
+    account_size: float = 10000,
+    risk_percent: float = 1.0,
+) -> dict[str, str]:
+    """ATR-based position sizing (2×ATR stop distance)."""
+    max_risk_usd = account_size * risk_percent / 100
+    stop_distance = atr * 2
+    shares = int(max_risk_usd / stop_distance) if stop_distance > 0 else 0
+    return {
+        "ticker": ticker,
+        "recommended_shares": str(shares),
+        "max_risk_usd": f"${max_risk_usd:.0f}",
+        "stop_distance": f"${stop_distance:.2f}",
+    }
+
+
+def _check_sector_concentration(sector_exposure: dict[str, float]) -> list[str]:
+    """Warn if any single sector exceeds 40%."""
+    alerts: list[str] = []
+    for sector, weight in sector_exposure.items():
+        if weight > 40:
+            alerts.append(f"{sector} 섹터 비중 {weight:.0f}% — 40% 초과 집중 위험")
+    return alerts
+
+
 def _empty_report() -> dict[str, Any]:
     return {
         "positions_by_weight": [],
         "sector_exposure": {},
         "concentration_warning": "",
+        "sector_concentration_alerts": [],
+        "correlation_pairs": [],
+        "position_sizing": [],
         "total_atr_risk_usd": 0,
         "max_drawdown_2atr_usd": 0,
         "max_drawdown_2atr_pct": "N/A",

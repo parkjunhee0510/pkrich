@@ -15,14 +15,19 @@ from urllib import error, parse, request
 from src.collector.finnhub import collect_finnhub_recommendations, is_finnhub_ready
 from src.collector.fmp import (
     collect_fmp_analyst_estimates,
+    collect_fmp_company_profile,
+    collect_fmp_dividend_history,
     collect_fmp_earnings_surprises,
+    collect_fmp_financial_ratios,
     collect_fmp_institutional_holders,
     collect_fmp_insider_trading,
+    collect_fmp_key_metrics,
     is_fmp_ready,
 )
 from src.types import CollectedTickerData, WatchlistItem
 from src.collector.options import collect_options_summary
 from src.collector.polygon_options import collect_options_flow, is_polygon_ready
+from src.collector.technicals import compute_technical_indicators
 from src.collector.sec_form4 import collect_insider_transactions
 from src.utils.env import is_env_flag_enabled
 from src.utils.network import can_open_tcp_connection
@@ -178,6 +183,8 @@ def _collect_single_ticker(
     institutional_changes: dict[str, str] = {}
     fmp_earnings_surprises: list[dict[str, str]] = []
     options_flow: dict[str, str] = {}
+    fundamental_metrics: dict[str, str] = {}
+    technical_indicators: dict[str, str] = {}
     ohlcv: dict[str, str] = {}
 
     if yfinance_ready:
@@ -241,6 +248,7 @@ def _collect_single_ticker(
             )
             rs_vs_spy = _calc_rs_vs_benchmark(price_change_30d, benchmark_change_30d)
             ohlcv = _extract_latest_ohlcv(history, price, open_price, volume)
+            technical_indicators = compute_technical_indicators(history)
             providers_used.append("yfinance")
             record_pipeline_event("collector", "info", "data_provider_used", ticker=item.ticker, source="yfinance")
         except Exception as exc:
@@ -367,6 +375,29 @@ def _collect_single_ticker(
         except Exception:
             fmp_earnings_surprises = []
 
+    if is_fmp_ready():
+        try:
+            fundamental_metrics = collect_fmp_key_metrics(item.ticker)
+            fundamental_metrics.update(collect_fmp_financial_ratios(item.ticker))
+        except Exception:
+            fundamental_metrics = {}
+        try:
+            dividend_data = collect_fmp_dividend_history(item.ticker)
+            if dividend_data:
+                fundamental_metrics.update(dividend_data)
+        except Exception:
+            pass
+        try:
+            profile_data = collect_fmp_company_profile(item.ticker)
+            if profile_data:
+                # Use profile sector/industry to fill gaps
+                if not sector or sector == 'N/A':
+                    sector = profile_data.get('sector', sector)
+                if 'industry' in profile_data:
+                    fundamental_metrics['industry'] = profile_data['industry']
+        except Exception:
+            pass
+
     if is_polygon_ready():
         try:
             options_flow = collect_options_flow(item.ticker, run_date)
@@ -427,6 +458,8 @@ def _collect_single_ticker(
         fmp_earnings_surprises=fmp_earnings_surprises,
         options_flow=options_flow,
         recommendation_trends=recommendation_trends,
+        fundamental_metrics=fundamental_metrics,
+        technical_indicators=technical_indicators,
     )
 
 

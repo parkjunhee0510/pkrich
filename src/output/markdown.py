@@ -99,6 +99,7 @@ def write_outputs(
     enriched_analyses = [_enrich_analysis(analysis) for analysis in analyses]
     datastore = get_datastore(output_root)
     datastore.append_prices(enriched_analyses)
+    datastore.append_analysis_snapshots(enriched_analyses)
     csv_period_changes = datastore.load_period_changes(run_date)
     period_changes_by_ticker = _merge_period_changes(csv_period_changes, direct_period_changes or {})
     timeline_map = write_json_outputs(
@@ -263,6 +264,9 @@ def render_ticker_markdown(
             "",
             "## 최근 타임라인",
             _render_recent_timeline(recent_timeline or []),
+            "",
+            "## 밸류에이션 점수",
+            _render_valuation_score(getattr(analysis, 'valuation_score', {})),
             "",
             "## 트레이드 프레임",
             _render_trade_frame(analysis.trade_frame),
@@ -763,6 +767,22 @@ def _render_trade_frame(trade_frame: dict[str, str]) -> str:
         f"- **무효화**: {trade_frame.get('invalidation_price', 'N/A')}",
         f"- **관찰 기간**: {trade_frame.get('watch_period', 'N/A')}",
     ])
+    return "\n".join(lines)
+
+
+def _render_valuation_score(valuation_score: dict[str, object]) -> str:
+    if not valuation_score:
+        return "- 밸류에이션 점수 정보가 없습니다."
+    score = valuation_score.get('score', 'N/A')
+    factors = valuation_score.get('factors', [])
+    assessment = valuation_score.get('assessment', '')
+    lines = [f"**점수: {score}**", ""]
+    if factors and isinstance(factors, list):
+        for factor in factors:
+            lines.append(f"- {factor}")
+        lines.append("")
+    if assessment:
+        lines.append(f"> {assessment}")
     return "\n".join(lines)
 
 

@@ -15,7 +15,7 @@ from src.utils.datastore import get_datastore
 from src.utils.env import is_env_flag_enabled, load_dotenv
 from src.utils.portfolio import calculate_portfolio_summary
 from src.utils.portfolio_risk import build_portfolio_risk_report
-from src.utils.pipeline_logging import finalize_pipeline_logging, record_pipeline_event, start_pipeline_logging
+from src.utils.pipeline_logging import finalize_pipeline_logging, get_pipeline_logger, record_pipeline_event, start_pipeline_logging
 from src.utils.signal_tracker import load_recent_signals, load_signal_stats, record_signals, update_signal_returns
 
 
@@ -87,6 +87,7 @@ def run_pipeline(run_date: date | None = None) -> None:
             price_history_rows=historical_price_rows,
         )
         record_signals(analyses, effective_date, price_lookup, signal_csv_path)
+        datastore.sync_signal_history(signal_csv_path)
         signal_stats = load_signal_stats(signal_csv_path)
         direct_period_changes = {
             ticker: {"7d": data.price_change_7d, "30d": data.price_change_30d}
@@ -115,6 +116,7 @@ def run_pipeline(run_date: date | None = None) -> None:
         send_signal_alerts(signal_alerts)
         success = True
         record_pipeline_event("pipeline", "info", "pipeline_completed", ticker_count=len(analyses), updated_signal_rows=updated_signals)
+        datastore.record_analysis_run(run_date=effective_date, success=True, logger=get_pipeline_logger())
     except Exception as exc:
         send_pipeline_failure_alert(effective_date, str(exc))
         record_pipeline_event(
@@ -123,6 +125,11 @@ def run_pipeline(run_date: date | None = None) -> None:
             "pipeline_failed",
             error_type=type(exc).__name__,
             error_message=str(exc),
+        )
+        get_datastore(output_root=Path("output")).record_analysis_run(
+            run_date=effective_date,
+            success=False,
+            logger=get_pipeline_logger(),
         )
         raise
     finally:

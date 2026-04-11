@@ -32,7 +32,11 @@ _SECTOR_TRANSLATIONS = {
 }
 _MAX_BATCH_SPLIT_DEPTH = 6
 _NUMERIC_HIGHLIGHT_PATTERN = re.compile(
-    r"(?:[$€₩]\s*[-+]?\d[\d,.]*(?:\.\d+)?)|(?:[-+]?\d[\d,.]*(?:\.\d+)?\s*(?:%p|%|배|x|USD|KRW|원|달러|M|B|T|억|만|조))"
+    r"(?:[$€₩]\s*[-+]?\d[\d,.]*(?:\.\d+)?)|(?:[-+]?\d[\d,.]*(?:\.\d+)?\s*(?:%p|%|배|x|USD|KRW|원|달러|M|B|T|억|만|조))|(?:\d[\d,.]*)"
+)
+_MISSING_DATA_HIGHLIGHT_PATTERN = re.compile(
+    r'(?:\bN/?A\b|데이터\s*(?:없|부족)|제공되지\s*않|확인\s*불가|판단\s*불가|비교\s*불가|제한됩니다?)',
+    re.IGNORECASE,
 )
 _FEW_SHOT_EXAMPLE = (
     '{"tickers":[{"ticker":"AAPL","summary":"애플은 260.49 USD 부근에서 SMA50 260.57 USD를 두고 방향성을 탐색 중이며 '
@@ -504,6 +508,8 @@ def _build_payload(
                 'fmp_earnings_surprises': market.fmp_earnings_surprises[:4],
                 'options_flow': market.options_flow,
                 'recommendation_trends': market.recommendation_trends[:3],
+                'fundamental_metrics': market.fundamental_metrics,
+                'technical_indicators': market.technical_indicators,
                 'quarterly_financials': market.quarterly_financials[:4],
                 'signal_history': (signal_history_map or {}).get(item.ticker, [])[:5],
                 'sector_peer_context': peer_context_map.get(item.ticker, {}),
@@ -525,6 +531,29 @@ def _build_sector_peer_context(
     batch: list[WatchlistItem],
     collected: dict[str, CollectedTickerData],
 ) -> dict[str, dict[str, str]]:
+    from src.collector.finnhub import collect_finnhub_peers, is_finnhub_ready
+    from src.collector.fmp import collect_fmp_peer_metrics, is_fmp_ready
+
+    # Try Finnhub peers + FMP metrics for enhanced comparison
+    use_enhanced = is_finnhub_ready() and is_fmp_ready()
+    peer_cache: dict[str, list[str]] = {}
+    peer_metrics_cache: dict[str, dict[str, str]] = {}
+
+    if use_enhanced:
+        for item in batch:
+            try:
+                peers = collect_finnhub_peers(item.ticker)
+                if peers:
+                    peer_cache[item.ticker] = peers
+                    # Collect FMP metrics for peers not yet cached
+                    new_peers = [p for p in peers if p not in peer_metrics_cache]
+                    if new_peers:
+                        metrics = collect_fmp_peer_metrics(new_peers)
+                        peer_metrics_cache.update(metrics)
+            except Exception:
+                continue
+
+    # Fallback: watchlist-internal grouping
     grouped: dict[str, list[CollectedTickerData]] = {}
     for item in batch:
         sector_key = (item.sector or collected[item.ticker].sector or 'N/A').strip()
@@ -534,6 +563,40 @@ def _build_sector_peer_context(
     for item in batch:
         market = collected[item.ticker]
         sector_key = (item.sector or market.sector or 'N/A').strip()
+
+        # Enhanced path: Finnhub peers with FMP metrics
+        finnhub_peers = peer_cache.get(item.ticker, [])
+        if finnhub_peers and peer_metrics_cache:
+            peer_names: list[str] = []
+            roe_values: list[str] = []
+            margin_values: list[str] = []
+            for p in finnhub_peers:
+                pm = peer_metrics_cache.get(p, {})
+                if pm:
+                    peer_names.append(p)
+                    if pm.get('roe'):
+                        roe_values.append(pm['roe'])
+                    if pm.get('gross_margin'):
+                        margin_values.append(pm['gross_margin'])
+            if peer_names:
+                avg_roe = _average_numeric(roe_values, suffix='%') if roe_values else 'N/A'
+                avg_margin = _average_numeric(margin_values, suffix='%') if margin_values else 'N/A'
+                context_by_ticker[item.ticker] = {
+                    'sector': sector_key or 'N/A',
+                    'peer_names': '/'.join(peer_names[:5]),
+                    'peer_count': str(len(peer_names)),
+                    'peer_avg_roe': avg_roe,
+                    'peer_avg_gross_margin': avg_margin,
+                    'ticker_roe': market.fundamental_metrics.get('roe', 'N/A'),
+                    'ticker_gross_margin': market.fundamental_metrics.get('gross_margin', 'N/A'),
+                    'ticker_pe': market.pe_ratio,
+                    'ticker_price_change_30d': market.price_change_30d,
+                    'ticker_rs_vs_spy': market.rs_vs_spy,
+                    'enhanced': 'true',
+                }
+                continue
+
+        # Fallback: watchlist-internal comparison
         peers = [entry for entry in grouped.get(sector_key, []) if entry.ticker != item.ticker]
         if not peers:
             context_by_ticker[item.ticker] = {}
@@ -697,39 +760,6 @@ def _call_openai_batch(
         )
         return None
 
-
-def _build_system_prompt() -> str:
-    return (
-        'You are a professional equity research analyst writing actionable trading notes. '
-        'Your audience is an active swing trader who needs: (1) concrete price levels for entries and stops, '
-        '(2) catalyst timelines, (3) quantitative evidence over qualitative narratives. '
-        'Use only the provided data. Return strict JSON with key \'tickers\'. '
-        'All human-readable field values must be written in Korean. '
-        'Keep ticker symbols and company names unchanged. '
-        'Rules: '
-        '- Every price-related statement MUST include a specific dollar amount or percentage. '
-        '- summary must be exactly 2 sentences: first sentence = current situation with price context, '
-        'second sentence = upcoming catalyst or key risk with timeline. '
-        '- financial_highlights: max 5 items, each MUST contain a number (margin %, growth rate, ratio). '
-        '- risks_or_watchpoints: max 4 items, each must specify a measurable trigger (price level, date, or threshold). '
-        '- signal_or_takeaway: one structured sentence: "[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격1]/[가격2] | 손절 [가격] (R:R [비율])" '
-        'Direction options: 매수 관찰, 매수 유지, 중립 관찰, 중립 경계, 매도 경계. '
-        '- trade_frame: use provided ATR and SMA values for stop loss and target calculations. '
-        'Include entry_price (current price or pullback zone), stop_loss (SMA50 or price - 2×ATR), '
-        'target_1 (near resistance, 1-2 ATR above entry), target_2 (analyst target or 52W high), '
-        'risk_reward_ratio (reward/risk as "X.XR" format), position_size_note (ATR-based 1% risk sizing hint). '
-        '- Reflect earnings surprise patterns (consecutive beat/miss, YoY acceleration/deceleration) in financial_highlights and signal_or_takeaway. '
-        '- Mention sector-relative valuation or momentum only when the provided peer comparison contains a clear numeric gap. '
-        '- Adjust risk posture by volatility regime: VIX < 15 = standard/aggressive targets allowed, '
-        'VIX 15-25 = standard posture, VIX 25-35 = tighter stop and smaller size bias, VIX > 35 = defensive and avoid aggressive long entries. '
-        '- Treat duplicated headlines about the same event as one catalyst. Do not overcount repeated coverage. '
-        '- news_tone must summarize the overall tone of the provided headlines, paying attention to negations like "no miss" or "denies". '
-        '- If any input field is "N/A" or missing, do not repeat it. Instead, infer from neighboring metrics when reasonable, '
-        'or omit only that specific data point. '
-        'Reference example JSON structure for style and specificity: '
-        f'{_FEW_SHOT_EXAMPLE}'
-    )
-
     usage_cost = calculate_response_cost(response, model_profile)
     record_pipeline_event(
         'analyzer',
@@ -768,6 +798,44 @@ def _build_system_prompt() -> str:
         return None
 
 
+def _build_system_prompt() -> str:
+    return (
+        'You are a professional equity research analyst writing actionable trading notes. '
+        'Your audience is an active swing trader who needs: (1) concrete price levels for entries and stops, '
+        '(2) catalyst timelines, (3) quantitative evidence over qualitative narratives. '
+        'Use only the provided data. Return strict JSON with key \'tickers\'. '
+        'All human-readable field values must be written in Korean. '
+        'Keep ticker symbols and company names unchanged. '
+        'Rules: '
+        '- Every price-related statement MUST include a specific dollar amount or percentage. '
+        '- summary must be exactly 2 sentences: first sentence = current situation with price context, '
+        'second sentence = upcoming catalyst or key risk with timeline. '
+        '- financial_highlights: max 5 items. Prefer numeric evidence, and ensure at least one item contains a number when data exists. '
+        'If quantitative data is unavailable, explicitly say that the metric is unavailable instead of inventing a number. '
+        '- risks_or_watchpoints: max 4 items, each must specify a measurable trigger (price level, date, or threshold). '
+        '- signal_or_takeaway: one structured sentence: "[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격1]/[가격2] | 손절 [가격] (R:R [비율])" '
+        'Direction options: 매수 관찰, 매수 유지, 중립 관찰, 중립 경계, 매도 경계. '
+        '- trade_frame: use provided ATR and SMA values for stop loss and target calculations. '
+        'Include entry_price (current price or pullback zone), stop_loss (SMA50 or price - 2×ATR), '
+        'target_1 (near resistance, 1-2 ATR above entry), target_2 (analyst target or 52W high), '
+        'risk_reward_ratio (reward/risk as "X.XR" format), position_size_note (ATR-based 1% risk sizing hint). '
+        '- Reflect earnings surprise patterns (consecutive beat/miss, YoY acceleration/deceleration) in financial_highlights and signal_or_takeaway. '
+        '- Mention sector-relative valuation or momentum only when the provided peer comparison contains a clear numeric gap. '
+        '- Adjust risk posture by volatility regime: VIX < 15 = standard/aggressive targets allowed, '
+        'VIX 15-25 = standard posture, VIX 25-35 = tighter stop and smaller size bias, VIX > 35 = defensive and avoid aggressive long entries. '
+        '- valuation_score: Return an object with score (1-10 scale as "N/10"), factors (list of key valuation drivers), '
+        'and assessment (Korean summary). Scoring guide: 8+/10=저평가, 5-7/10=적정, <5/10=고평가. '
+        'Base on ROE/ROIC, PE vs peers, FCF yield, margin trend, debt level. '
+        'If fundamental_metrics are unavailable, use PE, PBR, analyst target vs current price. '
+        '- Treat duplicated headlines about the same event as one catalyst. Do not overcount repeated coverage. '
+        '- news_tone must summarize the overall tone of the provided headlines, paying attention to negations like "no miss" or "denies". '
+        '- If any input field is "N/A" or missing, do not repeat it. Instead, infer from neighboring metrics when reasonable, '
+        'or omit only that specific data point. '
+        'Reference example JSON structure for style and specificity: '
+        f'{_FEW_SHOT_EXAMPLE}'
+    )
+
+
 def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_context: dict[str, Any] | None = None) -> str:
     compact_context = "\n\n".join(_build_ticker_context(entry) for entry in payload)
     instructions = (
@@ -780,8 +848,10 @@ def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_c
         'Sentence 2 = upcoming catalyst or key risk with specific date/timeline.\n\n'
         'key_news: Follow the same order as the provided news array. Each item is a SHORT Korean summary (max 15 words) '
         'of the headline. Example: "Apple, SEC에 분기 실적 보고서(10-Q) 제출" → "10-Q 분기 실적 보고 제출, 실적 확인 필요".\n\n'
-        'financial_highlights: Max 5 items. Every item MUST include a number. '
-        'Good: "영업이익률 30.2% (전년 대비 +1.8%p)". Bad: "수익성이 양호합니다". '
+        'financial_highlights: Max 5 items. Prefer numeric evidence and make sure at least one item contains a number when the data exists. '
+        'If the metric is genuinely unavailable, say so explicitly instead of fabricating a number. '
+        'Good: "영업이익률 30.2% (전년 대비 +1.8%p)". Also acceptable when data is missing: "PE 데이터가 없어 동종 대비 밸류에이션 판단이 제한됩니다." '
+        'Bad: "수익성이 양호합니다". '
         'Include: margin %, growth rates, PE/PB vs sector average, FCF yield, debt ratio when available.\n\n'
         'risks_or_watchpoints: Max 4 items. Each must specify a MEASURABLE trigger. '
         'Good: "SMA200($230.50) 하향 이탈 시 중기 추세 전환 확인". Bad: "시장 변동성에 유의".\n\n'
@@ -808,10 +878,33 @@ def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_c
         '- analyst_estimate_revisions direction="down"이면 risks_or_watchpoints에 하향 조정 리스크를 반영합니다.\n'
         '- insider_transactions에서 최근 30일 C-suite buy는 bullish 구조 신호로 해석하고, 대규모 매도는 리스크로 반영합니다.\n'
         '- insider_transactions의 option exercise는 bearish 신호로 과해석하지 않습니다.\n'
-        '- options_flow에서 PCR < 0.5는 bullish 포지셔닝, unusual call activity는 스마트머니 가능성으로 해석하되 가격 확인 조건을 명시합니다.\n'
-        '- options_flow의 avg IV가 높으면 stop 범위를 ATR 기준보다 다소 넓게 허용할 수 있습니다.\n'
+        '- options_flow PCR < 0.5는 bullish, > 1.5는 bearish 포지셔닝으로 해석하되 반드시 가격 확인 조건을 명시합니다.\n'
+        '- options_flow MaxPain과 현재가의 괴리가 크면 만기 주간 자석(pin) 효과를 risks_or_watchpoints에 반영하고 괴리 방향을 함께 기술합니다.\n'
+        '- options_flow IM(Implied Move)은 시장이 반영한 예상 변동폭이므로 target_1/target_2/stop_loss가 IM 범위와 일관되는지 확인하고, 초과 target은 근거를 명시합니다.\n'
+        '- options_flow GEX가 negative이면 변동성 증폭 국면으로 해석해 stop 폭을 넓히고, positive이면 MaxPain 근처 자석 효과를 감안해 목표가를 보수적으로 설정합니다.\n'
+        '- options_flow Skew가 fear-biased(+)이면 하방 테일 리스크 프리미엄이 높다는 의미이므로 risks_or_watchpoints에 헤지 수요를 반영합니다. greed-biased(-)이면 과열 신호로 해석합니다.\n'
+        '- options_flow NetΔ가 큰 양수이면 콜 중심 포지셔닝, 큰 음수이면 풋 중심 방어 포지셔닝으로 해석합니다.\n'
+        '- options_flow TopCalls/TopPuts의 최고 OI 행사가는 단기 지지/저항선 후보로 취급하고 trade_frame 설정 시 보조 근거로 사용합니다.\n'
+        '- options_flow avg IV가 높으면 stop 범위를 ATR 기준보다 다소 넓게 허용하고 VIX regime과 결합해 포지션 사이즈를 조정합니다.\n'
+        '- options_flow unusual_activity는 premium 금액이 큰 순서로 제공되므로 OI 대비 volume 비율과 가격 확인 조건을 함께 기술합니다.\n'
         '- recommendation_trends trend="upgrading"은 컨센서스 이동을 financial_highlights에, trend="downgrading"은 risks_or_watchpoints에 반영합니다.\n'
-        '- fmp_earnings_surprises가 있으면 기존 quarterly_financials보다 우선해서 earnings surprise pattern을 해석합니다.'
+        '- fmp_earnings_surprises가 있으면 기존 quarterly_financials보다 우선해서 earnings surprise pattern을 해석합니다.\n'
+        '- fundamental_metrics의 ROE/ROIC/FCF yield를 financial_highlights에서 동종 평균과 비교하여 밸류에이션 판단 근거로 사용합니다.\n'
+        '- gross_margin_trend/operating_margin_trend가 "improving"이면 수익성 개선 강조, "declining"이면 risks에 마진 축소 리스크를 반영합니다.\n'
+        '- debt_to_equity > 1.5이면 재무 레버리지 리스크를, current_ratio < 1.0이면 유동성 리스크를 risks에 반영합니다.\n'
+        '- RSI > 70이면 과매수 상태를 risks_or_watchpoints에 반영하고, RSI < 30이면 과매도 반등 가능성을 signal에 반영합니다.\n'
+        '- MACD crossover가 bullish이면 진입 트리거 보조 근거로, bearish이면 청산/경계 근거로 사용합니다.\n'
+        '- BB lower_band 터치는 가치투자자에게 매수 기회 시그널로, upper_band 터치는 이익실현 고려 시점으로 해석합니다.\n\n'
+        '## Valuation Score (밸류에이션 점수)\n'
+        '- valuation_score의 score는 1-10점 척도("N/10" 형식). 8+/10=저평가, 5-7/10=적정, <5/10=고평가.\n'
+        '- factors에는 점수에 영향을 준 핵심 지표를 나열합니다 (예: "ROE 147% (상위)", "PE 28.5x (프리미엄)").\n'
+        '- assessment는 1-2문장의 한국어 종합 평가입니다.\n'
+        '- fundamental_metrics가 있으면 ROE/ROIC, FCF yield, margin trend, debt level을 종합합니다.\n'
+        '- fundamental_metrics가 없으면 PE, PBR, 애널리스트 목표가 대비 현재가, 52주 범위 위치로 판단합니다.\n\n'
+        '## Dividend Analysis (배당 분석)\n'
+        '- annual_dividend, dividend_5y_cagr, consecutive_increase_years가 있으면 financial_highlights에 배당 관련 항목을 포함합니다.\n'
+        '- 배당 성장률(CAGR)이 5% 이상이고 연속 증가 3년 이상이면 배당 안정성을 강조합니다.\n'
+        '- 배당수익률(dividend_yield)이 섹터 평균 대비 높으면 소득 투자 매력을 언급합니다.'
     )
     macro_section = ""
     if macro_context:
@@ -865,6 +958,8 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
     insider_activity = _render_insider_transactions(analysis_input.get('insider_transactions', []))
     options_flow = _render_options_flow(analysis_input.get('options_flow', {}))
     recommendation = _render_recommendation_trends(analysis_input.get('recommendation_trends', []))
+    fundamentals = _render_fundamental_metrics(analysis_input.get('fundamental_metrics', {}))
+    technicals = _render_technical_indicators(analysis_input.get('technical_indicators', {}))
 
     return (
         f"[Ticker] {analysis_input.get('ticker', 'N/A')} | {analysis_input.get('name', 'N/A')} | {analysis_input.get('sector', 'N/A')}\n"
@@ -889,7 +984,9 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
         f"[Options Flow] {options_flow}\n"
         f"[Recommendation] {recommendation}\n"
         f"[Signal History] {signal_history}\n"
-        f"[Sector Comparison] {sector_peer_context}"
+        f"[Sector Comparison] {sector_peer_context}\n"
+        f"[Fundamentals] {fundamentals}\n"
+        f"[Technical Indicators] {technicals}"
     )
 
 
@@ -947,6 +1044,19 @@ def _render_sector_peer_context(context: Any) -> str:
         return 'N/A'
     sector = str(context.get('sector', 'N/A'))
     peer_count = str(context.get('peer_count', '0'))
+
+    # Enhanced path: Finnhub peers with FMP metrics
+    if context.get('enhanced') == 'true':
+        peer_names = context.get('peer_names', 'N/A')
+        return (
+            f"vs {peer_names} ({sector}, {peer_count}개): "
+            f"ROE 현재 {context.get('ticker_roe', 'N/A')} vs peer avg {context.get('peer_avg_roe', 'N/A')}, "
+            f"Gross Margin 현재 {context.get('ticker_gross_margin', 'N/A')} vs peer avg {context.get('peer_avg_gross_margin', 'N/A')}, "
+            f"PE {context.get('ticker_pe', 'N/A')}, 30D {context.get('ticker_price_change_30d', 'N/A')}, "
+            f"RS {context.get('ticker_rs_vs_spy', 'N/A')}"
+        )
+
+    # Fallback: watchlist-internal
     return (
         f"{sector} peers {peer_count}개 평균: PE {context.get('average_pe', 'N/A')}, "
         f"30D {context.get('average_price_change_30d', 'N/A')}, "
@@ -998,15 +1108,48 @@ def _render_options_flow(flow: Any) -> str:
     if not isinstance(flow, dict) or not flow:
         return 'N/A'
     parts: list[str] = []
+    # Basic flow metrics
     pcr = flow.get('put_call_volume_ratio')
     if pcr:
         parts.append(f"PCR {pcr} ({flow.get('flow_sentiment', '')})")
-    unusual = flow.get('unusual_activity')
-    if unusual:
-        parts.append(f"unusual: {unusual}")
     avg_iv = flow.get('avg_iv')
     if avg_iv:
         parts.append(f"avg IV {avg_iv}")
+    # Tier A: Max Pain
+    max_pain = flow.get('max_pain')
+    if max_pain:
+        parts.append(f"MaxPain {max_pain}")
+    # Tier A: Implied Move
+    implied_move = flow.get('implied_move')
+    if implied_move:
+        parts.append(f"IM {implied_move}")
+    # Tier A: GEX
+    gex = flow.get('gex_regime')
+    if gex:
+        parts.append(f"GEX {gex}")
+    # Tier A: IV Skew
+    skew = flow.get('iv_skew')
+    if skew:
+        parts.append(f"Skew {skew}")
+    # Tier A: Net Delta
+    net_delta = flow.get('net_delta')
+    if net_delta:
+        parts.append(f"NetΔ {net_delta}")
+    # Tier A: OI-based P/C ratio
+    oi_pcr = flow.get('put_call_oi_ratio')
+    if oi_pcr:
+        parts.append(f"OI P/C {oi_pcr}")
+    # Tier A: OI concentration
+    top_calls = flow.get('top_call_oi')
+    if top_calls:
+        parts.append(f"TopCalls {top_calls}")
+    top_puts = flow.get('top_put_oi')
+    if top_puts:
+        parts.append(f"TopPuts {top_puts}")
+    # Tier A: Unusual activity (premium-ranked)
+    unusual = flow.get('unusual_activity')
+    if unusual:
+        parts.append(f"unusual: {unusual}")
     return ' | '.join(parts) if parts else 'N/A'
 
 
@@ -1022,6 +1165,47 @@ def _render_recommendation_trends(trends: Any) -> str:
         f"{trend.get('period', '')} {trend.get('consensus', 'N/A')} "
         f"({trend.get('trend', '')}): {buys}B/{trend.get('hold', '0')}H/{sells}S"
     )
+
+
+def _render_technical_indicators(indicators: Any) -> str:
+    if not isinstance(indicators, dict) or not indicators:
+        return 'N/A'
+    parts: list[str] = []
+    rsi = indicators.get('rsi_14')
+    if rsi:
+        parts.append(f"RSI(14): {rsi} ({indicators.get('rsi_signal', '')})")
+    macd = indicators.get('macd')
+    if macd:
+        parts.append(
+            f"MACD: {macd}/{indicators.get('macd_signal', '')} "
+            f"({indicators.get('macd_crossover', '')})"
+        )
+    bb_upper = indicators.get('bb_upper')
+    if bb_upper:
+        parts.append(
+            f"BB: {indicators.get('bb_lower', '')}-{bb_upper} "
+            f"({indicators.get('bb_position', '')}, BW {indicators.get('bb_bandwidth', '')})"
+        )
+    return ' | '.join(parts) if parts else 'N/A'
+
+
+def _render_fundamental_metrics(metrics: Any) -> str:
+    if not isinstance(metrics, dict) or not metrics:
+        return 'N/A'
+    parts: list[str] = []
+    for key, label in (
+        ('roe', 'ROE'), ('roic', 'ROIC'), ('current_ratio', 'CR'),
+        ('debt_to_equity', 'D/E'), ('fcf_yield', 'FCF Yield'),
+        ('net_debt_to_ebitda', 'ND/EBITDA'),
+        ('gross_margin', 'Gross Margin'), ('operating_margin', 'Op Margin'),
+        ('annual_dividend', 'Annual Div'), ('dividend_5y_cagr', 'Div CAGR 5Y'),
+        ('consecutive_increase_years', 'Div Increase Yrs'), ('industry', 'Industry'),
+    ):
+        val = metrics.get(key)
+        if val and val != 'N/A':
+            trend = metrics.get(f'{key}_trend', '')
+            parts.append(f"{label}: {val}" + (f" ({trend})" if trend else ""))
+    return ', '.join(parts) if parts else 'N/A'
 
 
 def _build_fallback_analyses(
@@ -1064,6 +1248,7 @@ def _build_openai_analysis(
         options_summary=market.options_summary,
         signal_history=signal_history or [],
         sector_comparison=sector_comparison or {},
+        valuation_score=match.get('valuation_score', {}),
     )
 
 
@@ -1548,7 +1733,8 @@ def _parse_and_validate_response(content: str, watchlist: list[WatchlistItem]) -
                 'risks_or_watchpoints': _require_string_list(entry, 'risks_or_watchpoints', item_min_length=15),
                 'signal_or_takeaway': _require_non_empty_string(entry, 'signal_or_takeaway', min_length=30),
                 'news_tone': _require_news_tone(entry),
-                'trade_frame': _require_trade_frame(entry, min_length=15),
+                'trade_frame': _require_trade_frame(entry),
+                'valuation_score': _require_valuation_score(entry),
             }
         )
 
@@ -1582,9 +1768,17 @@ def _require_string_list(entry: dict[str, Any], key: str, *, item_min_length: in
 
 
 def _require_quantitative_highlights(items: list[str]) -> list[str]:
+    has_numeric_evidence = False
     for item in items:
-        if not _NUMERIC_HIGHLIGHT_PATTERN.search(item):
+        if _NUMERIC_HIGHLIGHT_PATTERN.search(item):
+            has_numeric_evidence = True
+            continue
+        if _MISSING_DATA_HIGHLIGHT_PATTERN.search(item):
+            continue
+        if len(item) < 15:
             raise ValueError(f"financial_highlights item missing quantitative data: {item!r}")
+    if not has_numeric_evidence and not any(_MISSING_DATA_HIGHLIGHT_PATTERN.search(item) for item in items):
+        raise ValueError("financial_highlights must contain at least one numeric datapoint or an explicit missing-data explanation.")
     return items
 
 
@@ -1627,17 +1821,17 @@ def _response_schema() -> dict[str, Any]:
                             'type': 'object',
                             'additionalProperties': False,
                             'properties': {
-                                'entry_price': {'type': 'string', 'minLength': 5},
-                                'stop_loss': {'type': 'string', 'minLength': 5},
-                                'target_1': {'type': 'string', 'minLength': 5},
-                                'target_2': {'type': 'string', 'minLength': 5},
+                                'entry_price': {'type': 'string', 'minLength': 3},
+                                'stop_loss': {'type': 'string', 'minLength': 3},
+                                'target_1': {'type': 'string', 'minLength': 3},
+                                'target_2': {'type': 'string', 'minLength': 3},
                                 'risk_reward_ratio': {'type': 'string', 'minLength': 2},
-                                'position_size_note': {'type': 'string', 'minLength': 10},
-                                'bull_scenario': {'type': 'string', 'minLength': 15},
-                                'base_scenario': {'type': 'string', 'minLength': 15},
-                                'bear_scenario': {'type': 'string', 'minLength': 15},
-                                'invalidation_price': {'type': 'string', 'minLength': 15},
-                                'watch_period': {'type': 'string', 'minLength': 15},
+                                'position_size_note': {'type': 'string', 'minLength': 8},
+                                'bull_scenario': {'type': 'string', 'minLength': 10},
+                                'base_scenario': {'type': 'string', 'minLength': 10},
+                                'bear_scenario': {'type': 'string', 'minLength': 10},
+                                'invalidation_price': {'type': 'string', 'minLength': 8},
+                                'watch_period': {'type': 'string', 'minLength': 5},
                             },
                             'required': [
                                 'entry_price',
@@ -1653,6 +1847,20 @@ def _response_schema() -> dict[str, Any]:
                                 'watch_period',
                             ],
                         },
+                        'valuation_score': {
+                            'type': 'object',
+                            'additionalProperties': False,
+                            'properties': {
+                                'score': {'type': 'string'},
+                                'factors': {
+                                    'type': 'array',
+                                    'items': {'type': 'string'},
+                                    'maxItems': 5,
+                                },
+                                'assessment': {'type': 'string', 'minLength': 10},
+                            },
+                            'required': ['score', 'factors', 'assessment'],
+                        },
                     },
                     'required': [
                         'ticker',
@@ -1663,6 +1871,7 @@ def _response_schema() -> dict[str, Any]:
                         'signal_or_takeaway',
                         'news_tone',
                         'trade_frame',
+                        'valuation_score',
                     ],
                 },
             }
@@ -1703,17 +1912,34 @@ def _require_trade_frame(entry: dict[str, Any], *, min_length: int = 1) -> dict[
     if not isinstance(value, dict):
         raise ValueError("Field 'trade_frame' must be an object.")
     return {
-        'entry_price': _require_non_empty_string(value, 'entry_price', min_length=min_length),
-        'stop_loss': _require_non_empty_string(value, 'stop_loss', min_length=min_length),
-        'target_1': _require_non_empty_string(value, 'target_1', min_length=min_length),
-        'target_2': _require_non_empty_string(value, 'target_2', min_length=min_length),
-        'risk_reward_ratio': _require_non_empty_string(value, 'risk_reward_ratio', min_length=min_length),
-        'position_size_note': _require_non_empty_string(value, 'position_size_note', min_length=min_length),
-        'bull_scenario': _require_non_empty_string(value, 'bull_scenario', min_length=min_length),
-        'base_scenario': _require_non_empty_string(value, 'base_scenario', min_length=min_length),
-        'bear_scenario': _require_non_empty_string(value, 'bear_scenario', min_length=min_length),
-        'invalidation_price': _require_non_empty_string(value, 'invalidation_price', min_length=min_length),
-        'watch_period': _require_non_empty_string(value, 'watch_period', min_length=min_length),
+        'entry_price': _require_non_empty_string(value, 'entry_price', min_length=max(min_length, 3)),
+        'stop_loss': _require_non_empty_string(value, 'stop_loss', min_length=max(min_length, 3)),
+        'target_1': _require_non_empty_string(value, 'target_1', min_length=max(min_length, 3)),
+        'target_2': _require_non_empty_string(value, 'target_2', min_length=max(min_length, 3)),
+        'risk_reward_ratio': _require_non_empty_string(value, 'risk_reward_ratio', min_length=max(min_length, 2)),
+        'position_size_note': _require_non_empty_string(value, 'position_size_note', min_length=max(min_length, 8)),
+        'bull_scenario': _require_non_empty_string(value, 'bull_scenario', min_length=max(min_length, 10)),
+        'base_scenario': _require_non_empty_string(value, 'base_scenario', min_length=max(min_length, 10)),
+        'bear_scenario': _require_non_empty_string(value, 'bear_scenario', min_length=max(min_length, 10)),
+        'invalidation_price': _require_non_empty_string(value, 'invalidation_price', min_length=max(min_length, 8)),
+        'watch_period': _require_non_empty_string(value, 'watch_period', min_length=max(min_length, 5)),
+    }
+
+
+def _require_valuation_score(entry: dict[str, Any]) -> dict[str, object]:
+    value = entry.get('valuation_score')
+    if not isinstance(value, dict):
+        raise ValueError("Field 'valuation_score' must be an object.")
+    score = _require_non_empty_string(value, 'score')
+    factors = value.get('factors', [])
+    if not isinstance(factors, list):
+        raise ValueError("Field 'valuation_score.factors' must be a list.")
+    factors = [str(f).strip() for f in factors if isinstance(f, str) and f.strip()]
+    assessment = _require_non_empty_string(value, 'assessment', min_length=10)
+    return {
+        'score': score,
+        'factors': factors,
+        'assessment': assessment,
     }
 
 

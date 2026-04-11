@@ -43,6 +43,7 @@ class PipelineRunLogger:
         self.daily_api_cost_usd = 0.0
         self.llm_usage: dict[str, int] = defaultdict(int)
         self.models_used: dict[str, int] = defaultdict(int)
+        self.analyzer_quality: dict[str, int] = defaultdict(int)
 
     def record(self, component: str, level: str, event: str, **fields: Any) -> None:
         safe_fields = _sanitize_fields(fields)
@@ -64,6 +65,7 @@ class PipelineRunLogger:
         ticker = str(safe_fields.get('ticker', '')).strip()
         if 'fallback' in event and ticker:
             self.ticker_fallbacks[ticker] = True
+            self.analyzer_quality['full_fallback_count'] += 1
 
         source = str(safe_fields.get('source') or safe_fields.get('provider') or '').strip()
         if level in {'warning', 'error'} and source:
@@ -82,6 +84,12 @@ class PipelineRunLogger:
             model = str(safe_fields.get('model', '')).strip()
             if model:
                 self.models_used[model] += 1
+        elif event == 'analysis_batch_planned':
+            self.analyzer_quality['batch_count'] += 1
+        elif event == 'openai_response_validation_failed':
+            self.analyzer_quality['validation_failure_count'] += 1
+        elif event == 'analysis_batch_split_retry':
+            self.analyzer_quality['batch_split_retry_count'] += 1
 
         if level in {'warning', 'error'}:
             self.latest_errors.append(
@@ -117,6 +125,7 @@ class PipelineRunLogger:
             'daily_api_cost_usd': round(self.daily_api_cost_usd, 8),
             'llm_usage': dict(sorted(self.llm_usage.items())),
             'models_used': dict(sorted(self.models_used.items())),
+            'analyzer_quality': dict(sorted(self.analyzer_quality.items())),
             'latest_errors': list(self.latest_errors),
             'top_scored_headlines': dict(sorted(self.top_scored_headlines.items())),
         }

@@ -83,6 +83,8 @@ class CollectedTickerData:
     fmp_earnings_surprises: list[dict[str, str]] = field(default_factory=list)
     options_flow: dict[str, str] = field(default_factory=dict)
     recommendation_trends: list[dict[str, str]] = field(default_factory=list)
+    fundamental_metrics: dict[str, str] = field(default_factory=dict)
+    technical_indicators: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -106,6 +108,7 @@ class TickerAnalysis:
     options_summary: dict[str, str] = field(default_factory=dict)
     signal_history: list[dict[str, str]] = field(default_factory=list)
     sector_comparison: dict[str, object] = field(default_factory=dict)
+    valuation_score: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

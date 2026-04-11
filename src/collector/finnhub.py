@@ -174,6 +174,28 @@ def collect_finnhub_earnings_calendar(ticker: str, run_date: date) -> list[dict[
         return []
 
 
+def collect_finnhub_peers(ticker: str) -> list[str]:
+    """Fetch peer companies for a ticker (up to 5)."""
+    try:
+        data = _fetch_json("stock/peers", {"symbol": ticker})
+        if not data or not isinstance(data, list):
+            return []
+        # Finnhub returns the ticker itself as the first element
+        peers = [p for p in data if isinstance(p, str) and p != ticker][:5]
+        if peers:
+            record_pipeline_event(
+                "collector", "info", "finnhub_peers",
+                ticker=ticker, count=len(peers),
+            )
+        return peers
+    except Exception as exc:
+        record_pipeline_event(
+            "collector", "warning", "finnhub_peers_failed",
+            ticker=ticker, error=str(exc),
+        )
+        return []
+
+
 def _map_timing(hour: str) -> str:
     h = hour.lower().strip()
     if h == "bmo":

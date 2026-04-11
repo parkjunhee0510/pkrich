@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from src.chat.engine import answer_question
+from src.utils.datastore import get_datastore
 
 OUTPUT_ROOT = Path("output")
 
@@ -37,12 +38,26 @@ def ticker_detail(ticker: str) -> dict[str, Any]:
     latest_day = days[-1]
     for entry in latest_day.get("tickers", []):
         if str(entry.get("ticker", "")).upper() == ticker.upper():
+            history = _get_datastore().get_ticker_history(ticker)
+            if history:
+                return {**entry, "history": history}
             return entry
     raise HTTPException(status_code=404, detail=f"Ticker {ticker} not found")
 
 
+@app.get("/api/ticker/{ticker}/history")
+def ticker_history(ticker: str) -> dict[str, Any]:
+    history = _get_datastore().get_ticker_history(ticker)
+    if not history:
+        raise HTTPException(status_code=404, detail=f"No history found for {ticker}")
+    return {"ticker": ticker.upper(), "history": history}
+
+
 @app.get("/api/signals")
 def signals() -> dict[str, Any]:
+    signal_stats = _get_datastore().get_signal_stats()
+    if signal_stats is not None:
+        return signal_stats
     payload = _load_json(OUTPUT_ROOT / "data" / "dashboard.json", default={"signal_stats": {}})
     return payload.get("signal_stats", {})
 
@@ -57,6 +72,12 @@ def monthly() -> dict[str, Any]:
     return _load_json(OUTPUT_ROOT / "data" / "monthly_summary.json", default={"status": "no_data"})
 
 
+@app.get("/api/analytics/quality")
+def analytics_quality() -> dict[str, Any]:
+    quality_runs = _get_datastore().get_analysis_quality()
+    return {"runs": quality_runs}
+
+
 @app.post("/api/chat")
 def chat(request: ChatRequest) -> dict[str, Any]:
     return answer_question(request.question, output_root=OUTPUT_ROOT)
@@ -69,3 +90,7 @@ def _load_json(path: Path, *, default: Any) -> Any:
         return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return default
+
+
+def _get_datastore():
+    return get_datastore(output_root=OUTPUT_ROOT)
