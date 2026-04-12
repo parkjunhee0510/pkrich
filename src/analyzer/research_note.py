@@ -69,6 +69,7 @@ def analyze_tickers(
     macro_context: dict[str, Any] | None = None,
     signal_history_map: dict[str, list[dict[str, str]]] | None = None,
     model_profile_name: str | None = None,
+    portfolio_account_size: float | None = None,
 ) -> list[TickerAnalysis]:
     load_dotenv()
     model_profile = load_model_profile(profile_name=model_profile_name)
@@ -81,10 +82,17 @@ def analyze_tickers(
             model_profile=model_profile,
             macro_context=macro_context,
             signal_history_map=signal_history_map,
+            portfolio_account_size=portfolio_account_size,
         )
         if llm_results:
             return llm_results
-    return _build_fallback_analyses(watchlist, collected, news_map, run_date)
+    return _build_fallback_analyses(
+        watchlist,
+        collected,
+        news_map,
+        run_date,
+        account_size_hint=portfolio_account_size,
+    )
 
 
 def _analyze_with_openai(
@@ -96,6 +104,7 @@ def _analyze_with_openai(
     model_profile: ModelProfile,
     macro_context: dict[str, Any] | None = None,
     signal_history_map: dict[str, list[dict[str, str]]] | None = None,
+    portfolio_account_size: float | None = None,
 ) -> list[TickerAnalysis]:
     try:
         from openai import OpenAI
@@ -123,6 +132,7 @@ def _analyze_with_openai(
             run_date,
             macro_context=macro_context,
             signal_history_map=signal_history_map,
+            account_size_hint=portfolio_account_size,
         )
     except Exception as exc:
         _log_analyzer_event(
@@ -147,6 +157,7 @@ def _analyze_batches_with_client(
     *,
     macro_context: dict[str, Any] | None = None,
     signal_history_map: dict[str, list[dict[str, str]]] | None = None,
+    account_size_hint: float | None = None,
 ) -> list[TickerAnalysis]:
     model_profile = _coerce_model_profile(model_profile_or_name)
     prepared = _prepare_payload_items(watchlist, collected, news_map, signal_history_map=signal_history_map)
@@ -166,6 +177,7 @@ def _analyze_batches_with_client(
             total_batches=len(batches),
             retry_depth=0,
             macro_context=macro_context,
+            account_size_hint=account_size_hint,
         )
 
     return [analyses_by_ticker[item.ticker] for item in watchlist if item.ticker in analyses_by_ticker]
@@ -256,6 +268,7 @@ def _process_batch(
     total_batches: int,
     retry_depth: int,
     macro_context: dict[str, Any] | None = None,
+    account_size_hint: float | None = None,
 ) -> None:
     payload = [entry.payload for entry in batch]
     batch_items = [entry.item for entry in batch]
@@ -305,6 +318,7 @@ def _process_batch(
         token_budget=token_budget,
         retry_depth=retry_depth,
         macro_context=macro_context,
+        account_size_hint=account_size_hint,
     )
     if parsed is None:
         if len(batch) > 1 and retry_depth < _MAX_BATCH_SPLIT_DEPTH:
@@ -321,6 +335,7 @@ def _process_batch(
                 retry_depth=retry_depth + 1,
                 reason='batch_request_failed',
                 macro_context=macro_context,
+                account_size_hint=account_size_hint,
             )
             return
 
@@ -332,6 +347,7 @@ def _process_batch(
                 run_date,
                 signal_history=prepared_item.payload.get('signal_history', []),
                 sector_comparison=_format_sector_comparison(prepared_item.payload.get('sector_peer_context', {})),
+                account_size_hint=account_size_hint,
             )
             record_pipeline_event(
                 'analyzer',
@@ -384,6 +400,7 @@ def _process_batch(
                 run_date,
                 signal_history=payload_entry.get('signal_history', []),
                 sector_comparison=_format_sector_comparison(payload_entry.get('sector_peer_context', {})),
+                account_size_hint=account_size_hint,
             )
             continue
 
@@ -413,6 +430,7 @@ def _split_and_retry_batch(
     retry_depth: int,
     reason: str,
     macro_context: dict[str, Any] | None = None,
+    account_size_hint: float | None = None,
 ) -> None:
     midpoint = max(1, len(batch) // 2)
     left = batch[:midpoint]
@@ -444,6 +462,7 @@ def _split_and_retry_batch(
             total_batches=total_batches,
             retry_depth=retry_depth,
             macro_context=macro_context,
+            account_size_hint=account_size_hint,
         )
 
 
@@ -707,9 +726,15 @@ def _call_openai_batch(
     token_budget: int,
     retry_depth: int,
     macro_context: dict[str, Any] | None = None,
+    account_size_hint: float | None = None,
 ) -> list[dict[str, Any]] | None:
     try:
-        user_prompt = _build_user_prompt(payload, run_date, macro_context=macro_context)
+        user_prompt = _build_user_prompt(
+            payload,
+            run_date,
+            macro_context=macro_context,
+            account_size_hint=account_size_hint,
+        )
         response = client.responses.create(
             model=model_profile.model,
             max_output_tokens=model_profile.max_output_tokens,
@@ -836,8 +861,16 @@ def _build_system_prompt() -> str:
     )
 
 
-def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_context: dict[str, Any] | None = None) -> str:
+def _build_user_prompt(
+    payload: list[dict[str, Any]],
+    run_date: date,
+    *,
+    macro_context: dict[str, Any] | None = None,
+    account_size_hint: float | None = None,
+) -> str:
     compact_context = "\n\n".join(_build_ticker_context(entry) for entry in payload)
+    account_size_text = _format_account_size_hint(account_size_hint)
+    one_percent_risk = account_size_hint * 0.01 if account_size_hint and account_size_hint > 0 else 100.0
     instructions = (
         'Create structured research notes for each ticker in Korean.\n'
         'Required fields: ticker, summary, key_news, financial_highlights, '
@@ -867,7 +900,7 @@ def _build_user_prompt(payload: list[dict[str, Any]], run_date: date, *, macro_c
         '- target_1: Near-term resistance. Use price + 1-2 ATR, or recent swing high.\n'
         '- target_2: Extended target. Use analyst target price or 52W high.\n'
         '- risk_reward_ratio: Calculate (target_1 - entry) / (entry - stop_loss). Format as "X.XR".\n'
-        '- position_size_note: "$10,000 계좌 1% 리스크 기준 약 N주 (ATR $X.XX 기반)" — calculate shares = $100 / ATR.\n'
+        f'- position_size_note: "{account_size_text} 계좌 1% 리스크 기준 약 N주 (ATR $X.XX 기반)" — calculate shares = ${one_percent_risk:.0f} / ATR.\n'
         '- invalidation_price: Same as stop_loss but with context (e.g. "SMA50 $145.20 종가 하회 시 추세 전환 확인").\n'
         '- bull_scenario: Reference target_2 or analyst target. Max 2 sentences.\n'
         '- base_scenario: Most likely range-bound action. Reference current price ± 1 ATR. Max 2 sentences.\n'
@@ -1213,8 +1246,19 @@ def _build_fallback_analyses(
     collected: dict[str, CollectedTickerData],
     news_map: dict[str, list[NewsItem]],
     run_date: date,
+    *,
+    account_size_hint: float | None = None,
 ) -> list[TickerAnalysis]:
-    return [_build_fallback_analysis(item, collected, news_map, run_date) for item in watchlist]
+    return [
+        _build_fallback_analysis(
+            item,
+            collected,
+            news_map,
+            run_date,
+            account_size_hint=account_size_hint,
+        )
+        for item in watchlist
+    ]
 
 
 def _build_openai_analysis(
@@ -1260,6 +1304,7 @@ def _build_fallback_analysis(
     *,
     signal_history: list[dict[str, str]] | None = None,
     sector_comparison: dict[str, Any] | None = None,
+    account_size_hint: float | None = None,
 ) -> TickerAnalysis:
     market = collected[item.ticker]
     ticker_news = news_map.get(item.ticker, [])
@@ -1306,7 +1351,7 @@ def _build_fallback_analysis(
         price_action=_build_price_action(market),
         quarterly_financials=market.quarterly_financials,
         upcoming_events=market.upcoming_events[:5],
-        trade_frame=_build_fallback_trade_frame(market),
+        trade_frame=_build_fallback_trade_frame(market, account_size_hint=account_size_hint),
         options_summary=market.options_summary,
         signal_history=signal_history or [],
         sector_comparison=sector_comparison or {},
@@ -1443,7 +1488,11 @@ def _build_fallback_signal(market: CollectedTickerData, ticker_news: list[NewsIt
     return f'{direction} — {catalyst} | 진입 트리거 {entry_zone} | 손절 {invalidation}{rr_text}'
 
 
-def _build_fallback_trade_frame(market: CollectedTickerData) -> dict[str, str]:
+def _build_fallback_trade_frame(
+    market: CollectedTickerData,
+    *,
+    account_size_hint: float | None = None,
+) -> dict[str, str]:
     price = market.price
     price_text = f"{price:.2f} {market.currency}" if price is not None else "현재 가격 기준"
     sma50_text = _with_currency(market.sma_50, market.currency)
@@ -1495,10 +1544,15 @@ def _build_fallback_trade_frame(market: CollectedTickerData) -> dict[str, str]:
         if risk > 0 and reward > 0:
             rr_text = f"{reward / risk:.1f}R"
 
-    # Position sizing (1% risk on $10,000)
+    # Position sizing (1% risk on account value when available)
+    normalized_account_size = account_size_hint if account_size_hint and account_size_hint > 0 else 10000.0
+    risk_budget = normalized_account_size * 0.01
     if atr_val is not None and atr_val > 0:
-        shares = int(100.0 // atr_val)
-        position_size_note = f"$10,000 계좌 1% 리스크 기준 약 {shares}주 (ATR ${atr_val:.2f} 기반)"
+        shares = int(risk_budget // atr_val)
+        position_size_note = (
+            f"{_format_account_size_hint(normalized_account_size)} 계좌 1% 리스크 기준 약 {shares}주 "
+            f"(ATR ${atr_val:.2f} 기반)"
+        )
     else:
         position_size_note = "ATR 데이터 부족으로 포지션 사이징 계산 불가"
 
@@ -1983,6 +2037,11 @@ def _with_currency(value: str, currency: str) -> str:
     if normalized_value.endswith(currency):
         return normalized_value
     return f"{normalized_value} {currency}".strip()
+
+
+def _format_account_size_hint(account_size_hint: float | None) -> str:
+    normalized = account_size_hint if account_size_hint and account_size_hint > 0 else 10000.0
+    return f"${normalized:,.0f}"
 
 
 def _parse_float_from_text(value: str | None) -> float | None:

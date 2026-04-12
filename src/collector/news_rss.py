@@ -273,7 +273,7 @@ def _filter_excluded_news(items: list[NewsItem], exclude_keywords: list[str]) ->
 
 def _news_rank_key(item: WatchlistItem, news_item: NewsItem, run_date: date | None) -> tuple[int, datetime, int, str]:
     published_dt = _parse_published_at(news_item.published_at)
-    source_priority = _load_source_priorities().get((news_item.source or "").strip().lower(), 0)
+    source_priority = load_source_priorities().get((news_item.source or "").strip().lower(), 0)
     title = _normalize_title(news_item.title)
     company_name = _normalize_title(item.name.replace("Corporation", "").replace("Corp.", "").replace("Inc.", ""))
     catalyst_type = _resolve_catalyst_type(news_item)
@@ -306,7 +306,7 @@ def _news_rank_key(item: WatchlistItem, news_item: NewsItem, run_date: date | No
     return (score, published_dt, source_priority, title)
 
 
-def _load_source_priorities() -> dict[str, int]:
+def load_source_priorities() -> dict[str, int]:
     try:
         raw_config = load_simple_mapping("config/output.yaml")
         configured = raw_config.get("news_source_priority", {})

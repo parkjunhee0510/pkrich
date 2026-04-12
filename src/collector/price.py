@@ -186,6 +186,7 @@ def _collect_single_ticker(
     fundamental_metrics: dict[str, str] = {}
     technical_indicators: dict[str, str] = {}
     ohlcv: dict[str, str] = {}
+    sector: str = item.sector
 
     if yfinance_ready:
         try:
@@ -408,7 +409,7 @@ def _collect_single_ticker(
     return CollectedTickerData(
         ticker=item.ticker,
         name=item.name,
-        sector=item.sector,
+        sector=sector or item.sector,
         price=price,
         change_percent=change_percent,
         currency=currency,

@@ -6,7 +6,12 @@ from pathlib import Path
 from typing import Any
 
 
-def answer_question(question: str, *, output_root: Path | None = None) -> dict[str, Any]:
+def answer_question(
+    question: str,
+    *,
+    output_root: Path | None = None,
+    messages: list[dict[str, str]] | None = None,
+) -> dict[str, Any]:
     root = output_root or Path("output")
     dashboard = _load_json(root / "data" / "dashboard.json", default={"days": []})
     days = dashboard.get("days", [])
@@ -22,7 +27,7 @@ def answer_question(question: str, *, output_root: Path | None = None) -> dict[s
 
     matched_tickers = _find_relevant_tickers(normalized_question, tickers)
     context = _build_context(matched_tickers)
-    llm_answer = _answer_with_openai(normalized_question, context)
+    llm_answer = _answer_with_openai(normalized_question, context, messages=messages or [])
     if llm_answer:
         return {
             "answer": llm_answer,
@@ -75,7 +80,7 @@ def _build_context(tickers: list[dict[str, Any]]) -> str:
     return "\n\n".join(chunks)
 
 
-def _answer_with_openai(question: str, context: str) -> str:
+def _answer_with_openai(question: str, context: str, *, messages: list[dict[str, str]]) -> str:
     api_key = os.getenv("OPENAI_API_KEY", "").strip()
     if not api_key or not context:
         return ""
@@ -83,6 +88,10 @@ def _answer_with_openai(question: str, context: str) -> str:
         from openai import OpenAI
 
         client = OpenAI(api_key=api_key)
+        conversation_context = _format_conversation_context(messages)
+        user_content = f"Question: {question}\n\nContext:\n{context}"
+        if conversation_context:
+            user_content = f"{conversation_context}\n\n{user_content}"
         response = client.responses.create(
             model=os.getenv("OPENAI_MODEL", "gpt-5.4-mini"),
             input=[
@@ -92,7 +101,7 @@ def _answer_with_openai(question: str, context: str) -> str:
                 },
                 {
                     "role": "user",
-                    "content": f"Question: {question}\n\nContext:\n{context}",
+                    "content": user_content,
                 },
             ],
         )
@@ -124,3 +133,18 @@ def _build_sources(tickers: list[dict[str, Any]]) -> list[dict[str, str]]:
                 }
             )
     return sources[:5]
+
+
+def _format_conversation_context(messages: list[dict[str, str]]) -> str:
+    if not messages:
+        return ""
+    recent = messages[-6:]
+    lines: list[str] = ["Recent conversation:"]
+    for message in recent:
+        role = str(message.get("role", "")).strip()
+        content = str(message.get("content", "")).strip()
+        if role not in {"user", "assistant"} or not content:
+            continue
+        speaker = "User" if role == "user" else "Assistant"
+        lines.append(f"{speaker}: {content}")
+    return "\n".join(lines) if len(lines) > 1 else ""

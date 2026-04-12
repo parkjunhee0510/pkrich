@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/scenario', label: '시나리오' },
   { to: '/backtest', label: '백테스트' },
   { to: '/chat', label: '리서치 챗' },
+  { to: '/admin', label: 'Admin' },
   { to: '/calendar', label: '캘린더' },
 ] as const
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { TablePageSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
+import { parseNumericChange, changeColor } from '../utils/format'
 import type { UpcomingEvent } from '../types'
 
 interface CalendarEvent extends UpcomingEvent {
@@ -159,7 +160,7 @@ export function Calendar() {
                       </div>
                       <div className="calendar-event-meta">
                         <span>{event.price}</span>
-                        <span style={{ color: event.dailyChange.includes('-') ? 'var(--color-down)' : 'var(--color-up)' }}>
+                        <span style={{ color: changeColor(parseNumericChange(event.dailyChange)) }}>
                           {event.dailyChange}
                         </span>
                       </div>

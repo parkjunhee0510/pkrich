@@ -1,7 +1,8 @@
 """Finnhub free tier collector.
 
-Provides analyst recommendation trends and earnings calendar data.
-Free tier allows 60 API calls/minute — more than enough.
+Provides analyst recommendation trends, earnings calendar data, peer lookup,
+and lightweight economic calendar events.
+Free tier allows 60 API calls/minute — more than enough for this batch flow.
 """
 
 from __future__ import annotations
@@ -196,6 +197,73 @@ def collect_finnhub_peers(ticker: str) -> list[str]:
         return []
 
 
+def collect_finnhub_economic_calendar(
+    run_date: date,
+    *,
+    lookahead_days: int = 14,
+) -> list[dict[str, str]]:
+    """Fetch a narrow set of US macro events for the near-term calendar.
+
+    Finnhub returns a broader economic calendar, so we normalize only the
+    events this project already surfaces: FOMC, CPI, and US employment/NFP.
+    """
+    try:
+        data = _fetch_json(
+            "calendar/economic",
+            {
+                "from": run_date.isoformat(),
+                "to": (run_date + timedelta(days=lookahead_days)).isoformat(),
+            },
+        )
+    except Exception as exc:
+        record_pipeline_event(
+            "collector",
+            "warning",
+            "finnhub_economic_calendar_failed",
+            error=str(exc),
+        )
+        return []
+
+    raw_events: Any = []
+    if isinstance(data, list):
+        raw_events = data
+    elif isinstance(data, dict):
+        raw_events = (
+            data.get("economicCalendar")
+            or data.get("economicCalendarData")
+            or data.get("events")
+            or []
+        )
+
+    if not isinstance(raw_events, list):
+        return []
+
+    normalized: list[dict[str, str]] = []
+    for entry in raw_events:
+        normalized_entry = _normalize_macro_event(entry, run_date)
+        if normalized_entry:
+            normalized.append(normalized_entry)
+
+    normalized.sort(key=lambda item: (item.get("date", ""), item.get("type", "")))
+    deduped: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for entry in normalized:
+        key = (entry.get("type", ""), entry.get("date", ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(entry)
+
+    if deduped:
+        record_pipeline_event(
+            "collector",
+            "info",
+            "finnhub_economic_calendar",
+            event_count=len(deduped),
+        )
+    return deduped
+
+
 def _map_timing(hour: str) -> str:
     h = hour.lower().strip()
     if h == "bmo":
@@ -216,3 +284,77 @@ def _format_large(value: float) -> str:
     if abs_val >= 1e6:
         return f"${value / 1e6:.1f}M"
     return f"${value:,.0f}"
+
+
+def _normalize_macro_event(entry: Any, run_date: date) -> dict[str, str] | None:
+    if not isinstance(entry, dict):
+        return None
+
+    title = " ".join(
+        str(entry.get(key, "")).strip()
+        for key in ("event", "indicator", "release", "title")
+        if str(entry.get(key, "")).strip()
+    ).strip()
+    if not title:
+        return None
+
+    normalized_title = title.lower()
+    event_type: str | None = None
+    label = ""
+    impact = "medium"
+    if "fomc" in normalized_title or "federal reserve" in normalized_title or "interest rate" in normalized_title:
+        event_type = "FOMC"
+        label = "FOMC 금리 결정"
+        impact = "high"
+    elif "cpi" in normalized_title or "consumer price index" in normalized_title:
+        event_type = "CPI"
+        label = "CPI 물가지표 발표"
+        impact = "high"
+    elif (
+        "nonfarm payroll" in normalized_title
+        or "non-farm payroll" in normalized_title
+        or "employment" in normalized_title
+        or "jobless" in normalized_title
+        or "unemployment" in normalized_title
+    ):
+        event_type = "Employment"
+        label = "고용지표 (Non-Farm Payrolls)"
+        impact = "high"
+
+    if event_type is None:
+        return None
+
+    date_value = (
+        str(entry.get("date") or entry.get("time") or entry.get("releaseDate") or "")
+        .strip()
+        .replace("Z", "")
+    )
+    if not date_value:
+        return None
+    event_date = _parse_event_date(date_value)
+    if event_date is None:
+        return None
+
+    days_until = (event_date - run_date).days
+    if days_until < 0:
+        return None
+
+    return {
+        "type": event_type,
+        "date": event_date.isoformat(),
+        "days_until": str(days_until),
+        "label": label,
+        "impact": impact,
+    }
+
+
+def _parse_event_date(raw_value: str) -> date | None:
+    trimmed = raw_value.strip()
+    if not trimmed:
+        return None
+    for candidate in (trimmed[:10], trimmed):
+        try:
+            return date.fromisoformat(candidate)
+        except ValueError:
+            continue
+    return None

@@ -15,6 +15,7 @@ from src.utils.earnings_setup import build_earnings_setup
 from src.utils.monthly_summary import load_monthly_summary
 from src.utils.sec_filings import collect_sec_filing_tags, collect_sec_filings, sort_sec_filings
 from src.utils.ticker_timelines import build_ticker_timelines
+from src.utils.weekly_summary import WeeklySummaryData
 
 _MAX_DAYS = 90
 
@@ -30,6 +31,7 @@ def write_json_outputs(
     signal_stats: dict[str, Any] | None = None,
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
+    weekly_summary: WeeklySummaryData | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     root = output_root or Path("output")
     data_dir = root / "data"
@@ -45,6 +47,7 @@ def write_json_outputs(
         signal_stats or {},
         macro_context or {},
         portfolio_risk or {},
+        weekly_summary=weekly_summary,
     )
     _write_price_history_json(data_dir / "price_history.json", data_dir / "price_history.csv")
     _write_backtest_summary_json(data_dir / "backtest_summary.json", data_dir / "signal_tracker.csv")
@@ -64,6 +67,7 @@ def _write_dashboard_json(
     signal_stats: dict[str, Any],
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
+    weekly_summary: WeeklySummaryData | None = None,
 ) -> list[dict[str, Any]]:
     existing_days: list[dict[str, Any]] = []
     if path.exists():
@@ -92,7 +96,22 @@ def _write_dashboard_json(
         merged = merged[-_MAX_DAYS:]
 
     path.write_text(
-        json.dumps({"days": merged, "signal_stats": signal_stats}, ensure_ascii=False, indent=2),
+        json.dumps(
+            {
+                "days": merged,
+                "signal_stats": signal_stats,
+                "weekly_summary": {
+                    "iso_year": weekly_summary.iso_year if weekly_summary else run_date.isocalendar()[0],
+                    "iso_week": weekly_summary.iso_week if weekly_summary else run_date.isocalendar()[1],
+                    "start_date": weekly_summary.start_date if weekly_summary else "",
+                    "end_date": weekly_summary.end_date if weekly_summary else "",
+                    "trading_days": weekly_summary.trading_days if weekly_summary else 0,
+                    "weekly_insight": weekly_summary.weekly_insight if weekly_summary else "",
+                },
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
         encoding="utf-8",
     )
     return merged

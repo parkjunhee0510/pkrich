@@ -202,14 +202,17 @@ export interface MacroContext {
   vix?: MacroContextVix
   us10y?: {
     level?: string
+    price?: string
     change?: string
   }
   dxy?: {
     level?: string
+    price?: string
     change?: string
   }
   copper?: {
     level?: string
+    price?: string
     change?: string
   }
   upcoming_macro_events?: MacroEvent[]
@@ -252,6 +255,15 @@ export interface DailyEntry {
   tickers: TickerAnalysisData[]
 }
 
+export interface WeeklySummaryPreview {
+  iso_year: number
+  iso_week: number
+  start_date: string
+  end_date: string
+  trading_days: number
+  weekly_insight?: string
+}
+
 export interface SignalHistoryRow {
   signal_date: string
   ticker: string
@@ -284,12 +296,44 @@ export interface SignalStats {
     total_evaluated?: number
     by_catalyst_tag?: Record<string, { count: number; avg_return: string; win_rate: string; best: string; worst: string }>
     by_news_tone?: Record<string, { count: number; avg_return: string; win_rate: string; best: string; worst: string }>
+    ticker_performance?: Array<{ ticker: string; signals: number; avg_return: string; win_rate: string }>
   }
 }
 
 export interface DashboardData {
   days: DailyEntry[]
   signal_stats?: SignalStats
+  weekly_summary?: WeeklySummaryPreview
+}
+
+export interface BacktestDirectionSummary {
+  direction: string
+  signals: number
+  win_rate: string
+  avg_return: string
+  cumulative_return: string
+  best_return: string
+  worst_return: string
+}
+
+export interface BacktestEquityPoint {
+  date: string
+  ticker: string
+  signal_direction: string
+  strategy_return: string
+  equity_multiple: number
+  cumulative_return: string
+}
+
+export interface BacktestTickerRow {
+  ticker: string
+  signals: number
+  avg_return: string
+  win_rate: string
+  bull_signals: number
+  bear_signals: number
+  best_return: string
+  worst_return: string
 }
 
 export interface BacktestSummary {
@@ -301,6 +345,14 @@ export interface BacktestSummary {
   cumulative_return?: string
   best_return?: string
   worst_return?: string
+  bull?: BacktestDirectionSummary
+  bear?: BacktestDirectionSummary
+  equity_curve?: BacktestEquityPoint[]
+  ticker_rows?: BacktestTickerRow[]
+  signal_meta?: {
+    meta_analysis?: SignalStats['meta_analysis']
+    summary_by_direction?: SignalStats['summary_by_direction']
+  }
 }
 
 export interface MonthlySummaryData {
@@ -317,6 +369,31 @@ export interface ChatResponse {
   answer: string
   matched_tickers: string[]
   sources: Array<{ ticker: string; title: string; link: string }>
+}
+
+export interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+  matched_tickers?: string[]
+  sources?: Array<{ ticker: string; title: string; link: string }>
+}
+
+export interface AnalyticsRun {
+  run_date: string
+  success: boolean
+  daily_api_cost_usd: number
+  models_used: Record<string, number>
+  llm_usage: Record<string, number>
+  batch_count: number
+  fallback_count: number
+  validation_failure_count: number
+}
+
+export interface AnalyticsCostResponse {
+  runs: AnalyticsRun[]
+  total_cost_usd: number
+  average_cost_usd: number
+  successful_runs: number
 }
 
 export interface PriceHistoryRow {

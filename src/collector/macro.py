@@ -5,22 +5,23 @@ import logging
 from datetime import date, timedelta
 from typing import Any
 
+from src.collector.finnhub import collect_finnhub_economic_calendar, is_finnhub_ready
 from src.utils.network import can_open_tcp_connection
 
 logger = logging.getLogger(__name__)
 
-# Static economic calendar — updated periodically.
-# Source: Federal Reserve, BLS published schedules.
-_FOMC_DATES_2026 = [
+# Static fallback calendar — kept as a safety net when live collection is
+# unavailable. These dates should never be the primary path.
+_FOMC_FALLBACK_DATES = [
     "2026-01-28", "2026-03-18", "2026-05-06", "2026-06-17",
     "2026-07-29", "2026-09-16", "2026-11-04", "2026-12-16",
 ]
-_CPI_DATES_2026 = [
+_CPI_FALLBACK_DATES = [
     "2026-01-14", "2026-02-11", "2026-03-11", "2026-04-14",
     "2026-05-13", "2026-06-10", "2026-07-14", "2026-08-12",
     "2026-09-15", "2026-10-13", "2026-11-12", "2026-12-09",
 ]
-_EMPLOYMENT_DATES_2026 = [
+_EMPLOYMENT_FALLBACK_DATES = [
     "2026-01-09", "2026-02-06", "2026-03-06", "2026-04-03",
     "2026-05-08", "2026-06-05", "2026-07-02", "2026-08-07",
     "2026-09-04", "2026-10-02", "2026-11-06", "2026-12-04",
@@ -81,10 +82,18 @@ def _classify_vix_regime(vix_level: Any) -> str:
 
 
 def _find_upcoming_events(run_date: date, lookahead_days: int) -> list[dict[str, str]]:
+    if is_finnhub_ready():
+        try:
+            live_events = collect_finnhub_economic_calendar(run_date, lookahead_days=lookahead_days)
+            if live_events:
+                return live_events
+        except Exception:
+            logger.exception("Live macro calendar lookup failed; falling back to static schedule.")
+
     cutoff = run_date + timedelta(days=lookahead_days)
     events: list[dict[str, str]] = []
 
-    for date_str in _FOMC_DATES_2026:
+    for date_str in _FOMC_FALLBACK_DATES:
         event_date = _safe_parse_date(date_str)
         if event_date and run_date <= event_date <= cutoff:
             days_until = (event_date - run_date).days
@@ -96,7 +105,7 @@ def _find_upcoming_events(run_date: date, lookahead_days: int) -> list[dict[str,
                 "impact": "high",
             })
 
-    for date_str in _CPI_DATES_2026:
+    for date_str in _CPI_FALLBACK_DATES:
         event_date = _safe_parse_date(date_str)
         if event_date and run_date <= event_date <= cutoff:
             days_until = (event_date - run_date).days
@@ -108,7 +117,7 @@ def _find_upcoming_events(run_date: date, lookahead_days: int) -> list[dict[str,
                 "impact": "high",
             })
 
-    for date_str in _EMPLOYMENT_DATES_2026:
+    for date_str in _EMPLOYMENT_FALLBACK_DATES:
         event_date = _safe_parse_date(date_str)
         if event_date and run_date <= event_date <= cutoff:
             days_until = (event_date - run_date).days
@@ -160,6 +169,7 @@ def _collect_macro_market_series() -> dict[str, dict[str, str]]:
             change_pct = ((latest - previous) / previous * 100) if previous else 0.0
             result[key] = {
                 "label": label,
+                "level": f"{latest:,.2f}",
                 "price": f"{latest:,.2f}",
                 "change": f"{change_pct:+.2f}%",
             }

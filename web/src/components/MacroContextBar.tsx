@@ -3,9 +3,9 @@ import type { MacroContext } from '../types'
 export function MacroContextBar({ macroContext }: { macroContext?: MacroContext | null }) {
   const vix = macroContext?.vix
   const macroSeries = [
-    { label: 'US10Y', value: macroContext?.us10y?.level, change: macroContext?.us10y?.change },
-    { label: 'DXY', value: macroContext?.dxy?.level, change: macroContext?.dxy?.change },
-    { label: 'Copper', value: macroContext?.copper?.level, change: macroContext?.copper?.change },
+    { label: 'US10Y', value: macroContext?.us10y?.level ?? macroContext?.us10y?.price, change: macroContext?.us10y?.change },
+    { label: 'DXY', value: macroContext?.dxy?.level ?? macroContext?.dxy?.price, change: macroContext?.dxy?.change },
+    { label: 'Copper', value: macroContext?.copper?.level ?? macroContext?.copper?.price, change: macroContext?.copper?.change },
   ].filter((item) => item.value)
   const macroEvents = (macroContext?.upcoming_macro_events ?? []).slice(0, 3)
 

@@ -76,13 +76,14 @@ def build_portfolio_risk_report(
 
     # Position sizing recommendations
     sizing_recs: list[dict[str, str]] = []
+    account_size_for_sizing = total_value if total_value and total_value > 0 else 10000
     for pos in positions_by_weight:
         atr = _parse_float(collected_data.get(pos["ticker"], CollectedTickerData(
             ticker="", name="", sector="", price=None, change_percent=None,
             currency="USD", market_cap="N/A", pe_ratio="N/A", summary_note="",
         )).atr_14d) if pos["ticker"] in collected_data else None
         if atr and atr > 0:
-            sizing = compute_position_sizing(pos["ticker"], atr)
+            sizing = compute_position_sizing(pos["ticker"], atr, account_size=account_size_for_sizing)
             sizing_recs.append(sizing)
 
     return {
@@ -178,7 +179,8 @@ def compute_position_sizing(
     risk_percent: float = 1.0,
 ) -> dict[str, str]:
     """ATR-based position sizing (2×ATR stop distance)."""
-    max_risk_usd = account_size * risk_percent / 100
+    normalized_account_size = account_size if account_size and account_size > 0 else 10000
+    max_risk_usd = normalized_account_size * risk_percent / 100
     stop_distance = atr * 2
     shares = int(max_risk_usd / stop_distance) if stop_distance > 0 else 0
     return {
@@ -186,6 +188,7 @@ def compute_position_sizing(
         "recommended_shares": str(shares),
         "max_risk_usd": f"${max_risk_usd:.0f}",
         "stop_distance": f"${stop_distance:.2f}",
+        "account_size": f"${normalized_account_size:.0f}",
     }
 
 

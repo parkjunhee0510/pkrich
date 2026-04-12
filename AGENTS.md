@@ -74,6 +74,15 @@ DO NOT:
   * RSS → news
   * DuckDuckGo → optional enrichment
 
+* Extended (optional):
+
+  * FMP → financial ratios, insider trading, institutional holdings, earnings surprises, dividends, peer metrics
+  * Finnhub → analyst recommendation trends, peer list
+  * Polygon → options flow (Max Pain, GEX, IV Skew, unusual activity)
+  * SEC Form 4 → insider transactions (free fallback for FMP)
+  * Technicals → RSI(14), MACD(12,26,9), Bollinger Bands (computed from yfinance history)
+  * Macro → yield curve, DXY, copper via yfinance + static calendar
+
 * Requirements:
 
   * implement rate limiting / delays
@@ -114,6 +123,7 @@ Directory structure MUST remain:
 
 output/
 ├── daily/
+│   └── weekly/
 ├── tickers/
 └── data/
 
@@ -124,10 +134,18 @@ Rules:
 * Preserve file naming conventions
 * Keep Git diffs clean and minimal
 
-Slack:
+Slack / Alerts:
 
 * optional
 * must not break core pipeline
+
+Additional Output Modules:
+
+* json_export.py → dashboard.json, price_history.json, ticker_timelines.json, backtest_summary.json, monthly_summary.json
+* alert.py → evaluates price/change alert rules from watchlist
+* signal_tracker → records signals with 1D/5D/20D return tracking
+* backtester → 20-day bull signal performance analysis
+* API (src/api/main.py) → FastAPI REST endpoints for web/chat
 
 ---
 
@@ -217,6 +235,20 @@ When making changes:
 * Never fail entire pipeline unless critical
 
 ---
+
+## Module Boundaries (Current)
+
+```
+src/
+├── collector/     # External data only (price, news, filings, options, macro)
+├── analyzer/      # LLM logic only (research notes, weekly insight)
+├── output/        # Formatting & delivery (markdown, json, slack, obsidian, alerts)
+├── utils/         # Shared utilities (config, datastore, portfolio, signals, logging)
+├── api/           # FastAPI REST API server
+├── backtester/    # Signal backtest engine
+├── chat/          # Q&A engine over dashboard data
+└── cli/           # CLI utilities (failure notification)
+```
 
 ## Non-Goals
 

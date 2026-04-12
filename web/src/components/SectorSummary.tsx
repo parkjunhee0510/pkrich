@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { TickerAnalysisData } from '../types'
 import { parseNumericChange, changeColor } from '../utils/format'
 
@@ -77,13 +78,13 @@ export function SectorSummary({ tickers }: { tickers: TickerAnalysisData[] }) {
             <div className="sector-card-extremes">
               {row.topGainer && (
                 <span className="sector-gainer">
-                  <a href={`${import.meta.env.BASE_URL}ticker/${row.topGainer.ticker}`}>{row.topGainer.ticker}</a>{' '}
+                  <Link to={`/ticker/${row.topGainer.ticker}`}>{row.topGainer.ticker}</Link>{' '}
                   <span style={{ color: 'var(--color-up)' }}>{row.topGainer.change >= 0 ? '+' : ''}{row.topGainer.change.toFixed(1)}%</span>
                 </span>
               )}
               {row.topLoser && (
                 <span className="sector-loser">
-                  <a href={`${import.meta.env.BASE_URL}ticker/${row.topLoser.ticker}`}>{row.topLoser.ticker}</a>{' '}
+                  <Link to={`/ticker/${row.topLoser.ticker}`}>{row.topLoser.ticker}</Link>{' '}
                   <span style={{ color: 'var(--color-down)' }}>{row.topLoser.change.toFixed(1)}%</span>
                 </span>
               )}

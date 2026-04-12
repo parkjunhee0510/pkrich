@@ -111,8 +111,9 @@
 ┌─────────────────────────────────────────────────────┐
 │           deploy-dashboard.yml                       │
 │           React 대시보드 빌드 → GitHub Pages 배포    │
-│           (Dashboard / TickerDetail /                │
-│            Portfolio / Signals / Calendar)           │
+│           (Dashboard / TickerDetail / Portfolio /    │
+│            Signals / Backtest / Calendar /           │
+│            Chat / Scenario)                         │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -452,6 +453,19 @@ React (Vite + TypeScript + Recharts) 기반 정적 사이트. GitHub Pages로 �
 - 다가오는 일정 배지
 - Ticker Detail 페이지: 가격 차트, 분기 재무 테이블, 타임라인 30일/90일 토글
 
+**페이지 구성**:
+
+| 페이지 | 경로 | 설명 |
+|---|---|---|
+| Dashboard | `/` | 메인 대시보드 (워치리스트, 섹터 퍼포먼스, 시장 개요, 매크로) |
+| Ticker Detail | `/ticker/:ticker` | 종목 상세 (차트, EPS 서프라이즈, 분기 재무, 트레이드 프레임, 타임라인) |
+| Portfolio | `/portfolio` | 포트폴리오 현황, 손익, 리스크 분석, 에쿼티 커브 |
+| Signals | `/signals` | 시그널 이력 및 성과 통계 |
+| Backtest | `/backtest` | 20거래일 bull 시그널 백테스트 결과 |
+| Calendar | `/calendar` | 실적 발표/이벤트 캘린더 |
+| Chat | `/chat` | 한국어 Q&A 인터페이스 |
+| Scenario | `/scenario` | What-if 시나리오 분석 |
+
 **배포**: `deploy-dashboard.yml`이 `web/**` 또는 `output/data/**` 변경 시 자동 빌드 → GitHub Pages 배포.
 
 ---
@@ -513,31 +527,67 @@ pkrich/
 │       └── deploy-dashboard.yml    # 웹 대시보드 빌드/배포
 ├── config/
 │   ├── watchlist.yaml              # 관심 종목 목록
-│   └── output.yaml                 # 뉴스 소스 우선순위, 섹터 표시 순서 등
+│   ├── output.yaml                 # 뉴스 소스 우선순위, 섹터 표시 순서 등
+│   ├── models.yaml                 # LLM 모델 프로파일 (economy/standard/deep)
+│   └── portfolio.yaml              # 포트폴리오 보유 종목
 ├── src/
 │   ├── __init__.py
 │   ├── types.py                    # 데이터 클래스 (frozen dataclass)
 │   ├── pipeline.py                 # 메인 오케스트레이션
 │   ├── collector/
-│   │   ├── price.py                # yfinance → Stooq → Alpha Vantage fallback
+│   │   ├── price.py                # yfinance → Stooq → Alpha Vantage fallback + FMP/Finnhub/Polygon 연동
 │   │   ├── news_rss.py             # Google News RSS 수집
-│   │   └── news_search.py          # DuckDuckGo / Yahoo / Reuters 검색 보강
+│   │   ├── news_search.py          # DuckDuckGo / Yahoo / Reuters 검색 보강
+│   │   ├── ir_rss.py               # 회사 공식 IR/보도자료 RSS
+│   │   ├── sec_edgar.py            # SEC EDGAR 공시 수집
+│   │   ├── sec_form4.py            # SEC Form 4 내부자 거래 파싱 (무료 fallback)
+│   │   ├── fmp.py                  # Financial Modeling Prep 재무 데이터
+│   │   ├── finnhub.py              # Finnhub 애널리스트 추천/동종업체
+│   │   ├── polygon_options.py      # Polygon.io 옵션 플로우 (Max Pain/GEX/IV Skew)
+│   │   ├── options.py              # yfinance 옵션 요약
+│   │   ├── technicals.py           # RSI/MACD/Bollinger Bands 기술 지표 계산
+│   │   └── macro.py                # 매크로 캘린더 + 수익률/DXY/구리
 │   ├── analyzer/
-│   │   └── research_note.py        # OpenAI 배치 분석 + deterministic fallback
+│   │   ├── research_note.py        # OpenAI 배치 분석 + deterministic fallback
+│   │   └── weekly_insight.py       # 주간 3문장 시장 요약 생성
 │   ├── output/
 │   │   ├── markdown.py             # daily / weekly / ticker .md 생성
-│   │   ├── json_export.py          # dashboard / price_history / timeline JSON
+│   │   ├── json_export.py          # dashboard / price_history / timeline / backtest / monthly JSON
 │   │   ├── obsidian.py             # Obsidian vault 미러링
-│   │   └── slack.py                # Slack webhook 요약 발송
-│   └── utils/
-│       ├── config.py               # YAML 설정 로더
-│       ├── env.py                  # 환경변수 로더
-│       ├── network.py              # 네트워크 유틸리티
-│       ├── news_tone.py            # 뉴스 감성 분석 (bullish/bearish/neutral)
-│       ├── period_changes.py       # 7D / 30D 가격 변화율 계산 (CSV 누적 기반, 보조)
-│       ├── pipeline_logging.py     # 구조화 파이프라인 이벤트 로깅
-│       ├── ticker_timelines.py     # 종목별 날짜 타임라인 집계
-│       └── weekly_summary.py       # 주간 리서치 노트 생성
+│   │   ├── slack.py                # Slack webhook 요약 발송
+│   │   └── alert.py                # 알림 규칙 평가 (가격/변동률 조건)
+│   ├── utils/
+│   │   ├── config.py               # YAML 설정 로더
+│   │   ├── env.py                  # 환경변수 로더
+│   │   ├── network.py              # 네트워크 유틸리티
+│   │   ├── news_tone.py            # 뉴스 감성 분석 (bullish/bearish/neutral)
+│   │   ├── period_changes.py       # 7D / 30D 가격 변화율 계산 (CSV 누적 기반, 보조)
+│   │   ├── pipeline_logging.py     # 구조화 파이프라인 이벤트 로깅
+│   │   ├── ticker_timelines.py     # 종목별 날짜 타임라인 집계
+│   │   ├── weekly_summary.py       # 주간 리서치 노트 생성
+│   │   ├── monthly_summary.py      # 월간 요약 통계
+│   │   ├── portfolio.py            # 포트폴리오 P&L 계산
+│   │   ├── portfolio_risk.py       # 포트폴리오 리스크 분석 (섹터 집중도, 상관관계, 포지션 사이징)
+│   │   ├── signal_tracker.py       # 시그널 기록 및 수익률 사후 검증
+│   │   ├── cost_tracker.py         # OpenAI API 비용 추적
+│   │   ├── model_config.py         # 모델 프로파일 로더
+│   │   ├── token_estimator.py      # 배치 토큰 예측
+│   │   ├── datastore.py            # 추상 Datastore 인터페이스
+│   │   ├── datastore_csv.py        # CSV 백엔드
+│   │   ├── datastore_sqlite.py     # SQLite 백엔드
+│   │   ├── migrate_csv_to_sqlite.py  # CSV → SQLite 마이그레이션
+│   │   ├── earnings_history.py     # 실적 Beat/Miss 분석
+│   │   ├── earnings_setup.py       # Forward EPS / 실적 D-Day 표시
+│   │   ├── quarterly_financials.py # 분기 재무 YoY 비교
+│   │   └── sec_filings.py          # SEC 공시 태그 추출/필터링
+│   ├── api/
+│   │   └── main.py                 # FastAPI REST API 서버
+│   ├── backtester/
+│   │   └── engine.py               # 20거래일 bull 시그널 백테스트
+│   ├── chat/
+│   │   └── engine.py               # 대시보드 데이터 기반 한국어 Q&A
+│   └── cli/
+│       └── notify_failure.py       # 파이프라인 실패 시 Slack 알림 CLI
 ├── web/                            # React 대시보드 (Vite + TypeScript + Recharts)
 │   ├── src/
 │   │   ├── components/
@@ -588,6 +638,9 @@ watchlist:
 | yfinance / Stooq | $0 |
 | RSS / DuckDuckGo | $0 |
 | Alpha Vantage (선택) | $0 (무료 티어, 일 25회 제한) |
+| FMP (선택) | $0 (무료 티어) |
+| Finnhub (선택) | $0 (무료 티어) |
+| Polygon (선택) | ~$9 (옵션 데이터, Basic 플랜) |
 | OpenAI API (20종목, 일 1회) | ~$0.31 |
 | Slack Webhook | $0 |
 | GitHub Pages | $0 |
@@ -633,6 +686,11 @@ watchlist:
 | **Phase 10** | 모델 업그레이드 (models.yaml 프로파일, model_config.py, cost_tracker.py) | ✅ 완료 |
 | **Phase 11** | SQLite 마이그레이션 (Datastore 추상화, CSV/SQLite 백엔드, DATASTORE_BACKEND 전환) | ✅ 완료 |
 | **Phase 12** | 포트폴리오 트래킹 (portfolio.yaml, portfolio.py, 일일 노트 포트폴리오 현황 섹션) | ✅ 완료 |
+| **Phase 13** | FMP/Finnhub/Polygon 연동 (재무비율, 내부자 거래, 기관 보유, 옵션 플로우, 애널리스트 트렌드) | ✅ 완료 |
+| **Phase 14** | SEC Form 4 내부자 거래 파싱, 기술 지표 (RSI/MACD/Bollinger), 매크로 컨텍스트 | ✅ 완료 |
+| **Phase 15** | 포트폴리오 리스크 분석 (섹터 집중도, 상관관계, ATR 포지션 사이징), 알림 규칙 | ✅ 완료 |
+| **Phase 16** | 시그널 트래커 (1D/5D/20D 수익률 검증), 백테스트 엔진, 월간 요약 | ✅ 완료 |
+| **Phase 17** | FastAPI REST API, Chat Q&A 엔진, 웹 대시보드 확장 (8 페이지) | ✅ 완료 |
 
 ---
 
@@ -652,11 +710,8 @@ watchlist:
 
 ## 10. 향후 확장 고려 사항
 
-현재 미구현 항목. 나머지(배치 전략 확장, 모델 업그레이드, SQLite, 포트폴리오 트래킹)는 Phase 9~12에서 완료.
+현재 미구현 항목. Phase 9~17에서 배치 전략 확장, 모델 업그레이드, SQLite, 포트폴리오 트래킹, 리스크 분석, 시그널 추적, API, Chat, 웹 대시보드 확장 등을 완료.
 
 | 항목 | 필요 조건 | 비고 |
 |---|---|---|
 | **한국 주식 추가** | pykrx + 한경/매경 RSS | 환율 처리 레이어 필요 |
-| **가격 알림** | 목표가 도달 시 Slack/이메일 알림 | watchlist.yaml에 `alert_price` 필드 추가 |
-| **포트폴리오 웹 대시보드** | 웹 대시보드에 포트폴리오 현황 섹션 추가 | 현재 daily .md에만 표시, JSON export 미포함 |
-| **월간 리포트** | 월별 종목 성과/포트폴리오 수익률 요약 .md | weekly_summary.py 패턴 재사용 가능 |

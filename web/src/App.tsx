@@ -25,6 +25,9 @@ const Scenario = lazy(() =>
 const Backtest = lazy(() =>
   import('./pages/Backtest').then((module) => ({ default: module.Backtest })),
 )
+const Admin = lazy(() =>
+  import('./pages/Admin').then((module) => ({ default: module.Admin })),
+)
 const Calendar = lazy(() =>
   import('./pages/Calendar').then((module) => ({ default: module.Calendar })),
 )
@@ -47,6 +50,7 @@ export default function App() {
             <Route path="/chat" element={<Chat />} />
             <Route path="/scenario" element={<Scenario />} />
             <Route path="/backtest" element={<Backtest />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

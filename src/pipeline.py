@@ -34,6 +34,8 @@ def run_pipeline(run_date: date | None = None) -> None:
         vix_data = _extract_vix_from_overview(market_overview)
         macro_context = collect_macro_context(effective_date, vix_data=vix_data)
         news_map = collect_news_for_watchlist(watchlist, effective_date)
+        portfolio_summary = calculate_portfolio_summary(portfolio_holdings, collected)
+        portfolio_account_size = portfolio_summary.total_market_value if portfolio_summary else None
         signal_csv_path = Path("output") / "data" / "signal_tracker.csv"
         signal_history_map = {
             item.ticker: load_recent_signals(signal_csv_path, item.ticker)
@@ -42,7 +44,7 @@ def run_pipeline(run_date: date | None = None) -> None:
         if is_env_flag_enabled("ENABLE_CONVICTION_ROUTING", default=False):
             high_conviction = [
                 item for item in watchlist
-                if _score_conviction(collected[item.ticker]) >= 2
+                if _score_conviction(collected[item.ticker], news_map.get(item.ticker, [])) >= 2
             ]
             normal_items = [item for item in watchlist if item not in high_conviction]
             analyses = analyze_tickers(
@@ -53,6 +55,7 @@ def run_pipeline(run_date: date | None = None) -> None:
                 macro_context=macro_context,
                 signal_history_map=signal_history_map,
                 model_profile_name="standard",
+                portfolio_account_size=portfolio_account_size,
             )
             if high_conviction:
                 analyses.extend(
@@ -64,6 +67,7 @@ def run_pipeline(run_date: date | None = None) -> None:
                         macro_context=macro_context,
                         signal_history_map=signal_history_map,
                         model_profile_name="deep",
+                        portfolio_account_size=portfolio_account_size,
                     )
                 )
         else:
@@ -74,8 +78,8 @@ def run_pipeline(run_date: date | None = None) -> None:
                 effective_date,
                 macro_context=macro_context,
                 signal_history_map=signal_history_map,
+                portfolio_account_size=portfolio_account_size,
             )
-        portfolio_summary = calculate_portfolio_summary(portfolio_holdings, collected)
         portfolio_risk = build_portfolio_risk_report(portfolio_summary, collected)
         price_lookup = {ticker: data.price for ticker, data in collected.items() if data.price is not None}
         datastore = get_datastore(output_root=Path("output"))
@@ -146,7 +150,7 @@ def _extract_vix_from_overview(market_overview: list[dict[str, str]]) -> dict[st
     return None
 
 
-def _score_conviction(data: object) -> int:
+def _score_conviction(data: object, news_items: list[object] | None = None) -> int:
     from src.types import CollectedTickerData
 
     if not isinstance(data, CollectedTickerData):
@@ -160,4 +164,54 @@ def _score_conviction(data: object) -> int:
         score += 1
     if (data.analyst_estimate_revisions or {}).get("direction") == "up":
         score += 1
+    if _headline_tone_score(news_items or []) > 0:
+        score += 1
+    if _is_atr_breakout(data):
+        score += 1
+    if _parse_numeric(data.relative_volume) is not None and _parse_numeric(data.relative_volume) >= 1.5:
+        score += 1
+    rsi_value = _parse_numeric((data.technical_indicators or {}).get("rsi_14", "N/A"))
+    if rsi_value is not None and (rsi_value >= 70 or rsi_value <= 30):
+        score += 1
     return score
+
+
+def _parse_numeric(value: object) -> float | None:
+    import re
+
+    text = str(value or "").strip().replace(",", "")
+    match = re.search(r"[-+]?\d*\.?\d+", text)
+    if not match:
+        return None
+    try:
+        return float(match.group(0))
+    except ValueError:
+        return None
+
+
+def _is_atr_breakout(data: object) -> bool:
+    from src.types import CollectedTickerData
+
+    if not isinstance(data, CollectedTickerData):
+        return False
+    change_percent = data.change_percent
+    atr_percent = _parse_numeric(data.atr_percent)
+    if change_percent is None or atr_percent is None:
+        return False
+    return abs(change_percent) >= atr_percent
+
+
+def _headline_tone_score(news_items: list[object]) -> int:
+    positive_terms = ("beat", "surge", "raise", "upgrade", "growth", "record", "bull", "strong", "outperform")
+    negative_terms = ("miss", "cut", "downgrade", "warning", "weak", "lawsuit", "bear", "decline", "fall")
+    positive = 0
+    negative = 0
+    for item in news_items[:5]:
+        title = str(getattr(item, "title", "") or "").lower()
+        positive += sum(1 for term in positive_terms if term in title)
+        negative += sum(1 for term in negative_terms if term in title)
+    if positive > negative:
+        return 1
+    if negative > positive:
+        return -1
+    return 0

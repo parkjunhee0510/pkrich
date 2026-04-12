@@ -105,6 +105,41 @@ class ApiTests(unittest.TestCase):
 
             self.assertEqual(payload['recent_signals'][0]['ticker'], 'AAPL')
 
+    def test_analytics_cost_falls_back_to_log_summaries(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            output_root = workspace / 'output'
+            data_dir = output_root / 'data'
+            logs_dir = workspace / 'logs' / 'pipeline'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            logs_dir.mkdir(parents=True, exist_ok=True)
+            (logs_dir / '2026-04-08.summary.json').write_text(
+                json.dumps(
+                    {
+                        'run_date': '2026-04-08',
+                        'success': True,
+                        'daily_api_cost_usd': 0.12,
+                        'models_used': {'gpt-5.4-mini': 1},
+                        'llm_usage': {'total_tokens': 1234},
+                        'analyzer_quality': {'batch_count': 2, 'validation_failure_count': 1},
+                        'ticker_fallbacks': {'AAPL': True},
+                    }
+                ),
+                encoding='utf-8',
+            )
+
+            original_root = api_main.OUTPUT_ROOT
+            try:
+                with patch.dict(os.environ, {'DATASTORE_BACKEND': 'csv'}, clear=False):
+                    api_main.OUTPUT_ROOT = output_root
+                    payload = api_main.analytics_cost()
+            finally:
+                api_main.OUTPUT_ROOT = original_root
+
+            self.assertEqual(payload['successful_runs'], 1)
+            self.assertEqual(len(payload['runs']), 1)
+            self.assertAlmostEqual(payload['total_cost_usd'], 0.12)
+
 
 if __name__ == '__main__':
     unittest.main()

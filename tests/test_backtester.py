@@ -15,7 +15,7 @@ CSV_BODY = """signal_date,ticker,signal_type,signal_direction,signal_price,catal
 
 
 class BacktesterTests(unittest.TestCase):
-    def test_build_backtest_summary_uses_bull_signals_only(self) -> None:
+    def test_build_backtest_summary_returns_bull_bear_and_ticker_rows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             csv_path = Path(tmp_dir) / "signal_tracker.csv"
             csv_path.write_text(CSV_BODY, encoding="utf-8")
@@ -23,10 +23,15 @@ class BacktesterTests(unittest.TestCase):
             summary = build_backtest_summary(csv_path)
 
         self.assertEqual(summary["status"], "ok")
-        self.assertEqual(summary["signals"], 2)
-        self.assertEqual(summary["win_rate"], "50.0%")
-        self.assertEqual(summary["best_return"], "+5.00%")
+        self.assertEqual(summary["signals"], 3)
+        self.assertEqual(summary["win_rate"], "66.7%")
+        self.assertEqual(summary["best_return"], "+6.00%")
         self.assertEqual(summary["worst_return"], "-2.00%")
+        self.assertEqual(summary["bull"]["signals"], 2)
+        self.assertEqual(summary["bear"]["signals"], 1)
+        self.assertEqual(summary["bear"]["avg_return"], "+6.00%")
+        self.assertEqual(summary["ticker_rows"][0]["ticker"], "TSLA")
+        self.assertGreaterEqual(len(summary["equity_curve"]), 2)
 
 
 if __name__ == "__main__":

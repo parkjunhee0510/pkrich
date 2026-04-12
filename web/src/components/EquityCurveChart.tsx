@@ -8,10 +8,12 @@ import {
   CartesianGrid,
   ReferenceLine,
 } from 'recharts'
-import type { DailyEntry } from '../types'
+import type { BacktestEquityPoint, DailyEntry } from '../types'
 
 interface Props {
-  days: DailyEntry[]
+  days?: DailyEntry[]
+  points?: BacktestEquityPoint[]
+  title?: string
 }
 
 interface EquityPoint {
@@ -25,18 +27,28 @@ function formatCurrency(value: number): string {
   return `$${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
 }
 
-export function EquityCurveChart({ days }: Props) {
-  const points: EquityPoint[] = days
-    .filter((d) => d.portfolio_summary && d.portfolio_summary.total_market_value > 0)
-    .map((d) => {
-      const ps = d.portfolio_summary!
-      return {
-        date: d.date,
-        value: ps.total_market_value,
-        pnl: ps.total_unrealized_pnl ?? 0,
-        returnPct: ps.total_unrealized_return_pct ?? 0,
-      }
-    })
+export function EquityCurveChart({ days = [], points: backtestPoints, title = '포트폴리오 추이 (P&L)' }: Props) {
+  const points: EquityPoint[] = backtestPoints && backtestPoints.length > 0
+    ? backtestPoints.map((point) => {
+        const cumulativeReturn = Number.parseFloat(String(point.cumulative_return).replace('%', '')) || 0
+        return {
+          date: point.date,
+          value: point.equity_multiple * 10000,
+          pnl: point.equity_multiple * 10000 - 10000,
+          returnPct: cumulativeReturn,
+        }
+      })
+    : days
+        .filter((d) => d.portfolio_summary && d.portfolio_summary.total_market_value > 0)
+        .map((d) => {
+          const ps = d.portfolio_summary!
+          return {
+            date: d.date,
+            value: ps.total_market_value,
+            pnl: ps.total_unrealized_pnl ?? 0,
+            returnPct: ps.total_unrealized_return_pct ?? 0,
+          }
+        })
 
   if (points.length < 2) {
     return (
@@ -52,7 +64,7 @@ export function EquityCurveChart({ days }: Props) {
   return (
     <div className="equity-curve-wrapper">
       <div className="equity-curve-header">
-        <h3>포트폴리오 추이 (P&L)</h3>
+        <h3>{title}</h3>
         <div className="equity-curve-stats">
           <span className={`equity-stat ${isPositive ? 'positive' : 'negative'}`}>
             {isPositive ? '+' : ''}

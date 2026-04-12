@@ -32,6 +32,11 @@ def migrate_csv_to_sqlite(
                 eps TEXT NOT NULL,
                 high_52w TEXT NOT NULL,
                 low_52w TEXT NOT NULL,
+                "open" TEXT NOT NULL DEFAULT 'N/A',
+                high TEXT NOT NULL DEFAULT 'N/A',
+                low TEXT NOT NULL DEFAULT 'N/A',
+                "close" TEXT NOT NULL DEFAULT 'N/A',
+                volume TEXT NOT NULL DEFAULT 'N/A',
                 PRIMARY KEY (date, ticker)
             )
             '''
@@ -40,8 +45,9 @@ def migrate_csv_to_sqlite(
         connection.executemany(
             '''
             INSERT OR REPLACE INTO prices (
-                date, ticker, price, daily_change, market_cap, trailing_pe, eps, high_52w, low_52w
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                date, ticker, price, daily_change, market_cap, trailing_pe, eps,
+                high_52w, low_52w, "open", high, low, "close", volume
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''',
             [
                 (
@@ -54,6 +60,11 @@ def migrate_csv_to_sqlite(
                     row.get('eps', 'N/A'),
                     row.get('52w_high', 'N/A'),
                     row.get('52w_low', 'N/A'),
+                    row.get('open', 'N/A'),
+                    row.get('high', 'N/A'),
+                    row.get('low', 'N/A'),
+                    row.get('close', 'N/A'),
+                    row.get('volume', 'N/A'),
                 )
                 for row in rows
             ],

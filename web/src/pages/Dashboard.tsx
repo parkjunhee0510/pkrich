@@ -470,6 +470,22 @@ export function Dashboard() {
       </div>
 
       <MacroContextBar macroContext={day.macro_context} />
+      {data.weekly_summary?.weekly_insight ? (
+        <section className="ticker-detail-section-shell">
+          <h3>주간 인사이트</h3>
+          <div className="detail-note-card">
+            <p>{data.weekly_summary.weekly_insight}</p>
+            <div className="watchlist-chip-row">
+              <span className="period-badge">
+                {data.weekly_summary.iso_year}-W{String(data.weekly_summary.iso_week).padStart(2, '0')}
+              </span>
+              <span className="period-badge">
+                {data.weekly_summary.start_date} ~ {data.weekly_summary.end_date}
+              </span>
+            </div>
+          </div>
+        </section>
+      ) : null}
       <MarketOverview entries={day.market_overview} />
       <SectorSummary tickers={day.tickers} />
 
@@ -501,7 +517,7 @@ function applyTraderFilters(ticker: TickerAnalysisData, filters: TraderFilters):
 
   if (filters.rvolHigh) {
     const rvol = parseNumericValue(ticker.price_action?.relative_volume)
-    if (rvol === null || rvol <= 1.2) {
+    if (rvol === null || rvol < 1.2) {
       return false
     }
   }

@@ -7,6 +7,7 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
 
+from src.collector.news_rss import load_source_priorities
 from src.output.json_export import write_json_outputs
 from src.output.obsidian import mirror_markdown_outputs
 from src.types import PortfolioSummary, TickerAnalysis
@@ -36,26 +37,6 @@ _SECTOR_DISPLAY_NAMES = {
     "Utilities": "유틸리티",
     "Real Estate": "부동산",
     "Materials": "소재",
-}
-_DEFAULT_SOURCE_PRIORITIES = {
-    "reuters": 5,
-    "associated press": 4,
-    "the associated press": 4,
-    "ap": 4,
-    "ap news": 4,
-    "sec edgar": 4,
-    "bloomberg": 3,
-    "cnbc": 2,
-    "ir rss": 2,
-    "apple newsroom": 2,
-    "microsoft source": 2,
-    "nvidia newsroom": 2,
-    "yahoo finance": 2,
-    "marketwatch": 1,
-    "seeking alpha": 1,
-    "duckduckgo": 0,
-    "rss": 0,
-    "fallback": -1,
 }
 _DEFAULT_SECTOR_DISPLAY_ORDER = [
     "Technology",
@@ -102,6 +83,7 @@ def write_outputs(
     datastore.append_analysis_snapshots(enriched_analyses)
     csv_period_changes = datastore.load_period_changes(run_date)
     period_changes_by_ticker = _merge_period_changes(csv_period_changes, direct_period_changes or {})
+    weekly_summary = load_weekly_summary(run_date, output_root=output_root)
     timeline_map = write_json_outputs(
         enriched_analyses,
         run_date,
@@ -112,6 +94,7 @@ def write_outputs(
         signal_stats=signal_stats,
         macro_context=macro_context,
         portfolio_risk=portfolio_risk,
+        weekly_summary=weekly_summary,
     )
 
     daily_path = daily_dir / f"{run_date.isoformat()}.md"
@@ -145,7 +128,6 @@ def write_outputs(
         )
         ticker_paths[analysis.ticker] = ticker_path
 
-    weekly_summary = load_weekly_summary(run_date, output_root=output_root)
     weekly_path = weekly_dir / f"{weekly_summary.iso_year}-W{weekly_summary.iso_week:02d}.md"
     _write_text_artifact(weekly_path, render_weekly_markdown(weekly_summary), artifact="weekly_note")
     monthly_summary = load_monthly_summary(run_date, output_root=output_root)
@@ -848,14 +830,7 @@ def _source_priority(source: str) -> int:
 
 
 def _load_source_priorities() -> dict[str, int]:
-    try:
-        raw_config = load_simple_mapping("config/output.yaml")
-        configured = raw_config.get("news_source_priority", {})
-        if not isinstance(configured, dict):
-            return _DEFAULT_SOURCE_PRIORITIES
-        return {str(key).strip().lower(): int(value) for key, value in configured.items()}
-    except Exception:
-        return _DEFAULT_SOURCE_PRIORITIES
+    return load_source_priorities()
 
 
 def _hide_fallback_news_without_links() -> bool:
