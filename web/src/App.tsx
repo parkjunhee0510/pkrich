@@ -13,6 +13,9 @@ const TickerDetail = lazy(() =>
 const Portfolio = lazy(() =>
   import('./pages/Portfolio').then((module) => ({ default: module.Portfolio })),
 )
+const PriceHistory = lazy(() =>
+  import('./pages/PriceHistory').then((module) => ({ default: module.PriceHistory })),
+)
 const Signals = lazy(() =>
   import('./pages/Signals').then((module) => ({ default: module.Signals })),
 )
@@ -46,6 +49,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/ticker/:ticker" element={<TickerDetail />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/prices" element={<PriceHistory />} />
             <Route path="/signals" element={<Signals />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/scenario" element={<Scenario />} />

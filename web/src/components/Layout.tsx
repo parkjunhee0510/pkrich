@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 
 const NAV_ITEMS = [
   { to: '/', label: '워치리스트' },
+  { to: '/prices', label: '시세' },
   { to: '/portfolio', label: '포트폴리오' },
   { to: '/signals', label: '시그널 통계' },
   { to: '/scenario', label: '시나리오' },
