@@ -2,18 +2,26 @@
   "AAPL": [
     {
       "date": "2026-04-12",
-      "price": "N/A",
-      "daily_change": "N/A",
-      "signal_or_takeaway": "중립 관찰 — 2026-04-14 CPI와 추가 실적 공시 여부 | 진입 트리거 현재가와 SMA50 확인 가능 시 재평가 | 목표 N/A/N/A | 손절 N/A (R:R N/A)",
-      "top_news_summary": "뉴스 요청이 외부 수집 비활성화로 대체됨",
-      "top_news_link": "",
+      "price": "260.48 USD",
+      "daily_change": "-0.00%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-30 실적과 연속 beat 유지 | 진입 트리거 260.88달러 회복 또는 254.38달러 부근 눌림 확인 | 목표 266.58달러/296.33달러 | 손절 248.48달러 (R:R 1.25R)",
+      "top_news_summary": "아이폰 홀리데이 판매 전망치 상회 언급",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
       "news_tone": {
         "label": "neutral",
         "confidence": 3,
-        "reasoning": "헤드라인이 실질적 뉴스 없이 대체 문구만 제공되어 방향성 판단 근거가 부족합니다.",
+        "reasoning": "실적 우위와 성장 기대가 있으나, RVOL 저하와 풋 우위 옵션 포지셔닝이 상쇄합니다.",
         "score": 0.0
       },
-      "upcoming_events": []
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "18",
+          "timing": "AMC"
+        }
+      ]
     },
     {
       "date": "2026-04-11",
@@ -61,18 +69,33 @@
   "CAT": [
     {
       "date": "2026-04-12",
-      "price": "N/A",
-      "daily_change": "N/A",
-      "signal_or_takeaway": "중립 관찰 — 2026-04-14 CPI와 추가 공시 여부 | 진입 트리거 현재가와 SMA50 확인 후 재평가 | 목표 N/A/N/A | 손절 N/A (R:R N/A)",
-      "top_news_summary": "뉴스 요청이 외부 수집 비활성화로 대체됨",
-      "top_news_link": "",
+      "price": "790.66 USD",
+      "daily_change": "+0.46%",
+      "signal_or_takeaway": "매수 관찰 — 2026-04-30 실적과 배당락 전 고점 재돌파 여부 | 진입 트리거 797.85달러 상향 돌파 또는 763.05달러 눌림 확인 | 목표 816.27달러/746.06달러 | 손절 763.05달러 (R:R 0.65R)",
+      "top_news_summary": "8-K 주요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000008/cat-20251231.htm",
       "news_tone": {
         "label": "neutral",
         "confidence": 3,
-        "reasoning": "실질 뉴스 없이 대체 문구만 제공되어 방향성 근거가 부족합니다.",
+        "reasoning": "실적은 견조하지만 주가가 52주 고점 바로 아래에 있어 추가상승 여력과 피로감이 혼재합니다.",
         "score": 0.0
       },
-      "upcoming_events": []
+      "upcoming_events": [
+        {
+          "type": "ex_dividend",
+          "label": "배당락일",
+          "date": "2026-04-20",
+          "days_until": "8",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "18",
+          "timing": "BMO"
+        }
+      ]
     },
     {
       "date": "2026-04-11",
@@ -134,18 +157,26 @@
   "XOM": [
     {
       "date": "2026-04-12",
-      "price": "N/A",
-      "daily_change": "N/A",
-      "signal_or_takeaway": "중립 관찰 — 2026-04-14 CPI와 유가 반응 | 진입 트리거 현재가와 SMA50 확인 후 재평가 | 목표 N/A/N/A | 손절 N/A (R:R N/A)",
-      "top_news_summary": "뉴스 요청이 외부 수집 비활성화로 대체됨",
-      "top_news_link": "",
+      "price": "152.51 USD",
+      "daily_change": "-1.63%",
+      "signal_or_takeaway": "중립 경계 — 2026-05-01 실적과 EPS 추정치 상향 | 진입 트리거 153.95달러 회복 또는 150.76달러 지지 확인 | 목표 160.57달러/162.71달러 | 손절 147.07달러 (R:R 1.54R)",
+      "top_news_summary": "2030년까지 250억달러 이익 성장 목표 상향",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
       "news_tone": {
         "label": "neutral",
         "confidence": 3,
-        "reasoning": "실질 뉴스 대신 대체 문구만 있어 방향성 편향이 약합니다.",
+        "reasoning": "장기 성장 가이던스와 EPS 상향은 긍정적이지만, 최근 가격 약세와 베어리시 MACD가 상쇄합니다.",
         "score": 0.0
       },
-      "upcoming_events": []
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-01",
+          "days_until": "19",
+          "timing": "BMO"
+        }
+      ]
     },
     {
       "date": "2026-04-11",
@@ -193,18 +224,26 @@
   "AMD": [
     {
       "date": "2026-04-12",
-      "price": "N/A",
-      "daily_change": "N/A",
-      "signal_or_takeaway": "매수 관찰 — 최근 2회 연속 bull 신호와 CPI 전 대기 | 진입 트리거 현재가와 SMA50 확인 시 재진입 검토 | 목표 N/A/N/A | 손절 N/A (R:R N/A)",
-      "top_news_summary": "뉴스 요청이 외부 수집 비활성화로 대체됨",
-      "top_news_link": "",
+      "price": "245.04 USD",
+      "daily_change": "+3.55%",
+      "signal_or_takeaway": "매수 관찰 — 2026-05-05 실적과 EPS 추정치 상향 | 진입 트리거 239.73달러 이상 유지 또는 233.34달러 눌림 확인 | 목표 256.74달러/289.35달러 | 손절 223.64달러 (R:R 0.77R)",
+      "top_news_summary": "4분기 매출이 예상 상회한다고 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
       "news_tone": {
         "label": "bullish",
-        "confidence": 3,
-        "reasoning": "최근 신호 이력이 연속 bullish지만 실질 뉴스가 없어 강도는 제한적입니다.",
-        "score": 3.0
+        "confidence": 4,
+        "reasoning": "실적 서프라이즈 연속성과 EPS 추정치 급등이 긍정적이지만, 과매수와 고평가가 단기 경계 요인입니다.",
+        "score": 4.0
       },
-      "upcoming_events": []
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "23",
+          "timing": "AMC"
+        }
+      ]
     },
     {
       "date": "2026-04-11",
@@ -252,18 +291,26 @@
   "KO": [
     {
       "date": "2026-04-12",
-      "price": "N/A",
-      "daily_change": "N/A",
-      "signal_or_takeaway": "중립 관찰 — 2026-04-14 CPI와 방어주 수급 | 진입 트리거 현재가와 SMA50 확인 후 재평가 | 목표 N/A/N/A | 손절 N/A (R:R N/A)",
-      "top_news_summary": "뉴스 요청이 외부 수집 비활성화로 대체됨",
-      "top_news_link": "",
+      "price": "77.47 USD",
+      "daily_change": "-0.91%",
+      "signal_or_takeaway": "매수 유지 — 2026-04-28 실적과 EPS 추정치 상향 | 진입 트리거 77.53달러 회복 또는 76.14달러 눌림 확인 | 목표 78.80달러/83.67달러 | 손절 74.47달러 (R:R 0.67R)",
+      "top_news_summary": "병입업체, 탄산음료 수요로 이익 성장 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
       "news_tone": {
-        "label": "neutral",
-        "confidence": 3,
-        "reasoning": "실질 뉴스 없이 대체 문구만 존재해 방향성이 중립적입니다.",
-        "score": 0.0
+        "label": "bullish",
+        "confidence": 4,
+        "reasoning": "실적 연속 beat와 EPS 상향, 그리고 강한 콜 우위 옵션 흐름이 우호적입니다.",
+        "score": 4.0
       },
-      "upcoming_events": []
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-28",
+          "days_until": "16",
+          "timing": "BMO"
+        }
+      ]
     },
     {
       "date": "2026-04-11",
@@ -311,18 +358,26 @@
   "T": [
     {
       "date": "2026-04-12",
-      "price": "N/A",
-      "daily_change": "N/A",
-      "signal_or_takeaway": "중립 관찰 — 2026-04-14 CPI와 금리 기대 변화 | 진입 트리거 현재가와 SMA50 확인 후 재평가 | 목표 N/A/N/A | 손절 N/A (R:R N/A)",
-      "top_news_summary": "뉴스 요청이 외부 수집 비활성화로 대체됨",
-      "top_news_link": "",
+      "price": "26.46 USD",
+      "daily_change": "-0.38%",
+      "signal_or_takeaway": "중립 경계 — 2026-04-22 실적과 EPS 상향 재확인 | 진입 트리거 26.45달러 지지 또는 27.90달러 회복 확인 | 목표 27.74달러/30.39달러 | 손절 25.17달러 (R:R 0.57R)",
+      "top_news_summary": "Crown Castle, 인력 20% 감축 및 연간 사이트 임대수익 약세 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm",
       "news_tone": {
         "label": "neutral",
         "confidence": 3,
-        "reasoning": "실질 뉴스 없이 대체 문구만 제공되어 방향성이 중립적입니다.",
+        "reasoning": "배당과 EPS 상향은 긍정적이지만 SMA50 하회와 MACD bearish가 단기 리스크를 키웁니다.",
         "score": 0.0
       },
-      "upcoming_events": []
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-22",
+          "days_until": "10",
+          "timing": "BMO"
+        }
+      ]
     },
     {
       "date": "2026-04-11",
@@ -377,18 +432,26 @@
   "IONQ": [
     {
       "date": "2026-04-12",
-      "price": "N/A",
-      "daily_change": "N/A",
-      "signal_or_takeaway": "중립 관찰 — 최근 2회 neutral 신호와 CPI 대기 | 진입 트리거 현재가와 SMA50 확인 시 재평가 | 목표 N/A/N/A | 손절 N/A (R:R N/A)",
-      "top_news_summary": "뉴스 요청이 외부 수집 비활성화로 대체됨",
-      "top_news_link": "",
+      "price": "28.79 USD",
+      "daily_change": "+2.53%",
+      "signal_or_takeaway": "중립 관찰 — 2026-05-06 실적과 숏커버 가능성 | 진입 트리거 33.33달러 회복 또는 26.64달러 지지 확인 | 목표 34.94달러/65.29달러 | 손절 24.34달러 (R:R 0.91R)",
+      "top_news_summary": "8-K 주요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
       "news_tone": {
         "label": "neutral",
         "confidence": 3,
-        "reasoning": "최근 신호가 중립이며 실질 뉴스도 없어 방향성은 제한적입니다.",
+        "reasoning": "공매도 비중과 높은 IV는 상승/하락 모두 열려 있으나, 실적 변동성이 너무 커 방향성 확신은 제한적입니다.",
         "score": 0.0
       },
-      "upcoming_events": []
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "24",
+          "timing": "AMC"
+        }
+      ]
     },
     {
       "date": "2026-04-11",
@@ -436,18 +499,26 @@
   "PLUG": [
     {
       "date": "2026-04-12",
-      "price": "N/A",
-      "daily_change": "N/A",
-      "signal_or_takeaway": "중립 경계 — CPI 전후 고변동성 테마 리스크 | 진입 트리거 현재가와 SMA50 확인 전까지 보수적 관찰 | 목표 N/A/N/A | 손절 N/A (R:R N/A)",
-      "top_news_summary": "뉴스 요청이 외부 수집 비활성화로 대체됨",
-      "top_news_link": "",
+      "price": "2.74 USD",
+      "daily_change": "+0.00%",
+      "signal_or_takeaway": "중립 경계 — 2026-05-11 실적과 공매도/풋 우위 | 진입 트리거 2.76달러 돌파 또는 2.55달러 지지 확인 | 목표 2.93달러/2.83달러 | 손절 2.36달러 (R:R 0.71R)",
+      "top_news_summary": "유럽 증시 기록적 고점에도 기술주와 헬스케어는 부진",
+      "top_news_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxONjZDVm1DSm1LTlZBRE85T3RvSDdlQnAwcGhDZ0pSdnhReWRKOWZCazNkYm5ablhMcXpWeU9VN2tvbTl6VU5IZWF2R1VFUkNmTzRNTXJDWUJqN2UxV0l6XzN5ejVqTGNqR2g2cWYxUGxrWWRyRlROWVUxV1lWLVdEazVGTjdSYU9aNHRRS21xMFg4VUJBNFljd0Nuc1UyTk0?oc=5",
       "news_tone": {
         "label": "bearish",
-        "confidence": 2,
-        "reasoning": "실질 촉매가 없고 고변동성 테마주로서 CPI 전후 리스크가 상대적으로 큽니다.",
-        "score": -2.0
+        "confidence": 4,
+        "reasoning": "주가 모멘텀은 강하지만 손실 지속, PCR 1.92x, 고IV가 함께 있어 실적 전후 급변 리스크가 큽니다.",
+        "score": -4.0
       },
-      "upcoming_events": []
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-11",
+          "days_until": "29",
+          "timing": "AMC"
+        }
+      ]
     },
     {
       "date": "2026-04-11",
