@@ -1,5 +1,7 @@
 ﻿from __future__ import annotations
 
+import re
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -11,6 +13,7 @@ from src.output.alert import evaluate_alert_rules
 from src.output.api_status import write_api_status_outputs
 from src.output.markdown import write_outputs
 from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
+from src.types import CollectedTickerData
 from src.utils.config import load_portfolio, load_watchlist
 from src.utils.datastore import get_datastore
 from src.utils.env import is_env_flag_enabled, load_dotenv
@@ -30,7 +33,10 @@ def run_pipeline(run_date: date | None = None) -> None:
     try:
         watchlist = load_watchlist()
         portfolio_holdings = load_portfolio()
+        datastore = get_datastore(output_root=Path("output"))
         collected = collect_market_data(watchlist, effective_date)
+        historical_price_rows = datastore.query_prices(tickers=[item.ticker for item in watchlist])
+        collected = _merge_missing_prices_from_history(collected, historical_price_rows)
         market_overview = collect_market_overview()
         vix_data = _extract_vix_from_overview(market_overview)
         macro_context = collect_macro_context(effective_date, vix_data=vix_data)
@@ -83,8 +89,6 @@ def run_pipeline(run_date: date | None = None) -> None:
             )
         portfolio_risk = build_portfolio_risk_report(portfolio_summary, collected)
         price_lookup = {ticker: data.price for ticker, data in collected.items() if data.price is not None}
-        datastore = get_datastore(output_root=Path("output"))
-        historical_price_rows = datastore.query_prices(tickers=[item.ticker for item in watchlist])
         updated_signals = update_signal_returns(
             signal_csv_path,
             effective_date,
@@ -217,3 +221,46 @@ def _headline_tone_score(news_items: list[object]) -> int:
     if negative > positive:
         return -1
     return 0
+
+
+def _merge_missing_prices_from_history(
+    collected: dict[str, CollectedTickerData],
+    historical_price_rows: list[dict[str, str]],
+) -> dict[str, CollectedTickerData]:
+    latest_price_by_ticker: dict[str, float] = {}
+    latest_date_by_ticker: dict[str, str] = {}
+    for row in historical_price_rows:
+        ticker = str(row.get("ticker", "")).strip().upper()
+        row_date = str(row.get("date", "")).strip()
+        price_value = _parse_price_value(row.get("price", ""))
+        if not ticker or price_value is None or not row_date:
+            continue
+        previous_date = latest_date_by_ticker.get(ticker, "")
+        if previous_date and previous_date >= row_date:
+            continue
+        latest_date_by_ticker[ticker] = row_date
+        latest_price_by_ticker[ticker] = price_value
+
+    patched = dict(collected)
+    for ticker, payload in patched.items():
+        price = getattr(payload, "price", None)
+        if price is not None:
+            continue
+        fallback_price = latest_price_by_ticker.get(ticker)
+        if fallback_price is None:
+            continue
+        patched[ticker] = replace(payload, price=fallback_price)
+    return patched
+
+
+def _parse_price_value(raw_value: object) -> float | None:
+    text = str(raw_value or "").strip().replace(",", "")
+    if not text or text == "N/A":
+        return None
+    match = re.search(r"[-+]?\d*\.?\d+", text)
+    if not match:
+        return None
+    try:
+        return float(match.group(0))
+    except ValueError:
+        return None

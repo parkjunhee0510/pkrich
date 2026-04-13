@@ -5,7 +5,7 @@
   "providers": {
     "yfinance": {
       "overall_status": "active",
-      "used_tickers": 7,
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -13,15 +13,15 @@
     },
     "alpha_vantage": {
       "overall_status": "active",
-      "used_tickers": 2,
+      "used_tickers": 4,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 5
+      "not_used_tickers": 7
     },
     "polygon": {
       "overall_status": "active",
-      "used_tickers": 7,
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -30,14 +30,14 @@
     "fmp": {
       "overall_status": "limited",
       "used_tickers": 0,
-      "throttled_tickers": 7,
+      "throttled_tickers": 11,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
       "not_used_tickers": 0
     },
     "finnhub": {
       "overall_status": "active",
-      "used_tickers": 7,
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -45,7 +45,7 @@
     },
     "sec_edgar": {
       "overall_status": "active",
-      "used_tickers": 7,
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -57,7 +57,7 @@
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 6
+      "not_used_tickers": 10
     }
   },
   "llm": {
@@ -66,7 +66,7 @@
     "completed_batches": 1,
     "failed_batches": 0,
     "validation_failures": 0,
-    "estimated_cost_usd": 0.0189207,
+    "estimated_cost_usd": 0.02954475,
     "latest_model": "gpt-5.4-mini",
     "models_used": {
       "gpt-5.4-mini": 1
