@@ -31,6 +31,9 @@ const Admin = lazy(() =>
 const Calendar = lazy(() =>
   import('./pages/Calendar').then((module) => ({ default: module.Calendar })),
 )
+const ApiStatus = lazy(() =>
+  import('./pages/ApiStatus').then((module) => ({ default: module.ApiStatus })),
+)
 const NotFound = lazy(() =>
   import('./pages/NotFound').then((module) => ({ default: module.NotFound })),
 )
@@ -52,6 +55,7 @@ export default function App() {
             <Route path="/backtest" element={<Backtest />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/calendar" element={<Calendar />} />
+            <Route path="/api-status" element={<ApiStatus />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

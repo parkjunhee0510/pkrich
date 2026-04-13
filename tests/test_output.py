@@ -275,11 +275,15 @@ class OutputTests(unittest.TestCase):
             )
 
             dashboard = json.loads((web_data_dir / 'dashboard.json').read_text(encoding='utf-8'))
+            dashboard_history = json.loads((web_data_dir / 'dashboard_history.json').read_text(encoding='utf-8'))
             price_history = json.loads((web_data_dir / 'price_history.json').read_text(encoding='utf-8'))
             timeline = json.loads((web_data_dir / 'ticker_timelines.json').read_text(encoding='utf-8'))
 
             self.assertIn('AAPL', timelines)
+            self.assertEqual(len(dashboard['days']), 1)
+            self.assertEqual(len(dashboard_history['days']), 1)
             self.assertEqual(dashboard['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
+            self.assertEqual(dashboard_history['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['period_changes']['7d'], '+3.25%')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['news_tone']['label'], 'bullish')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['earnings_setup']['forward_eps'], '6.80 USD/share')

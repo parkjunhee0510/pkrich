@@ -23,6 +23,7 @@ from src.collector.fmp import (
     collect_fmp_insider_trading,
     collect_fmp_key_metrics,
     is_fmp_ready,
+    should_collect_fmp_extended,
 )
 from src.types import CollectedTickerData, WatchlistItem
 from src.collector.options import collect_options_summary
@@ -347,7 +348,7 @@ def _collect_single_ticker(
         except Exception:
             recommendation_trends = []
 
-    if is_fmp_ready():
+    if is_fmp_ready() and should_collect_fmp_extended():
         try:
             insider_transactions = collect_fmp_insider_trading(item.ticker, run_date)
         except Exception:
@@ -358,19 +359,19 @@ def _collect_single_ticker(
         except Exception:
             insider_transactions = []
 
-    if is_fmp_ready():
+    if is_fmp_ready() and should_collect_fmp_extended():
         try:
             analyst_estimate_revisions = collect_fmp_analyst_estimates(item.ticker, run_date)
         except Exception:
             analyst_estimate_revisions = {}
 
-    if is_fmp_ready():
+    if is_fmp_ready() and should_collect_fmp_extended():
         try:
             institutional_changes = collect_fmp_institutional_holders(item.ticker)
         except Exception:
             institutional_changes = {}
 
-    if is_fmp_ready():
+    if is_fmp_ready() and should_collect_fmp_extended():
         try:
             fmp_earnings_surprises = collect_fmp_earnings_surprises(item.ticker)
         except Exception:

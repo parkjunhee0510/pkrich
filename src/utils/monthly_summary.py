@@ -9,7 +9,8 @@ from typing import Any
 
 def load_monthly_summary(run_date: date, *, output_root: Path | None = None) -> dict[str, Any]:
     root = output_root or Path("output")
-    dashboard_path = root / "data" / "dashboard.json"
+    history_path = root / "data" / "dashboard_history.json"
+    dashboard_path = history_path if history_path.exists() else root / "data" / "dashboard.json"
     if not dashboard_path.exists():
         return {
             "month": run_date.strftime("%Y-%m"),

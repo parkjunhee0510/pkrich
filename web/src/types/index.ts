@@ -396,6 +396,37 @@ export interface AnalyticsCostResponse {
   successful_runs: number
 }
 
+export type ApiProviderState = 'used' | 'failed' | 'throttled' | 'unavailable' | 'not_used'
+
+export interface ApiProviderSummary {
+  overall_status: 'active' | 'partial' | 'limited' | 'failing' | 'idle'
+  used_tickers: number
+  throttled_tickers: number
+  unavailable_tickers: number
+  failed_tickers: number
+  not_used_tickers: number
+}
+
+export interface ApiStatusSummary {
+  run_date: string
+  log_path: string
+  pipeline_completed: boolean
+  providers: Record<string, ApiProviderSummary>
+}
+
+export interface ApiTickerMatrixRow {
+  ticker: string
+  name: string
+  sector: string
+  yfinance: ApiProviderState
+  alpha_vantage: ApiProviderState
+  polygon: ApiProviderState
+  fmp: ApiProviderState
+  finnhub: ApiProviderState
+  sec_edgar: ApiProviderState
+  ir_rss: ApiProviderState
+}
+
 export interface PriceHistoryRow {
   date: string
   ticker: string

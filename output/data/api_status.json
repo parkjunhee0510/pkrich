@@ -1,0 +1,63 @@
+{
+  "run_date": "2026-04-13",
+  "log_path": "logs\\pipeline\\2026-04-13.jsonl",
+  "pipeline_completed": true,
+  "providers": {
+    "yfinance": {
+      "overall_status": "active",
+      "used_tickers": 8,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "alpha_vantage": {
+      "overall_status": "active",
+      "used_tickers": 3,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 5
+    },
+    "polygon": {
+      "overall_status": "active",
+      "used_tickers": 8,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "fmp": {
+      "overall_status": "limited",
+      "used_tickers": 0,
+      "throttled_tickers": 8,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "finnhub": {
+      "overall_status": "active",
+      "used_tickers": 8,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "sec_edgar": {
+      "overall_status": "active",
+      "used_tickers": 7,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 1
+    },
+    "ir_rss": {
+      "overall_status": "active",
+      "used_tickers": 1,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 7
+    }
+  }
+}

@@ -12,6 +12,14 @@ from src.utils.datastore_csv import append_price_history_csv
 from src.utils.period_changes import load_period_changes_from_rows
 from src.utils.signal_tracker import build_signal_stats_from_rows, load_signal_rows
 
+PRICE_COLUMN_DEFAULTS: dict[str, str] = {
+    'open': "TEXT NOT NULL DEFAULT 'N/A'",
+    'high': "TEXT NOT NULL DEFAULT 'N/A'",
+    'low': "TEXT NOT NULL DEFAULT 'N/A'",
+    'close': "TEXT NOT NULL DEFAULT 'N/A'",
+    'volume': "TEXT NOT NULL DEFAULT 'N/A'",
+}
+
 
 class SqliteDatastore(Datastore):
     def __init__(self, output_root: Path | None = None) -> None:
@@ -391,6 +399,7 @@ class SqliteDatastore(Datastore):
                 )
                 '''
             )
+            self._ensure_price_columns(connection)
             connection.execute(
                 '''
                 CREATE TABLE IF NOT EXISTS signal_history (
@@ -446,6 +455,16 @@ class SqliteDatastore(Datastore):
             connection.commit()
         finally:
             connection.close()
+
+    def _ensure_price_columns(self, connection: sqlite3.Connection) -> None:
+        existing_columns = {
+            str(row[1]).strip().lower()
+            for row in connection.execute("PRAGMA table_info(prices)").fetchall()
+        }
+        for column_name, column_spec in PRICE_COLUMN_DEFAULTS.items():
+            if column_name in existing_columns:
+                continue
+            connection.execute(f'ALTER TABLE prices ADD COLUMN "{column_name}" {column_spec}')
 
     def _upsert_price_rows(self, rows: list[dict[str, str]]) -> None:
         if not rows:

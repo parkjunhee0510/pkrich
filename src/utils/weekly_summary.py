@@ -72,7 +72,8 @@ def load_weekly_summary(
     output_root: Path | None = None,
 ) -> WeeklySummaryData:
     root = output_root or Path("output")
-    dashboard_days = _load_dashboard_days(root / "data" / "dashboard.json")
+    history_path = root / "data" / "dashboard_history.json"
+    dashboard_days = _load_dashboard_days(history_path if history_path.exists() else root / "data" / "dashboard.json")
     week_days = _filter_week_days(dashboard_days, run_date)
 
     iso_year, iso_week, _ = run_date.isocalendar()

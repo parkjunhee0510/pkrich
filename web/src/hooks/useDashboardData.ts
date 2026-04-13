@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { DashboardData } from '../types'
 
 const DATA_URL = `${import.meta.env.BASE_URL}output/data/dashboard.json`
+const HISTORY_URL = `${import.meta.env.BASE_URL}output/data/dashboard_history.json`
 
 export function useDashboardData() {
   const [data, setData] = useState<DashboardData | null>(null)
@@ -18,12 +19,25 @@ export function useDashboardData() {
   }, [])
 
   useEffect(() => {
-    fetch(`${DATA_URL}?ts=${refreshToken}`, { cache: 'no-store' })
-      .then((res) => {
+    Promise.all([
+      fetch(`${DATA_URL}?ts=${refreshToken}`, { cache: 'no-store' }).then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
+      }),
+      fetch(`${HISTORY_URL}?ts=${refreshToken}`, { cache: 'no-store' })
+        .then((res) => (res.ok ? res.json() : null))
+        .catch(() => null),
+    ])
+      .then(([latestJson, historyJson]: [DashboardData, DashboardData | null]) => {
+        const latestDays = Array.isArray(latestJson?.days) ? latestJson.days : []
+        const historyDays = Array.isArray(historyJson?.days) ? historyJson.days : []
+        const mergedDays = historyDays.length > 0 ? historyDays : latestDays
+
+        setData({
+          ...latestJson,
+          days: mergedDays,
+        })
       })
-      .then((json: DashboardData) => setData(json))
       .catch((err) => setError(err.message))
       .finally(() => {
         if (!hasLoadedRef.current) {

@@ -12,11 +12,12 @@ def load_dotenv(path: str = ".env") -> None:
         return
 
     for line in env_path.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
+        stripped = line.lstrip("\ufeff").strip()
         if not stripped or stripped.startswith("#") or "=" not in stripped:
             continue
         key, value = stripped.split("=", 1)
-        os.environ.setdefault(key.strip(), normalize_env_value(value))
+        normalized_key = key.strip().lstrip("\ufeff")
+        os.environ.setdefault(normalized_key, normalize_env_value(value))
 
     sanitize_proxy_environment()
 

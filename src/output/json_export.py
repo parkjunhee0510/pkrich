@@ -37,8 +37,9 @@ def write_json_outputs(
     data_dir = root / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
 
-    merged_days = _write_dashboard_json(
+    latest_day, merged_days = _write_dashboard_jsons(
         data_dir / "dashboard.json",
+        data_dir / "dashboard_history.json",
         analyses,
         run_date,
         market_overview or [],
@@ -57,8 +58,9 @@ def write_json_outputs(
     return timelines
 
 
-def _write_dashboard_json(
-    path: Path,
+def _write_dashboard_jsons(
+    latest_path: Path,
+    history_path: Path,
     analyses: list[TickerAnalysis],
     run_date: date,
     market_overview: list[dict[str, str]],
@@ -68,11 +70,12 @@ def _write_dashboard_json(
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
     weekly_summary: WeeklySummaryData | None = None,
-) -> list[dict[str, Any]]:
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     existing_days: list[dict[str, Any]] = []
-    if path.exists():
+    source_path = history_path if history_path.exists() else latest_path
+    if source_path.exists():
         try:
-            existing = json.loads(path.read_text(encoding="utf-8"))
+            existing = json.loads(source_path.read_text(encoding="utf-8"))
             existing_days = existing.get("days", [])
         except (json.JSONDecodeError, KeyError):
             existing_days = []
@@ -95,26 +98,28 @@ def _write_dashboard_json(
     if len(merged) > _MAX_DAYS:
         merged = merged[-_MAX_DAYS:]
 
-    path.write_text(
-        json.dumps(
-            {
-                "days": merged,
-                "signal_stats": signal_stats,
-                "weekly_summary": {
-                    "iso_year": weekly_summary.iso_year if weekly_summary else run_date.isocalendar()[0],
-                    "iso_week": weekly_summary.iso_week if weekly_summary else run_date.isocalendar()[1],
-                    "start_date": weekly_summary.start_date if weekly_summary else "",
-                    "end_date": weekly_summary.end_date if weekly_summary else "",
-                    "trading_days": weekly_summary.trading_days if weekly_summary else 0,
-                    "weekly_insight": weekly_summary.weekly_insight if weekly_summary else "",
-                },
-            },
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
-    return merged
+    weekly_summary_payload = {
+        "iso_year": weekly_summary.iso_year if weekly_summary else run_date.isocalendar()[0],
+        "iso_week": weekly_summary.iso_week if weekly_summary else run_date.isocalendar()[1],
+        "start_date": weekly_summary.start_date if weekly_summary else "",
+        "end_date": weekly_summary.end_date if weekly_summary else "",
+        "trading_days": weekly_summary.trading_days if weekly_summary else 0,
+        "weekly_insight": weekly_summary.weekly_insight if weekly_summary else "",
+    }
+    latest_payload = {
+        "days": [new_day],
+        "signal_stats": signal_stats,
+        "weekly_summary": weekly_summary_payload,
+    }
+    history_payload = {
+        "days": merged,
+        "signal_stats": signal_stats,
+        "weekly_summary": weekly_summary_payload,
+    }
+
+    latest_path.write_text(json.dumps(latest_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    history_path.write_text(json.dumps(history_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return new_day, merged
 
 
 def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]) -> dict[str, Any]:
@@ -235,7 +240,17 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
     target_dir = web_root / "public" / "output" / "data"
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    for filename in ("dashboard.json", "price_history.json", "ticker_timelines.json", "backtest_summary.json", "monthly_summary.json"):
+    for filename in (
+        "dashboard.json",
+        "dashboard_history.json",
+        "api_status.json",
+        "api_ticker_matrix.json",
+        "api_ticker_matrix.csv",
+        "price_history.json",
+        "ticker_timelines.json",
+        "backtest_summary.json",
+        "monthly_summary.json",
+    ):
         source_path = data_dir / filename
         if source_path.exists():
             shutil.copy2(source_path, target_dir / filename)

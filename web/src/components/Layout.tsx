@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react'
+﻿import { useEffect, type ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 const NAV_ITEMS = [
@@ -7,9 +7,10 @@ const NAV_ITEMS = [
   { to: '/signals', label: '시그널 통계' },
   { to: '/scenario', label: '시나리오' },
   { to: '/backtest', label: '백테스트' },
-  { to: '/chat', label: '리서치 챗' },
+  { to: '/chat', label: '리서치 채팅' },
   { to: '/admin', label: 'Admin' },
   { to: '/calendar', label: '캘린더' },
+  { to: '/api-status', label: 'API 상태' },
 ] as const
 
 export function Layout({ children }: { children: ReactNode }) {

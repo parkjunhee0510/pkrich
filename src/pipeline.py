@@ -8,6 +8,7 @@ from src.collector.macro import collect_macro_context
 from src.collector.news_rss import collect_news_for_watchlist
 from src.collector.price import collect_market_data, collect_market_overview
 from src.output.alert import evaluate_alert_rules
+from src.output.api_status import write_api_status_outputs
 from src.output.markdown import write_outputs
 from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
 from src.utils.config import load_portfolio, load_watchlist
@@ -120,6 +121,7 @@ def run_pipeline(run_date: date | None = None) -> None:
         send_signal_alerts(signal_alerts)
         success = True
         record_pipeline_event("pipeline", "info", "pipeline_completed", ticker_count=len(analyses), updated_signal_rows=updated_signals)
+        write_api_status_outputs(effective_date, watchlist, output_root=Path("output"))
         datastore.record_analysis_run(run_date=effective_date, success=True, logger=get_pipeline_logger())
     except Exception as exc:
         send_pipeline_failure_alert(effective_date, str(exc))

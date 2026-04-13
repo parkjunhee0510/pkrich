@@ -13,6 +13,7 @@ import time
 from datetime import date, timedelta
 from typing import Any
 from urllib import request
+from urllib.error import HTTPError
 
 from src.utils.network import can_open_tcp_connection
 from src.utils.pipeline_logging import record_pipeline_event
@@ -215,6 +216,22 @@ def collect_finnhub_economic_calendar(
                 "to": (run_date + timedelta(days=lookahead_days)).isoformat(),
             },
         )
+    except HTTPError as exc:
+        if exc.code == 403:
+            record_pipeline_event(
+                "collector",
+                "info",
+                "finnhub_economic_calendar_unavailable",
+                reason="http_403",
+            )
+            return []
+        record_pipeline_event(
+            "collector",
+            "warning",
+            "finnhub_economic_calendar_failed",
+            error=str(exc),
+        )
+        return []
     except Exception as exc:
         record_pipeline_event(
             "collector",

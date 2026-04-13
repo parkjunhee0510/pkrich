@@ -2,6 +2,7 @@
 
 import tempfile
 import unittest
+import sqlite3
 from datetime import date
 from pathlib import Path
 
@@ -121,6 +122,47 @@ class DatastoreTests(unittest.TestCase):
 
         self.assertEqual(result['csv_rows'], 2)
         self.assertEqual(result['sqlite_rows'], 2)
+
+    def test_sqlite_datastore_upgrades_legacy_prices_schema_with_ohlcv_columns(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / 'output'
+            data_dir = output_root / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            sqlite_path = data_dir / 'price_history.sqlite'
+
+            connection = sqlite3.connect(sqlite_path)
+            try:
+                connection.execute(
+                    '''
+                    CREATE TABLE prices (
+                        date TEXT NOT NULL,
+                        ticker TEXT NOT NULL,
+                        price TEXT NOT NULL,
+                        daily_change TEXT NOT NULL,
+                        market_cap TEXT NOT NULL,
+                        trailing_pe TEXT NOT NULL,
+                        eps TEXT NOT NULL,
+                        high_52w TEXT NOT NULL,
+                        low_52w TEXT NOT NULL,
+                        PRIMARY KEY (date, ticker)
+                    )
+                    '''
+                )
+                connection.commit()
+            finally:
+                connection.close()
+
+            datastore = get_datastore(output_root=output_root, backend='sqlite')
+            connection = sqlite3.connect(datastore.sqlite_path)
+            try:
+                columns = [row[1] for row in connection.execute("PRAGMA table_info(prices)")]
+            finally:
+                connection.close()
+            self.assertIn('open', columns)
+            self.assertIn('high', columns)
+            self.assertIn('low', columns)
+            self.assertIn('close', columns)
+            self.assertIn('volume', columns)
 
 
 if __name__ == '__main__':

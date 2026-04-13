@@ -1,6 +1,29 @@
 {
   "AAPL": [
     {
+      "date": "2026-04-13",
+      "price": "260.48 USD",
+      "daily_change": "-0.00%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-30 실적과 MACD bullish 전환 지속 여부 | 진입 트리거 260.88 USD 회복 또는 254.38 USD 눌림 지지 | 목표 266.58 USD/296.33 USD | 손절 248.38 USD (R:R 1.17)",
+      "top_news_summary": "Foxconn 1분기 매출 급증, 지정학 리스크 경고",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "실적 전 기대감과 함께 RVOL 0.59x로 거래 강도는 약하지만, 최근 beat 기록과 매출 성장 기대가 유지됩니다. 다만 옵션 흐름 NetΔ -403,869과 PCR 1.32x가 만기주 경계 신호를 주어 방향성이 중립적입니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "17",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-12",
       "price": "260.48 USD",
       "daily_change": "-0.00%",
@@ -64,9 +87,73 @@
           "timing": "AMC"
         }
       ]
+    },
+    {
+      "date": "2026-04-09",
+      "price": "258.90 USD",
+      "daily_change": "+2.13%",
+      "signal_or_takeaway": "중립 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입존 252.84–264.96 / 무효화 SMA50(260.57 USD)",
+      "top_news_summary": "[실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+      "news_tone": {
+        "label": "bullish",
+        "score": 3.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "21",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-08",
+      "price": "253.50 USD",
+      "daily_change": "-2.07%",
+      "signal_or_takeaway": "하락 중(-2.1%) — 하락 원인 및 지지선 확인 필요.",
+      "top_news_summary": "Apple's 50-year journey from garage to tech titan - Reuters",
+      "top_news_link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQZFJhckU2VDRIelZqZ1E3SWxQRmNldWhTLUtSV3lXUEliQ2hqeTkySlRucG9HNHVmRzdPZVVnMUYzS3N0b0Roc2g3cWM3RUJVNTdJbXVTTlVPelUyZG1laWpVNlprVG5fQzFBRF9DU1pUcWlKUUdMN1N3Q3k2UENYU19PQzN6Sk80ZjV6M2NwNm0ydw?oc=5",
+      "news_tone": {
+        "label": "bullish",
+        "score": 4.0
+      },
+      "upcoming_events": []
     }
   ],
   "CAT": [
+    {
+      "date": "2026-04-13",
+      "price": "790.66 USD",
+      "daily_change": "+0.46%",
+      "signal_or_takeaway": "매수 관찰 — 2026-04-30 실적과 52주 고점 797.85 USD 돌파 여부 | 진입 트리거 781.62 USD 상향 안착 또는 723.31 USD 눌림 지지 | 목표 816.27 USD/746.06 USD | 손절 734.41 USD (R:R 1.24)",
+      "top_news_summary": "CATERPILLAR 8-K 중요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/18230/000001823026000008/cat-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "주가가 52주 고점 부근까지 올라왔고 실적·배당 이벤트가 임박해 있으나, EPS 성장률 -11.40% YoY와 밸류에이션 부담이 공존합니다. 옵션 흐름도 NetΔ -53,878로 강한 추세 확장보다는 관망 성격이 우세합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "ex_dividend",
+          "label": "배당락일",
+          "date": "2026-04-20",
+          "days_until": "7",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "17",
+          "timing": "BMO"
+        }
+      ]
+    },
     {
       "date": "2026-04-12",
       "price": "790.66 USD",
@@ -156,6 +243,29 @@
   ],
   "XOM": [
     {
+      "date": "2026-04-13",
+      "price": "152.51 USD",
+      "daily_change": "-1.63%",
+      "signal_or_takeaway": "중립 관찰 — 2026-05-01 실적과 153.95 USD SMA50 회복 여부 | 진입 트리거 153.95 USD 회복 또는 150.76 USD 지지 확인 | 목표 158.67 USD/162.71 USD | 손절 141.47 USD (R:R 0.99)",
+      "top_news_summary": "Exxon, 2030년까지 250억 달러 이익 성장 목표 상향",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "장기 성장 목표 상향과 배당 매력은 긍정적이지만, 최근 7일 -6.65% 약세와 SMA50 하회가 단기 모멘텀을 약화시킵니다. 옵션 흐름은 PCR 1.07과 NetΔ +554,323이 혼재해 방향성이 중립적입니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-01",
+          "days_until": "18",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
       "date": "2026-04-12",
       "price": "152.51 USD",
       "daily_change": "-1.63%",
@@ -222,6 +332,29 @@
     }
   ],
   "AMD": [
+    {
+      "date": "2026-04-13",
+      "price": "245.04 USD",
+      "daily_change": "+3.55%",
+      "signal_or_takeaway": "매수 유지 — AI 수요와 2026-05-05 실적 기대 | 진입 트리거 239.73 USD 상향 돌파 후 245.04 USD 지지 | 목표 255.89 USD/289.35 USD | 손절 223.35 USD (R:R 0.66)",
+      "top_news_summary": "AMD, 2030년까지 이익 3배·데이터센터 시장 1조 달러 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 4,
+        "reasoning": "AI 수요 전망과 장기 이익 성장 서사가 강하고, 최근 30일 +26.71%의 강한 추세가 이를 뒷받침합니다. 다만 PER 93.53x와 RSI 70.1 과매수로 단기 추격은 조심해야 합니다.",
+        "score": 4.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "22",
+          "timing": "AMC"
+        }
+      ]
+    },
     {
       "date": "2026-04-12",
       "price": "245.04 USD",
@@ -290,6 +423,29 @@
   ],
   "KO": [
     {
+      "date": "2026-04-13",
+      "price": "77.47 USD",
+      "daily_change": "-0.91%",
+      "signal_or_takeaway": "매수 관찰 — 2026-04-28 실적과 68 USD MaxPain 하단 방어 | 진입 트리거 77.53 USD 회복 또는 76.28 USD 지지 | 목표 78.80 USD/83.67 USD | 손절 74.87 USD (R:R 1.12)",
+      "top_news_summary": "병입업체 Coca-Cola HBC, 탄산음료 수요로 이익 성장 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 4,
+        "reasoning": "저당·프리미엄 제품 전략과 실적 안정성이 확인되고, 옵션 흐름 PCR 0.44와 NetΔ +1,029,432가 우호적입니다. 다만 RVOL 0.61x로 강한 돌파보다는 완만한 우상향이 더 적합합니다.",
+        "score": 4.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-28",
+          "days_until": "15",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
       "date": "2026-04-12",
       "price": "77.47 USD",
       "daily_change": "-0.91%",
@@ -356,6 +512,29 @@
     }
   ],
   "T": [
+    {
+      "date": "2026-04-13",
+      "price": "26.46 USD",
+      "daily_change": "-0.38%",
+      "signal_or_takeaway": "중립 경계 — 2026-04-22 실적과 25.00 USD MaxPain 방어 여부 | 진입 트리거 26.87 USD 회복 또는 26.45 USD 지지 | 목표 27.10 USD/30.39 USD | 손절 25.17 USD (R:R 0.70)",
+      "top_news_summary": "Crown Castle, 인력 20% 감축 및 임대수익 전망 하향",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm",
+      "news_tone": {
+        "label": "bearish",
+        "confidence": 4,
+        "reasoning": "배당 매력은 있지만 SMA50·SMA200 모두 하회하고 EPS 성장률 -5.60% YoY로 실적 모멘텀이 약합니다. 옵션 흐름은 PCR 0.36과 NetΔ +811,230으로 우호적이지만 가격 확인 전까지는 경계가 필요합니다.",
+        "score": -4.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-22",
+          "days_until": "9",
+          "timing": "BMO"
+        }
+      ]
+    },
     {
       "date": "2026-04-12",
       "price": "26.46 USD",
@@ -431,6 +610,29 @@
   ],
   "IONQ": [
     {
+      "date": "2026-04-13",
+      "price": "28.79 USD",
+      "daily_change": "+2.53%",
+      "signal_or_takeaway": "중립 관찰 — 2026-05-06 실적과 고변동성 재료 | 진입 트리거 33.33 USD 회복 또는 23.48 USD 지지 | 목표 34.76 USD/65.29 USD | 손절 24.49 USD (R:R 0.53)",
+      "top_news_summary": "IonQ 8-K 중요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "AI-양자 테마와 최근 실적 서프라이즈는 긍정적이지만, 적자 구조와 30일 -12.70% 약세가 여전히 큽니다. 옵션 흐름은 PCR 0.16과 NetΔ +783,538로 강하지만, 가격 확인 전에는 과열로 해석해야 합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "23",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-12",
       "price": "28.79 USD",
       "daily_change": "+2.53%",
@@ -498,6 +700,29 @@
   ],
   "PLUG": [
     {
+      "date": "2026-04-13",
+      "price": "2.74 USD",
+      "daily_change": "+0.00%",
+      "signal_or_takeaway": "중립 경계 — 2026-05-11 실적과 2.00 USD MaxPain 수렴 가능성 | 진입 트리거 2.76 USD 돌파 또는 2.15 USD 지지 | 목표 2.93 USD/2.83 USD | 손절 2.36 USD (R:R 2.00)",
+      "top_news_summary": "유럽 증시 사상 최고치 경신, 기술·헬스케어는 약세",
+      "top_news_link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxONjZDVm1DSm1LTlZBRE85T3RvSDdlQnAwcGhDZ0pSdnhReWRKOWZCazNkYm5ablhMcXpWeU9VN2tvbTl6VU5IZWF2R1VFUkNmTzRNTXJDWUJqN2UxV0l6XzN5ejVqTGNqR2g2cWYxUGxrWWRyRlROWVUxV1lWLVdEazVGTjdSYU9aNHRRS21xMFg4VUJBNFljd0Nuc1UyTk0?oc=5",
+      "news_tone": {
+        "label": "bearish",
+        "confidence": 4,
+        "reasoning": "반등은 강하지만 옵션 흐름의 PCR 1.92와 bearish sentiment가 만기주 하방 압력을 시사합니다. 적자 구조와 실적까지 D-28인 점을 감안하면 추격매수보다 가격 확인이 우선입니다.",
+        "score": -4.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-11",
+          "days_until": "28",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-12",
       "price": "2.74 USD",
       "daily_change": "+0.00%",
@@ -561,6 +786,78 @@
           "timing": "AMC"
         }
       ]
+    }
+  ],
+  "MSFT": [
+    {
+      "date": "2026-04-09",
+      "price": "374.33 USD",
+      "daily_change": "+0.55%",
+      "signal_or_takeaway": "중립 경계 — [실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입존 365.77–382.89 / 무효화 SMA50(402.04 USD)",
+      "top_news_summary": "[실적] MICROSOFT CORP, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/789019/000119312526027207/msft-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "score": 1.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-29",
+          "days_until": "20",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-08",
+      "price": "372.29 USD",
+      "daily_change": "-0.16%",
+      "signal_or_takeaway": "보합권(-0.2%) — 특이사항 없음, 추적 유지.",
+      "top_news_summary": "Microsoft forecasts slower cloud business growth in second quarter - Reuters",
+      "top_news_link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQNGJYdk5DRE9Gdk9nNS00N2R5SkdQM1FDVHM1eXVNNlBwcFFiMEM3eS1pUlpxM3IwVS1iM1JzNWdZcUJ1WGRJd2FwVVBCZHhnaHA4TzgzVUNDSmZwYzB6UEluRGVDQXVoeWtPWEVINFVDLTd6dzFDSUxfNEdTVzg4cTdjNVQ4QnVUVnFyZVVEeURobEM4?oc=5",
+      "news_tone": {
+        "label": "bullish",
+        "score": 3.0
+      },
+      "upcoming_events": []
+    }
+  ],
+  "NVDA": [
+    {
+      "date": "2026-04-09",
+      "price": "182.08 USD",
+      "daily_change": "+2.23%",
+      "signal_or_takeaway": "중립 관찰 — [실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입존 176.75–187.41 / 무효화 SMA50(182.51 USD)",
+      "top_news_summary": "[실적] NVIDIA CORP, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+      "news_tone": {
+        "label": "neutral",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-20",
+          "days_until": "41",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-08",
+      "price": "178.10 USD",
+      "daily_change": "+0.26%",
+      "signal_or_takeaway": "보합권(+0.3%) — 특이사항 없음, 추적 유지.",
+      "top_news_summary": "Nvidia-backed CoreWeave's shares fall as data center delay hits annual revenue forecast - Reuters",
+      "top_news_link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNTUttYUMtUDZKNHJPRFl4ampvVTNlVUZ3RG1ZalN1RDJnZVYxak4wWmtZUFFQUVBvcmlFVVVQU016RURFTzdqdDFWY3VNNmV4VHpNVmRSUlZVa1Y0WlVpQnM5ZTdQS2tzN2ZFZGNmZWFfOFVvZ1pCa0RRbmtVMjlGQUR4QkxnX2JqWGQwbnpaVHc4MmZ3RmxjcXZNT3NobWZ4TWdBUjRUNXdOOTFhNmV5V2dYUm4xS2k1WGY0?oc=5",
+      "news_tone": {
+        "label": "bullish",
+        "score": 3.0
+      },
+      "upcoming_events": []
     }
   ]
 }
