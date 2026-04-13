@@ -115,6 +115,22 @@ export interface TradeFrame {
   watch_period: string
 }
 
+export interface MarketRegimeData {
+  regime: 'risk_on' | 'neutral' | 'risk_off'
+  confidence: number
+  drivers: Record<string, string>
+  implication: string
+  assessed_at: string
+}
+
+export interface TickerDecisionData {
+  action: 'buy' | 'watch' | 'avoid'
+  conviction: number
+  reason: string
+  valid_until: string
+  factors: Record<string, number>
+}
+
 export interface TickerAnalysisData {
   ticker: string
   name: string
@@ -140,6 +156,7 @@ export interface TickerAnalysisData {
   sector_comparison?: SectorComparison
   options_summary?: OptionsSummary
   valuation_score?: ValuationScore
+  decision?: TickerDecisionData
 }
 
 export interface ValuationScore {
@@ -250,6 +267,7 @@ export interface DailyEntry {
   date: string
   market_overview: MarketOverviewEntry[]
   macro_context?: MacroContext | null
+  market_regime?: MarketRegimeData | null
   portfolio_risk?: PortfolioRisk | null
   portfolio_summary?: PortfolioSummaryData | null
   tickers: TickerAnalysisData[]

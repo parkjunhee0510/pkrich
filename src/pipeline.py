@@ -7,13 +7,15 @@ from pathlib import Path
 
 from src.analyzer.research_note import analyze_tickers
 from src.collector.macro import collect_macro_context
+from src.decision.decision_layer import generate_decisions
+from src.decision.market_regime import detect_market_regime
 from src.collector.news_rss import collect_news_for_watchlist
 from src.collector.price import collect_market_data, collect_market_overview
 from src.output.alert import evaluate_alert_rules
 from src.output.api_status import write_api_status_outputs
 from src.output.markdown import write_outputs
 from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
-from src.types import CollectedTickerData
+from src.types import CollectedTickerData, MarketRegime
 from src.utils.config import load_portfolio, load_watchlist
 from src.utils.datastore import get_datastore
 from src.utils.env import is_env_flag_enabled, load_dotenv
@@ -98,6 +100,21 @@ def run_pipeline(run_date: date | None = None) -> None:
         record_signals(analyses, effective_date, price_lookup, signal_csv_path)
         datastore.sync_signal_history(signal_csv_path)
         signal_stats = load_signal_stats(signal_csv_path)
+        # Decision layer: market regime + per-ticker decisions
+        try:
+            market_regime = detect_market_regime(market_overview, macro_context, collected, effective_date)
+            decisions = generate_decisions(analyses, collected, market_regime, signal_stats, effective_date)
+            record_pipeline_event(
+                "decision", "info", "decision_completed",
+                regime=market_regime.regime,
+                confidence=market_regime.confidence,
+                decisions_count=len(decisions),
+            )
+        except Exception:
+            market_regime = MarketRegime()
+            decisions = []
+            record_pipeline_event("decision", "warning", "decision_failed")
+
         direct_period_changes = {
             ticker: {"7d": data.price_change_7d, "30d": data.price_change_30d}
             for ticker, data in collected.items()
@@ -111,6 +128,8 @@ def run_pipeline(run_date: date | None = None) -> None:
             signal_stats=signal_stats,
             macro_context=macro_context,
             portfolio_risk=portfolio_risk,
+            market_regime=market_regime,
+            decisions=decisions,
         )
         send_daily_summary(
             analyses,

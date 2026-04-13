@@ -34,6 +34,12 @@ import {
 
 type DensityMode = 'compact' | 'comfortable' | 'focus'
 
+const DECISION_LABEL: Record<string, string> = {
+  buy: '매수',
+  watch: '관찰',
+  avoid: '회피',
+}
+
 const STORAGE_KEY = 'pkrich-watchlist-order'
 
 function loadCustomOrder(): string[] {
@@ -193,6 +199,11 @@ function SortableWatchlistCard({
             <Link to={`/ticker/${ticker.ticker}`} className="ticker-link">
               {ticker.ticker}
             </Link>
+            {ticker.decision && (
+              <span className={`watchlist-decision-pill decision-pill-${ticker.decision.action}`}>
+                {DECISION_LABEL[ticker.decision.action] ?? ticker.decision.action}
+              </span>
+            )}
             <SignalBadge changePercent={pct} signalDirection={signalDirection} />
             <span className="watchlist-focus-pill">{setup.focusLabel}</span>
             {latestCatalyst && (

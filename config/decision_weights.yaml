@@ -1,0 +1,34 @@
+# Decision Layer weight configuration
+# Adjust weights/thresholds without code changes
+
+factors:
+  valuation:
+    max: 20
+  momentum:
+    max: 20
+  catalyst_recency:
+    min: -10
+    max: 20
+  signal_track_record:
+    min: -10
+    max: 15
+  news_tone:
+    min: -5
+    max: 10
+  regime_adjustment:
+    min: -15
+    max: 15
+  earnings_pattern:
+    min: -10
+    max: 10
+  fundamentals:
+    max: 10
+
+thresholds:
+  buy: 65
+  buy_risk_off: 75
+  avoid: 35
+
+valid_until:
+  earnings_window_days: 30
+  default_days: 7

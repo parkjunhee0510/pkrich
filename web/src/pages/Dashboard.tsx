@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { MacroContextBar } from '../components/MacroContextBar'
 import { MarketOverview } from '../components/MarketOverview'
+import { MarketRegimeBanner } from '../components/MarketRegimeBanner'
 import { SectorSummary } from '../components/SectorSummary'
 import { DashboardSkeleton } from '../components/Skeleton'
 import {
@@ -469,6 +470,7 @@ export function Dashboard() {
         <SignalPerformanceBoard highlights={signalHighlights} />
       </div>
 
+      <MarketRegimeBanner regime={day.market_regime} />
       <MacroContextBar macroContext={day.macro_context} />
       {data.weekly_summary?.weekly_insight ? (
         <section className="ticker-detail-section-shell">

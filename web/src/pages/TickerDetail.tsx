@@ -8,6 +8,7 @@ import { NewsItem } from '../components/NewsItem'
 import { SecFilingBadges } from '../components/SecFilingBadges'
 import { SignalBadge } from '../components/SignalBadge'
 import { InfoTooltip } from '../components/InfoTooltip'
+import { DecisionCard } from '../components/DecisionCard'
 import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
 import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
@@ -196,6 +197,10 @@ export function TickerDetail() {
           <SignalBadge changePercent={pct} signalDirection={signalDirection} />
         </div>
       </div>
+
+      {analysis.decision && (
+        <DecisionCard decision={analysis.decision} />
+      )}
 
       {actionPlan && (
         <TraderDecisionBoard

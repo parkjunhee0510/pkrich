@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from src.backtester.engine import build_backtest_summary
-from src.types import PortfolioSummary, TickerAnalysis
+from src.types import MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
 from src.utils.earnings_history import build_earnings_surprise_summary
 from src.utils.earnings_setup import build_earnings_setup
 from src.utils.monthly_summary import load_monthly_summary
@@ -33,11 +33,14 @@ def write_json_outputs(
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
     weekly_summary: WeeklySummaryData | None = None,
+    market_regime: MarketRegime | None = None,
+    decisions: list[TickerDecision] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     root = output_root or Path("output")
     data_dir = root / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
 
+    decision_map = {d.ticker: d for d in (decisions or [])}
     latest_day, merged_days = _write_dashboard_jsons(
         data_dir / "dashboard.json",
         data_dir / "dashboard_history.json",
@@ -50,6 +53,8 @@ def write_json_outputs(
         macro_context or {},
         portfolio_risk or {},
         weekly_summary=weekly_summary,
+        market_regime=market_regime,
+        decision_map=decision_map,
     )
     _write_price_history_exports(
         data_dir / "price_history.json",
@@ -77,6 +82,8 @@ def _write_dashboard_jsons(
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
     weekly_summary: WeeklySummaryData | None = None,
+    market_regime: MarketRegime | None = None,
+    decision_map: dict[str, TickerDecision] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     existing_days: list[dict[str, Any]] = []
     source_path = history_path if history_path.exists() else latest_path
@@ -87,14 +94,20 @@ def _write_dashboard_jsons(
         except (json.JSONDecodeError, KeyError):
             existing_days = []
 
+    dm = decision_map or {}
     new_day = {
         "date": run_date.isoformat(),
         "market_overview": market_overview,
         "macro_context": macro_context or {},
+        "market_regime": _serialize_market_regime(market_regime),
         "portfolio_risk": portfolio_risk or {},
         "portfolio_summary": _serialize_portfolio_summary(portfolio_summary),
         "tickers": [
-            _serialize_analysis(a, period_changes_by_ticker.get(a.ticker, {"7d": "N/A", "30d": "N/A"}))
+            _serialize_analysis(
+                a,
+                period_changes_by_ticker.get(a.ticker, {"7d": "N/A", "30d": "N/A"}),
+                decision=dm.get(a.ticker),
+            )
             for a in analyses
         ],
     }
@@ -212,9 +225,14 @@ def _replace_snapshot_tokens(value: Any, replacements: dict[str, str]) -> Any:
     return value
 
 
-def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]) -> dict[str, Any]:
+def _serialize_analysis(
+    analysis: TickerAnalysis,
+    period_changes: dict[str, str],
+    *,
+    decision: TickerDecision | None = None,
+) -> dict[str, Any]:
     currency = _snapshot_currency(analysis.data_snapshot)
-    return {
+    result: dict[str, Any] = {
         "ticker": analysis.ticker,
         "name": analysis.name,
         "date": analysis.date,
@@ -253,6 +271,31 @@ def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]
         "period_changes": period_changes,
         "sec_filing_tags": collect_sec_filing_tags(analysis.news_references),
         "sec_filings": sort_sec_filings(collect_sec_filings(analysis.news_references)),
+    }
+    if decision is not None:
+        result["decision"] = _serialize_decision(decision)
+    return result
+
+
+def _serialize_market_regime(regime: MarketRegime | None) -> dict[str, Any]:
+    if regime is None:
+        return {}
+    return {
+        "regime": regime.regime,
+        "confidence": regime.confidence,
+        "drivers": regime.drivers,
+        "implication": regime.implication,
+        "assessed_at": regime.assessed_at,
+    }
+
+
+def _serialize_decision(decision: TickerDecision) -> dict[str, Any]:
+    return {
+        "action": decision.action,
+        "conviction": decision.conviction,
+        "reason": decision.reason,
+        "valid_until": decision.valid_until,
+        "factors": decision.factors,
     }
 
 

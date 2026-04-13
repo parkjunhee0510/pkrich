@@ -767,6 +767,154 @@ a:hover {
   gap: 0.5rem;
 }
 
+/* --- Market Regime Banner --- */
+.market-regime-banner {
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--color-border);
+  margin-bottom: 1rem;
+  background: var(--color-surface);
+}
+.market-regime-banner.regime-risk-on {
+  border-left: 4px solid var(--color-up, #22c55e);
+}
+.market-regime-banner.regime-neutral {
+  border-left: 4px solid var(--color-caution, #eab308);
+}
+.market-regime-banner.regime-risk-off {
+  border-left: 4px solid var(--color-down, #ef4444);
+}
+.regime-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+.regime-badge {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.regime-confidence {
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+.regime-implication {
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0.45rem;
+  opacity: 0.85;
+}
+.regime-drivers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.regime-driver-chip {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border);
+}
+
+/* --- Decision Card --- */
+.decision-card {
+  padding: 0.85rem 1rem;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px solid var(--color-border);
+  margin-bottom: 1rem;
+  background: var(--color-surface);
+}
+.decision-card.decision-buy {
+  border-left: 4px solid var(--color-up, #22c55e);
+}
+.decision-card.decision-watch {
+  border-left: 4px solid var(--color-caution, #eab308);
+}
+.decision-card.decision-avoid {
+  border-left: 4px solid var(--color-down, #ef4444);
+}
+.decision-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
+}
+.decision-action-badge {
+  font-weight: 700;
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+.decision-conviction-meter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+.decision-conviction-label {
+  font-size: 0.78rem;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+.decision-conviction-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  max-width: 180px;
+}
+.decision-conviction-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-up, #22c55e);
+  transition: width 0.3s ease;
+}
+.decision-avoid .decision-conviction-fill {
+  background: var(--color-down, #ef4444);
+}
+.decision-watch .decision-conviction-fill {
+  background: var(--color-caution, #eab308);
+}
+.decision-conviction-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 1.8rem;
+  text-align: right;
+}
+.decision-reason {
+  font-size: 0.85rem;
+  margin: 0.2rem 0 0.4rem;
+  opacity: 0.85;
+}
+.decision-valid-until {
+  font-size: 0.75rem;
+  opacity: 0.55;
+}
+.decision-factors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+.decision-factor-chip {
+  font-size: 0.72rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+.decision-factor-chip.factor-positive {
+  color: var(--color-up, #22c55e);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+.decision-factor-chip.factor-negative {
+  color: var(--color-down, #ef4444);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+.decision-factor-chip.factor-neutral {
+  opacity: 0.5;
+}
+
 .macro-context-bar {
   display: grid;
   grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.5fr);
@@ -971,6 +1119,28 @@ a:hover {
   color: var(--color-text-secondary);
   font-size: 0.8rem;
   line-height: 1.45;
+}
+
+.watchlist-decision-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.decision-pill-buy {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--color-up, #22c55e);
+}
+.decision-pill-watch {
+  background: rgba(234, 179, 8, 0.15);
+  color: var(--color-caution, #eab308);
+}
+.decision-pill-avoid {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-down, #ef4444);
 }
 
 .watchlist-focus-pill {

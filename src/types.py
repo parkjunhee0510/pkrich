@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Literal
 
 
 @dataclass(frozen=True)
@@ -141,3 +142,22 @@ class PortfolioSummary:
     total_cost_basis: float = 0.0
     total_unrealized_pnl: float | None = None
     total_unrealized_return_pct: float | None = None
+
+
+@dataclass(frozen=True)
+class MarketRegime:
+    regime: Literal['risk_on', 'neutral', 'risk_off'] = 'neutral'
+    confidence: int = 0
+    drivers: dict[str, str] = field(default_factory=dict)
+    implication: str = ''
+    assessed_at: str = ''
+
+
+@dataclass(frozen=True)
+class TickerDecision:
+    ticker: str = ''
+    action: Literal['buy', 'watch', 'avoid'] = 'watch'
+    conviction: int = 0
+    reason: str = ''
+    valid_until: str = ''
+    factors: dict[str, float] = field(default_factory=dict)

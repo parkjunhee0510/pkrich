@@ -60,6 +60,7 @@ def collect_macro_context(
     # Upcoming macro events
     context["upcoming_macro_events"] = _find_upcoming_events(run_date, lookahead_days)
     context.update(_collect_macro_market_series())
+    context["spy_technicals"] = _collect_spy_technicals()
 
     return context
 
@@ -149,7 +150,7 @@ def _collect_macro_market_series() -> dict[str, dict[str, str]]:
     except Exception:
         return {}
 
-    symbol_map = {
+    symbol_map: dict[str, tuple[str, str]] = {
         "us10y": ("^TNX", "미국 10년물"),
         "dxy": ("DX-Y.NYB", "달러 인덱스"),
         "copper": ("HG=F", "구리 선물"),
@@ -176,3 +177,47 @@ def _collect_macro_market_series() -> dict[str, dict[str, str]]:
         except Exception:
             continue
     return result
+
+
+def _collect_spy_technicals() -> dict[str, str]:
+    """Fetch SPY close, SMA50, SMA200, RSI14 via yfinance."""
+    if not can_open_tcp_connection("query1.finance.yahoo.com", 443):
+        return {}
+
+    try:
+        import yfinance as yf  # type: ignore
+    except Exception:
+        return {}
+
+    try:
+        ticker = yf.Ticker("SPY")
+        history = ticker.history(period="210d", interval="1d")
+        if history is None or history.empty:
+            return {}
+        close_series = history["Close"].dropna()
+        if len(close_series) < 50:
+            return {}
+
+        latest_close = float(close_series.iloc[-1])
+        sma50 = float(close_series.tail(50).mean())
+        sma200 = float(close_series.tail(200).mean()) if len(close_series) >= 200 else None
+
+        # RSI(14) calculation
+        delta = close_series.diff()
+        gain = delta.where(delta > 0, 0.0).tail(15)
+        loss = (-delta.where(delta < 0, 0.0)).tail(15)
+        avg_gain = float(gain.mean())
+        avg_loss = float(loss.mean())
+        rsi_14 = 100 - (100 / (1 + avg_gain / avg_loss)) if avg_loss > 0 else 100.0
+
+        result: dict[str, str] = {
+            "close": f"{latest_close:.2f}",
+            "sma50": f"{sma50:.2f}",
+            "rsi14": f"{rsi_14:.1f}",
+        }
+        if sma200 is not None:
+            result["sma200"] = f"{sma200:.2f}"
+        return result
+    except Exception:
+        logger.debug("SPY technicals collection failed", exc_info=True)
+        return {}

@@ -10,7 +10,7 @@ from typing import Any
 from src.collector.news_rss import load_source_priorities
 from src.output.json_export import write_json_outputs
 from src.output.obsidian import mirror_markdown_outputs
-from src.types import PortfolioSummary, TickerAnalysis
+from src.types import MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
 from src.utils.config import load_simple_mapping
 from src.utils.datastore import get_datastore
 from src.utils.datastore_csv import append_price_history_csv
@@ -65,6 +65,8 @@ def write_outputs(
     signal_stats: dict[str, Any] | None = None,
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
+    market_regime: MarketRegime | None = None,
+    decisions: list[TickerDecision] | None = None,
 ) -> dict[str, Any]:
     output_root = Path("output")
     daily_dir = output_root / "daily"
@@ -95,6 +97,8 @@ def write_outputs(
         macro_context=macro_context,
         portfolio_risk=portfolio_risk,
         weekly_summary=weekly_summary,
+        market_regime=market_regime,
+        decisions=decisions,
     )
 
     daily_path = daily_dir / f"{run_date.isoformat()}.md"
@@ -107,6 +111,8 @@ def write_outputs(
             portfolio_summary=portfolio_summary,
             macro_context=macro_context,
             portfolio_risk=portfolio_risk,
+            market_regime=market_regime,
+            decisions=decisions,
         ),
         artifact="daily_note",
     )
@@ -150,6 +156,8 @@ def render_daily_markdown(
     portfolio_summary: PortfolioSummary | None = None,
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
+    market_regime: MarketRegime | None = None,
+    decisions: list[TickerDecision] | None = None,
 ) -> str:
     watchlist_rows = "\n".join(
         f"| {analysis.ticker} | {analysis.data_snapshot['Price']} | {analysis.data_snapshot['Daily Change']} | {analysis.signal_or_takeaway} |"
@@ -169,6 +177,38 @@ def render_daily_markdown(
 
     if macro_context:
         lines.extend(["## 매크로 환경", _render_macro_context(macro_context), ""])
+
+    if market_regime and market_regime.regime != "neutral":
+        regime_labels = {"risk_on": "🟢 위험선호", "neutral": "🟡 중립", "risk_off": "🔴 위험회피"}
+        lines.extend([
+            "## 시장 리짐",
+            f"**{regime_labels.get(market_regime.regime, market_regime.regime)}** (확신도 {market_regime.confidence}%)",
+            "",
+            market_regime.implication,
+            "",
+        ])
+    elif market_regime:
+        lines.extend([
+            "## 시장 리짐",
+            f"**🟡 중립** (확신도 {market_regime.confidence}%)",
+            "",
+            market_regime.implication,
+            "",
+        ])
+
+    if decisions:
+        decision_map = {d.ticker: d for d in decisions}
+        decision_rows = "\n".join(
+            f"| {d.ticker} | {d.action} | {d.conviction} | {d.reason} | {d.valid_until} |"
+            for d in decisions
+        )
+        lines.extend([
+            "## 의사결정 요약",
+            "| 티커 | 액션 | 확신도 | 근거 | 유효기간 |",
+            "|------|------|--------|------|----------|",
+            decision_rows,
+            "",
+        ])
 
     lines.extend([
         "## 관심 종목 요약",
