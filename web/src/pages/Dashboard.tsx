@@ -265,7 +265,7 @@ export function Dashboard() {
       )}
 
       <div className="dashboard-header">
-        <h2>트레이더 워크스페이스 · {day.date}</h2>
+        <h2>부자 되고 싶어요 · {day.date}</h2>
         {data.days.length > 1 && (
           <select className="date-select" value={idx} onChange={(e) => setSelectedIdx(Number(e.target.value))}>
             {data.days.map((entry, index) => (

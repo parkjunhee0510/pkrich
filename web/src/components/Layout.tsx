@@ -52,7 +52,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="layout">
       <header className="header">
         <Link to="/" className="header-title">
-          Stock Research
+          준희의 포트폴리오
         </Link>
         <nav className="header-nav">
           {NAV_ITEMS.map((item) => (
