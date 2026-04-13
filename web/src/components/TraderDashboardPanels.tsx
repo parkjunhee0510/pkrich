@@ -77,7 +77,7 @@ export function EarningsBoard({ sections }: { sections: EarningsBoardSection[] }
       <section className="dashboard-panel-section">
         <div className="section-header-with-kicker">
           <div>
-            <h3>실적 플레이 보드</h3>
+            <h3>실적 발표</h3>
             <p className="section-kicker">가까운 실적 이벤트가 없습니다. 점수순 카드나 하드 촉매 피드로 이동해 다음 일정이 있는 종목부터 확인해보세요.</p>
           </div>
         </div>
