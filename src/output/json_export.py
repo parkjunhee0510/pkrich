@@ -438,8 +438,15 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
     if not web_root.exists():
         return
 
-    target_dir = web_root / "public" / "output" / "data"
-    target_dir.mkdir(parents=True, exist_ok=True)
+    target_dirs = [
+        web_root / "public" / "output" / "data",
+    ]
+    dist_root = web_root / "dist" / "output" / "data"
+    if dist_root.parent.parent.exists():
+        target_dirs.append(dist_root)
+
+    for target_dir in target_dirs:
+        target_dir.mkdir(parents=True, exist_ok=True)
 
     for filename in (
         "dashboard.json",
@@ -454,4 +461,5 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
     ):
         source_path = data_dir / filename
         if source_path.exists():
-            shutil.copy2(source_path, target_dir / filename)
+            for target_dir in target_dirs:
+                shutil.copy2(source_path, target_dir / filename)
