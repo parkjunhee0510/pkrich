@@ -59,12 +59,14 @@ def build_api_status_payload(
     last_run = _load_last_run_rows(log_path)
     per_ticker = _build_ticker_provider_state(last_run, watchlist)
     provider_summary = _summarize_providers(per_ticker)
+    llm_summary = _summarize_llm(last_run)
     return {
         "summary": {
             "run_date": run_date.isoformat(),
             "log_path": str(log_path),
             "pipeline_completed": any(row.get("event") == "pipeline_completed" for row in last_run),
             "providers": provider_summary,
+            "llm": llm_summary,
         },
         "ticker_matrix": [
             {
@@ -196,6 +198,33 @@ def _summarize_providers(per_ticker: dict[str, dict[str, str]]) -> dict[str, dic
             "not_used_tickers": counts.get("not_used", 0),
         }
     return result
+
+
+def _summarize_llm(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    planned_batches = [row for row in rows if row.get("event") == "analysis_batch_planned"]
+    usage_rows = [row for row in rows if row.get("event") == "openai_usage_recorded"]
+    request_failures = [row for row in rows if row.get("event") in {"openai_request_failed", "openai_analyzer_failed"}]
+    validation_failures = [row for row in rows if row.get("event") == "openai_response_validation_failed"]
+
+    models = Counter(str(row.get("model", "")).strip() for row in usage_rows if str(row.get("model", "")).strip())
+    latest_usage = usage_rows[-1] if usage_rows else {}
+    estimated_cost = 0.0
+    for row in usage_rows:
+        try:
+            estimated_cost += float(row.get("estimated_cost_usd") or 0.0)
+        except (TypeError, ValueError):
+            continue
+
+    return {
+        "used": bool(usage_rows),
+        "planned_batches": len(planned_batches),
+        "completed_batches": len(usage_rows),
+        "failed_batches": len(request_failures),
+        "validation_failures": len(validation_failures),
+        "estimated_cost_usd": round(estimated_cost, 8),
+        "latest_model": str(latest_usage.get("model", "")).strip() or "N/A",
+        "models_used": dict(sorted(models.items())),
+    }
 
 
 def _write_matrix_csv(path: Path, rows: list[dict[str, Any]]) -> None:

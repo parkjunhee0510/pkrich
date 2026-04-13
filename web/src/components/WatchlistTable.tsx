@@ -427,7 +427,7 @@ function buildContextSummary(ticker: TickerAnalysisData): string {
   const parts: string[] = []
 
   if (typeof ticker.news_tone?.confidence === 'number') {
-    parts.push(`톤 확신도 ${(ticker.news_tone.confidence * 100).toFixed(0)}%`)
+    parts.push(formatNewsToneConfidence(ticker.news_tone.confidence))
   }
 
   if (ticker.sector_comparison?.summary) {
@@ -435,4 +435,17 @@ function buildContextSummary(ticker: TickerAnalysisData): string {
   }
 
   return parts.join(' · ')
+}
+
+function formatNewsToneConfidence(confidence: number): string {
+  const normalized = Math.max(1, Math.min(5, Math.round(confidence)))
+  const percentage = normalized * 20
+  const levelMap: Record<number, string> = {
+    1: '낮음',
+    2: '보통',
+    3: '높음',
+    4: '매우 높음',
+    5: '매우 높음',
+  }
+  return `톤 확신도 ${levelMap[normalized]} (${percentage}%)`
 }

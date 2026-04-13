@@ -32,6 +32,8 @@ class ApiStatusTests(unittest.TestCase):
                 {"event": "finnhub_recommendations", "component": "collector", "level": "info", "ticker": "AAPL"},
                 {"event": "news_provider_completed", "component": "collector", "level": "info", "ticker": "AAPL", "source": "SEC EDGAR"},
                 {"event": "news_provider_completed", "component": "collector", "level": "info", "ticker": "AAPL", "source": "Apple Newsroom"},
+                {"event": "analysis_batch_planned", "component": "analyzer", "level": "info", "model": "gpt-5.4-mini"},
+                {"event": "openai_usage_recorded", "component": "analyzer", "level": "info", "model": "gpt-5.4-mini", "estimated_cost_usd": 0.0125},
                 {"event": "data_provider_used", "component": "collector", "level": "info", "ticker": "PLUG", "source": "yfinance"},
                 {"event": "fmp_financial_ratios_unavailable", "component": "collector", "level": "info", "ticker": "PLUG"},
                 {"event": "finnhub_recommendations_failed", "component": "collector", "level": "warning", "ticker": "PLUG"},
@@ -45,6 +47,9 @@ class ApiStatusTests(unittest.TestCase):
         matrix = {row["ticker"]: row for row in payload["ticker_matrix"]}
 
         self.assertTrue(summary["pipeline_completed"])
+        self.assertTrue(summary["llm"]["used"])
+        self.assertEqual(summary["llm"]["latest_model"], "gpt-5.4-mini")
+        self.assertEqual(summary["llm"]["completed_batches"], 1)
         self.assertEqual(summary["providers"]["yfinance"]["used_tickers"], 2)
         self.assertEqual(summary["providers"]["alpha_vantage"]["used_tickers"], 1)
         self.assertEqual(summary["providers"]["fmp"]["unavailable_tickers"], 1)
@@ -80,6 +85,7 @@ class ApiStatusTests(unittest.TestCase):
         matrix = payload["ticker_matrix"][0]
         self.assertEqual(summary["providers"]["fmp"]["overall_status"], "limited")
         self.assertEqual(summary["providers"]["fmp"]["throttled_tickers"], 1)
+        self.assertFalse(summary["llm"]["used"])
         self.assertEqual(matrix["fmp"], "throttled")
 
     def test_write_api_status_outputs_writes_json_and_csv(self) -> None:

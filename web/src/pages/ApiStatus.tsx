@@ -122,6 +122,7 @@ export function ApiStatus() {
       </div>
 
       <div className="api-provider-grid">
+        <OpenAiUsageCard summary={data.summary} />
         {providerEntries.map(([providerKey, provider]) => (
           <ProviderCard key={providerKey} providerKey={providerKey} provider={provider} />
         ))}
@@ -217,11 +218,49 @@ function ProviderCard({
   )
 }
 
-function ProviderMetric({ label, value }: { label: string; value: number }) {
+function OpenAiUsageCard({ summary }: { summary: ApiStatusSummary }) {
+  const llm = summary.llm
+  const modelEntries = Object.entries(llm.models_used ?? {})
+
+  return (
+    <div className={`api-provider-card provider-${llm.used ? 'active' : 'idle'}`}>
+      <div className="api-provider-head">
+        <strong>OpenAI</strong>
+        <span className={`api-state-pill ${llm.used ? 'state-used' : 'state-not-used'}`}>
+          {llm.used ? '사용됨' : '미사용'}
+        </span>
+      </div>
+      <p className="api-provider-description">
+        최신 파이프라인 실행에서 실제 LLM 분석이 수행됐는지, 어떤 모델을 썼는지, 비용이 어느 정도였는지 보여줍니다.
+      </p>
+      <div className="api-provider-metrics">
+        <ProviderMetric label="latest model" valueText={llm.latest_model || 'N/A'} />
+        <ProviderMetric label="estimated cost" valueText={`$${Number(llm.estimated_cost_usd ?? 0).toFixed(4)}`} />
+        <ProviderMetric label="planned batches" value={llm.planned_batches} />
+        <ProviderMetric label="completed batches" value={llm.completed_batches} />
+        <ProviderMetric label="failed batches" value={llm.failed_batches} />
+        <ProviderMetric label="validation fails" value={llm.validation_failures} />
+      </div>
+      <div className="api-provider-fields">
+        {modelEntries.length > 0 ? (
+          modelEntries.map(([model, count]) => (
+            <span key={model} className="api-provider-field-chip">
+              {model} × {count}
+            </span>
+          ))
+        ) : (
+          <span className="api-provider-field-chip">이번 실행에서는 fallback 없이 정적 분석만 사용됨</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ProviderMetric({ label, value, valueText }: { label: string; value?: number; valueText?: string }) {
   return (
     <div className="api-provider-metric">
       <span className="signal-summary-label">{label}</span>
-      <strong>{value}</strong>
+      <strong>{valueText ?? value ?? 0}</strong>
     </div>
   )
 }

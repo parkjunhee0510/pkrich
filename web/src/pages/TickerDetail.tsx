@@ -171,7 +171,7 @@ export function TickerDetail() {
               Tone: {analysis.news_tone?.label ?? 'neutral'}
             </span>
             {typeof analysis.news_tone?.confidence === 'number' ? (
-              <span className="period-badge">신뢰도 {(analysis.news_tone.confidence * 100).toFixed(0)}%</span>
+              <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
             ) : null}
             <span className="period-badge">7D {analysis.period_changes?.['7d'] ?? 'N/A'}</span>
             <span className="period-badge">30D {analysis.period_changes?.['30d'] ?? 'N/A'}</span>
@@ -285,7 +285,7 @@ export function TickerDetail() {
                 {analysis.news_tone?.label ?? 'neutral'}
               </span>
               {typeof analysis.news_tone?.confidence === 'number' ? (
-                <span className="period-badge">확신도 {(analysis.news_tone.confidence * 100).toFixed(0)}%</span>
+                <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
               ) : null}
             </div>
             {analysis.news_tone?.reasoning ? <p>{analysis.news_tone.reasoning}</p> : null}
@@ -1008,6 +1008,19 @@ function parseFirstNumber(value?: string): number | null {
   if (!match) return null
   const numeric = Number.parseFloat(match[0])
   return Number.isNaN(numeric) ? null : numeric
+}
+
+function formatNewsToneConfidence(confidence: number): string {
+  const normalized = Math.max(1, Math.min(5, Math.round(confidence)))
+  const percentage = normalized * 20
+  const levelMap: Record<number, string> = {
+    1: '낮음',
+    2: '보통',
+    3: '높음',
+    4: '매우 높음',
+    5: '매우 높음',
+  }
+  return `톤 확신도 ${levelMap[normalized]} (${percentage}%)`
 }
 
 function extractCurrency(value?: string): string {

@@ -412,6 +412,16 @@ export interface ApiStatusSummary {
   log_path: string
   pipeline_completed: boolean
   providers: Record<string, ApiProviderSummary>
+  llm: {
+    used: boolean
+    planned_batches: number
+    completed_batches: number
+    failed_batches: number
+    validation_failures: number
+    estimated_cost_usd: number
+    latest_model: string
+    models_used: Record<string, number>
+  }
 }
 
 export interface ApiTickerMatrixRow {
