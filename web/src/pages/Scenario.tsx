@@ -57,11 +57,12 @@ export function Scenario() {
                     className="scenario-adjustment-input"
                     type="number"
                     step={1}
-                    value={adjustments[position.ticker] ?? 0}
+                    value={adjustments[position.ticker] || ''}
+                    placeholder="0"
                     onChange={(event) =>
                       setAdjustments((current) => ({
                         ...current,
-                        [position.ticker]: Number(event.target.value) || 0,
+                        [position.ticker]: event.target.value === '' ? 0 : Number(event.target.value),
                       }))
                     }
                   />
@@ -111,7 +112,7 @@ export function Scenario() {
             <ul className="news-list">
               {scenario.correlationWarnings.map((warning) => (
                 <li key={warning} className="news-item">
-                  <span>{warning}</span>
+                  {warning}
                 </li>
               ))}
             </ul>

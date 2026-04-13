@@ -36,6 +36,78 @@ def _analysis(run_date: str, price: str) -> TickerAnalysis:
 
 
 class DatastoreTests(unittest.TestCase):
+    def test_sqlite_datastore_backfills_historical_prices_for_late_added_ticker(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / 'output'
+            datastore = get_datastore(output_root=output_root, backend='sqlite')
+            analysis = TickerAnalysis(
+                ticker='CAT',
+                name='Caterpillar Inc.',
+                date='2026-04-13',
+                summary='요약',
+                key_news=[],
+                news_references=[],
+                financial_highlights=['매출 1.00B'],
+                risks_or_watchpoints=['체크 필요'],
+                signal_or_takeaway='추적 유지',
+                data_snapshot={
+                    'Price': '790.66 USD',
+                    'Daily Change': '+0.46%',
+                    'Market Cap': '1.00T',
+                    'Trailing P/E': '25.00',
+                    'EPS': '6.00',
+                    '52W High': '810.00',
+                    '52W Low': '220.00',
+                    'Open': '789.10',
+                    'High': '792.00',
+                    'Low': '785.20',
+                    'Close': '790.66',
+                    'Volume': '2.10M',
+                },
+                historical_prices=[
+                    {
+                        'date': '2026-04-10',
+                        'ticker': 'CAT',
+                        'price': '787.07 USD',
+                        'daily_change': '+2.01%',
+                        'market_cap': 'N/A',
+                        'trailing_pe': 'N/A',
+                        'eps': 'N/A',
+                        '52w_high': 'N/A',
+                        '52w_low': 'N/A',
+                        'open': '780.00',
+                        'high': '788.00',
+                        'low': '779.50',
+                        'close': '787.07',
+                        'volume': '1.95M',
+                    },
+                    {
+                        'date': '2026-04-13',
+                        'ticker': 'CAT',
+                        'price': '789.90 USD',
+                        'daily_change': '+0.36%',
+                        'market_cap': 'N/A',
+                        'trailing_pe': 'N/A',
+                        'eps': 'N/A',
+                        '52w_high': 'N/A',
+                        '52w_low': 'N/A',
+                        'open': '788.50',
+                        'high': '791.10',
+                        'low': '786.70',
+                        'close': '789.90',
+                        'volume': '2.00M',
+                    },
+                ],
+            )
+
+            datastore.append_prices([analysis])
+            rows = datastore.query_prices(tickers=['CAT'])
+
+        self.assertEqual([row['date'] for row in rows], ['2026-04-10', '2026-04-13'])
+        self.assertEqual(rows[0]['price'], '787.07 USD')
+        self.assertEqual(rows[1]['price'], '790.66 USD')
+        self.assertEqual(rows[1]['market_cap'], '1.00T')
+
     def test_csv_datastore_appends_and_compares_prices(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_root = Path(temp_dir) / 'output'

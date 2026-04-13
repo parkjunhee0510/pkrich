@@ -76,8 +76,31 @@ def get_datastore(output_root: Path | None = None, backend: str | None = None) -
 
 
 def build_price_history_rows(analyses: list[TickerAnalysis]) -> list[dict[str, str]]:
-    return [
-        {
+    rows_by_key: dict[tuple[str, str], dict[str, str]] = {}
+    for analysis in analyses:
+        for historical_row in analysis.historical_prices:
+            row_date = str(historical_row.get('date', '')).strip()
+            ticker = str(historical_row.get('ticker', analysis.ticker)).strip().upper()
+            if not row_date or not ticker:
+                continue
+            rows_by_key[(row_date, ticker)] = {
+                'date': row_date,
+                'ticker': ticker,
+                'price': str(historical_row.get('price', 'N/A')),
+                'daily_change': str(historical_row.get('daily_change', 'N/A')),
+                'market_cap': str(historical_row.get('market_cap', 'N/A')),
+                'trailing_pe': str(historical_row.get('trailing_pe', 'N/A')),
+                'eps': str(historical_row.get('eps', 'N/A')),
+                '52w_high': str(historical_row.get('52w_high', 'N/A')),
+                '52w_low': str(historical_row.get('52w_low', 'N/A')),
+                'open': str(historical_row.get('open', 'N/A')),
+                'high': str(historical_row.get('high', 'N/A')),
+                'low': str(historical_row.get('low', 'N/A')),
+                'close': str(historical_row.get('close', 'N/A')),
+                'volume': str(historical_row.get('volume', 'N/A')),
+            }
+
+        rows_by_key[(analysis.date, analysis.ticker)] = {
             'date': analysis.date,
             'ticker': analysis.ticker,
             'price': analysis.data_snapshot.get('Price', 'N/A'),
@@ -93,5 +116,5 @@ def build_price_history_rows(analyses: list[TickerAnalysis]) -> list[dict[str, s
             'close': analysis.data_snapshot.get('Close', 'N/A'),
             'volume': analysis.data_snapshot.get('Volume', 'N/A'),
         }
-        for analysis in analyses
-    ]
+
+    return [rows_by_key[key] for key in sorted(rows_by_key)]

@@ -62,10 +62,10 @@ class CsvDatastore(Datastore):
 
 def append_price_history_csv(path: Path, analyses: list[TickerAnalysis]) -> None:
     existing_rows = _read_csv_rows(path)
-
-    replacement_keys = {(analysis.date, analysis.ticker) for analysis in analyses}
+    new_rows = build_price_history_rows(analyses)
+    replacement_keys = {(row.get('date'), row.get('ticker')) for row in new_rows}
     updated_rows = [row for row in existing_rows if (row.get('date'), row.get('ticker')) not in replacement_keys]
-    updated_rows.extend(build_price_history_rows(analyses))
+    updated_rows.extend(new_rows)
     updated_rows.sort(key=lambda row: (row['date'], row['ticker']))
 
     path.parent.mkdir(parents=True, exist_ok=True)

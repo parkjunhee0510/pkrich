@@ -187,6 +187,7 @@ def _collect_single_ticker(
     fundamental_metrics: dict[str, str] = {}
     technical_indicators: dict[str, str] = {}
     ohlcv: dict[str, str] = {}
+    historical_prices: list[dict[str, str]] = []
     sector: str = item.sector
 
     if yfinance_ready:
@@ -250,6 +251,7 @@ def _collect_single_ticker(
             )
             rs_vs_spy = _calc_rs_vs_benchmark(price_change_30d, benchmark_change_30d)
             ohlcv = _extract_latest_ohlcv(history, price, open_price, volume)
+            historical_prices = _extract_historical_price_rows(history, item.ticker, currency)
             technical_indicators = compute_technical_indicators(history)
             providers_used.append("yfinance")
             record_pipeline_event("collector", "info", "data_provider_used", ticker=item.ticker, source="yfinance")
@@ -462,6 +464,7 @@ def _collect_single_ticker(
         recommendation_trends=recommendation_trends,
         fundamental_metrics=fundamental_metrics,
         technical_indicators=technical_indicators,
+        historical_prices=historical_prices,
     )
 
 
@@ -507,6 +510,59 @@ def _extract_latest_ohlcv(
         result["close"] = f"{price:.2f}"
     result["volume"] = volume_str
     return result
+
+
+def _extract_historical_price_rows(
+    history: object,
+    ticker_symbol: str,
+    currency: str,
+) -> list[dict[str, str]]:
+    """Normalize yfinance daily history into datastore-compatible backfill rows."""
+    try:
+        import pandas as pd
+
+        if not isinstance(history, pd.DataFrame) or history.empty:
+            return []
+    except Exception:
+        return []
+
+    rows: list[dict[str, str]] = []
+    previous_close: float | None = None
+    for idx_val, row in history.iterrows():
+        try:
+            row_date = idx_val.date() if hasattr(idx_val, "date") else date.fromisoformat(str(idx_val)[:10])
+        except Exception:
+            continue
+
+        open_value = _coerce_finite_float(row.get("Open"))
+        high_value = _coerce_finite_float(row.get("High"))
+        low_value = _coerce_finite_float(row.get("Low"))
+        close_value = _coerce_finite_float(row.get("Close"))
+        volume_value = _coerce_finite_float(row.get("Volume"))
+        if close_value is None:
+            continue
+
+        daily_change = _calculate_change_percent(close_value, previous_close)
+        rows.append(
+            {
+                "date": row_date.isoformat(),
+                "ticker": ticker_symbol,
+                "price": f"{close_value:.2f} {currency}",
+                "daily_change": f"{daily_change:+.2f}%" if daily_change is not None else "N/A",
+                "market_cap": "N/A",
+                "trailing_pe": "N/A",
+                "eps": "N/A",
+                "52w_high": "N/A",
+                "52w_low": "N/A",
+                "open": f"{open_value:.2f}" if open_value is not None else "N/A",
+                "high": f"{high_value:.2f}" if high_value is not None else "N/A",
+                "low": f"{low_value:.2f}" if low_value is not None else "N/A",
+                "close": f"{close_value:.2f}",
+                "volume": _format_large_number(volume_value),
+            }
+        )
+        previous_close = close_value
+    return rows
 
 
 def _select_price_snapshot(history: object, info: dict[str, Any]) -> tuple[float | None, float | None]:

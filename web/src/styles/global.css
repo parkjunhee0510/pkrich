@@ -2081,15 +2081,37 @@ a:hover {
 
 .portfolio-summary-card {
   padding: 1rem;
-  border-radius: var(--radius);
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   background: var(--color-surface);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.portfolio-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transform: skewX(-20deg);
+  transition: all 0.5s ease;
 }
 
 .portfolio-summary-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: var(--shadow-glow), 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: var(--color-border-hover);
+}
+
+.portfolio-summary-card:hover::before {
+  left: 200%;
 }
 
 .portfolio-card-label {
@@ -2143,9 +2165,12 @@ a:hover {
   align-items: flex-start;
   gap: 1rem;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-  padding: 0.95rem 1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(15, 17, 23, 0.4);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: 1.25rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
 }
 
 .portfolio-editor-toolbar p,
@@ -2176,9 +2201,15 @@ a:hover {
 
 .portfolio-group-card {
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  background: rgba(22, 25, 43, 0.4);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+.portfolio-group-card:hover {
+  border-color: var(--color-border-hover);
 }
 
 .portfolio-group-head {
@@ -3459,4 +3490,42 @@ summary:focus-visible {
   .api-provider-metrics {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+/* ========== Scenario Page ========== */
+.scenario-adjustment-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  width: 75px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  text-align: right;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.scenario-adjustment-input:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.scenario-adjustment-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-glow);
+  background: rgba(15, 17, 23, 0.7);
+  transform: translateY(-1px);
+}
+
+.scenario-adjustment-input::-webkit-outer-spin-button,
+.scenario-adjustment-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import json
+import sqlite3
 import shutil
 from datetime import date
 from pathlib import Path
@@ -50,11 +51,17 @@ def write_json_outputs(
         portfolio_risk or {},
         weekly_summary=weekly_summary,
     )
-    _write_price_history_json(data_dir / "price_history.json", data_dir / "price_history.csv")
+    _write_price_history_exports(
+        data_dir / "price_history.json",
+        data_dir / "price_history.csv",
+        data_dir / "price_history.sqlite",
+    )
     _write_backtest_summary_json(data_dir / "backtest_summary.json", data_dir / "signal_tracker.csv")
     _write_monthly_summary_json(data_dir / "monthly_summary.json", run_date, root)
     timelines = _write_ticker_timelines_json(data_dir / "ticker_timelines.json", merged_days)
-    _sync_web_public_data(data_dir, root.parent)
+    # Keep the React app's `public/output/data/*` in sync with the latest exports.
+    # `data_dir` is expected to be `<repo>/output/data`, so the repo root is `data_dir.parent.parent`.
+    _sync_web_public_data(data_dir, data_dir.parent.parent)
     return timelines
 
 
@@ -98,6 +105,9 @@ def _write_dashboard_jsons(
     if len(merged) > _MAX_DAYS:
         merged = merged[-_MAX_DAYS:]
 
+    merged = _reconcile_days_with_price_history(merged, latest_path.parent)
+    new_day = next((day for day in merged if day.get("date") == run_date.isoformat()), new_day)
+
     weekly_summary_payload = {
         "iso_year": weekly_summary.iso_year if weekly_summary else run_date.isocalendar()[0],
         "iso_week": weekly_summary.iso_week if weekly_summary else run_date.isocalendar()[1],
@@ -120,6 +130,86 @@ def _write_dashboard_jsons(
     latest_path.write_text(json.dumps(latest_payload, ensure_ascii=False, indent=2), encoding="utf-8")
     history_path.write_text(json.dumps(history_payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return new_day, merged
+
+
+def _reconcile_days_with_price_history(days: list[dict[str, Any]], data_dir: Path) -> list[dict[str, Any]]:
+    sqlite_path = data_dir / "price_history.sqlite"
+    if not sqlite_path.exists():
+        return days
+
+    try:
+        with sqlite3.connect(sqlite_path) as connection:
+            cursor = connection.cursor()
+            rows = cursor.execute(
+                "select date, ticker, open, high, low, close, volume, price, daily_change from prices"
+            ).fetchall()
+    except sqlite3.Error:
+        return days
+
+    snapshot_map = {
+        (str(row[0]), str(row[1])): {
+            "Open": row[2],
+            "High": row[3],
+            "Low": row[4],
+            "Close": row[5],
+            "Volume": row[6],
+            "Price": row[7],
+            "Daily Change": row[8],
+        }
+        for row in rows
+    }
+
+    reconciled_days: list[dict[str, Any]] = []
+    for day in days:
+        date_value = str(day.get("date", ""))
+        tickers = day.get("tickers", [])
+        if not isinstance(tickers, list):
+            reconciled_days.append(day)
+            continue
+
+        updated_tickers: list[dict[str, Any]] = []
+        for ticker_payload in tickers:
+            if not isinstance(ticker_payload, dict):
+                updated_tickers.append(ticker_payload)
+                continue
+
+            ticker = str(ticker_payload.get("ticker", ""))
+            snapshot_override = snapshot_map.get((date_value, ticker))
+            if not snapshot_override:
+                updated_tickers.append(ticker_payload)
+                continue
+
+            data_snapshot = ticker_payload.get("data_snapshot")
+            if not isinstance(data_snapshot, dict):
+                data_snapshot = {}
+            replacements = {
+                str(old_value): str(new_value)
+                for key, new_value in snapshot_override.items()
+                for old_value in [data_snapshot.get(key)]
+                if old_value not in (None, "", "N/A") and new_value not in (None, "", "N/A") and str(old_value) != str(new_value)
+            }
+            merged_snapshot = {**data_snapshot, **{k: v for k, v in snapshot_override.items() if v is not None}}
+            normalized_payload = _replace_snapshot_tokens(ticker_payload, replacements)
+            updated_tickers.append({**normalized_payload, "data_snapshot": merged_snapshot})
+
+        reconciled_days.append({**day, "tickers": updated_tickers})
+
+    return reconciled_days
+
+
+def _replace_snapshot_tokens(value: Any, replacements: dict[str, str]) -> Any:
+    if not replacements:
+        return value
+    if isinstance(value, str):
+        updated = value
+        for old_text, new_text in replacements.items():
+            updated = updated.replace(old_text, new_text)
+        return updated
+    if isinstance(value, list):
+        return [_replace_snapshot_tokens(item, replacements) for item in value]
+    if isinstance(value, dict):
+        return {key: _replace_snapshot_tokens(item, replacements) for key, item in value.items()}
+    return value
 
 
 def _serialize_analysis(analysis: TickerAnalysis, period_changes: dict[str, str]) -> dict[str, Any]:
@@ -176,19 +266,87 @@ def _snapshot_currency(snapshot: dict[str, str]) -> str:
     return "USD"
 
 
-def _write_price_history_json(json_path: Path, csv_path: Path) -> None:
+def _write_price_history_exports(json_path: Path, csv_path: Path, sqlite_path: Path) -> None:
+    rows = _load_price_history_rows(sqlite_path, csv_path)
+    json_path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    with csv_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=[
+            "date",
+            "ticker",
+            "price",
+            "daily_change",
+            "market_cap",
+            "trailing_pe",
+            "eps",
+            "52w_high",
+            "52w_low",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+        ])
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def _load_price_history_rows(sqlite_path: Path, csv_path: Path) -> list[dict[str, str]]:
+    if sqlite_path.exists():
+        try:
+            with sqlite3.connect(sqlite_path) as connection:
+                cursor = connection.execute(
+                    """
+                    SELECT
+                        date,
+                        ticker,
+                        price,
+                        daily_change,
+                        market_cap,
+                        trailing_pe,
+                        eps,
+                        high_52w,
+                        low_52w,
+                        open,
+                        high,
+                        low,
+                        close,
+                        volume
+                    FROM prices
+                    ORDER BY date, ticker
+                    """
+                )
+                return [
+                    {
+                        "date": str(row[0]),
+                        "ticker": str(row[1]),
+                        "price": str(row[2]),
+                        "daily_change": str(row[3]),
+                        "market_cap": str(row[4]),
+                        "trailing_pe": str(row[5]),
+                        "eps": str(row[6]),
+                        "52w_high": str(row[7]),
+                        "52w_low": str(row[8]),
+                        "open": str(row[9]),
+                        "high": str(row[10]),
+                        "low": str(row[11]),
+                        "close": str(row[12]),
+                        "volume": str(row[13]),
+                    }
+                    for row in cursor.fetchall()
+                ]
+        except sqlite3.Error:
+            pass
+
     if not csv_path.exists():
-        json_path.write_text("[]", encoding="utf-8")
-        return
+        return []
 
     with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
-        rows = [
+        return [
             {key.lstrip("\ufeff") if key else "": value for key, value in row.items() if key}
             for row in reader
         ]
-
-    json_path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def _write_ticker_timelines_json(path: Path, days: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:

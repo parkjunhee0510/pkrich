@@ -85,6 +85,7 @@ class CollectedTickerData:
     recommendation_trends: list[dict[str, str]] = field(default_factory=list)
     fundamental_metrics: dict[str, str] = field(default_factory=dict)
     technical_indicators: dict[str, str] = field(default_factory=dict)
+    historical_prices: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -109,6 +110,7 @@ class TickerAnalysis:
     signal_history: list[dict[str, str]] = field(default_factory=list)
     sector_comparison: dict[str, object] = field(default_factory=dict)
     valuation_score: dict[str, object] = field(default_factory=dict)
+    historical_prices: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

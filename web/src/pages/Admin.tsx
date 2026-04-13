@@ -7,7 +7,7 @@ const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(
 
 export function Admin() {
   const [data, setData] = useState<AnalyticsCostResponse | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(() => Boolean(API_BASE))
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -15,10 +15,7 @@ export function Admin() {
   }, [])
 
   useEffect(() => {
-    if (!API_BASE) {
-      setLoading(false)
-      return
-    }
+    if (!API_BASE) return
     fetch(`${API_BASE}/api/analytics/cost`, { cache: 'no-store' })
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`)

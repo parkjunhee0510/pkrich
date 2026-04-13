@@ -2,6 +2,7 @@
 
 import csv
 import json
+import sqlite3
 import tempfile
 import unittest
 from datetime import date
@@ -229,7 +230,7 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(rows[0]['ticker'], 'AAPL')
 
     def test_write_json_outputs_writes_dashboard_price_history_and_timeline(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
             temp_path = Path(temp_dir)
             output_root = temp_path / 'output'
             data_dir = output_root / 'data'
@@ -302,6 +303,169 @@ class OutputTests(unittest.TestCase):
             )
             self.assertEqual(price_history[-1]['ticker'], 'AAPL')
             self.assertEqual(timeline['AAPL'][0]['top_news_summary'], '애플 실적이 예상치를 웃돌았습니다.')
+            with (data_dir / 'price_history.csv').open('r', encoding='utf-8', newline='') as handle:
+                csv_rows = list(csv.DictReader(handle))
+            self.assertEqual(len(csv_rows), 2)
+
+    def test_write_json_outputs_reconciles_history_snapshot_from_sqlite(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            temp_path = Path(temp_dir)
+            output_root = temp_path / 'output'
+            data_dir = output_root / 'data'
+            web_data_dir = temp_path / 'web' / 'public' / 'output' / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            (temp_path / 'web').mkdir(parents=True, exist_ok=True)
+
+            history_payload = {
+                'days': [
+                    {
+                        'date': '2026-04-10',
+                        'market_overview': [],
+                        'tickers': [
+                            {
+                                'ticker': 'AAPL',
+                                'name': 'Apple Inc.',
+                                'date': '2026-04-10',
+                                'summary': 'Apple은 999.99 USD (+9.99%)로 거래 중입니다.',
+                                'key_news': [],
+                                'news_references': [],
+                                'financial_highlights': [],
+                                'risks_or_watchpoints': [],
+                                'signal_or_takeaway': '관찰',
+                                'data_snapshot': {
+                                    'Price': '999.99 USD',
+                                    'Daily Change': '+9.99%',
+                                    'Open': '999.99',
+                                    'High': '999.99',
+                                    'Low': '999.99',
+                                    'Close': '999.99',
+                                    'Volume': '9.99M',
+                                },
+                                'fundamentals': {},
+                                'earnings_setup': {},
+                                'earnings_surprise_history': [],
+                                'price_action': {},
+                                'quarterly_financials': [],
+                                'upcoming_events': [],
+                                'news_tone': {'label': 'neutral', 'score': 0.0},
+                                'trade_frame': {},
+                                'options_summary': {},
+                                'signal_history': [],
+                                'sector_comparison': {},
+                                'valuation_score': {},
+                                'period_changes': {'7d': 'N/A', '30d': 'N/A'},
+                                'sec_filing_tags': [],
+                                'sec_filings': [],
+                            }
+                        ],
+                    }
+                ],
+                'signal_stats': {},
+                'weekly_summary': {},
+            }
+            (data_dir / 'dashboard_history.json').write_text(
+                json.dumps(history_payload, ensure_ascii=False, indent=2),
+                encoding='utf-8',
+            )
+            (data_dir / 'price_history.csv').write_text(
+                '\n'.join(
+                    [
+                        'date,ticker,price,daily_change,market_cap,trailing_pe,eps,52w_high,52w_low',
+                        '2026-04-10,AAPL,250.75 USD,+1.25%,1.00T,25.00,6.10,110.00,80.00',
+                        '2026-04-13,AAPL,100.00 USD,+1.23%,1.00T,25.00,6.10,110.00,80.00',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            sqlite_path = data_dir / 'price_history.sqlite'
+            connection = sqlite3.connect(sqlite_path)
+            try:
+                connection.execute(
+                    'create table prices (date text, ticker text, open text, high text, low text, close text, volume text, price text, daily_change text)'
+                )
+                connection.execute(
+                    'insert into prices values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    ('2026-04-10', 'AAPL', '250.10', '251.00', '249.50', '250.75', '11.20M', '250.75 USD', '+1.25%'),
+                )
+                connection.execute(
+                    'insert into prices values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    ('2026-04-13', 'AAPL', '99.50', '100.50', '98.90', '100.00', '12.30M', '100.00 USD', '+1.23%'),
+                )
+                connection.commit()
+            finally:
+                connection.close()
+
+            write_json_outputs(
+                [_sample_analysis()],
+                date(2026, 4, 13),
+                market_overview=[],
+                output_root=output_root,
+            )
+
+            repaired = json.loads((data_dir / 'dashboard_history.json').read_text(encoding='utf-8'))
+            repaired_day = next(day for day in repaired['days'] if day['date'] == '2026-04-10')
+            repaired_ticker = next(t for t in repaired_day['tickers'] if t['ticker'] == 'AAPL')
+            self.assertEqual(repaired_ticker['summary'], 'Apple은 250.75 USD (+1.25%)로 거래 중입니다.')
+            self.assertEqual(repaired_ticker['data_snapshot']['Price'], '250.75 USD')
+            self.assertEqual(repaired_ticker['data_snapshot']['Daily Change'], '+1.25%')
+            self.assertEqual(repaired_ticker['data_snapshot']['Open'], '250.10')
+            self.assertEqual(repaired_ticker['data_snapshot']['Close'], '250.75')
+            self.assertTrue((web_data_dir / 'dashboard_history.json').exists())
+
+    def test_write_json_outputs_rebuilds_price_history_from_sqlite(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            temp_path = Path(temp_dir)
+            output_root = temp_path / 'output'
+            data_dir = output_root / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            (temp_path / 'web').mkdir(parents=True, exist_ok=True)
+
+            (data_dir / 'price_history.csv').write_text(
+                '\n'.join(
+                    [
+                        'date,ticker,price,daily_change,market_cap,trailing_pe,eps,52w_high,52w_low,open,high,low,close,volume',
+                        '2026-04-10,AAPL,999.99 USD,+9.99%,1.00T,25.00,6.10,110.00,80.00,999.99,999.99,999.99,999.99,9.99M',
+                        '2026-04-11,AAPL,998.99 USD,+8.99%,1.00T,25.00,6.10,110.00,80.00,998.99,998.99,998.99,998.99,8.99M',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+            sqlite_path = data_dir / 'price_history.sqlite'
+            connection = sqlite3.connect(sqlite_path)
+            try:
+                connection.execute(
+                    'create table prices (date text, ticker text, open text, high text, low text, close text, volume text, price text, daily_change text, market_cap text, trailing_pe text, eps text, high_52w text, low_52w text)'
+                )
+                connection.execute(
+                    'insert into prices values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    ('2026-04-10', 'AAPL', '250.10', '251.00', '249.50', '250.75', '11.20M', '250.75 USD', '+1.25%', '1.00T', '25.00', '6.10', '110.00', '80.00'),
+                )
+                connection.execute(
+                    'insert into prices values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    ('2026-04-13', 'AAPL', '99.50', '100.50', '98.90', '100.00', '12.30M', '100.00 USD', '+1.23%', '1.00T', '25.00', '6.10', '110.00', '80.00'),
+                )
+                connection.commit()
+            finally:
+                connection.close()
+
+            write_json_outputs(
+                [_sample_analysis()],
+                date(2026, 4, 13),
+                market_overview=[],
+                output_root=output_root,
+            )
+
+            json_rows = json.loads((data_dir / 'price_history.json').read_text(encoding='utf-8'))
+            with (data_dir / 'price_history.csv').open('r', encoding='utf-8', newline='') as handle:
+                csv_rows = list(csv.DictReader(handle))
+            self.assertEqual(len(json_rows), 2)
+            self.assertEqual(len(csv_rows), 2)
+            self.assertEqual(json_rows[0]['date'], '2026-04-10')
+            self.assertEqual(json_rows[0]['price'], '250.75 USD')
+            self.assertEqual(json_rows[1]['date'], '2026-04-13')
+            self.assertEqual(csv_rows[0]['price'], '250.75 USD')
+            self.assertEqual(csv_rows[1]['date'], '2026-04-13')
 
 
 if __name__ == '__main__':

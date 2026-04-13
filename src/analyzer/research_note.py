@@ -1293,6 +1293,7 @@ def _build_openai_analysis(
         signal_history=signal_history or [],
         sector_comparison=sector_comparison or {},
         valuation_score=match.get('valuation_score', {}),
+        historical_prices=market.historical_prices,
     )
 
 
@@ -1355,6 +1356,7 @@ def _build_fallback_analysis(
         options_summary=market.options_summary,
         signal_history=signal_history or [],
         sector_comparison=sector_comparison or {},
+        historical_prices=market.historical_prices,
     )
 
 
