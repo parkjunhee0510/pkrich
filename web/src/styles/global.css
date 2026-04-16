@@ -73,46 +73,6 @@
   --nav-hover-fire: #c8830a;
 }
 
-/* ④ 다크모드 — 낡은 가죽 + 약한 백색 오프셋 쉐도우 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bone:          #161410;
-    --bone-dim:      #201d18;
-    --paper:         #1e1b14;
-    --paper-raised:  #26231a;
-    --ink:           #e8e4d4;
-    --ink-2:         #ccc8b8;
-    --ink-soft:      #8a8678;
-    --muted:         #5a5650;
-    --rule:          #e8e4d4;
-
-    --pos:           #6dd44a;
-    --neg:           #ff7060;
-    --caution:       #e09030;
-    --pos-block:     #7aaa00;
-    --neg-block:     #b82a1a;
-    --caution-block: #b87800;
-    --info-block:    #2a5aaa;
-
-    --hazard:        #cc4000;
-
-    --shadow-hard:    4px 4px 0 0 rgba(255,255,255,0.12);
-    --shadow-hard-sm: 2px 2px 0 0 rgba(255,255,255,0.08);
-    --shadow-hard-lg: 6px 6px 0 0 rgba(255,255,255,0.15);
-    --shadow-glow:    var(--shadow-hard);
-
-    --nav-hover-bg:   #0a0806;
-    --nav-hover-gold: #e0b830;
-    --nav-hover-fire: #d09020;
-  }
-
-  body {
-    background:
-      repeating-linear-gradient(0deg,  transparent 0 23px, rgba(255,255,255,0.025) 23px 24px),
-      repeating-linear-gradient(90deg, transparent 0 23px, rgba(255,255,255,0.025) 23px 24px),
-      var(--bone);
-  }
-}
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
