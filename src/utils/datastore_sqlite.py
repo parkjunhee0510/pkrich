@@ -374,6 +374,53 @@ class SqliteDatastore(Datastore):
         finally:
             connection.close()
 
+    def get_peer_selection_cache(self, ticker: str, month_key: str) -> dict[str, Any] | None:
+        normalized = ticker.strip().upper()
+        if not normalized or not month_key:
+            return None
+        connection = sqlite3.connect(self.sqlite_path)
+        try:
+            cursor = connection.execute(
+                '''
+                SELECT payload_json
+                FROM peer_selection_cache
+                WHERE ticker = ? AND month_key = ?
+                ''',
+                (normalized, month_key),
+            )
+            row = cursor.fetchone()
+            if not row:
+                return None
+            return _safe_load_json(row[0], default=None)
+        finally:
+            connection.close()
+
+    def set_peer_selection_cache(self, ticker: str, month_key: str, payload: dict[str, Any]) -> None:
+        normalized = ticker.strip().upper()
+        if not normalized or not month_key:
+            return
+        connection = sqlite3.connect(self.sqlite_path)
+        try:
+            connection.execute(
+                '''
+                INSERT OR REPLACE INTO peer_selection_cache (
+                    month_key,
+                    ticker,
+                    payload_json,
+                    updated_at
+                ) VALUES (?, ?, ?, ?)
+                ''',
+                (
+                    month_key,
+                    normalized,
+                    json.dumps(payload, ensure_ascii=False),
+                    date.today().isoformat(),
+                ),
+            )
+            connection.commit()
+        finally:
+            connection.close()
+
     def _ensure_schema(self) -> None:
         self.data_dir.mkdir(parents=True, exist_ok=True)
         connection = sqlite3.connect(self.sqlite_path)
@@ -449,6 +496,17 @@ class SqliteDatastore(Datastore):
                     news_tone_reasoning TEXT NOT NULL DEFAULT '',
                     trade_frame_json TEXT NOT NULL DEFAULT '{}',
                     PRIMARY KEY (date, ticker)
+                )
+                '''
+            )
+            connection.execute(
+                '''
+                CREATE TABLE IF NOT EXISTS peer_selection_cache (
+                    month_key TEXT NOT NULL,
+                    ticker TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY (month_key, ticker)
                 )
                 '''
             )

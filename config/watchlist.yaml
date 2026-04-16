@@ -1,4 +1,11 @@
-﻿watchlist:
+﻿sector_etf_map:
+  Technology: XLK
+  Energy: XLE
+  Industrials: XLI
+  Consumer Staples: XLP
+  Communication Services: XLC
+  Utilities: XLU
+watchlist:
   - ticker: AAPL
     name: Apple Inc.
     sector: Technology
@@ -67,3 +74,14 @@
     sector: Industrials
     keywords: ["hydrogen fuel", "fuel cells", "green hydrogen", "energy transition"]
     cik: "0001093691"
+
+  - ticker: RKLB
+    name: Rocket Lab USA, Inc.
+    sector: Industrials
+    keywords: ["space launch", "satellite buses", "space systems", "defense contracts"]
+
+  - ticker: PL
+    name: Planet Labs PBC
+    sector: Technology
+    keywords: ["earth observation", "satellite imagery", "geospatial data", "AI analytics"]
+

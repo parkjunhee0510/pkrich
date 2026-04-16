@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import csv
 import re
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -118,6 +118,16 @@ def load_signal_rows(csv_path: Path) -> list[dict[str, str]]:
     return _load_rows(csv_path)
 
 
+def _filter_recent_signals(sorted_rows: list[dict[str, str]], days: int = 90) -> list[dict[str, str]]:
+    """평가 완료 여부와 관계없이 최근 days일치 시그널을 모두 반환한다."""
+    cutoff = date.today() - timedelta(days=days)
+    return [
+        row for row in sorted_rows
+        if _parse_date(row.get("signal_date", "")) is not None
+        and (_parse_date(row.get("signal_date", "")) or date.min) >= cutoff
+    ]
+
+
 def build_signal_stats_from_rows(rows: list[dict[str, str]]) -> dict[str, Any]:
     sorted_rows = sorted(rows, key=lambda row: (row.get("signal_date", ""), row.get("ticker", "")), reverse=True)
     summary_by_direction: dict[str, dict[str, Any]] = {}
@@ -142,7 +152,7 @@ def build_signal_stats_from_rows(rows: list[dict[str, str]]) -> dict[str, Any]:
         }
 
     return {
-        "recent_signals": sorted_rows[:30],
+        "recent_signals": _filter_recent_signals(sorted_rows),
         "summary_by_direction": summary_by_direction,
         "meta_analysis": _build_meta_analysis(rows),
     }
@@ -164,12 +174,11 @@ def load_recent_signals(csv_path: Path, ticker: str, limit: int = 5) -> list[dic
     for row in matched_rows[:limit]:
         history.append(
             {
-                "signal_date": str(row.get("signal_date", "")).strip(),
-                "signal_direction": str(row.get("signal_direction", "neutral")).strip() or "neutral",
-                "catalyst_tag": str(row.get("catalyst_tag", "일반 이슈")).strip() or "일반 이슈",
-                "news_tone": str(row.get("news_tone", "neutral")).strip() or "neutral",
+                "date": str(row.get("signal_date", "")).strip(),
+                "direction": str(row.get("signal_direction", "neutral")).strip() or "neutral",
+                "catalyst": str(row.get("catalyst_tag", "")).strip(),
                 "return_5d": str(row.get("return_5d", "N/A")).strip() or "N/A",
-                "trade_frame_scenario": str(row.get("trade_frame_scenario", "")).strip(),
+                "note": str(row.get("trade_frame_scenario", "")).strip(),
             }
         )
     return history

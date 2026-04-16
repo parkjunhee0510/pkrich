@@ -12,6 +12,20 @@ from time import sleep
 from typing import Any
 from urllib import error, parse, request
 
+from src.collector.helpers.formatters import (
+    calculate_change_percent as _calculate_change_percent,
+    coerce_finite_float as _coerce_finite_float,
+    derive_forward_eps as _derive_forward_eps,
+    format_analyst_count as _format_analyst_count,
+    format_fractional_percent as _format_fractional_percent,
+    format_growth_percentage as _format_growth_percentage,
+    format_large_number as _format_large_number,
+    format_percent_ratio as _format_percent_ratio,
+    format_price as _format_price,
+    format_ratio as _format_ratio,
+    format_short_ratio as _format_short_ratio,
+    map_recommendation as _map_recommendation,
+)
 from src.collector.finnhub import collect_finnhub_recommendations, is_finnhub_ready
 from src.collector.fmp import (
     collect_fmp_analyst_estimates,
@@ -33,6 +47,20 @@ from src.collector.sec_form4 import collect_insider_transactions
 from src.utils.env import is_env_flag_enabled
 from src.utils.network import can_open_tcp_connection
 from src.utils.pipeline_logging import record_pipeline_event
+from src.collector.helpers.yfinance_helpers import (
+    _configure_yfinance_cache,
+    _select_price_snapshot,
+    _extract_latest_ohlcv,
+    _extract_historical_price_rows,
+    _extract_yfinance_quarterly_financials,
+    _extract_yfinance_events,
+)
+from src.collector.helpers.earnings import (
+    _derive_growth_from_quarterly_financials,
+    _extract_forward_eps_from_analyst_targets,
+    _extract_forward_eps_from_earnings_estimate,
+)
+from src.collector.helpers.sector_etf import calculate_rs_vs_sector_etf
 
 _ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query"
 _ALPHA_VANTAGE_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
@@ -164,6 +192,7 @@ def _collect_single_ticker(
     held_by_insiders = "N/A"
     held_by_institutions = "N/A"
     implied_volatility = "N/A"
+    yfinance_beta = "N/A"
     quarterly_financials: list[dict[str, str]] = []
     upcoming_events: list[dict[str, str]] = []
 
@@ -177,6 +206,7 @@ def _collect_single_ticker(
     price_vs_sma200 = "N/A"
     week52_position = "N/A"
     rs_vs_spy = "N/A"
+    rs_vs_sector_etf = "N/A"
     options_summary: dict[str, str] = {}
     recommendation_trends: list[dict[str, str]] = []
     insider_transactions: list[dict[str, str]] = []
@@ -231,6 +261,9 @@ def _collect_single_ticker(
             held_by_insiders = _format_fractional_percent(info.get("heldPercentInsiders"))
             held_by_institutions = _format_fractional_percent(info.get("heldPercentInstitutions"))
             implied_volatility = _format_fractional_percent(info.get("impliedVolatility"))
+            beta_value = _coerce_finite_float(info.get("beta"))
+            if beta_value is not None:
+                yfinance_beta = f"{beta_value:.2f}"
             options_summary = collect_options_summary(item.ticker)
             quarterly_financials = _extract_yfinance_quarterly_financials(ticker)
             if earnings_growth == "N/A":
@@ -250,6 +283,12 @@ def _collect_single_ticker(
                 _coerce_finite_float(info.get("fiftyTwoWeekLow")),
             )
             rs_vs_spy = _calc_rs_vs_benchmark(price_change_30d, benchmark_change_30d)
+            rs_vs_sector_etf, _ = calculate_rs_vs_sector_etf(
+                history,
+                sector,
+                run_date,
+                get_etf_history=lambda symbol: yf.Ticker(symbol).history(period="6mo", interval="1d"),
+            )
             ohlcv = _extract_latest_ohlcv(history, price, open_price, volume)
             historical_prices = _extract_historical_price_rows(history, item.ticker, currency)
             technical_indicators = compute_technical_indicators(history)
@@ -397,10 +436,15 @@ def _collect_single_ticker(
                 # Use profile sector/industry to fill gaps
                 if not sector or sector == 'N/A':
                     sector = profile_data.get('sector', sector)
+                if "beta" in profile_data:
+                    fundamental_metrics["beta"] = profile_data["beta"]
                 if 'industry' in profile_data:
                     fundamental_metrics['industry'] = profile_data['industry']
         except Exception:
             pass
+
+    if yfinance_beta != "N/A" and "beta" not in fundamental_metrics:
+        fundamental_metrics["beta"] = yfinance_beta
 
     if is_polygon_ready():
         try:
@@ -450,6 +494,7 @@ def _collect_single_ticker(
         price_vs_sma200=price_vs_sma200,
         week52_position=week52_position,
         rs_vs_spy=rs_vs_spy,
+        rs_vs_sector_etf=rs_vs_sector_etf,
         options_summary=options_summary,
         open_price=ohlcv.get("open", "N/A") if ohlcv else "N/A",
         high_price=ohlcv.get("high", "N/A") if ohlcv else "N/A",
@@ -480,114 +525,6 @@ def _fallback_market_data(item: WatchlistItem, summary_note: str) -> CollectedTi
         pe_ratio="N/A",
         summary_note=summary_note,
     )
-
-
-def _extract_latest_ohlcv(
-    history: object,
-    price: float | None,
-    open_price: float | None,
-    volume_str: str,
-) -> dict[str, str]:
-    """Extract latest-day OHLCV from history DataFrame for candlestick charting."""
-    result: dict[str, str] = {}
-    try:
-        import pandas as pd
-        if isinstance(history, pd.DataFrame) and not history.empty:
-            last_row = history.iloc[-1]
-            result["open"] = f"{float(last_row.get('Open', 0)):.2f}" if last_row.get("Open") is not None else "N/A"
-            result["high"] = f"{float(last_row.get('High', 0)):.2f}" if last_row.get("High") is not None else "N/A"
-            result["low"] = f"{float(last_row.get('Low', 0)):.2f}" if last_row.get("Low") is not None else "N/A"
-            result["close"] = f"{float(last_row.get('Close', 0)):.2f}" if last_row.get("Close") is not None else "N/A"
-            vol = last_row.get("Volume")
-            result["volume"] = str(int(vol)) if vol is not None and vol == vol else "N/A"
-            return result
-    except Exception:
-        pass
-    # fallback from info dict
-    if open_price is not None:
-        result["open"] = f"{open_price:.2f}"
-    if price is not None:
-        result["close"] = f"{price:.2f}"
-    result["volume"] = volume_str
-    return result
-
-
-def _extract_historical_price_rows(
-    history: object,
-    ticker_symbol: str,
-    currency: str,
-) -> list[dict[str, str]]:
-    """Normalize yfinance daily history into datastore-compatible backfill rows."""
-    try:
-        import pandas as pd
-
-        if not isinstance(history, pd.DataFrame) or history.empty:
-            return []
-    except Exception:
-        return []
-
-    rows: list[dict[str, str]] = []
-    previous_close: float | None = None
-    for idx_val, row in history.iterrows():
-        try:
-            row_date = idx_val.date() if hasattr(idx_val, "date") else date.fromisoformat(str(idx_val)[:10])
-        except Exception:
-            continue
-
-        open_value = _coerce_finite_float(row.get("Open"))
-        high_value = _coerce_finite_float(row.get("High"))
-        low_value = _coerce_finite_float(row.get("Low"))
-        close_value = _coerce_finite_float(row.get("Close"))
-        volume_value = _coerce_finite_float(row.get("Volume"))
-        if close_value is None:
-            continue
-
-        daily_change = _calculate_change_percent(close_value, previous_close)
-        rows.append(
-            {
-                "date": row_date.isoformat(),
-                "ticker": ticker_symbol,
-                "price": f"{close_value:.2f} {currency}",
-                "daily_change": f"{daily_change:+.2f}%" if daily_change is not None else "N/A",
-                "market_cap": "N/A",
-                "trailing_pe": "N/A",
-                "eps": "N/A",
-                "52w_high": "N/A",
-                "52w_low": "N/A",
-                "open": f"{open_value:.2f}" if open_value is not None else "N/A",
-                "high": f"{high_value:.2f}" if high_value is not None else "N/A",
-                "low": f"{low_value:.2f}" if low_value is not None else "N/A",
-                "close": f"{close_value:.2f}",
-                "volume": _format_large_number(volume_value),
-            }
-        )
-        previous_close = close_value
-    return rows
-
-
-def _select_price_snapshot(history: object, info: dict[str, Any]) -> tuple[float | None, float | None]:
-    close_values = _extract_close_values(history)
-    latest_history_close = close_values[-1] if close_values else None
-    valid_closes = [value for value in close_values if value is not None]
-    live_price = _coerce_finite_float(info.get("regularMarketPrice"))
-    if live_price is None:
-        live_price = _coerce_finite_float(info.get("currentPrice"))
-    previous_close = _coerce_finite_float(info.get("previousClose"))
-
-    if latest_history_close is not None:
-        baseline = valid_closes[-2] if len(valid_closes) > 1 else previous_close
-        return latest_history_close, _calculate_change_percent(latest_history_close, baseline)
-
-    if live_price is not None:
-        baseline = previous_close if previous_close is not None else (valid_closes[-1] if valid_closes else None)
-        return live_price, _calculate_change_percent(live_price, baseline)
-
-    if valid_closes:
-        latest_valid_close = valid_closes[-1]
-        baseline = valid_closes[-2] if len(valid_closes) > 1 else previous_close
-        return latest_valid_close, _calculate_change_percent(latest_valid_close, baseline)
-
-    return None, None
 
 
 def _extract_close_values(history: object) -> list[float | None]:
@@ -709,38 +646,6 @@ def _download_text(url: str) -> str:
         return response.read().decode("utf-8")
 
 
-def _extract_yfinance_quarterly_financials(ticker: Any) -> list[dict[str, str]]:
-    statement = getattr(ticker, "quarterly_income_stmt", None)
-    if statement is None or getattr(statement, "empty", False):
-        return []
-
-    try:
-        columns = list(statement.columns)[:8]
-    except Exception:
-        return []
-
-    earnings_history = _extract_yfinance_earnings_history(ticker)
-    reports: list[dict[str, str]] = []
-    for column in columns:
-        fiscal_date = _coerce_event_date(column).isoformat() if _coerce_event_date(column) else ""
-        quarter = _format_quarter(column)
-        earnings_entry = _lookup_quarterly_enrichment(earnings_history, fiscal_date, quarter)
-        statement_eps = _format_ratio(_statement_value(statement, ["Diluted EPS", "Basic EPS", "DilutedEPS", "BasicEPS"], column))
-        reports.append(
-            {
-                "fiscal_date": fiscal_date,
-                "quarter": quarter,
-                "revenue": _format_large_number(_statement_value(statement, ["Total Revenue", "Operating Revenue", "TotalRevenue"], column)),
-                "operating_income": _format_large_number(_statement_value(statement, ["Operating Income", "OperatingIncome"], column)),
-                "eps": statement_eps if statement_eps != "N/A" else str(earnings_entry.get("actual_eps", "N/A")),
-                "estimated_eps": str(earnings_entry.get("estimated_eps", "N/A")),
-                "surprise_pct": str(earnings_entry.get("surprise_pct", "N/A")),
-                "beat_miss": str(earnings_entry.get("beat_miss", "N/A")),
-            }
-        )
-    return reports
-
-
 def _extract_yfinance_earnings_history(ticker: Any) -> dict[str, dict[str, str]]:
     history = getattr(ticker, "earnings_history", None)
     if history is None or getattr(history, "empty", False):
@@ -832,32 +737,6 @@ def _statement_value(statement: Any, row_names: list[str], column: Any) -> Any:
         except Exception:
             continue
     return None
-
-
-def _extract_yfinance_events(
-    ticker_symbol: str,
-    info: dict[str, Any],
-    ticker: Any,
-    run_date: date,
-) -> list[dict[str, str]]:
-    earnings_timing = _extract_yfinance_earnings_timing(info)
-    raw_events = [
-        {"type": "earnings", "label": "실적 발표", "date": info.get("earningsDate"), "timing": earnings_timing},
-        {"type": "earnings", "label": "실적 발표", "date": info.get("earningsTimestamp"), "timing": earnings_timing},
-        {"type": "earnings", "label": "실적 발표", "date": info.get("earningsTimestampStart"), "timing": earnings_timing},
-        {"type": "ex_dividend", "label": "배당락일", "date": info.get("exDividendDate")},
-        {"type": "dividend", "label": "배당 지급일", "date": info.get("dividendDate")},
-    ]
-
-    calendar = getattr(ticker, "calendar", None)
-    raw_events.extend(_extract_calendar_events(calendar))
-    return _normalize_upcoming_events(
-        raw_events,
-        run_date,
-        ticker=ticker_symbol,
-        source="yfinance",
-        calendar_shape=type(calendar).__name__ if calendar is not None else "",
-    )
 
 
 def _extract_alpha_quarterly_financials(bundle: dict[str, Any]) -> list[dict[str, str]]:
@@ -1277,31 +1156,6 @@ def _build_summary_note(run_date: date, providers_used: list[str]) -> str:
     return f"{run_date.isoformat()} 기준 {unique_providers} 데이터를 사용해 시장 정보를 정리했습니다."
 
 
-def _configure_yfinance_cache(yf: Any) -> None:
-    cache_dir = Path(".cache") / "yfinance"
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    try:
-        yf.set_tz_cache_location(str(cache_dir.resolve()))
-    except Exception:
-        return
-
-
-def _coerce_finite_float(value: object) -> float | None:
-    try:
-        numeric_value = float(value)
-    except (TypeError, ValueError):
-        return None
-    if not math.isfinite(numeric_value):
-        return None
-    return numeric_value
-
-
-def _calculate_change_percent(latest_price: float, baseline_price: float | None) -> float | None:
-    if baseline_price is None or baseline_price == 0:
-        return None
-    return (latest_price - baseline_price) / baseline_price * 100
-
-
 def _collect_benchmark_change_30d(run_date: date) -> float | None:
     if not is_env_flag_enabled("ENABLE_EXTERNAL_FETCH", default=True):
         return None
@@ -1464,136 +1318,19 @@ def _normalize_field_name(value: object) -> str:
     return "".join(character for character in str(value).lower() if character.isalnum())
 
 
-def _extract_history_values(history: object, column_name: str) -> list[float | None]:
-    if getattr(history, "empty", True):
-        return []
-    try:
-        column = history[column_name]
-    except Exception:
-        return []
-    try:
-        values = list(column)
-    except TypeError:
-        values = column if isinstance(column, list) else []
-    return [_coerce_finite_float(value) for value in values]
-
-
-def _calc_atr_display(history: object, current_price: float | None) -> tuple[str, str]:
-    atr_value = _calc_atr_14d(history)
-    if atr_value is None:
-        return "N/A", "N/A"
-    atr_percent = _calculate_change_percent(atr_value, current_price)
-    if current_price and current_price != 0:
-        atr_percent = (atr_value / current_price) * 100
-    return f"{atr_value:.2f}", f"{atr_percent:.2f}%" if atr_percent is not None else "N/A"
-
-
-def _calc_atr_14d(history: object) -> float | None:
-    highs = _extract_history_values(history, "High")
-    lows = _extract_history_values(history, "Low")
-    closes = _extract_history_values(history, "Close")
-    if not highs or not lows or not closes:
-        return None
-
-    length = min(len(highs), len(lows), len(closes))
-    true_ranges: list[float] = []
-    previous_close: float | None = None
-    for index in range(length):
-        high = highs[index]
-        low = lows[index]
-        close = closes[index]
-        if high is None or low is None or close is None:
-            previous_close = close if close is not None else previous_close
-            continue
-        intraday_range = high - low
-        if previous_close is None:
-            true_range = intraday_range
-        else:
-            true_range = max(
-                intraday_range,
-                abs(high - previous_close),
-                abs(low - previous_close),
-            )
-        true_ranges.append(true_range)
-        previous_close = close
-
-    if len(true_ranges) < 14:
-        return None
-    trailing_ranges = true_ranges[-14:]
-    return sum(trailing_ranges) / len(trailing_ranges)
-
-
-def _calc_relative_volume(info: dict[str, Any]) -> str:
-    current_volume = _coerce_finite_float(info.get("volume"))
-    average_volume = _coerce_finite_float(info.get("averageVolume")) or _coerce_finite_float(info.get("averageVolume10days"))
-    if current_volume is None or average_volume is None or average_volume == 0:
-        return "N/A"
-    return f"{current_volume / average_volume:.2f}x"
-
-
-def _calc_gap_percent(open_price: float | None, previous_close: float | None) -> str:
-    gap = _calculate_change_percent(open_price, previous_close) if open_price is not None else None
-    if gap is None:
-        return "N/A"
-    return f"{gap:+.2f}%"
-
-
-def _calc_price_vs_sma(price: float | None, sma: float | None) -> str:
-    change = _calculate_change_percent(price, sma) if price is not None else None
-    if change is None:
-        return "N/A"
-    return f"{change:+.2f}%"
-
-
-def _calc_week52_position(price: float | None, week52_high: float | None, week52_low: float | None) -> str:
-    if price is None or week52_high is None or week52_low is None or week52_high <= week52_low:
-        return "N/A"
-    position = ((price - week52_low) / (week52_high - week52_low)) * 100
-    return f"{position:.0f}%"
-
-
-def _calc_rs_vs_benchmark(price_change_30d: str, benchmark_change_30d: float | None) -> str:
-    ticker_change = _parse_percent_value(price_change_30d)
-    if ticker_change is None or benchmark_change_30d is None:
-        return "N/A"
-    return f"{(ticker_change - benchmark_change_30d):+.2f}%"
-
-
-def _parse_percent_value(value: str | float | None) -> float | None:
-    if value is None:
-        return None
-    if isinstance(value, (int, float)):
-        numeric_value = float(value)
-        return numeric_value if math.isfinite(numeric_value) else None
-    text = str(value).strip()
-    if not text or text == "N/A":
-        return None
-    if text.endswith("%"):
-        text = text[:-1]
-    return _coerce_finite_float(text)
-
-
-def _calculate_history_period_change(history: object, current_price: float, run_date: date, days: int) -> float | None:
-    target = run_date - timedelta(days=days)
-    if getattr(history, "empty", True):
-        return None
-    try:
-        close_col = history["Close"]
-        index = history.index
-    except Exception:
-        return None
-
-    anchor: float | None = None
-    for idx_val, close_val in zip(index, close_col):
-        try:
-            row_date = idx_val.date() if hasattr(idx_val, "date") else date.fromisoformat(str(idx_val)[:10])
-        except Exception:
-            continue
-        if row_date <= target:
-            normalized_close = _coerce_finite_float(close_val)
-            if normalized_close is not None:
-                anchor = normalized_close
-    return _calculate_change_percent(current_price, anchor)
+from src.collector.technicals import (
+    _calc_atr_display,
+    _calc_atr_14d,
+    _calc_gap_percent,
+    _calc_price_vs_sma,
+    _calc_relative_volume,
+    _calc_rs_vs_benchmark,
+    _calc_week52_position,
+    _extract_history_values,
+    _format_period_change,
+    _parse_percent_value,
+    _calculate_history_period_change,
+)
 
 
 def _format_surprise_percentage(value: object) -> str:
@@ -1631,151 +1368,6 @@ def _format_quarter(value: Any) -> str:
         return str(value) if value else "N/A"
     quarter = ((event_date.month - 1) // 3) + 1
     return f"{event_date.year}-Q{quarter}"
-
-
-def _previous_year_quarter_label(quarter: str) -> str | None:
-    if not quarter or "-Q" not in quarter:
-        return None
-    year_text, quarter_text = quarter.split("-Q", 1)
-    try:
-        return f"{int(year_text) - 1}-Q{int(quarter_text)}"
-    except ValueError:
-        return None
-
-
-def _derive_growth_from_quarterly_financials(rows: list[dict[str, str]]) -> str:
-    if not rows:
-        return "N/A"
-    rows_by_quarter = {
-        str(row.get("quarter", "")).strip(): row
-        for row in rows
-        if isinstance(row, dict)
-    }
-    for row in rows:
-        quarter = str(row.get("quarter", "")).strip()
-        prior_quarter = _previous_year_quarter_label(quarter)
-        if not prior_quarter:
-            continue
-        prior_row = rows_by_quarter.get(prior_quarter)
-        if not prior_row:
-            continue
-        current_eps = _coerce_finite_float(row.get("eps"))
-        prior_eps = _coerce_finite_float(prior_row.get("eps"))
-        if current_eps is None or prior_eps is None or prior_eps == 0:
-            continue
-        growth = ((current_eps - prior_eps) / abs(prior_eps)) * 100
-        return f"{growth:+.2f}% YoY"
-    return "N/A"
-
-
-def _format_large_number(value: object) -> str:
-    numeric_value = _coerce_finite_float(value)
-    if numeric_value is None:
-        return "N/A"
-    if numeric_value >= 1_000_000_000_000:
-        return f"{numeric_value / 1_000_000_000_000:.2f}T"
-    if numeric_value >= 1_000_000_000:
-        return f"{numeric_value / 1_000_000_000:.2f}B"
-    if numeric_value >= 1_000_000:
-        return f"{numeric_value / 1_000_000:.2f}M"
-    return f"{numeric_value:,.0f}"
-
-
-def _format_ratio(value: object) -> str:
-    numeric_value = _coerce_finite_float(value)
-    if numeric_value is None:
-        return "N/A"
-    return f"{numeric_value:.2f}"
-
-
-def _format_short_ratio(value: object) -> str:
-    formatted = _format_ratio(value)
-    if formatted == "N/A":
-        return formatted
-    return f"{formatted}일"
-
-
-def _format_price(value: object, currency: str) -> str:
-    formatted = _format_ratio(value)
-    if formatted == "N/A":
-        return formatted
-    return f"{formatted} {currency}".strip()
-
-
-def _format_analyst_count(value: object) -> str:
-    numeric_value = _coerce_finite_float(value)
-    if numeric_value is None:
-        return "N/A"
-    return f"{int(numeric_value)}명"
-
-
-def _map_recommendation(score: float | None) -> str:
-    if score is None:
-        return "N/A"
-    if score <= 1.5:
-        return "Strong Buy"
-    if score <= 2.5:
-        return "Buy"
-    if score <= 3.5:
-        return "Hold"
-    if score <= 4.5:
-        return "Sell"
-    return "Strong Sell"
-
-
-def _derive_forward_eps(price: float | None, forward_pe: object) -> str:
-    forward_pe_value = _coerce_finite_float(forward_pe)
-    if price is None or forward_pe_value is None or forward_pe_value == 0:
-        return "N/A"
-    return f"{(price / forward_pe_value):.2f}"
-
-
-def _extract_forward_eps_from_analyst_targets(value: Any) -> str:
-    if value is None:
-        return "N/A"
-    if isinstance(value, dict):
-        return _format_ratio(
-            value.get("consensusMeanEps")
-            or value.get("meanEps")
-            or value.get("targetMeanEps")
-        )
-
-    to_dict = getattr(value, "to_dict", None)
-    if callable(to_dict):
-        try:
-            return _extract_forward_eps_from_analyst_targets(to_dict())
-        except Exception:
-            return "N/A"
-
-    return "N/A"
-
-
-def _extract_forward_eps_from_earnings_estimate(value: Any) -> str:
-    records = _tabular_records(value)
-    if not records and isinstance(value, dict):
-        records = [{"__index__": key, **child} for key, child in value.items() if isinstance(child, dict)]
-    if not records:
-        return "N/A"
-
-    ranked_records = sorted(records, key=_earnings_estimate_priority)
-    for record in ranked_records:
-        estimate = _record_value(
-            record,
-            [
-                "avg",
-                "average",
-                "estimate",
-                "epsestimate",
-                "consensus",
-                "consensuseps",
-                "meaneps",
-                "consensusmeaneps",
-            ],
-        )
-        formatted = _format_ratio(estimate)
-        if formatted != "N/A":
-            return formatted
-    return "N/A"
 
 
 def _extract_alpha_forward_eps_from_estimates(bundle: dict[str, Any]) -> str:
@@ -1912,35 +1504,6 @@ def _earnings_estimate_priority(record: dict[str, Any]) -> int:
     return len(priority_order)
 
 
-def _format_period_change(history: object, current_price: float, run_date: date, days: int) -> str:
-    period_change = _calculate_history_period_change(history, current_price, run_date, days)
-    if period_change is None:
-        return "N/A"
-    return f"{period_change:+.2f}%"
+# _format_period_change is re-exported from src.collector.technicals above
 
 
-def _format_percent_ratio(value: object) -> str:
-    numeric_value = _coerce_finite_float(value)
-    if numeric_value is None:
-        return "N/A"
-    # Some providers return ratios as decimals (0.0041 => 0.41%),
-    # while others already return percentage points (0.41 => 0.41%).
-    if abs(numeric_value) < 0.2:
-        numeric_value *= 100
-    return f"{numeric_value:.2f}%"
-
-
-def _format_fractional_percent(value: object) -> str:
-    numeric_value = _coerce_finite_float(value)
-    if numeric_value is None:
-        return "N/A"
-    return f"{numeric_value * 100:.2f}%"
-
-
-def _format_growth_percentage(value: object) -> str:
-    numeric_value = _coerce_finite_float(value)
-    if numeric_value is None:
-        return "N/A"
-    if abs(numeric_value) < 1:
-        numeric_value *= 100
-    return f"{numeric_value:+.2f}% YoY"

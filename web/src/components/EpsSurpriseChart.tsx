@@ -10,10 +10,11 @@ import {
   ReferenceLine,
   Legend,
 } from 'recharts'
-import type { QuarterlyFinancialRow } from '../types'
+import type { EarningsPattern, QuarterlyFinancialRow } from '../types'
 
 interface Props {
   quarters: QuarterlyFinancialRow[]
+  earningsPattern?: EarningsPattern
 }
 
 interface ChartRow {
@@ -31,18 +32,32 @@ function parseEps(v?: string): number | null {
   return isNaN(n) ? null : n
 }
 
+const BEAT_MISS_LABELS: Record<string, string> = {
+  beat: '상회',
+  miss: '하회',
+  'in-line': '부합',
+  'N/A': '미확인',
+}
+
+const SURPRISE_TREND_LABELS: Record<string, string> = {
+  improving: '개선',
+  deteriorating: '악화',
+  stable: '안정',
+  insufficient_data: '데이터 부족',
+}
+
 function beatMissColor(bm: string): string {
   if (bm === 'beat') return '#26a69a'
   if (bm === 'miss') return '#ef5350'
   return '#888'
 }
 
-export function EpsSurpriseChart({ quarters }: Props) {
+export function EpsSurpriseChart({ quarters, earningsPattern }: Props) {
   if (quarters.length === 0) return null
 
   const chartData: ChartRow[] = quarters
     .slice()
-    .reverse() // oldest first for chart
+    .reverse()
     .map((q) => ({
       quarter: q.quarter,
       actualEps: parseEps(q.eps) ?? 0,
@@ -89,15 +104,24 @@ export function EpsSurpriseChart({ quarters }: Props) {
       </ResponsiveContainer>
       <div className="eps-surprise-legend">
         {chartData.map((row) => (
-          <span
-            key={row.quarter}
-            className={`eps-chip ${row.beatMiss}`}
-          >
-            {row.quarter}: {row.beatMiss}
+          <span key={row.quarter} className={`eps-chip ${row.beatMiss}`}>
+            {row.quarter}: {BEAT_MISS_LABELS[row.beatMiss] ?? row.beatMiss}
             {row.surprisePct ? ` (${row.surprisePct})` : ''}
           </span>
         ))}
       </div>
+      {earningsPattern ? (
+        <div className="eps-pattern-summary">
+          {earningsPattern.beat_streak > 0 ? (
+            <span className="eps-chip beat">연속 상회 {earningsPattern.beat_streak}분기</span>
+          ) : null}
+          <span className="eps-pattern-text">
+            서프라이즈 추세 {SURPRISE_TREND_LABELS[earningsPattern.surprise_trend] ?? earningsPattern.surprise_trend}
+          </span>
+          <span className="eps-pattern-text">평균 서프라이즈 {earningsPattern.avg_surprise_pct}</span>
+          <span className="eps-pattern-note">{earningsPattern.pattern_note}</span>
+        </div>
+      ) : null}
     </div>
   )
 }

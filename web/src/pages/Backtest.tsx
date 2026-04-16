@@ -66,12 +66,12 @@ export function Backtest() {
           </div>
           <div className="signal-summary-grid">
             <SummaryMetricCard
-              label="Bull"
+              label="강세"
               value={`${backtest?.bull?.signals ?? 0} signals`}
               note={`승률 ${backtest?.bull?.win_rate ?? 'N/A'} · 평균 ${backtest?.bull?.avg_return ?? 'N/A'}`}
             />
             <SummaryMetricCard
-              label="Bear"
+              label="약세"
               value={`${backtest?.bear?.signals ?? 0} signals`}
               note={`승률 ${backtest?.bear?.win_rate ?? 'N/A'} · 평균 ${backtest?.bear?.avg_return ?? 'N/A'}`}
             />
@@ -123,8 +123,8 @@ export function Backtest() {
                   <th>신호 수</th>
                   <th>평균 수익</th>
                   <th>승률</th>
-                  <th>Bull</th>
-                  <th>Bear</th>
+                  <th>강세</th>
+                  <th>약세</th>
                   <th>최고</th>
                   <th>최저</th>
                 </tr>

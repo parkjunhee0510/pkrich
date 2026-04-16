@@ -1,0 +1,75 @@
+# Provider configuration for the collector plugin architecture.
+#
+# Each entry maps a provider's `name` (set as class attribute on the
+# DataProvider subclass) to its rate limit and priority.
+#
+# Priority rules:
+#   * Lower number wins when multiple providers emit the same data type.
+#   * Priority 1 = primary source (most trusted / highest rate budget).
+#   * Priority 2 = secondary / fill-the-gap.
+#   * Priority 3 = fallback / enrichment only.
+#
+# Rate limits are in calls per minute (cpm). `burst` defaults to cpm when
+# omitted. These values should match the upstream API's documented limits
+# to avoid 429 responses.
+#
+# To add a new provider:
+#   1. Implement src/collector/providers/<name>_provider.py
+#   2. Add an entry here
+#   3. Register it in src/collector/bootstrap.py (or wherever wiring lives)
+#
+# Loaded by src/collector/bootstrap.load_provider_config().
+
+providers:
+  yfinance:
+    priority: 1
+    rate: 60        # yfinance has no documented limit; keep conservative
+    burst: 20
+
+  sector_etf:
+    priority: 1
+    rate: 30
+    burst: 10
+
+  fmp:
+    priority: 2
+    rate: 300       # FMP Free tier: 250/day; Starter: much higher. Tune later.
+    burst: 20
+
+  finnhub:
+    priority: 2
+    rate: 60        # Finnhub free tier: 60 calls/min
+    burst: 30
+
+  polygon:
+    priority: 2
+    rate: 5         # Polygon free tier: 5 calls/min
+    burst: 5
+
+  alphavantage:
+    priority: 3
+    rate: 5         # Alpha Vantage free: 5/min, 500/day
+    burst: 5
+
+  sec_edgar:
+    priority: 1
+    rate: 10        # SEC EDGAR requests a 10 req/sec ceiling; stay well below
+    burst: 10
+
+  stooq:
+    priority: 3     # used only as fallback when yfinance is unreachable
+    rate: 30
+    burst: 10
+
+# Cache TTL overrides (hours). If omitted, the default policy in
+# src/collector/orchestrator.py::DEFAULT_CACHE_TTL_HOURS is used.
+#
+# Only specify entries you want to differ from defaults.
+cache_ttl:
+  fundamentals: 24
+  quarterly_financials: 24
+  upcoming_events: 6
+  sec_filings: 12
+  ir_rss: 6
+  institutional_holdings: 168   # weekly
+  analyst_estimates: 24

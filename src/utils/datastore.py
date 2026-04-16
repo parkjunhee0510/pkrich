@@ -62,6 +62,12 @@ class Datastore(ABC):
     def get_analysis_quality(self, *, limit: int = 30) -> list[dict[str, Any]]:
         return []
 
+    def get_peer_selection_cache(self, ticker: str, month_key: str) -> dict[str, Any] | None:
+        return None
+
+    def set_peer_selection_cache(self, ticker: str, month_key: str, payload: dict[str, Any]) -> None:
+        return None
+
 
 def get_datastore(output_root: Path | None = None, backend: str | None = None) -> Datastore:
     normalized_backend = (backend or os.getenv('DATASTORE_BACKEND', 'csv')).strip().lower()

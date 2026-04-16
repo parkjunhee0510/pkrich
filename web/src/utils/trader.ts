@@ -19,6 +19,12 @@ export interface TraderActionPlan {
   nextCatalyst: string
 }
 
+export interface OptionsSignalTag {
+  label: string
+  tone?: 'bullish' | 'neutral' | 'bearish'
+  emphasis?: 'normal' | 'alert'
+}
+
 export interface SetupScoreCard {
   ticker: string
   name: string
@@ -26,10 +32,14 @@ export interface SetupScoreCard {
   focusLabel: SetupFocusLabel
   actionPlan: TraderActionPlan
   earningsDday: string
+  sectorRs: string
   forwardVsTtm: string
   latestBeatMiss: string
+  beatStreak: number
   epsGrowth: string
   tags: string[]
+  optionTags: OptionsSignalTag[]
+  rawOptionsUnusualActivity: string
 }
 
 export interface EarningsBoardItem {
@@ -104,10 +114,14 @@ export function buildSetupCards(tickers: TickerAnalysisData[], limit = 5): Setup
         focusLabel: setup.focusLabel,
         actionPlan: extractActionPlan(ticker),
         earningsDday: extractEarningsDdayLabel(ticker),
+        sectorRs: ticker.price_action?.rs_vs_sector_etf ?? 'N/A',
         forwardVsTtm: ticker.earnings_setup?.forward_vs_ttm ?? 'N/A',
         latestBeatMiss: ticker.earnings_setup?.latest_beat_miss ?? 'N/A',
+        beatStreak: ticker.earnings_pattern?.beat_streak ?? 0,
         epsGrowth: ticker.earnings_setup?.earnings_growth ?? 'N/A',
         tags: setup.tags.slice(0, 4),
+        optionTags: buildOptionsSignalTags(ticker),
+        rawOptionsUnusualActivity: ticker.options_summary?.unusual_activity ?? '',
       }
     })
     .sort((left, right) => right.score - left.score || left.ticker.localeCompare(right.ticker))
@@ -209,6 +223,202 @@ export function extractActionPlan(ticker: TickerAnalysisData): TraderActionPlan 
   return { direction, thesis, entry, invalidation, nextCatalyst }
 }
 
+
+type ParsedUnusualContract = {
+  side: 'PUT' | 'CALL'
+  strike: string
+  volume: number
+  ratio: number | null
+}
+
+export type UnusualActivityPostureTone = 'defensive' | 'bullish' | 'mixed'
+export type UnusualActivityStrengthTone = 'normal' | 'strong' | 'very-strong'
+
+export interface UnusualActivityMeta {
+  postureLabel: string
+  postureTone: UnusualActivityPostureTone
+  strengthLabel: string | null
+  strengthTone: UnusualActivityStrengthTone
+}
+
+export function summarizeUnusualActivity(value?: string): string {
+  const parsed = parseUnusualContracts(value)
+  if (parsed.length === 0) {
+    return '이상 거래 해석에 필요한 옵션 흐름이 아직 충분하지 않습니다.'
+  }
+
+  const putCount = parsed.filter((item) => item.side === 'PUT').length
+  const callCount = parsed.filter((item) => item.side === 'CALL').length
+  const dominantSide = putCount > callCount ? 'put' : callCount > putCount ? 'call' : 'mixed'
+  const strongest = [...parsed].sort((left, right) => (right.ratio ?? 0) - (left.ratio ?? 0))[0]
+  const dominantStrike = mostCommonStrike(parsed, dominantSide === 'mixed' ? undefined : dominantSide.toUpperCase() as 'PUT' | 'CALL')
+  const postureTag = getUnusualPostureTag(dominantSide)
+
+  const lead = dominantSide === 'put'
+    ? `${postureTag} 풋 수요가 우세합니다.`
+    : dominantSide === 'call'
+      ? `${postureTag} 콜 수요가 우세합니다.`
+      : `${postureTag} 콜/풋 양방향 포지셔닝이 함께 붙었습니다.`
+
+  const strikeNote = dominantStrike
+    ? `${dominantStrike} 행사가 중심으로 거래가 몰렸습니다.`
+    : '행사가가 한쪽으로 크게 쏠리지는 않았습니다.'
+  const strengthNote = strongest?.ratio !== null && strongest?.ratio !== undefined
+    ? `가장 강한 계약은 OI 대비 ${Math.round(strongest.ratio)}%로 ${describeUnusualStrength(strongest.ratio)}.`
+    : '강도 판단에 필요한 OI 비율 정보는 제한적입니다.'
+
+  return `${lead} ${strikeNote} ${strengthNote}`
+}
+
+export function summarizeUnusualActivityShort(value?: string): string {
+  const parsed = parseUnusualContracts(value)
+  if (parsed.length === 0) {
+    return ''
+  }
+  const putCount = parsed.filter((item) => item.side === 'PUT').length
+  const callCount = parsed.filter((item) => item.side === 'CALL').length
+  const dominantSide = putCount > callCount ? 'put' : callCount > putCount ? 'call' : 'mixed'
+  const strongest = [...parsed].sort((left, right) => (right.ratio ?? 0) - (left.ratio ?? 0))[0]
+  const dominantStrike = mostCommonStrike(parsed, dominantSide === 'mixed' ? undefined : dominantSide.toUpperCase() as 'PUT' | 'CALL')
+
+  const lead = getUnusualPostureShortLabel(dominantSide)
+  const strikeNote = dominantStrike ? `${dominantStrike} 가격대 집중` : '가격대 분산'
+  const strengthNote = strongest?.ratio !== null && strongest?.ratio !== undefined
+    ? `보유량 대비 ${Math.round(strongest.ratio)}%`
+    : ''
+
+  return [lead, strikeNote, strengthNote].filter(Boolean).join(' · ')
+}
+
+export function getUnusualActivityMeta(value?: string): UnusualActivityMeta | null {
+  const parsed = parseUnusualContracts(value)
+  if (parsed.length === 0) {
+    return null
+  }
+
+  const putCount = parsed.filter((item) => item.side === 'PUT').length
+  const callCount = parsed.filter((item) => item.side === 'CALL').length
+  const dominantSide = putCount > callCount ? 'put' : callCount > putCount ? 'call' : 'mixed'
+  const strongest = [...parsed].sort((left, right) => (right.ratio ?? 0) - (left.ratio ?? 0))[0]
+
+  return {
+    postureLabel: getUnusualPostureTag(dominantSide),
+    postureTone: getUnusualPostureTone(dominantSide),
+    strengthLabel: getUnusualStrengthLabel(strongest?.ratio ?? null),
+    strengthTone: getUnusualStrengthTone(strongest?.ratio ?? null),
+  }
+}
+
+function getUnusualPostureTag(side: 'put' | 'call' | 'mixed'): string {
+  if (side === 'put') return '단기 하방 방어'
+  if (side === 'call') return '상승 베팅'
+  return '변동성 대응'
+}
+
+function getUnusualPostureShortLabel(side: 'put' | 'call' | 'mixed'): string {
+  if (side === 'put') return '하락 대비'
+  if (side === 'call') return '상승 기대'
+  return '방향성 혼재'
+}
+
+function getUnusualPostureTone(side: 'put' | 'call' | 'mixed'): UnusualActivityPostureTone {
+  if (side === 'put') return 'defensive'
+  if (side === 'call') return 'bullish'
+  return 'mixed'
+}
+
+function getUnusualStrengthLabel(ratio: number | null): string | null {
+  if (ratio === null) return null
+  if (ratio >= 80) return '매우 강함'
+  if (ratio >= 50) return '강함'
+  return null
+}
+
+function getUnusualStrengthTone(ratio: number | null): UnusualActivityStrengthTone {
+  if (ratio === null) return 'normal'
+  if (ratio >= 80) return 'very-strong'
+  if (ratio >= 50) return 'strong'
+  return 'normal'
+}
+
+function parseUnusualContracts(value?: string): ParsedUnusualContract[] {
+  if (!value) return []
+  return value
+    .split(';')
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .map((segment) => {
+      const sideMatch = segment.match(/\b(PUT|CALL)\b/i)
+      const strikeMatch = segment.match(/\$\s*([0-9]+(?:\.[0-9]+)?)/)
+      const volumeMatch = segment.match(/vol\s*([0-9,]+)/i)
+      const ratioMatch = segment.match(/([0-9]+(?:\.[0-9]+)?)%/)
+      if (!sideMatch || !strikeMatch) {
+        return null
+      }
+      return {
+        side: sideMatch[1].toUpperCase() as 'PUT' | 'CALL',
+        strike: `$${strikeMatch[1]}`,
+        volume: volumeMatch ? Number.parseInt(volumeMatch[1].replace(/,/g, ''), 10) : 0,
+        ratio: ratioMatch ? Number.parseFloat(ratioMatch[1]) : null,
+      }
+    })
+    .filter((item): item is ParsedUnusualContract => item !== null)
+}
+
+function mostCommonStrike(items: ParsedUnusualContract[], side?: 'PUT' | 'CALL'): string | null {
+  const counts = new Map<string, number>()
+  for (const item of items) {
+    if (side && item.side !== side) continue
+    counts.set(item.strike, (counts.get(item.strike) ?? 0) + 1)
+  }
+  let best: string | null = null
+  let bestCount = 0
+  for (const [strike, count] of counts.entries()) {
+    if (count > bestCount) {
+      best = strike
+      bestCount = count
+    }
+  }
+  return best
+}
+
+function describeUnusualStrength(ratio: number): string {
+  if (ratio >= 80) return '매우 공격적인 수준입니다'
+  if (ratio >= 50) return '상당히 강한 편입니다'
+  if (ratio >= 30) return '눈에 띄는 수준입니다'
+  return '경계해 볼 정도입니다'
+}
+
+export function formatOptionsToneLabel(value?: string): string {
+  if (value === 'bullish') return '옵션 강세'
+  if (value === 'bearish') return '옵션 약세'
+  return '옵션 중립'
+}
+
+export function buildOptionsSignalTags(ticker: TickerAnalysisData): OptionsSignalTag[] {
+  const summary = ticker.options_summary
+  if (!summary) {
+    return []
+  }
+
+  const tags: OptionsSignalTag[] = []
+  const tone = (summary.tone ?? '').trim()
+  if (tone && tone !== 'N/A') {
+    const normalizedTone = tone === 'bullish' || tone === 'bearish' ? tone : 'neutral'
+    tags.push({
+      label: formatOptionsToneLabel(normalizedTone),
+      tone: normalizedTone,
+      emphasis: 'normal',
+    })
+  }
+
+  if (summary.unusual_activity && summary.unusual_activity !== 'N/A') {
+    tags.push({ label: '이상 거래', emphasis: 'alert' })
+  }
+
+  return tags
+}
+
 export function buildPriceActionTags(ticker: TickerAnalysisData): string[] {
   const tags: string[] = []
   const vsSma50 = parseNumericValue(ticker.price_action?.price_vs_sma50)
@@ -217,6 +427,7 @@ export function buildPriceActionTags(ticker: TickerAnalysisData): string[] {
   const rvol = parseNumericValue(ticker.price_action?.relative_volume)
   const gap = parseNumericValue(ticker.price_action?.gap_percent)
   const rs = parseNumericValue(ticker.price_action?.rs_vs_spy)
+  const sectorRs = parseNumericValue(ticker.price_action?.rs_vs_sector_etf)
 
   if (vsSma50 !== null && vsSma200 !== null) {
     if (vsSma50 > 2 && vsSma200 > 0) tags.push('추세 우위')
@@ -241,6 +452,11 @@ export function buildPriceActionTags(ticker: TickerAnalysisData): string[] {
   if (rs !== null) {
     if (rs >= 2) tags.push('상대강도 우위')
     else if (rs <= -2) tags.push('상대약세')
+  }
+
+  if (sectorRs !== null) {
+    if (sectorRs >= 2) tags.push('섹터 우위')
+    else if (sectorRs <= -2) tags.push('섹터 약세')
   }
 
   return tags.slice(0, 4)
@@ -313,7 +529,7 @@ export function buildSignalPerformanceHighlights(signalStats?: SignalStats): Sig
 
   if (bullSummary) {
     highlights.push({
-      label: 'Bull 5D 승률',
+      label: '강세 5D 승률',
       value: bullSummary.win_rate_5d || 'N/A',
       note: `${bullSummary.evaluated_5d}건 평가 / 평균 ${bullSummary.avg_return_5d || 'N/A'}`,
     })
@@ -321,7 +537,7 @@ export function buildSignalPerformanceHighlights(signalStats?: SignalStats): Sig
 
   if (bearSummary) {
     highlights.push({
-      label: 'Bear 5D 승률',
+      label: '약세 5D 승률',
       value: bearSummary.win_rate_5d || 'N/A',
       note: `${bearSummary.evaluated_5d}건 평가 / 평균 ${bearSummary.avg_return_5d || 'N/A'}`,
     })
@@ -403,13 +619,15 @@ export function buildPositionSizingSummary(ticker: TickerAnalysisData, accountSi
   const shares = Math.max(0, Math.floor(riskBudget / atr))
   const stopPrice = price - (2 * atr)
   const targetPrice = parsePrice(ticker.fundamentals?.analyst_target_price ?? 'N/A')
-  let riskReward = 'N/A'
-  if (targetPrice > price) {
+  let riskReward: string
+  if (targetPrice > 0 && targetPrice <= price) {
+    riskReward = `목표 ${targetPrice.toFixed(2)} / 현재 ${price.toFixed(2)}`
+  } else if (targetPrice > price) {
     const reward = targetPrice - price
     const risk = atr * 2
-    if (risk > 0) {
-      riskReward = `${(reward / risk).toFixed(2)}R`
-    }
+    riskReward = risk > 0 ? `${(reward / risk).toFixed(2)}R` : 'N/A'
+  } else {
+    riskReward = 'N/A'
   }
 
   return {

@@ -138,8 +138,10 @@ class SignalTrackerTests(unittest.TestCase):
             history = load_recent_signals(csv_path, "AAPL", limit=1)
 
             self.assertEqual(len(history), 1)
-            self.assertEqual(history[0]["signal_date"], "2026-04-01")
-            self.assertEqual(history[0]["signal_direction"], "bull")
+            # load_recent_signals returns prompt-friendly short keys:
+            # "date" (not "signal_date"), "direction" (not "signal_direction")
+            self.assertEqual(history[0]["date"], "2026-04-01")
+            self.assertEqual(history[0]["direction"], "bull")
             self.assertEqual(history[0]["return_5d"], "+5.00%")
 
 

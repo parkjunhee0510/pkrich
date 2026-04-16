@@ -1,9 +1,9 @@
 import type { MarketRegimeData } from '../types'
 
 const REGIME_CONFIG: Record<string, { emoji: string; label: string; className: string }> = {
-  risk_on: { emoji: '\uD83D\uDFE2', label: 'Risk-On', className: 'regime-risk-on' },
-  neutral: { emoji: '\uD83D\uDFE1', label: 'Neutral', className: 'regime-neutral' },
-  risk_off: { emoji: '\uD83D\uDD34', label: 'Risk-Off', className: 'regime-risk-off' },
+  risk_on: { emoji: '\uD83D\uDFE2', label: '위험선호', className: 'regime-risk-on' },
+  neutral: { emoji: '\uD83D\uDFE1', label: '중립', className: 'regime-neutral' },
+  risk_off: { emoji: '\uD83D\uDD34', label: '위험회피', className: 'regime-risk-off' },
 }
 
 interface MarketRegimeBannerProps {

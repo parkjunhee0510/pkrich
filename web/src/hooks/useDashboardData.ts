@@ -31,7 +31,17 @@ export function useDashboardData() {
       .then(([latestJson, historyJson]: [DashboardData, DashboardData | null]) => {
         const latestDays = Array.isArray(latestJson?.days) ? latestJson.days : []
         const historyDays = Array.isArray(historyJson?.days) ? historyJson.days : []
-        const mergedDays = historyDays.length > 0 ? historyDays : latestDays
+
+        // historyDays를 base로 하되, latestDays의 각 날짜를 upsert하여
+        // signal_history 등 최신 필드가 유실되지 않도록 함
+        let mergedDays = latestDays
+        if (historyDays.length > 0) {
+          const latestDaysByDate = new Map(latestDays.map((d) => [d.date, d]))
+          mergedDays = [
+            ...historyDays.filter((d) => !latestDaysByDate.has(d.date)),
+            ...latestDays,
+          ].sort((a, b) => a.date.localeCompare(b.date))
+        }
 
         setData({
           ...latestJson,
