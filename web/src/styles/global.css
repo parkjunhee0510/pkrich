@@ -2534,6 +2534,31 @@ input:focus, select:focus, textarea:focus {
   outline-offset: -2px;
   color: var(--nav-hover-gold);
 }
+
+/* ========== Hamburger nav toggle ========== */
+.header-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 0.5rem 0.6rem;
+  margin-left: auto;
+  background: none;
+  border: var(--rule-weight) solid var(--ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+}
+.header-hamburger:hover { background: var(--caution-block); }
+.hamburger-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--ink);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.header-hamburger.is-open .hamburger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.header-hamburger.is-open .hamburger-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.header-hamburger.is-open .hamburger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 .dashboard-filter-btn:focus-visible,
 .watchlist-dnd-reset:focus-visible {
   outline: 2px solid var(--hazard);
@@ -2584,8 +2609,23 @@ input:focus, select:focus, textarea:focus {
 }
 @media (max-width: 768px) {
   .layout { padding: 1rem 1rem 3rem; }
-  .header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
-  .header-nav { flex-wrap: wrap; }
+  .header { flex-direction: row; align-items: center; gap: 0; }
+  .header-hamburger { display: flex; }
+  .header-nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    order: 3;
+    border-top: var(--rule-weight) solid var(--ink);
+    margin-top: 0.5rem;
+  }
+  .header-nav.nav-open { display: flex; }
+  .header-nav .nav-link {
+    width: 100%;
+    border-left: 0;
+    border-bottom: var(--rule-weight) solid var(--ink);
+  }
+  .header-nav .nav-link:last-child { border-bottom: 0; }
   .ticker-header { flex-direction: column; align-items: flex-start; }
   .dashboard-header, .market-overview { flex-direction: column; gap: 0; }
   .dashboard-controls { flex-direction: column; align-items: stretch; }

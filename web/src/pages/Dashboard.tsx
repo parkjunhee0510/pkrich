@@ -75,6 +75,15 @@ export function Dashboard() {
   const [accountSize, setAccountSize] = useState(10000)
   const [watchlistSort, setWatchlistSort] = useState<WatchlistSortMode>('score')
   const [density, setDensity] = useState<DensityMode>('comfortable')
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const sync = () => { setDensity(mq.matches ? 'compact' : 'comfortable') }
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
   const [tickerInput, setTickerInput] = useState('')
   const [autoRunAfterAdd, setAutoRunAfterAdd] = useState(false)
   const [pendingNavigationTicker, setPendingNavigationTicker] = useState<string | null>(null)
