@@ -21,13 +21,13 @@
   --pos:         #0a7b2f;
   --neg:         #b81414;
   --caution:     #a15c00;
-  --pos-block:   #c6f432;
+  --pos-block:   #9dba00;  /* ② 올리브-라임 (덜 형광) */
   --neg-block:   #ff5a4a;
   --caution-block:#ffb800;
-  --info-block:  #76b5ff;
+  --info-block:  #3d82e8;  /* ① 더 진한 블루 (대비 강화) */
 
   /* hazard accent (sparing) */
-  --hazard:      #ff3b00;
+  --hazard:      #d96000;  /* ③ 번트 앰버 (네비 골드와 통일) */
 
   /* type */
   --font-mono:   'JetBrains Mono', 'Space Mono', ui-monospace, Menlo, monospace;
@@ -73,6 +73,47 @@
   --nav-hover-fire: #c8830a;
 }
 
+/* ④ 다크모드 — 낡은 가죽 + 약한 백색 오프셋 쉐도우 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bone:          #161410;
+    --bone-dim:      #201d18;
+    --paper:         #1e1b14;
+    --paper-raised:  #26231a;
+    --ink:           #e8e4d4;
+    --ink-2:         #ccc8b8;
+    --ink-soft:      #8a8678;
+    --muted:         #5a5650;
+    --rule:          #e8e4d4;
+
+    --pos:           #6dd44a;
+    --neg:           #ff7060;
+    --caution:       #e09030;
+    --pos-block:     #7aaa00;
+    --neg-block:     #b82a1a;
+    --caution-block: #b87800;
+    --info-block:    #2a5aaa;
+
+    --hazard:        #cc4000;
+
+    --shadow-hard:    4px 4px 0 0 rgba(255,255,255,0.12);
+    --shadow-hard-sm: 2px 2px 0 0 rgba(255,255,255,0.08);
+    --shadow-hard-lg: 6px 6px 0 0 rgba(255,255,255,0.15);
+    --shadow-glow:    var(--shadow-hard);
+
+    --nav-hover-bg:   #0a0806;
+    --nav-hover-gold: #e0b830;
+    --nav-hover-fire: #d09020;
+  }
+
+  body {
+    background:
+      repeating-linear-gradient(0deg,  transparent 0 23px, rgba(255,255,255,0.025) 23px 24px),
+      repeating-linear-gradient(90deg, transparent 0 23px, rgba(255,255,255,0.025) 23px 24px),
+      var(--bone);
+  }
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { background: var(--bone); }
@@ -80,9 +121,9 @@ html { background: var(--bone); }
 body {
   font-family: var(--font-mono);
   background:
-    repeating-linear-gradient(0deg,  transparent 0 23px, rgba(10,10,10,0.045) 23px 24px),
-    repeating-linear-gradient(90deg, transparent 0 23px, rgba(10,10,10,0.045) 23px 24px),
-    var(--bone);
+    repeating-linear-gradient(0deg,  transparent 0 23px, rgba(10,10,10,0.03) 23px 24px),
+    repeating-linear-gradient(90deg, transparent 0 23px, rgba(10,10,10,0.03) 23px 24px),
+    var(--bone);  /* ⑤ 그리드 노이즈 완화 */
   color: var(--ink);
   font-size: 14px;
   line-height: 1.45;
