@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "horizons": {
+    "5": {
+      "horizon": 5,
+      "collinearity": {
+        "status": "insufficient_data",
+        "sample_size": 0,
+        "pairs": [],
+        "threshold": 0.6
+      },
+      "factor_ir": {
+        "status": "insufficient_data",
+        "sample_size": 0,
+        "factors": [],
+        "weak_factors": [],
+        "threshold": 0.1
+      }
+    },
+    "20": {
+      "horizon": 20,
+      "collinearity": {
+        "status": "insufficient_data",
+        "sample_size": 0,
+        "pairs": [],
+        "threshold": 0.6
+      },
+      "factor_ir": {
+        "status": "insufficient_data",
+        "sample_size": 0,
+        "factors": [],
+        "weak_factors": [],
+        "threshold": 0.1
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "horizons": {
+    "1": {
+      "horizon": 1,
+      "decile_buckets": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 1,
+        "metric": "absolute",
+        "deciles": []
+      },
+      "reliability": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 1,
+        "bins": [],
+        "brier_score": null
+      }
+    },
+    "5": {
+      "horizon": 5,
+      "decile_buckets": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 5,
+        "metric": "absolute",
+        "deciles": []
+      },
+      "reliability": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 5,
+        "bins": [],
+        "brier_score": null
+      },
+      "alpha_buckets": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 5,
+        "metric": "alpha",
+        "deciles": []
+      }
+    },
+    "20": {
+      "horizon": 20,
+      "decile_buckets": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 20,
+        "metric": "absolute",
+        "deciles": []
+      },
+      "reliability": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 20,
+        "bins": [],
+        "brier_score": null
+      }
+    }
+  }
+}

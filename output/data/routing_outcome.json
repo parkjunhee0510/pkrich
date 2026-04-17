@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "run_count": 1,
+  "evaluated_signals": 0,
+  "latest_run_date": "2026-04-16",
+  "summary": {
+    "deep_selected_count": 0,
+    "economy_only_count": 0,
+    "portfolio_priority_count": 0,
+    "deep_selected_avg_return_20d": null,
+    "economy_only_avg_return_20d": null,
+    "portfolio_priority_avg_return_20d": null,
+    "deep_selected_hit_rate": null,
+    "economy_only_hit_rate": null,
+    "portfolio_priority_hit_rate": null,
+    "avg_return_delta_20d": null,
+    "hit_rate_delta": null
+  },
+  "periods": [],
+  "latest_run": {
+    "run_date": "2026-04-16",
+    "trigger_range": [
+      25,
+      75
+    ],
+    "max_daily_ensemble": 0,
+    "portfolio_priority": false,
+    "deep_pass_count": 13,
+    "tickers": [
+      {
+        "ticker": "AAPL",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 66,
+        "action": "buy"
+      },
+      {
+        "ticker": "CAT",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 65,
+        "action": "buy"
+      },
+      {
+        "ticker": "XOM",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 62,
+        "action": "watch"
+      },
+      {
+        "ticker": "AMD",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 62,
+        "action": "watch"
+      },
+      {
+        "ticker": "KO",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 60,
+        "action": "watch"
+      },
+      {
+        "ticker": "T",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 59,
+        "action": "watch"
+      },
+      {
+        "ticker": "IONQ",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 61,
+        "action": "watch"
+      },
+      {
+        "ticker": "OXY",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": false,
+        "conviction": 63,
+        "action": "watch"
+      },
+      {
+        "ticker": "ORA",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": false,
+        "conviction": 61,
+        "action": "watch"
+      },
+      {
+        "ticker": "SPIR",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": false,
+        "conviction": 60,
+        "action": "watch"
+      },
+      {
+        "ticker": "PLUG",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 63,
+        "action": "watch"
+      },
+      {
+        "ticker": "RKLB",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": false,
+        "conviction": 64,
+        "action": "watch"
+      },
+      {
+        "ticker": "PL",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": false,
+        "conviction": 60,
+        "action": "watch"
+      }
+    ]
+  },
+  "status": "no_data"
+}
