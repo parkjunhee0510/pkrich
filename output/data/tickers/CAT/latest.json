@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-04-16",
+  "date": "2026-04-17",
   "ticker": "CAT",
   "payload": {
     "ticker": "CAT",
@@ -60,35 +60,35 @@
     ],
     "signal_or_takeaway": "관망/조건부 매수 | 진입 트리거: 772.66 유지 후 798.54 돌파 확인 | 목표가: 811.57, 754.33 | 손절가: 731.55 이탈 시 손절",
     "data_snapshot": {
-      "Price": "772.66 USD",
-      "Daily Change": "+0.32%",
-      "Market Cap": "361.59B",
-      "Trailing P/E": "41.14",
+      "Price": "796.28 USD",
+      "Daily Change": "+3.06%",
+      "Market Cap": "372.64B",
+      "Trailing P/E": "42.40",
       "EPS": "18.78",
       "52W High": "798.54",
       "52W Low": "282.46",
       "50D SMA": "731.55",
       "200D SMA": "567.57",
-      "Volume": "1.59M",
+      "Volume": "749722",
       "3M Avg Volume": "2.82M",
-      "Price/Book": "16.86",
+      "Price/Book": "17.38",
       "Dividend Yield": "0.78%",
       "Sector": "Industrials",
-      "Open": "768.00",
-      "High": "772.81",
-      "Low": "754.45",
-      "Close": "772.66",
+      "Open": "780.51",
+      "High": "796.45",
+      "Low": "776.00",
+      "Close": "796.28",
       "RS vs Sector ETF": "+7.99%"
     },
     "fundamentals": {
-      "market_cap": "361.59B",
-      "trailing_pe": "41.14",
+      "market_cap": "372.64B",
+      "trailing_pe": "42.40",
       "eps": "18.78",
       "forward_eps": "27.82",
       "earnings_growth": "-11.40% YoY",
-      "price_to_book": "16.86",
+      "price_to_book": "17.38",
       "dividend_yield": "0.78%",
-      "volume": "1.59M",
+      "volume": "749722",
       "avg_volume_3m": "2.82M",
       "52w_high": "798.54",
       "52w_low": "282.46",
@@ -98,7 +98,7 @@
       "analyst_recommendation": "Buy",
       "analyst_count": "26명",
       "held_by_insiders": "0.22%",
-      "held_by_institutions": "72.60%",
+      "held_by_institutions": "72.55%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
@@ -128,15 +128,15 @@
       "pattern_note": "최근 2개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "25.94",
-      "atr_percent": "3.36%",
-      "relative_volume": "0.56x",
-      "gap_percent": "-0.28%",
-      "price_vs_sma50": "+5.62%",
-      "price_vs_sma200": "+36.13%",
-      "week52_position": "95%",
+      "atr_14d": "26.49",
+      "atr_percent": "3.33%",
+      "relative_volume": "0.27x",
+      "gap_percent": "+1.02%",
+      "price_vs_sma50": "+8.85%",
+      "price_vs_sma200": "+40.30%",
+      "week52_position": "100%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+7.99%"
+      "rs_vs_sector_etf": "+8.49%"
     },
     "quarterly_financials": [
       {
@@ -216,10 +216,10 @@
     },
     "options_summary": {
       "expiry": "2026-04-17",
-      "atm_call_iv": "42.4%",
-      "atm_put_iv": "59.6%",
-      "put_call_ratio": "1.14x",
-      "iv_percentile_30d": "9th",
+      "atm_call_iv": "13.2%",
+      "atm_put_iv": "58.2%",
+      "put_call_ratio": "1.06x",
+      "iv_percentile_30d": "39th",
       "tone": "neutral",
       "unusual_activity": "PUT $700, vol 198, OI 대비 80% ; PUT $800, vol 64, OI 대비 100% ; PUT $820, vol 29, OI 대비 171%",
       "oi_change": "콜 OI N/A / 풋 OI +0.6%"
@@ -310,8 +310,8 @@
       "conviction_sample_size": 2
     },
     "period_changes": {
-      "7d": "-1.83%",
-      "30d": "+10.07%"
+      "7d": "+0.71%",
+      "30d": "+14.80%"
     },
     "sec_filing_tags": [
       "기타 공시"
@@ -349,5 +349,6 @@
       "ensemble_agreement": "agree",
       "final_consensus": "agree"
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-04-17T14:49:59"
 }
