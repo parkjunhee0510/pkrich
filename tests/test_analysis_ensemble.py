@@ -289,5 +289,103 @@ class AnalysisEnsembleTests(unittest.TestCase):
         self.assertIn("buy", updated[0].reason)
 
 
+class ConvictionAdjustmentTests(unittest.TestCase):
+    def test_agree_tight_spread_boosts_full_amount(self) -> None:
+        decisions = [TickerDecision(ticker="AAPL", action="buy", conviction=70, reason="")]
+        updated = apply_consensus_to_decisions(
+            decisions,
+            {
+                "AAPL": {
+                    "final_consensus": "agree",
+                    "economy_conviction": 72,
+                    "deep_conviction": 70,
+                    "third_conviction": 71,
+                },
+            },
+        )
+        # mean ~= 71, stdev very small → +8 boost → ~79
+        self.assertGreater(updated[0].conviction, 75)
+        self.assertLessEqual(updated[0].conviction, 80)
+        self.assertIn("앙상블 보정", updated[0].reason)
+
+    def test_agree_wide_spread_shrinks_boost(self) -> None:
+        decisions = [TickerDecision(ticker="AAPL", action="buy", conviction=60, reason="")]
+        updated = apply_consensus_to_decisions(
+            decisions,
+            {
+                "AAPL": {
+                    "final_consensus": "agree",
+                    "economy_conviction": 40,
+                    "deep_conviction": 80,
+                },
+            },
+        )
+        # mean = 60, stdev = 20 → boost = max(0, 8 - 0.5*20) = 0 → stays at 60
+        self.assertEqual(updated[0].conviction, 60)
+
+    def test_resolved_caps_at_median(self) -> None:
+        decisions = [TickerDecision(ticker="AAPL", action="buy", conviction=80, reason="")]
+        updated = apply_consensus_to_decisions(
+            decisions,
+            {
+                "AAPL": {
+                    "final_consensus": "resolved",
+                    "economy_conviction": 80,
+                    "deep_conviction": 30,
+                    "third_conviction": 65,
+                },
+            },
+        )
+        # median = 65 → capped
+        self.assertEqual(updated[0].conviction, 65)
+
+    def test_conflict_compresses_toward_fifty(self) -> None:
+        decisions = [TickerDecision(ticker="AAPL", action="buy", conviction=80, reason="")]
+        updated = apply_consensus_to_decisions(
+            decisions,
+            {
+                "AAPL": {
+                    "final_consensus": "conflict",
+                    "economy_conviction": 80,
+                    "deep_conviction": 80,
+                    "third_conviction": 80,
+                },
+            },
+        )
+        # mean = 80 → adjusted = 50 + (80-50)*0.6 = 68
+        self.assertEqual(updated[0].conviction, 68)
+
+    def test_single_leaves_conviction_unchanged(self) -> None:
+        decisions = [TickerDecision(ticker="AAPL", action="buy", conviction=55, reason="")]
+        updated = apply_consensus_to_decisions(
+            decisions,
+            {
+                "AAPL": {
+                    "final_consensus": "single",
+                    "economy_conviction": 55,
+                },
+            },
+        )
+        self.assertEqual(updated[0].conviction, 55)
+        self.assertNotIn("앙상블 보정", updated[0].reason)
+
+    def test_adjustment_diagnostics_written_to_consensus(self) -> None:
+        decisions = [TickerDecision(ticker="AAPL", action="buy", conviction=60, reason="")]
+        consensus_map = {
+            "AAPL": {
+                "final_consensus": "agree",
+                "economy_conviction": 60,
+                "deep_conviction": 62,
+            },
+        }
+        apply_consensus_to_decisions(decisions, consensus_map)
+        payload = consensus_map["AAPL"]
+        self.assertIn("conviction_mean", payload)
+        self.assertIn("conviction_stdev", payload)
+        self.assertIn("conviction_adjusted", payload)
+        self.assertEqual(payload["conviction_prior"], 60)
+        self.assertEqual(payload["conviction_sample_size"], 2)
+
+
 if __name__ == "__main__":
     unittest.main()

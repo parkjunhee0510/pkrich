@@ -94,6 +94,16 @@ def write_outputs(
         portfolio_risk=portfolio_risk,
         decisions=decisions,
     )
+    from src.analyzer.derive import (
+        build_backtest_summary,
+        build_derivations_by_ticker,
+        load_monthly_summary as _load_monthly_summary,
+    )
+
+    backtest_summary = build_backtest_summary(datastore.signal_csv_path)
+    monthly_summary = _load_monthly_summary(run_date, output_root=output_root)
+    derived_by_ticker = build_derivations_by_ticker(enriched_analyses)
+    price_history_rows = datastore.query_prices()
     timeline_map = write_json_outputs(
         enriched_analyses,
         run_date,
@@ -107,6 +117,10 @@ def write_outputs(
         weekly_summary=weekly_summary,
         market_regime=market_regime,
         decisions=decisions,
+        backtest_summary=backtest_summary,
+        monthly_summary=monthly_summary,
+        derived_by_ticker=derived_by_ticker,
+        price_history_rows=price_history_rows,
     )
 
     daily_path = daily_dir / f"{run_date.isoformat()}.md"

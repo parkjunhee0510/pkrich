@@ -7,6 +7,7 @@ from datetime import date
 from pathlib import Path
 
 from src.output.api_status import build_api_status_payload, write_api_status_outputs
+from src.output.schema import SCHEMA_VERSION
 from src.types import WatchlistItem
 
 
@@ -46,6 +47,8 @@ class ApiStatusTests(unittest.TestCase):
         summary = payload["summary"]
         matrix = {row["ticker"]: row for row in payload["ticker_matrix"]}
 
+        self.assertEqual(summary["schema_version"], SCHEMA_VERSION)
+        self.assertEqual(matrix["AAPL"]["schema_version"], SCHEMA_VERSION)
         self.assertTrue(summary["pipeline_completed"])
         self.assertTrue(summary["llm"]["used"])
         self.assertEqual(summary["llm"]["latest_model"], "gpt-5.4-mini")
@@ -83,6 +86,7 @@ class ApiStatusTests(unittest.TestCase):
 
         summary = payload["summary"]
         matrix = payload["ticker_matrix"][0]
+        self.assertEqual(summary["schema_version"], SCHEMA_VERSION)
         self.assertEqual(summary["providers"]["fmp"]["overall_status"], "limited")
         self.assertEqual(summary["providers"]["fmp"]["throttled_tickers"], 1)
         self.assertFalse(summary["llm"]["used"])
@@ -134,6 +138,7 @@ class ApiStatusTests(unittest.TestCase):
             )
 
         quality = payload["summary"]["llm"]["quality"]
+        self.assertEqual(payload["summary"]["schema_version"], SCHEMA_VERSION)
         self.assertEqual(quality["run_date"], "2026-04-13")
         self.assertEqual(quality["validated_ticker_count"], 11)
         self.assertEqual(quality["schema_violation_count"], 1)

@@ -948,6 +948,133 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
   letter-spacing: 0.08em;
   border: 1px solid var(--ink);
 }
+
+.thesis-diff-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.thesis-diff-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.7rem;
+  border: 1.5px solid var(--ink);
+  font-size: 0.74rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.thesis-diff-status.changed {
+  background: var(--caution-block);
+  color: var(--ink);
+}
+
+.thesis-diff-status.steady {
+  background: var(--bone);
+  color: var(--ink-soft);
+}
+
+.thesis-diff-summary-card {
+  padding: 0.85rem 1rem;
+  border: var(--rule-weight) solid var(--ink);
+  background: var(--paper);
+  box-shadow: var(--shadow-hard-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.thesis-diff-summary-card strong {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  letter-spacing: 0.03em;
+}
+
+.thesis-diff-summary-card p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+
+.thesis-diff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem;
+}
+
+.thesis-diff-card {
+  padding: 0.9rem 1rem;
+  border: var(--rule-weight) solid var(--ink);
+  background: var(--paper);
+  box-shadow: var(--shadow-hard-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.thesis-diff-card.changed {
+  border-left: 8px solid var(--hazard);
+}
+
+.thesis-diff-card.steady {
+  border-left: 8px solid var(--bone-dim);
+}
+
+.thesis-diff-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.thesis-diff-label,
+.thesis-diff-chip,
+.thesis-diff-copy-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.thesis-diff-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.5rem;
+  border: 1px solid var(--ink);
+}
+
+.thesis-diff-chip.changed {
+  background: var(--caution-block);
+  color: var(--ink);
+}
+
+.thesis-diff-chip.steady {
+  background: var(--bone);
+  color: var(--ink-soft);
+}
+
+.thesis-diff-emphasis {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--ink-2);
+}
+
+.thesis-diff-copy {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+
+.thesis-diff-copy p {
+  margin: 0.25rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
 .decision-factor-chip.factor-positive { background: var(--pos-block); color: var(--ink); }
 .decision-factor-chip.factor-negative { background: var(--neg-block); color: #fff; }
 .decision-factor-chip.factor-neutral  { background: var(--bone); color: var(--ink); }
@@ -1144,8 +1271,8 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
   color: var(--paper);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 1000;
 }
 .table-wrap .snapshot-table thead th { position: sticky; top: 0; }
 .watchlist-table tr:hover { background: var(--caution-block); }
@@ -1278,6 +1405,9 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
   border: var(--rule-weight) solid var(--ink);
   background: var(--paper);
   box-shadow: var(--shadow-hard);
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 .price-action-card {
   padding: 0.75rem;
@@ -1572,7 +1702,7 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
 
 /* timeline */
 .timeline-header-row { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
-.timeline-window-toggle { display: flex; gap: 0; }
+.timeline-window-toggle { display: flex; gap: 0; margin-right: 10px;}
 .timeline-window-toggle button {
   padding: 0.35rem 0.7rem;
   background: var(--paper);
@@ -1589,7 +1719,7 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
 
 .timeline-list {
   list-style: none;
-  margin: 0;
+  margin: 10px;
   padding: 0;
   border-left: 3px solid var(--ink);
   padding-left: 1rem;
@@ -1630,6 +1760,10 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
 /* trade frame */
 .trade-frame-grid, .trade-frame-detail-grid {
   display: grid;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.6rem;
 }
@@ -1699,7 +1833,7 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
 }
 .options-unusual-alert strong { font-family: var(--font-mono); font-size: 0.76rem; text-transform: uppercase; }
 .options-unusual-summary { margin: 0; color: var(--ink-2); line-height: 1.5; }
-.detail-section-summary { font-size: 0.88rem; color: var(--ink-2); margin-top: 0.75rem; margin-bottom: 0; line-height: 1.6; }
+.detail-section-summary { font-size: 1.08rem; color: var(--ink-2); margin-top: 0.75rem; margin-bottom: 0.5; line-height: 1.6; margin-left: 10px;}
 
 /* ========== Portfolio ========== */
 .portfolio-page { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -2397,7 +2531,7 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
   background: var(--bone);
   border-left: 3px solid var(--ink);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 1.1rem;
 }
 .valuation-factors li::before { content: none; }
 
@@ -2946,3 +3080,120 @@ input:focus, select:focus, textarea:focus {
 .tone-positive { background: var(--pos-block); }
 .tone-negative { background: var(--neg-block); color: #fff; }
 .tone-caution  { background: var(--caution-block); }
+
+/* ========== Admin cost dashboard ========== */
+.admin-cost-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.9fr);
+  gap: 1rem;
+}
+
+.admin-cost-chart {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  gap: 0.6rem;
+  align-items: end;
+  min-height: 260px;
+  padding: 1rem;
+  background: var(--paper);
+  border: var(--rule-weight) solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.admin-cost-bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.admin-cost-bar-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  max-width: 52px;
+  height: 190px;
+  background: var(--bone);
+  border: 1.5px solid var(--ink);
+  overflow: hidden;
+}
+
+.admin-cost-bar-total {
+  position: absolute;
+  inset: auto 0 0 0;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  border-top: 1px dashed var(--ink-soft);
+  pointer-events: none;
+}
+
+.admin-cost-bar-segment {
+  width: 100%;
+  min-height: 0;
+  z-index: 1;
+}
+
+.admin-cost-bar-segment.profile-economy { background: var(--info-block); }
+.admin-cost-bar-segment.profile-standard { background: var(--caution-block); }
+.admin-cost-bar-segment.profile-deep { background: var(--hazard); }
+.admin-cost-bar-segment.profile-unknown { background: var(--bone-dim); }
+
+.admin-cost-bar-date {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.admin-cost-sidecard {
+  padding: 1rem;
+  background: var(--paper);
+  border: var(--rule-weight) solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.admin-profile-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.admin-profile-card {
+  padding: 0.85rem;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.admin-profile-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+}
+
+.admin-profile-card strong {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.admin-profile-card p,
+.admin-profile-card small {
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+}
+
+@media (max-width: 768px) {
+  .admin-cost-grid { grid-template-columns: 1fr; }
+  .admin-cost-chart { grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); min-height: 220px; }
+}

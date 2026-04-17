@@ -75,6 +75,8 @@ class EnsembleConfig:
     third_model: str
     third_prompt: str
     max_daily_ensemble: int
+    portfolio_priority: bool = False
+    emit_routing_log: bool = True
 
 
 def load_model_profile(path: str = 'config/models.yaml', *, profile_name: str | None = None) -> ModelProfile:
@@ -147,6 +149,8 @@ def load_ensemble_config(path: str = 'config/models.yaml') -> EnsembleConfig:
         third_model=third_model,
         third_prompt=third_prompt,
         max_daily_ensemble=max_daily_ensemble,
+        portfolio_priority=bool(ensemble.get('portfolio_priority', False)),
+        emit_routing_log=bool(ensemble.get('emit_routing_log', True)),
     )
 
 

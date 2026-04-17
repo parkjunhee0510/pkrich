@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from src.analyzer.base import AnalysisContext, AnalysisModule, ModuleResult
+from src.analyzer.base import AnalysisContext, AnalysisModule
 
 
 @dataclass(frozen=True)

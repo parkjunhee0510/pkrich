@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import argparse
 from pathlib import Path
 
 REQUIRED_MODULES = ("yfinance", "feedparser", "ddgs", "openai", "yaml")
@@ -85,6 +86,13 @@ def _check_dependencies() -> None:
 
 if __name__ == "__main__":
     _check_dependencies()
-    from src.pipeline import run_pipeline
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--collect-only", action="store_true", help="Run collector-only intraday refresh")
+    args = parser.parse_args()
 
-    run_pipeline()
+    from src.pipeline import collect_only, run_pipeline
+
+    if args.collect_only:
+        collect_only()
+    else:
+        run_pipeline()

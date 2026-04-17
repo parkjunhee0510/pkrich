@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from src.output.analysis_quality import write_analysis_quality_output
+from src.output.schema import SCHEMA_VERSION
 
 
 class AnalysisQualityOutputTests(unittest.TestCase):
@@ -37,6 +38,7 @@ class AnalysisQualityOutputTests(unittest.TestCase):
 
             payload = write_analysis_quality_output(output_root=output_root, logs_root=logs_root)
 
+            self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
             self.assertEqual(payload["latest"]["run_date"], "2026-04-16")
             self.assertEqual(payload["latest"]["hallucination_ratio"], 0.2)
             self.assertTrue((output_root / "data" / "analysis_quality.json").exists())

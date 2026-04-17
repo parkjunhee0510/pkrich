@@ -1,7 +1,7 @@
 # 주식 리서치 자동화 시스템 — 설계 문서
 
-> **상태**: v4  
-> **작성일**: 2026-04-15  
+> **상태**: v5
+> **작성일**: 2026-04-17
 > **작성자**: 박준희  
 
 ---
@@ -79,17 +79,34 @@
 │  ┌─────────────────────────────────────────────┐    │
 │  │         포트폴리오 & 시그널 (State)            │    │
 │  │  portfolio.py  — 보유 × 현재가 → 손익 계산   │    │
-│  │  signal_tracker.py — 시그널 기록 +            │    │
-│  │                      1D/5D/20D 수익률 업데이트 │    │
+│  │  signal_tracker.py — 저수준 CSV helper       │    │
+│  │  Datastore.record_signals / update_returns / │    │
+│  │     load_signal_stats_data (v5 추상화)        │    │
+│  │     → CSV + SQLite dual-write                │    │
+│  │  ensemble routing — portfolio_priority,      │    │
+│  │     routing_log 방출 (v5)                    │    │
+│  └─────────────────────────────────────────────┘    │
+│                       │                              │
+│  ┌─────────────────────────────────────────────┐    │
+│  │           파생 (analyzer/derive) — v5         │    │
+│  │  backtest_summary / monthly_summary /        │    │
+│  │  earnings_setup / sec_filings /              │    │
+│  │  ticker_timelines / weekly_summary /         │    │
+│  │  per-ticker derivations                       │    │
+│  │  → orchestration이 미리 계산, output은 write │    │
 │  └─────────────────────────────────────────────┘    │
 │                       │                              │
 │  ┌─────────────────────────────────────────────┐    │
 │  │              출력 (Output)                   │    │
 │  │  markdown.py  → daily + weekly + tickers .md│    │
 │  │                 (+ 포트폴리오 / 실적 셋업)    │    │
-│  │  json_export.py → dashboard/price/timeline  │    │
-│  │                  (+ portfolio_summary +      │    │
-│  │                   signal_stats)              │    │
+│  │  json_export.py → legacy dashboard/price/   │    │
+│  │                   timeline + signal_stats    │    │
+│  │  sharded_export.py → data/index.json +      │    │
+│  │                      tickers/<T>/latest.json │    │
+│  │                      + history.json (v5)     │    │
+│  │  cost_log.py  → data/cost_log.json (v5)     │    │
+│  │  routing_log → data/routing_log.json (v5)   │    │
 │  │  obsidian.py  → Obsidian vault 미러 (선택적) │    │
 │  │  slack.py     → Slack webhook 요약 (선택적)  │    │
 │  └─────────────────────────────────────────────┘    │
@@ -364,7 +381,7 @@ yfinance에서 종가/변동률 수집 실패 시 Stooq CSV API로 대체 수집
 | Output (20종목) | ~16,000 | $0.0096 | $0.21 |
 | **합계** | | | **~$0.31** |
 
-→ 월 $1 미만. 목표($5) 대비 충분한 여유.
+→ 월 $1 미만. 목표($30) 대비 충분한 여유.
 
 ### 3.4 출력 형식
 
@@ -429,15 +446,36 @@ S&P 500: 5,234.18 (+0.45%) | NASDAQ 100: 16,892.33 (+0.62%)
 
 **주간 노트**: 해당 주 거래일 데이터를 집계하여 상위 등락 종목, 반복 뉴스, 주간 Action Items 제공.
 
-#### JSON 출력 3종
+#### JSON 출력
+
+**공용 (파이프라인마다 생성)**
 
 | 파일 | 내용 | 용도 |
 |---|---|---|
-| `dashboard.json` | 전체 날짜별 분석 데이터 (티커, 시그널, 뉴스톤, 이벤트 등) | 웹 대시보드 메인 |
+| `dashboard.json` | 최근 1일 전체 payload (legacy, v5 기준 `EMIT_LEGACY_DASHBOARD` 플래그로 유지) | 대시보드 fallback |
+| `dashboard_history.json` | 최근 90일 전체 payload (legacy) | 히스토리 fallback |
 | `price_history.json` | 날짜별 종가/등락률 배열 | 웹 가격 차트 |
 | `ticker_timelines.json` | 종목별 날짜 타임라인 (최대 90일) | 웹 타임라인 뷰 |
+| `backtest_summary.json` | bull/bear 시그널 20D 성과 | Backtest 페이지 |
+| `monthly_summary.json` | 월간 통계 | 월간 뷰 |
+| `signal_tracker.csv` | 시그널 기록 (CSV, SQLite와 dual-write) | 백테스트/디버깅 |
 
-파이프라인 실행 시 `web/public/output/data/`로 자동 동기화.
+**샤딩 (v5, `EMIT_SHARDED_DASHBOARD=true` 기본)**
+
+| 파일 | 내용 | 용도 |
+|---|---|---|
+| `index.json` | 경량 요약 (market context + 티커별 10개 핵심 필드) | Dashboard eager load 대상 |
+| `tickers/<T>/latest.json` | 티커별 풀 payload (최신 1일) | TickerDetail 진입 시 lazy fetch |
+| `tickers/<T>/history.json` | 티커별 히스토리 (최대 90일) | TickerDetail 히스토리 뷰 |
+
+**감사/관측 (v5)**
+
+| 파일 | 내용 | 용도 |
+|---|---|---|
+| `routing_log.json` | 각 티커의 ensemble routing 결정 (conviction / in_portfolio / selected_for_deep / reason) | deep pass 의사결정 감사 |
+| `cost_log.json` | per-run LLM 비용 분해 (profile × input/output tokens × 단가) | 비용 추적 (진행 중) |
+
+파이프라인 실행 시 `web/public/output/data/`로 자동 동기화 (샤드 디렉토리 포함).
 
 #### Obsidian 동기화 (선택적)
 
@@ -463,6 +501,17 @@ CSV/JSON은 Obsidian으로 복사하지 않음. `output/`이 항상 source of tr
 ### 3.5 웹 대시보드
 
 React (Vite + TypeScript + Recharts) 기반 정적 사이트. GitHub Pages로 자동 배포.
+
+**데이터 레이어 (v5 Repository 패턴)**
+
+`web/src/data/DashboardRepository.ts` 인터페이스로 데이터 로드를 추상화. 구현체는 `StaticJsonRepository` (정적 JSON fetch). 페이지별 접근 패턴:
+
+| 페이지 | 로드 방식 | 파일 |
+|---|---|---|
+| Dashboard / Backtest / Signals 등 | eager `loadDashboard()` | `dashboard.json` + `dashboard_history.json` (legacy) |
+| TickerDetail | 우선 lazy `loadTickerLatest()`, 미스 시 fallback | `tickers/<T>/latest.json` + `history.json` |
+
+샤드 히트 시 TickerDetail은 `dashboard.json` 전체를 받지 않고 단일 티커 payload만 fetch. `useDashboardData({ enabled: false })` 옵션으로 조건부 skip 가능.
 
 **주요 기능**:
 - 날짜 선택
@@ -596,12 +645,29 @@ pkrich/
 │   │   └── macro.py                # 매크로 캘린더 + 수익률/DXY/구리
 │   ├── analyzer/
 │   │   ├── research_note.py        # OpenAI 배치 분석 + deterministic fallback
-│   │   └── weekly_insight.py       # 주간 3문장 시장 요약 생성
+│   │   ├── weekly_insight.py       # 주간 3문장 시장 요약 생성
+│   │   ├── ensemble.py             # economy → deep → tie-break 합의 + routing (v5: portfolio_priority, routing_log)
+│   │   ├── orchestrator.py         # AnalysisOrchestrator — 모듈 DAG 실행
+│   │   ├── registry.py             # ModuleRegistry
+│   │   ├── ab_test.py              # 주간 prompt A/B
+│   │   ├── modules/                # AnalysisModule 구현체들
+│   │   ├── prompts/                # 프롬프트 템플릿 레지스트리
+│   │   └── derive/                 # (v5) 파생 계산 레이어
+│   │       ├── __init__.py         # backtest_summary / monthly_summary /
+│   │       │                        #   earnings_* / sec_filings /
+│   │       │                        #   ticker_timelines / weekly_summary re-export
+│   │       └── ticker.py           # per-ticker derivations (earnings/sec)
 │   ├── output/
 │   │   ├── markdown.py             # daily / weekly / ticker .md 생성
-│   │   ├── json_export.py          # dashboard / price_history / timeline / backtest / monthly JSON
+│   │   ├── json_export.py          # legacy dashboard / price_history / timeline JSON (write-only, v5)
+│   │   ├── sharded_export.py       # (v5) index.json + tickers/<T>/latest|history.json
+│   │   ├── cost_log.py             # (v5) per-run LLM 비용 분해
+│   │   ├── schema.py               # (v5) 공용 SCHEMA_VERSION 상수
 │   │   ├── obsidian.py             # Obsidian vault 미러링
 │   │   ├── slack.py                # Slack webhook 요약 발송
+│   │   ├── ab_test.py              # A/B 결과 출력
+│   │   ├── analysis_quality.py     # 분석 품질 메트릭 출력
+│   │   ├── api_status.py           # API 상태 매트릭스 출력
 │   │   └── alert.py                # 알림 규칙 평가 (가격/변동률 조건)
 │   ├── utils/
 │   │   ├── config.py               # YAML 설정 로더
@@ -619,10 +685,11 @@ pkrich/
 │   │   ├── cost_tracker.py         # OpenAI API 비용 추적
 │   │   ├── model_config.py         # 모델 프로파일 로더
 │   │   ├── token_estimator.py      # 배치 토큰 예측
-│   │   ├── datastore.py            # 추상 Datastore 인터페이스
+│   │   ├── datastore.py            # 추상 Datastore 인터페이스 (v5: signal API 포함)
 │   │   ├── datastore_csv.py        # CSV 백엔드
-│   │   ├── datastore_sqlite.py     # SQLite 백엔드
-│   │   ├── migrate_csv_to_sqlite.py  # CSV → SQLite 마이그레이션
+│   │   ├── datastore_sqlite.py     # SQLite 백엔드 (v5: signal dual-write 오버라이드)
+│   │   ├── migrate_csv_to_sqlite.py   # price_history CSV → SQLite 마이그레이션
+│   │   ├── migrate_signal_tracker.py  # (v5) signal_tracker CSV → SQLite 백필
 │   │   ├── earnings_history.py     # 실적 Beat/Miss 분석
 │   │   ├── earnings_setup.py       # Forward EPS / 실적 D-Day 표시
 │   │   ├── quarterly_financials.py # 분기 재무 YoY 비교
@@ -638,18 +705,33 @@ pkrich/
 ├── web/                            # React 대시보드 (Vite + TypeScript + Recharts)
 │   ├── src/
 │   │   ├── components/
+│   │   ├── data/                   # (v5) Repository 레이어
+│   │   │   ├── DashboardRepository.ts  # 인터페이스
+│   │   │   └── StaticJsonRepository.ts # 정적 JSON 구현체
 │   │   ├── hooks/
+│   │   │   ├── useDashboardData.ts     # repo 경유, enabled 플래그 지원
+│   │   │   └── useTickerAnalysis.ts    # (v5) 티커 샤드 lazy fetch
 │   │   ├── pages/
 │   │   ├── types/
 │   │   └── utils/
 │   ├── public/
-│   │   └── output/data/            # JSON 자동 동기화 대상
+│   │   └── output/data/            # JSON 자동 동기화 대상 (샤드 디렉토리 포함)
 │   └── package.json
 ├── output/                         # 생성된 리서치 노트 (Git 관리)
 │   ├── daily/
 │   │   └── weekly/
 │   ├── tickers/
 │   └── data/
+│       ├── dashboard.json          # legacy (EMIT_LEGACY_DASHBOARD 플래그, v5)
+│       ├── dashboard_history.json  # legacy
+│       ├── index.json              # (v5) 샤딩: 경량 요약
+│       ├── tickers/<T>/latest.json # (v5) 샤딩: 티커별 풀 payload
+│       ├── tickers/<T>/history.json# (v5) 샤딩: 티커별 히스토리
+│       ├── routing_log.json        # (v5) ensemble routing 감사
+│       ├── cost_log.json           # (v5) LLM 비용 분해
+│       ├── price_history.{csv,json,sqlite}
+│       ├── signal_tracker.csv      # + SQLite signal_history (dual-write, v5)
+│       └── ...
 ├── logs/
 │   └── pipeline/
 │       ├── YYYY-MM-DD.jsonl        # 이벤트 스트림
@@ -739,6 +821,7 @@ watchlist:
 | **Phase 16** | 시그널 트래커 (1D/5D/20D 수익률 검증), 백테스트 엔진, 월간 요약 | ✅ 완료 |
 | **Phase 17** | FastAPI REST API, Chat Q&A 엔진, 웹 대시보드 확장 (8 페이지) | ✅ 완료 |
 | **Phase 1-0e** | Provider 아키텍처 도입 (DataProvider ABC, CollectionOrchestrator, ProviderRegistry, RateLimit) — yfinance/FMP/Finnhub/Polygon/Stooq/AlphaVantage를 우선순위 provider로 등록, shadow mode 검증 후 orchestrator 기본 경로 전환, 순수 포매터·기술지표·yfinance 헬퍼·EPS 헬퍼를 독립 모듈로 분리, price.py 1946줄 → 1491줄 축소 | ✅ 완료 |
+| **Phase 18 (v5)** | 레이어 경계 정비 + 샤딩 + 라우팅 감사 — (1) `Datastore`에 signal API 통합 + CSV/SQLite dual-write, `migrate_signal_tracker` 추가; (2) `src/analyzer/derive/` 네임스페이스 신설, output/에서 파생 로직 제거, `tests/test_output_boundary.py`로 import 경계 enforce; (3) `sharded_export.py` — `index.json` + `tickers/<T>/{latest,history}.json` 방출 (`EMIT_SHARDED_DASHBOARD` 플래그); (4) 프론트 `DashboardRepository` 인터페이스 + `StaticJsonRepository`, `useTickerAnalysis` 훅 — TickerDetail 진입 시 샤드 lazy fetch, `dashboard.json` 요청 skip; (5) `LlmRateLimiter` (RPM+TPM 복합 토큰 버킷); (6) ensemble routing 정교화 — `portfolio_priority`, `routing_log.json` 방출; (7) pre-existing 3 test errors 해소, unused imports 정리 (521/521 PASS) | ✅ 완료 |
 
 ---
 
@@ -758,8 +841,22 @@ watchlist:
 
 ## 10. 향후 확장 고려 사항
 
-현재 미구현 항목. Phase 9~17에서 배치 전략 확장, 모델 업그레이드, SQLite, 포트폴리오 트래킹, 리스크 분석, 시그널 추적, API, Chat, 웹 대시보드 확장 등을 완료.
+Phase 9~17에서 배치 전략 확장, 모델 업그레이드, SQLite, 포트폴리오 트래킹, 리스크 분석, 시그널 추적, API, Chat, 웹 대시보드 확장을 완료. Phase 18 (v5) 에서 레이어 경계·샤딩·라우팅 감사까지 정비.
+
+**단기 후보 (v5 기반에서 자연스러운 연장)**
+
+| 항목 | 필요 조건 | 근거 |
+|---|---|---|
+| **cost_log 완성** | per-profile × input/output 토큰 분해 + routing_log와 join → "deep pass ROI" 뷰 | `cost_tracker` + Phase 18 routing_log |
+| **JSON schema snapshot 테스트** | 각 output/data/*.json 픽스처 diff + `SCHEMA_VERSION` 게이트 | 대형 리팩터 이후 schema drift 방지 |
+| **Dashboard index.json 완전 전환** | Dashboard.tsx를 `index.json` + 디테일 lazy fetch로 마이그, 30일 green 후 `EMIT_LEGACY_DASHBOARD=false` | PR4/5/5.5 기반 |
+| **Signal outcome 대시보드** | `signal_tracker`(SQLite) × `routing_log` 결합 → deep pass 히트율/수익률 차이 | v5로 두 소스 구조화 완료 |
+
+**중장기**
 
 | 항목 | 필요 조건 | 비고 |
 |---|---|---|
 | **한국 주식 추가** | pykrx + 한경/매경 RSS | 환율 처리 레이어 필요 |
+| **Intraday 부분 refresh** | `pipeline.collect_only()` 분리, 프론트 polling | Phase 18 레이어 분리가 전제 |
+| **Multi-run diff 뷰** | ticker history 샤드 활용 — `signal_or_takeaway` / `trade_frame` / `decision` 변화 강조 UI | 데이터는 이미 샤드에 존재 |
+| **Config 중앙화** | 흩어진 env flags (ENABLE_*, EMIT_*) → Settings 객체 (pydantic) | 현재 마찰 크지 않음 |

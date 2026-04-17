@@ -79,6 +79,7 @@ def build_raw_payloads(
                     'title': article.title,
                     'source': article.source,
                     'published_at': article.published_at,
+                    'link': article.link,
                 }
                 for article in deduped_news_map.get(item.ticker, [])
             ],

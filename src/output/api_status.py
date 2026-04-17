@@ -4,11 +4,12 @@ import csv
 import json
 import shutil
 import time
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import date
 from pathlib import Path
 from typing import Any, Callable
 
+from src.output.schema import SCHEMA_VERSION
 from src.types import WatchlistItem
 from src.utils.pipeline_logging import record_pipeline_event
 
@@ -102,6 +103,7 @@ def build_api_status_payload(
     llm_summary = _summarize_llm(last_run, output_root=output_root)
     return {
         "summary": {
+            "schema_version": SCHEMA_VERSION,
             "run_date": run_date.isoformat(),
             "log_path": str(log_path),
             "pipeline_completed": any(row.get("event") == "pipeline_completed" for row in last_run),
@@ -110,6 +112,7 @@ def build_api_status_payload(
         },
         "ticker_matrix": [
             {
+                "schema_version": SCHEMA_VERSION,
                 "ticker": item.ticker,
                 "name": item.name,
                 "sector": item.sector,

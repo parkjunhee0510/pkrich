@@ -46,7 +46,11 @@ jobs:
             backtest_summary.json \
             monthly_summary.json \
             api_status.json \
-            api_ticker_matrix.json; do
+            api_ticker_matrix.json \
+            calibration.json \
+            factor_audit.json \
+            tuning_report.json \
+            validation_warnings.json; do
             cp "output/data/$f" web/dist/output/data/ 2>/dev/null || echo "No $f yet"
           done
 

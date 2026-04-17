@@ -3,20 +3,26 @@ from __future__ import annotations
 
 import csv
 import json
-import sqlite3
 import shutil
 from datetime import date
 from pathlib import Path
 from typing import Any
 
-from src.backtester.engine import build_backtest_summary
+from src.analyzer.derive import (
+    build_backtest_summary,
+    build_earnings_pattern,
+    build_earnings_setup,
+    build_earnings_surprise_summary,
+    build_ticker_timelines,
+    collect_sec_filing_tags,
+    collect_sec_filings,
+    load_monthly_summary,
+    sort_sec_filings,
+)
+from src.output.schema import SCHEMA_VERSION
+from src.output.sharded_export import write_sharded_outputs
 from src.types import MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
-from src.utils.earnings_history import build_earnings_surprise_summary
-from src.utils.earnings_pattern import build_earnings_pattern
-from src.utils.earnings_setup import build_earnings_setup
-from src.utils.monthly_summary import load_monthly_summary
-from src.utils.sec_filings import collect_sec_filing_tags, collect_sec_filings, sort_sec_filings
-from src.utils.ticker_timelines import build_ticker_timelines
+from src.utils.env import is_env_flag_enabled
 from src.utils.weekly_summary import WeeklySummaryData
 
 _MAX_DAYS = 90
@@ -36,12 +42,28 @@ def write_json_outputs(
     weekly_summary: WeeklySummaryData | None = None,
     market_regime: MarketRegime | None = None,
     decisions: list[TickerDecision] | None = None,
+    backtest_summary: dict[str, Any] | None = None,
+    monthly_summary: dict[str, Any] | None = None,
+    derived_by_ticker: dict[str, dict[str, Any]] | None = None,
+    price_history_rows: list[dict[str, str]] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     root = output_root or Path("output")
     data_dir = root / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
 
     decision_map = {d.ticker: d for d in (decisions or [])}
+    emit_legacy_dashboard = is_env_flag_enabled("EMIT_LEGACY_DASHBOARD", default=False)
+    weekly_summary_payload = {
+        "schema_version": SCHEMA_VERSION,
+        "iso_year": weekly_summary.iso_year if weekly_summary else run_date.isocalendar()[0],
+        "iso_week": weekly_summary.iso_week if weekly_summary else run_date.isocalendar()[1],
+        "start_date": weekly_summary.start_date if weekly_summary else "",
+        "end_date": weekly_summary.end_date if weekly_summary else "",
+        "trading_days": weekly_summary.trading_days if weekly_summary else 0,
+        "weekly_report": weekly_summary.weekly_report if weekly_summary else {},
+        "weekly_insight": weekly_summary.weekly_insight if weekly_summary else "",
+    }
+
     latest_day, merged_days = _write_dashboard_jsons(
         data_dir / "dashboard.json",
         data_dir / "dashboard_history.json",
@@ -56,15 +78,45 @@ def write_json_outputs(
         weekly_summary=weekly_summary,
         market_regime=market_regime,
         decision_map=decision_map,
+        derived_by_ticker=derived_by_ticker,
+        price_history_rows=price_history_rows,
+        emit_legacy_dashboard=emit_legacy_dashboard,
+        weekly_summary_payload=weekly_summary_payload,
     )
     _write_price_history_exports(
         data_dir / "price_history.json",
         data_dir / "price_history.csv",
-        data_dir / "price_history.sqlite",
+        price_history_rows,
     )
-    _write_backtest_summary_json(data_dir / "backtest_summary.json", data_dir / "signal_tracker.csv")
-    _write_monthly_summary_json(data_dir / "monthly_summary.json", run_date, root)
+    backtest_payload = (
+        backtest_summary
+        if backtest_summary is not None
+        else build_backtest_summary(data_dir / "signal_tracker.csv")
+    )
+    (data_dir / "backtest_summary.json").write_text(
+        json.dumps(backtest_payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    _write_calibration_json(data_dir)
+    _write_factor_audit_json(data_dir)
+    _write_tuning_report_json(data_dir)
+    _write_validation_warnings_json(data_dir)
+    monthly_payload = (
+        monthly_summary
+        if monthly_summary is not None
+        else load_monthly_summary(run_date, output_root=root)
+    )
+    (data_dir / "monthly_summary.json").write_text(
+        json.dumps(monthly_payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     timelines = _write_ticker_timelines_json(data_dir / "ticker_timelines.json", merged_days)
+    if is_env_flag_enabled("EMIT_SHARDED_DASHBOARD", default=True):
+        write_sharded_outputs(
+            data_dir,
+            latest_day,
+            merged_days,
+            signal_stats=signal_stats or {},
+            weekly_summary=weekly_summary_payload,
+        )
     # Keep the React app's `public/output/data/*` in sync with the latest exports.
     # `data_dir` is expected to be `<repo>/output/data`, so the repo root is `data_dir.parent.parent`.
     _sync_web_public_data(data_dir, data_dir.parent.parent)
@@ -85,6 +137,10 @@ def _write_dashboard_jsons(
     weekly_summary: WeeklySummaryData | None = None,
     market_regime: MarketRegime | None = None,
     decision_map: dict[str, TickerDecision] | None = None,
+    derived_by_ticker: dict[str, dict[str, Any]] | None = None,
+    price_history_rows: list[dict[str, str]] | None = None,
+    emit_legacy_dashboard: bool = False,
+    weekly_summary_payload: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     existing_days: list[dict[str, Any]] = []
     source_path = history_path if history_path.exists() else latest_path
@@ -108,6 +164,7 @@ def _write_dashboard_jsons(
                 a,
                 period_changes_by_ticker.get(a.ticker, {"7d": "N/A", "30d": "N/A"}),
                 decision=dm.get(a.ticker),
+                ticker_derivations=(derived_by_ticker or {}).get(a.ticker),
             )
             for a in analyses
         ],
@@ -119,10 +176,11 @@ def _write_dashboard_jsons(
     if len(merged) > _MAX_DAYS:
         merged = merged[-_MAX_DAYS:]
 
-    merged = _reconcile_days_with_price_history(merged, latest_path.parent)
+    merged = _reconcile_days_with_price_history(merged, price_history_rows)
     new_day = next((day for day in merged if day.get("date") == run_date.isoformat()), new_day)
 
-    weekly_summary_payload = {
+    weekly_summary_payload = weekly_summary_payload or {
+        "schema_version": SCHEMA_VERSION,
         "iso_year": weekly_summary.iso_year if weekly_summary else run_date.isocalendar()[0],
         "iso_week": weekly_summary.iso_week if weekly_summary else run_date.isocalendar()[1],
         "start_date": weekly_summary.start_date if weekly_summary else "",
@@ -132,46 +190,44 @@ def _write_dashboard_jsons(
         "weekly_insight": weekly_summary.weekly_insight if weekly_summary else "",
     }
     latest_payload = {
+        "schema_version": SCHEMA_VERSION,
         "days": [new_day],
         "signal_stats": signal_stats,
         "weekly_summary": weekly_summary_payload,
     }
     history_payload = {
+        "schema_version": SCHEMA_VERSION,
         "days": merged,
         "signal_stats": signal_stats,
         "weekly_summary": weekly_summary_payload,
     }
 
-    latest_path.write_text(json.dumps(latest_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    if emit_legacy_dashboard:
+        latest_path.write_text(json.dumps(latest_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    elif latest_path.exists():
+        latest_path.unlink()
     history_path.write_text(json.dumps(history_payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return new_day, merged
 
 
-def _reconcile_days_with_price_history(days: list[dict[str, Any]], data_dir: Path) -> list[dict[str, Any]]:
-    sqlite_path = data_dir / "price_history.sqlite"
-    if not sqlite_path.exists():
-        return days
-
-    try:
-        with sqlite3.connect(sqlite_path) as connection:
-            cursor = connection.cursor()
-            rows = cursor.execute(
-                "select date, ticker, open, high, low, close, volume, price, daily_change from prices"
-            ).fetchall()
-    except sqlite3.Error:
+def _reconcile_days_with_price_history(
+    days: list[dict[str, Any]],
+    price_history_rows: list[dict[str, str]] | None,
+) -> list[dict[str, Any]]:
+    if not price_history_rows:
         return days
 
     snapshot_map = {
-        (str(row[0]), str(row[1])): {
-            "Open": row[2],
-            "High": row[3],
-            "Low": row[4],
-            "Close": row[5],
-            "Volume": row[6],
-            "Price": row[7],
-            "Daily Change": row[8],
+        (str(row.get("date", "")), str(row.get("ticker", ""))): {
+            "Open": row.get("open", "N/A"),
+            "High": row.get("high", "N/A"),
+            "Low": row.get("low", "N/A"),
+            "Close": row.get("close", "N/A"),
+            "Volume": row.get("volume", "N/A"),
+            "Price": row.get("price", "N/A"),
+            "Daily Change": row.get("daily_change", "N/A"),
         }
-        for row in rows
+        for row in price_history_rows
     }
 
     reconciled_days: list[dict[str, Any]] = []
@@ -232,8 +288,22 @@ def _serialize_analysis(
     period_changes: dict[str, str],
     *,
     decision: TickerDecision | None = None,
+    ticker_derivations: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    currency = _snapshot_currency(analysis.data_snapshot)
+    if ticker_derivations is None:
+        currency = _snapshot_currency(analysis.data_snapshot)
+        ticker_derivations = {
+            "earnings_setup": build_earnings_setup(
+                analysis.fundamentals,
+                analysis.quarterly_financials,
+                analysis.upcoming_events,
+                currency=currency,
+            ),
+            "earnings_surprise_history": build_earnings_surprise_summary(analysis.quarterly_financials),
+            "earnings_pattern": build_earnings_pattern(analysis.quarterly_financials),
+            "sec_filing_tags": collect_sec_filing_tags(analysis.news_references),
+            "sec_filings": sort_sec_filings(collect_sec_filings(analysis.news_references)),
+        }
     result: dict[str, Any] = {
         "ticker": analysis.ticker,
         "name": analysis.name,
@@ -254,14 +324,9 @@ def _serialize_analysis(
         "signal_or_takeaway": analysis.signal_or_takeaway,
         "data_snapshot": analysis.data_snapshot,
         "fundamentals": analysis.fundamentals,
-        "earnings_setup": build_earnings_setup(
-            analysis.fundamentals,
-            analysis.quarterly_financials,
-            analysis.upcoming_events,
-            currency=currency,
-        ),
-        "earnings_surprise_history": build_earnings_surprise_summary(analysis.quarterly_financials),
-        "earnings_pattern": build_earnings_pattern(analysis.quarterly_financials),
+        "earnings_setup": ticker_derivations["earnings_setup"],
+        "earnings_surprise_history": ticker_derivations["earnings_surprise_history"],
+        "earnings_pattern": ticker_derivations["earnings_pattern"],
         "price_action": analysis.price_action,
         "quarterly_financials": analysis.quarterly_financials[:4],
         "upcoming_events": analysis.upcoming_events,
@@ -274,8 +339,8 @@ def _serialize_analysis(
         "valuation_score": getattr(analysis, "valuation_score", {}),
         "analysis_consensus": getattr(analysis, "analysis_consensus", {}),
         "period_changes": period_changes,
-        "sec_filing_tags": collect_sec_filing_tags(analysis.news_references),
-        "sec_filings": sort_sec_filings(collect_sec_filings(analysis.news_references)),
+        "sec_filing_tags": ticker_derivations["sec_filing_tags"],
+        "sec_filings": ticker_derivations["sec_filings"],
     }
     if decision is not None:
         result["decision"] = _serialize_decision(decision, analysis_consensus=getattr(analysis, "analysis_consensus", {}))
@@ -327,9 +392,13 @@ def _snapshot_currency(snapshot: dict[str, str]) -> str:
     return "USD"
 
 
-def _write_price_history_exports(json_path: Path, csv_path: Path, sqlite_path: Path) -> None:
-    rows = _load_price_history_rows(sqlite_path, csv_path)
-    json_path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+def _write_price_history_exports(
+    json_path: Path,
+    csv_path: Path,
+    rows: list[dict[str, str]] | None,
+) -> None:
+    effective_rows = rows if rows is not None else _load_price_history_rows_from_csv(csv_path)
+    json_path.write_text(json.dumps(effective_rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
     with csv_path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=[
@@ -349,59 +418,12 @@ def _write_price_history_exports(json_path: Path, csv_path: Path, sqlite_path: P
             "volume",
         ])
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(effective_rows)
 
 
-def _load_price_history_rows(sqlite_path: Path, csv_path: Path) -> list[dict[str, str]]:
-    if sqlite_path.exists():
-        try:
-            with sqlite3.connect(sqlite_path) as connection:
-                cursor = connection.execute(
-                    """
-                    SELECT
-                        date,
-                        ticker,
-                        price,
-                        daily_change,
-                        market_cap,
-                        trailing_pe,
-                        eps,
-                        high_52w,
-                        low_52w,
-                        open,
-                        high,
-                        low,
-                        close,
-                        volume
-                    FROM prices
-                    ORDER BY date, ticker
-                    """
-                )
-                return [
-                    {
-                        "date": str(row[0]),
-                        "ticker": str(row[1]),
-                        "price": str(row[2]),
-                        "daily_change": str(row[3]),
-                        "market_cap": str(row[4]),
-                        "trailing_pe": str(row[5]),
-                        "eps": str(row[6]),
-                        "52w_high": str(row[7]),
-                        "52w_low": str(row[8]),
-                        "open": str(row[9]),
-                        "high": str(row[10]),
-                        "low": str(row[11]),
-                        "close": str(row[12]),
-                        "volume": str(row[13]),
-                    }
-                    for row in cursor.fetchall()
-                ]
-        except sqlite3.Error:
-            pass
-
+def _load_price_history_rows_from_csv(csv_path: Path) -> list[dict[str, str]]:
     if not csv_path.exists():
         return []
-
     with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
         return [
@@ -414,16 +436,6 @@ def _write_ticker_timelines_json(path: Path, days: list[dict[str, Any]]) -> dict
     timelines = build_ticker_timelines(days)
     path.write_text(json.dumps(timelines, ensure_ascii=False, indent=2), encoding="utf-8")
     return timelines
-
-
-def _write_backtest_summary_json(path: Path, signal_csv_path: Path) -> None:
-    payload = build_backtest_summary(signal_csv_path)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
-def _write_monthly_summary_json(path: Path, run_date: date, output_root: Path) -> None:
-    payload = load_monthly_summary(run_date, output_root=output_root)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def _serialize_portfolio_summary(portfolio_summary: PortfolioSummary | None) -> dict[str, Any] | None:
@@ -451,6 +463,140 @@ def _serialize_portfolio_summary(portfolio_summary: PortfolioSummary | None) -> 
     }
 
 
+def _write_calibration_json(data_dir: Path) -> None:
+    """Emit conviction-vs-realized-return calibration payload for Admin page."""
+    from src.decision.calibration import build_calibration_payload
+    from src.utils.signal_tracker import load_signal_rows
+
+    try:
+        rows = load_signal_rows(data_dir / "signal_tracker.csv")
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            "horizons": {
+                str(horizon): build_calibration_payload(rows, horizon=horizon)
+                for horizon in (1, 5, 20)
+            },
+        }
+    except Exception as exc:  # graceful degradation — never crash the pipeline
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            "error": str(exc),
+            "horizons": {},
+        }
+    (data_dir / "calibration.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+def _write_factor_audit_json(data_dir: Path) -> None:
+    """Emit factor collinearity + IR audit payload for Admin page."""
+    from src.decision.factor_audit import build_factor_audit_payload
+    from src.utils.signal_tracker import load_signal_rows
+
+    try:
+        rows = load_signal_rows(data_dir / "signal_tracker.csv")
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            "horizons": {
+                str(horizon): build_factor_audit_payload(rows, horizon=horizon)
+                for horizon in (5, 20)
+            },
+        }
+    except Exception as exc:  # graceful degradation
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            "error": str(exc),
+            "horizons": {},
+        }
+    (data_dir / "factor_audit.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+def _write_tuning_report_json(data_dir: Path) -> None:
+    """Emit regime-multiplier grid search + walk-forward CV + threshold suggestions.
+
+    Read-only advisory artifact for Admin UI — does NOT rewrite
+    `decision_weights.yaml`. Operator reviews and manually promotes.
+    """
+    from src.decision.tune_weights import build_tuning_payload
+    from src.utils.signal_tracker import load_signal_rows
+
+    try:
+        rows = load_signal_rows(data_dir / "signal_tracker.csv")
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            "horizons": {
+                str(horizon): build_tuning_payload(rows, horizon=horizon)
+                for horizon in (5, 20)
+            },
+        }
+    except Exception as exc:  # graceful degradation
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            "error": str(exc),
+            "horizons": {},
+        }
+    (data_dir / "tuning_report.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+def _write_validation_warnings_json(data_dir: Path, *, window_days: int = 14) -> None:
+    """Aggregate recent LLM validation warnings into a histogram for Admin.
+
+    Reads the last `window_days` of pipeline summary files (cheap — one
+    file per day) and emits per-day counts across the four hallucination
+    categories plus the drop counter. No reliance on jsonl replay.
+    """
+    from datetime import date as _date, timedelta
+
+    logs_root = Path("logs") / "pipeline"
+    categories = (
+        "schema_violation_count",
+        "fact_warning_count",
+        "consistency_warning_count",
+        "hallucination_warning_count",
+        "dropped_unsupported_count",
+    )
+    series: list[dict[str, Any]] = []
+    totals: dict[str, int] = {cat: 0 for cat in categories}
+    today = _date.today()
+
+    for offset in range(window_days - 1, -1, -1):
+        day = today - timedelta(days=offset)
+        summary_path = logs_root / f"{day.isoformat()}.summary.json"
+        if not summary_path.exists():
+            continue
+        try:
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        quality = summary.get("analyzer_quality", {}) or {}
+        day_counts = {cat: int(quality.get(cat, 0) or 0) for cat in categories}
+        for cat, count in day_counts.items():
+            totals[cat] += count
+        series.append({
+            "date": day.isoformat(),
+            "batch_count": int(quality.get("batch_count", 0) or 0),
+            "validated_ticker_count": int(quality.get("validated_ticker_count", 0) or 0),
+            "validation_failure_count": int(quality.get("validation_failure_count", 0) or 0),
+            **day_counts,
+        })
+
+    payload = {
+        "schema_version": SCHEMA_VERSION,
+        "window_days": window_days,
+        "generated_at": today.isoformat(),
+        "categories": list(categories),
+        "totals": totals,
+        "series": series,
+    }
+    (data_dir / "validation_warnings.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
 def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
     web_root = project_root / "web"
     if not web_root.exists():
@@ -466,20 +612,42 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
     for target_dir in target_dirs:
         target_dir.mkdir(parents=True, exist_ok=True)
 
-    for filename in (
-        "dashboard.json",
+    filenames = [
         "dashboard_history.json",
         "api_status.json",
         "api_ticker_matrix.json",
         "api_ticker_matrix.csv",
         "analysis_quality.json",
+        "cost_log.json",
+        "routing_outcome.json",
         "ab_test_results.json",
         "price_history.json",
         "ticker_timelines.json",
         "backtest_summary.json",
         "monthly_summary.json",
-    ):
+        "index.json",
+    ]
+    dashboard_json = data_dir / "dashboard.json"
+    if dashboard_json.exists():
+        filenames.insert(0, "dashboard.json")
+
+    for filename in filenames:
         source_path = data_dir / filename
         if source_path.exists():
             for target_dir in target_dirs:
                 shutil.copy2(source_path, target_dir / filename)
+
+    stale_candidates = {"dashboard.json"} - set(filenames)
+    for filename in stale_candidates:
+        for target_dir in target_dirs:
+            target_path = target_dir / filename
+            if target_path.exists():
+                target_path.unlink()
+
+    source_tickers = data_dir / "tickers"
+    if source_tickers.is_dir():
+        for target_dir in target_dirs:
+            target_tickers = target_dir / "tickers"
+            if target_tickers.exists():
+                shutil.rmtree(target_tickers, ignore_errors=True)
+            shutil.copytree(source_tickers, target_tickers)

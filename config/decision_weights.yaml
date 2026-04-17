@@ -31,15 +31,35 @@ factors:
     max: 0
 
 regime_multipliers:
+  # Per-factor gain by macro regime. Unlisted factors default to 1.0.
+  # Tuning guidance: after ~30 days of `calibration.json` accumulation, refit
+  # against regime-segmented IR (see src/decision/calibration.py).
   risk_on:
+    # Growth regime: trust momentum/catalyst, underweight valuation/defense.
     momentum: 1.3
+    catalyst_recency: 1.2
+    peer_rank: 1.15
+    news_tone: 1.1
+    signal_track_record: 1.1
     valuation: 0.8
-    catalyst: 1.2
+    fundamentals: 0.9
   risk_off:
+    # Defensive regime: suppress momentum hard (whipsaw risk), lean on
+    # balance-sheet factors, and boost signal_track_record because
+    # regime-consistent setups age better.
+    momentum: 0.5
+    catalyst_recency: 0.7
+    news_tone: 0.7
     valuation: 1.4
-    momentum: 0.7
-    fundamentals: 1.3
-  neutral: {}
+    fundamentals: 1.4
+    signal_track_record: 1.3
+    earnings_pattern: 1.1
+  neutral:
+    # Mild factor diversification — nudge toward evidence-backed factors
+    # without over-fitting to a regime read that itself is neutral.
+    signal_track_record: 1.1
+    peer_rank: 1.05
+    momentum: 0.95
 
 thresholds:
   buy: 65

@@ -339,6 +339,7 @@ export interface DailyEntry {
 }
 
 export interface WeeklySummaryPreview {
+  schema_version?: number
   iso_year: number
   iso_week: number
   start_date: string
@@ -410,6 +411,7 @@ export interface SignalStats {
 }
 
 export interface DashboardData {
+  schema_version?: number
   days: DailyEntry[]
   signal_stats?: SignalStats
   weekly_summary?: WeeklySummaryPreview
@@ -474,6 +476,53 @@ export interface MonthlySummaryData {
   top_sectors?: Array<{ sector: string; avg_daily_change: string }>
 }
 
+export interface RoutingOutcomeSummary {
+  deep_selected_count: number
+  economy_only_count: number
+  portfolio_priority_count: number
+  deep_selected_avg_return_20d: number | null
+  economy_only_avg_return_20d: number | null
+  portfolio_priority_avg_return_20d: number | null
+  deep_selected_hit_rate: number | null
+  economy_only_hit_rate: number | null
+  portfolio_priority_hit_rate: number | null
+  avg_return_delta_20d: number | null
+  hit_rate_delta: number | null
+}
+
+export interface RoutingOutcomePeriod extends RoutingOutcomeSummary {
+  period: string
+}
+
+export interface RoutingOutcomeLatestRunTicker {
+  ticker: string
+  selected_for_deep: boolean
+  reason: string
+  in_portfolio: boolean
+  conviction: number | null
+  action: string | null
+}
+
+export interface RoutingOutcomeLatestRun {
+  run_date: string
+  trigger_range: number[]
+  max_daily_ensemble: number
+  portfolio_priority: boolean
+  deep_pass_count: number
+  tickers: RoutingOutcomeLatestRunTicker[]
+}
+
+export interface RoutingOutcomePayload {
+  schema_version?: number
+  run_count: number
+  evaluated_signals: number
+  latest_run_date: string
+  summary: RoutingOutcomeSummary
+  periods: RoutingOutcomePeriod[]
+  latest_run: RoutingOutcomeLatestRun | Record<string, never>
+  status: string
+}
+
 export interface ChatResponse {
   answer: string
   matched_tickers: string[]
@@ -498,11 +547,50 @@ export interface AnalyticsRun {
   validation_failure_count: number
 }
 
+export interface CostLogProfileBreakdown {
+  cost_usd: number
+  tokens: number
+  calls: number
+  models: Record<string, number>
+}
+
+export interface CostLogRoutingSummary {
+  ensemble_enabled: boolean
+  eligible_count: number
+  selected_count: number
+  skipped_due_to_cap_count: number
+  conflicted_count: number
+}
+
+export interface CostLogDeepValue {
+  deep_cost_usd: number
+  selected_ticker_count: number
+  cost_per_selected_ticker_usd: number
+  share_of_total_cost: number
+  worth_it_hint: string
+}
+
+export interface CostLogRun {
+  run_date: string
+  success: boolean
+  total_cost_usd: number
+  profiles: Record<string, CostLogProfileBreakdown>
+  routing: CostLogRoutingSummary
+  deep_pass_value: CostLogDeepValue
+}
+
+export interface CostLogPayload {
+  schema_version?: number
+  runs: CostLogRun[]
+  latest: CostLogRun | Record<string, never>
+}
+
 export interface AnalyticsCostResponse {
   runs: AnalyticsRun[]
   total_cost_usd: number
   average_cost_usd: number
   successful_runs: number
+  cost_log?: CostLogPayload
 }
 
 export type ApiProviderState = 'used' | 'failed' | 'throttled' | 'unavailable' | 'not_used'
@@ -517,6 +605,7 @@ export interface ApiProviderSummary {
 }
 
 export interface ApiStatusSummary {
+  schema_version?: number
   run_date: string
   log_path: string
   pipeline_completed: boolean
@@ -544,6 +633,7 @@ export interface ApiStatusSummary {
 }
 
 export interface ApiTickerMatrixRow {
+  schema_version?: number
   ticker: string
   name: string
   sector: string

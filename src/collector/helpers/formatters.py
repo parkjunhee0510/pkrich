@@ -24,7 +24,6 @@ sentinel all downstream markdown/JSON renderers understand.
 from __future__ import annotations
 
 import math
-from typing import Any
 
 
 # ---------------------------------------------------------------------------

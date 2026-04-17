@@ -1,8 +1,17 @@
 from __future__ import annotations
 
+import statistics
 from dataclasses import dataclass, replace
 from datetime import date
 from typing import Any
+
+# Conviction calibration modifiers (see src/decision/calibration.py for validation).
+# AGREE_BOOST: max boost when 3 models agree with zero spread.
+# SPREAD_K: shrinks the boost proportionally to stdev of model convictions.
+# CONFLICT_SHRINK: compresses mean conviction toward 50 on full disagreement.
+AGREE_BOOST = 8.0
+SPREAD_K = 0.5
+CONFLICT_SHRINK = 0.6
 
 from src.analyzer.orchestrator import AnalysisOrchestrator
 from src.analyzer.payloads import payloads_from_analyses
@@ -86,12 +95,28 @@ class AnalysisEnsemble:
         )
         economy_decision_map = {decision.ticker: decision for decision in economy_decisions}
 
+        portfolio_tickers: set[str] = set()
+        if portfolio_summary is not None:
+            portfolio_tickers = {
+                position.ticker for position in portfolio_summary.positions
+            }
+
         eligible_tickers = [
             item.ticker
             for item in watchlist
-            if _is_ensemble_target(economy_decision_map.get(item.ticker), self.config)
+            if _is_ensemble_target(
+                economy_decision_map.get(item.ticker),
+                self.config,
+                in_portfolio=item.ticker in portfolio_tickers,
+            )
         ]
-        target_tickers = _select_target_tickers(eligible_tickers, economy_decision_map, watchlist, self.config)
+        target_tickers = _select_target_tickers(
+            eligible_tickers,
+            economy_decision_map,
+            watchlist,
+            self.config,
+            portfolio_tickers=portfolio_tickers,
+        )
         skipped_due_to_cap = [ticker for ticker in eligible_tickers if ticker not in target_tickers]
 
         diagnostics: dict[str, Any] = {
@@ -111,6 +136,15 @@ class AnalysisEnsemble:
             "third_executed_modules": [],
             "conflicted_tickers": [],
             "third_review_tickers": [],
+            "portfolio_tickers": sorted(portfolio_tickers),
+            "routing_log": build_routing_log(
+                watchlist,
+                economy_decision_map,
+                target_tickers,
+                self.config,
+                portfolio_tickers=portfolio_tickers,
+                run_date=run_date,
+            ),
         }
         portfolio_result = dict(self.economy_orchestrator.portfolio_result)
 
@@ -258,6 +292,15 @@ def apply_consensus_to_decisions(
         final_consensus = str(consensus.get("final_consensus", "single"))
         reason = decision.reason
 
+        adjustment = _compute_conviction_adjustment(consensus)
+        if adjustment is not None:
+            # Persist diagnostics onto the payload so Admin/json_export can show it.
+            consensus["conviction_mean"] = adjustment["mean"]
+            consensus["conviction_stdev"] = adjustment["stdev"]
+            consensus["conviction_adjusted"] = adjustment["adjusted"]
+            consensus["conviction_prior"] = decision.conviction
+            consensus["conviction_sample_size"] = adjustment["sample_size"]
+
         if final_consensus == "resolved":
             final_action = str(consensus.get("final_action", decision.action))
             third_reason = str(consensus.get("third_reason", "")).strip()
@@ -279,21 +322,61 @@ def apply_consensus_to_decisions(
                 conflict_note = f"{conflict_note} ({economy_reason})"
             reason = f"{reason} / {conflict_note}" if reason else conflict_note
 
+        new_conviction = decision.conviction
+        if adjustment is not None:
+            new_conviction = adjustment["adjusted"]
+            delta = new_conviction - decision.conviction
+            if delta != 0:
+                direction = "↑" if delta > 0 else "↓"
+                calibration_note = (
+                    f"앙상블 보정: {decision.conviction}→{new_conviction} "
+                    f"({direction}{abs(delta)}, spread σ={adjustment['stdev']})"
+                )
+                reason = f"{reason} / {calibration_note}" if reason else calibration_note
+
         updated.append(
             replace(
                 decision,
                 reason=reason,
                 final_consensus=final_consensus,
+                conviction=new_conviction,
             )
         )
     return updated
 
 
-def _is_ensemble_target(decision: TickerDecision | None, config: EnsembleConfig) -> bool:
+def _is_ensemble_target(
+    decision: TickerDecision | None,
+    config: EnsembleConfig,
+    *,
+    in_portfolio: bool = False,
+) -> bool:
     if decision is None or not config.enabled:
         return False
+    if config.portfolio_priority and in_portfolio:
+        return True
     low, high = config.trigger_range
     return low <= decision.conviction <= high
+
+
+def _classify_routing_reason(
+    decision: TickerDecision | None,
+    config: EnsembleConfig,
+    *,
+    in_portfolio: bool,
+) -> str:
+    if decision is None:
+        return "no_decision"
+    if not config.enabled:
+        return "ensemble_disabled"
+    if config.portfolio_priority and in_portfolio:
+        return "portfolio_priority"
+    low, high = config.trigger_range
+    if decision.conviction < low:
+        return "below_range"
+    if decision.conviction > high:
+        return "above_range"
+    return "in_trigger_range"
 
 
 def _select_target_tickers(
@@ -301,21 +384,62 @@ def _select_target_tickers(
     decision_map: dict[str, TickerDecision],
     watchlist: list[WatchlistItem],
     config: EnsembleConfig,
+    *,
+    portfolio_tickers: set[str] | None = None,
 ) -> list[str]:
     if not config.enabled:
         return []
+    portfolio_tickers = portfolio_tickers or set()
     watchlist_order = {item.ticker: index for index, item in enumerate(watchlist)}
 
-    def _sort_key(ticker: str) -> tuple[float, float, int]:
+    def _sort_key(ticker: str) -> tuple[int, float, float, int]:
         conviction = decision_map[ticker].conviction
         edge_distance = min(abs(conviction - 35), abs(conviction - 65))
         ambiguity = abs(conviction - 50)
-        return (edge_distance, ambiguity, watchlist_order.get(ticker, 9999))
+        portfolio_rank = 0 if (config.portfolio_priority and ticker in portfolio_tickers) else 1
+        return (portfolio_rank, edge_distance, ambiguity, watchlist_order.get(ticker, 9999))
 
     ranked = sorted(eligible_tickers, key=_sort_key)
     if config.max_daily_ensemble == 0:
         return ranked
     return ranked[: config.max_daily_ensemble]
+
+
+def build_routing_log(
+    watchlist: list[WatchlistItem],
+    decision_map: dict[str, TickerDecision],
+    target_tickers: list[str],
+    config: EnsembleConfig,
+    *,
+    portfolio_tickers: set[str] | None = None,
+    run_date: date | None = None,
+) -> dict[str, Any]:
+    portfolio_tickers = portfolio_tickers or set()
+    selected_set = set(target_tickers)
+    entries: list[dict[str, Any]] = []
+    for item in watchlist:
+        ticker = item.ticker
+        decision = decision_map.get(ticker)
+        in_portfolio = ticker in portfolio_tickers
+        entries.append(
+            {
+                "ticker": ticker,
+                "conviction": decision.conviction if decision else None,
+                "action": decision.action if decision else None,
+                "in_portfolio": in_portfolio,
+                "selected_for_deep": ticker in selected_set,
+                "reason": _classify_routing_reason(decision, config, in_portfolio=in_portfolio),
+            }
+        )
+    return {
+        "schema_version": 1,
+        "run_date": run_date.isoformat() if run_date else None,
+        "trigger_range": list(config.trigger_range),
+        "max_daily_ensemble": config.max_daily_ensemble,
+        "portfolio_priority": config.portfolio_priority,
+        "deep_pass_count": len(selected_set),
+        "tickers": entries,
+    }
 
 
 def _direction_bucket(action: str | None) -> str:
@@ -399,6 +523,60 @@ def _build_consensus_payload(
         payload["final_consensus"] = "conflict"
         payload["final_action"] = third_action
     return payload
+
+
+def _clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
+
+
+def _compute_conviction_adjustment(consensus: dict[str, Any]) -> dict[str, Any] | None:
+    """Derive a conviction override from model agreement.
+
+    Inputs: per-model convictions (economy/deep/third) already stored in the
+    consensus payload by `_build_pair_consensus`.
+
+    Formula by `final_consensus`:
+      - "agree" (directional agreement among available models):
+            adjusted = mean + max(0, AGREE_BOOST - SPREAD_K * stdev)
+        Tight spread rewarded; wide spread diluted.
+      - "resolved" (tie-breaker aligned with one camp):
+            adjusted = median(convictions)   # cap at median, no boost
+      - "conflict" (full three-way split):
+            adjusted = 50 + (mean - 50) * CONFLICT_SHRINK   # pull toward 50
+      - "single" / missing data: no adjustment.
+
+    Returns a dict with diagnostic fields (mean, stdev, adjusted) or None when
+    insufficient data to adjust.
+    """
+    final_consensus = str(consensus.get("final_consensus", "single"))
+    raw = [
+        consensus.get("economy_conviction"),
+        consensus.get("deep_conviction"),
+        consensus.get("third_conviction"),
+    ]
+    convictions = [float(v) for v in raw if isinstance(v, (int, float))]
+    if len(convictions) < 2 or final_consensus == "single":
+        return None
+
+    mean_c = statistics.mean(convictions)
+    stdev_c = statistics.pstdev(convictions) if len(convictions) >= 2 else 0.0
+
+    if final_consensus == "agree":
+        boost = max(0.0, AGREE_BOOST - SPREAD_K * stdev_c)
+        adjusted = _clamp(mean_c + boost, 0.0, 100.0)
+    elif final_consensus == "resolved":
+        adjusted = _clamp(statistics.median(convictions), 0.0, 100.0)
+    elif final_consensus == "conflict":
+        adjusted = _clamp(50.0 + (mean_c - 50.0) * CONFLICT_SHRINK, 0.0, 100.0)
+    else:
+        return None
+
+    return {
+        "mean": round(mean_c, 2),
+        "stdev": round(stdev_c, 2),
+        "adjusted": int(round(adjusted)),
+        "sample_size": len(convictions),
+    }
 
 
 def _selection_reason(enabled: bool, selected: bool, skipped_due_to_cap: bool) -> str:

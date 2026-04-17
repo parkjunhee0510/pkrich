@@ -122,6 +122,7 @@ def run_structured_llm_module(
                         fact_warning_count=counts.get("fact_warning", 0),
                         consistency_warning_count=counts.get("consistency_warning", 0),
                         hallucination_warning_count=counts.get("hallucination_warning", 0),
+                        dropped_unsupported_count=counts.get("dropped_unsupported", 0),
                     )
                 if capture_validation_details:
                     diagnostics["validation_details"][ticker] = {

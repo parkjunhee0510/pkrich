@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 import csv
+import json
+import math
 import re
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
-from src.types import TickerAnalysis
+from src.types import MarketRegime, TickerAnalysis, TickerDecision
 from src.utils.sec_filings import collect_sec_filings
+
+_ACTION_TO_DIRECTION = {
+    "buy": "bull",
+    "avoid": "bear",
+    "watch": "neutral",
+}
 
 FIELDNAMES = [
     "signal_date",
@@ -24,6 +32,16 @@ FIELDNAMES = [
     "evaluated_1d",
     "evaluated_5d",
     "evaluated_20d",
+    "conviction",
+    "action",
+    "regime",
+    "factors_json",
+    # Survivorship-bias guard: watchlist is curated, so absolute returns
+    # inherit selection bias. We also record the equal-weight benchmark
+    # (mean return of all watchlist signals on the same date) and the
+    # per-signal alpha. Calibration / factor_audit should prefer alpha.
+    "benchmark_return_5d",
+    "alpha_5d",
 ]
 _NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*\.?\d*")
 _BULLISH_TERMS = ("상승", "강세", "반등", "회복", "돌파", "bull")
@@ -35,10 +53,18 @@ def record_signals(
     run_date: date,
     price_lookup: dict[str, float],
     csv_path: Path,
+    *,
+    decisions: list[TickerDecision] | None = None,
+    market_regime: MarketRegime | None = None,
 ) -> None:
     rows = _load_rows(csv_path)
     replacement_keys = {(run_date.isoformat(), analysis.ticker) for analysis in analyses}
     retained = [row for row in rows if (row.get("signal_date"), row.get("ticker")) not in replacement_keys]
+
+    decision_map: dict[str, TickerDecision] = {
+        d.ticker: d for d in (decisions or []) if getattr(d, "ticker", "")
+    }
+    regime_label = market_regime.regime if market_regime is not None else ""
 
     for analysis in analyses:
         signal_price = price_lookup.get(analysis.ticker)
@@ -46,12 +72,28 @@ def record_signals(
             continue
         filings = collect_sec_filings(analysis.news_references)
         primary_filing = filings[0] if filings else {}
+        decision = decision_map.get(analysis.ticker)
+        conviction_value = str(decision.conviction) if decision is not None else ""
+        action_value = str(decision.action) if decision is not None else ""
+        factors_json_value = ""
+        if decision is not None and decision.factors:
+            try:
+                factors_json_value = json.dumps(
+                    {k: float(v) for k, v in decision.factors.items()},
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+            except (TypeError, ValueError):
+                factors_json_value = ""
         retained.append(
             {
                 "signal_date": run_date.isoformat(),
                 "ticker": analysis.ticker,
                 "signal_type": str(primary_filing.get("form_type", "") or "takeaway"),
-                "signal_direction": _classify_signal_direction(analysis),
+                "signal_direction": _classify_signal_direction(
+                    analysis,
+                    action=decision.action if decision is not None else None,
+                ),
                 "signal_price": f"{signal_price:.2f}",
                 "catalyst_tag": str(primary_filing.get("tag", "") or "일반 이슈"),
                 "news_tone": str(analysis.news_tone.get("label", "neutral")),
@@ -62,6 +104,12 @@ def record_signals(
                 "evaluated_1d": "False",
                 "evaluated_5d": "False",
                 "evaluated_20d": "False",
+                "conviction": conviction_value,
+                "action": action_value,
+                "regime": regime_label,
+                "factors_json": factors_json_value,
+                "benchmark_return_5d": row_default(),
+                "alpha_5d": row_default(),
             }
         )
 
@@ -105,6 +153,12 @@ def update_signal_returns(
             row[evaluated_key] = "True"
             updated_row_keys.add((row.get("signal_date", ""), ticker))
 
+    # Second pass: compute the watchlist equal-weight benchmark per
+    # signal_date and the per-signal alpha (return_5d - benchmark). This
+    # neutralizes the survivorship bias in absolute IR measurements —
+    # calibration / factor_audit should read alpha_5d.
+    _populate_benchmark_and_alpha(rows)
+
     _write_rows(csv_path, rows)
     return len(updated_row_keys)
 
@@ -130,6 +184,7 @@ def _filter_recent_signals(sorted_rows: list[dict[str, str]], days: int = 90) ->
 
 def build_signal_stats_from_rows(rows: list[dict[str, str]]) -> dict[str, Any]:
     sorted_rows = sorted(rows, key=lambda row: (row.get("signal_date", ""), row.get("ticker", "")), reverse=True)
+    neutral_bands = build_ticker_neutral_bands(rows)
     summary_by_direction: dict[str, dict[str, Any]] = {}
     for direction in ("bull", "bear", "neutral"):
         direction_rows = [row for row in rows if row.get("signal_direction") == direction]
@@ -140,7 +195,8 @@ def build_signal_stats_from_rows(rows: list[dict[str, str]]) -> dict[str, Any]:
         for row, value in zip(evaluated_rows, evaluated_returns, strict=False):
             if value is None:
                 continue
-            if _is_signal_win(direction, value):
+            band = neutral_bands.get(str(row.get("ticker", "")).strip())
+            if _is_signal_win(direction, value, neutral_band=band):
                 win_count += 1
         avg_return = sum(usable_returns) / len(usable_returns) if usable_returns else None
         win_rate = (win_count / len(usable_returns) * 100) if usable_returns else None
@@ -213,8 +269,10 @@ def _build_meta_analysis(rows: list[dict[str, str]]) -> dict[str, Any]:
 
 
 def _group_stats(rows: list[dict[str, str]], group_key: str) -> dict[str, dict[str, Any]]:
+    neutral_bands = build_ticker_neutral_bands(rows)
     groups: dict[str, list[float]] = {}
     directions: dict[str, list[str]] = {}
+    bands: dict[str, list[float]] = {}
     for row in rows:
         group = str(row.get(group_key, "unknown")).strip() or "unknown"
         ret = _parse_float(row.get("return_5d", ""))
@@ -223,15 +281,20 @@ def _group_stats(rows: list[dict[str, str]], group_key: str) -> dict[str, dict[s
             continue
         groups.setdefault(group, []).append(ret)
         directions.setdefault(group, []).append(direction)
+        bands.setdefault(group, []).append(
+            neutral_bands.get(str(row.get("ticker", "")).strip(), DEFAULT_NEUTRAL_BAND_PCT)
+        )
 
     result: dict[str, dict[str, Any]] = {}
     for group, returns in groups.items():
         if not returns:
             continue
         dir_list = directions.get(group, [])
+        band_list = bands.get(group, [])
         wins = sum(
-            1 for ret, d in zip(returns, dir_list, strict=False)
-            if _is_signal_win(d, ret)
+            1
+            for ret, d, band in zip(returns, dir_list, band_list, strict=False)
+            if _is_signal_win(d, ret, neutral_band=band)
         )
         result[group] = {
             "count": len(returns),
@@ -244,6 +307,7 @@ def _group_stats(rows: list[dict[str, str]], group_key: str) -> dict[str, dict[s
 
 
 def _calculate_streaks(rows: list[dict[str, str]]) -> dict[str, Any]:
+    neutral_bands = build_ticker_neutral_bands(rows)
     sorted_rows = sorted(rows, key=lambda r: (r.get("signal_date", ""), r.get("ticker", "")), reverse=True)
     current_streak = 0
     current_type = ""
@@ -257,7 +321,8 @@ def _calculate_streaks(rows: list[dict[str, str]]) -> dict[str, Any]:
         direction = str(row.get("signal_direction", "neutral"))
         if ret is None:
             continue
-        is_win = _is_signal_win(direction, ret)
+        band = neutral_bands.get(str(row.get("ticker", "")).strip())
+        is_win = _is_signal_win(direction, ret, neutral_band=band)
         if is_win:
             temp_win += 1
             max_win_streak = max(max_win_streak, temp_win)
@@ -273,7 +338,8 @@ def _calculate_streaks(rows: list[dict[str, str]]) -> dict[str, Any]:
         direction = str(row.get("signal_direction", "neutral"))
         if ret is None:
             continue
-        is_win = _is_signal_win(direction, ret)
+        band = neutral_bands.get(str(row.get("ticker", "")).strip())
+        is_win = _is_signal_win(direction, ret, neutral_band=band)
         streak_label = "win" if is_win else "loss"
         if not current_type:
             current_type = streak_label
@@ -292,6 +358,7 @@ def _calculate_streaks(rows: list[dict[str, str]]) -> dict[str, Any]:
 
 
 def _ticker_performance(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    neutral_bands = build_ticker_neutral_bands(rows)
     ticker_returns: dict[str, list[float]] = {}
     ticker_directions: dict[str, list[str]] = {}
     for row in rows:
@@ -308,7 +375,12 @@ def _ticker_performance(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
         if not returns:
             continue
         dirs = ticker_directions.get(ticker, [])
-        wins = sum(1 for r, d in zip(returns, dirs, strict=False) if _is_signal_win(d, r))
+        band = neutral_bands.get(ticker)
+        wins = sum(
+            1
+            for r, d in zip(returns, dirs, strict=False)
+            if _is_signal_win(d, r, neutral_band=band)
+        )
         result.append({
             "ticker": ticker,
             "signals": len(returns),
@@ -324,7 +396,27 @@ def row_default() -> str:
     return "N/A"
 
 
-def _classify_signal_direction(analysis: TickerAnalysis) -> str:
+def _classify_signal_direction(
+    analysis: TickerAnalysis,
+    *,
+    action: str | None = None,
+) -> str:
+    """Classify the directional bias of a signal.
+
+    Primary source: the decision layer's `action` (buy/avoid/watch), which is
+    a downstream aggregate of many factors and is not itself fed back into
+    future decisions via signal_track_record. Using it here breaks the old
+    self-referential loop where news_tone → direction → signal_track_record →
+    next decision's news_tone-derived factor.
+
+    Fallback: when no action is provided (legacy callers, tests, or failed
+    decision runs), we fall back to the prior text-based classifier.
+    """
+    if action:
+        normalized = action.strip().lower()
+        if normalized in _ACTION_TO_DIRECTION:
+            return _ACTION_TO_DIRECTION[normalized]
+
     signal_text = analysis.signal_or_takeaway.lower()
     text = f"{analysis.signal_or_takeaway} {analysis.trade_frame.get('base_scenario', '')}".lower()
     if any(term in signal_text for term in _BEARISH_TERMS):
@@ -341,12 +433,71 @@ def _classify_signal_direction(analysis: TickerAnalysis) -> str:
     return "neutral"
 
 
-def _is_signal_win(direction: str, return_value: float) -> bool:
+DEFAULT_NEUTRAL_BAND_PCT = 1.0
+
+
+def _is_signal_win(
+    direction: str,
+    return_value: float,
+    *,
+    neutral_band: float | None = None,
+) -> bool:
+    """Directional outcome check.
+
+    - bull: win if return > 0
+    - bear: win if return < 0
+    - neutral: win if |return| is within the ticker's own noise floor. The
+      band defaults to a fixed 1% (legacy behaviour) but callers that have
+      context should pass a per-ticker 1σ derived from `build_ticker_neutral_bands`
+      so a quiet name like KO isn't held to the same flat-line tolerance
+      as a high-vol name like IONQ.
+    """
     if direction == "bull":
         return return_value > 0
     if direction == "bear":
         return return_value < 0
-    return abs(return_value) <= 1.0
+    band = neutral_band if neutral_band is not None else DEFAULT_NEUTRAL_BAND_PCT
+    return abs(return_value) <= band
+
+
+def build_ticker_neutral_bands(
+    rows: list[dict[str, str]],
+    *,
+    min_samples: int = 5,
+    fallback: float = DEFAULT_NEUTRAL_BAND_PCT,
+) -> dict[str, float]:
+    """Per-ticker 1σ of realized 5D returns.
+
+    Used as the neutral-band tolerance in `_is_signal_win` so the
+    near-flat win condition scales with each ticker's own volatility
+    instead of a hardcoded ±1%. Tickers with fewer than `min_samples`
+    evaluated rows fall back to the legacy 1.0 constant.
+    """
+    returns_by_ticker: dict[str, list[float]] = {}
+    for row in rows:
+        ticker = str(row.get("ticker", "")).strip()
+        if not ticker:
+            continue
+        if str(row.get("evaluated_5d", "False")).lower() != "true":
+            continue
+        ret = _parse_float(row.get("return_5d", ""))
+        if ret is None:
+            continue
+        returns_by_ticker.setdefault(ticker, []).append(ret)
+
+    bands: dict[str, float] = {}
+    for ticker, values in returns_by_ticker.items():
+        if len(values) < min_samples:
+            bands[ticker] = fallback
+            continue
+        mean_value = sum(values) / len(values)
+        variance = sum((v - mean_value) ** 2 for v in values) / (len(values) - 1)
+        stdev = math.sqrt(variance) if variance > 0 else fallback
+        # Clamp to [0.5%, 5.0%] so pathological thin samples don't blow up
+        # the neutral band (and so extremely quiet names still demand some
+        # movement to break the "near-flat" band).
+        bands[ticker] = max(0.5, min(5.0, stdev))
+    return bands
 
 
 def _build_price_series(
@@ -433,3 +584,40 @@ def _parse_float(raw_value: object) -> float | None:
 
 def _format_percent(value: float) -> str:
     return f"{value:+.2f}%"
+
+
+def _populate_benchmark_and_alpha(rows: list[dict[str, str]]) -> None:
+    """Compute per-date watchlist-equal-weight benchmark and alpha in place.
+
+    Benchmark = mean(return_5d across all rows sharing the same signal_date
+                that have been evaluated). Alpha = row.return_5d - benchmark.
+    Rows not yet evaluated at 5D keep their default N/A.
+    """
+    by_date: dict[str, list[float]] = {}
+    for row in rows:
+        if str(row.get("evaluated_5d", "False")).lower() != "true":
+            continue
+        return_value = _parse_float(row.get("return_5d", ""))
+        if return_value is None:
+            continue
+        by_date.setdefault(row.get("signal_date", ""), []).append(return_value)
+
+    benchmark_by_date: dict[str, float] = {
+        signal_date: sum(values) / len(values)
+        for signal_date, values in by_date.items()
+        if values
+    }
+
+    for row in rows:
+        signal_date = row.get("signal_date", "")
+        benchmark = benchmark_by_date.get(signal_date)
+        if benchmark is None:
+            row["benchmark_return_5d"] = row_default()
+            row["alpha_5d"] = row_default()
+            continue
+        row["benchmark_return_5d"] = _format_percent(benchmark)
+        return_value = _parse_float(row.get("return_5d", ""))
+        if str(row.get("evaluated_5d", "False")).lower() == "true" and return_value is not None:
+            row["alpha_5d"] = _format_percent(return_value - benchmark)
+        else:
+            row["alpha_5d"] = row_default()

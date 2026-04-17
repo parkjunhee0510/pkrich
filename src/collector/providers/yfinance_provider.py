@@ -27,7 +27,6 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from src.collector import price as price_legacy
 from src.collector.helpers.yfinance_helpers import (
     _configure_yfinance_cache,
     _select_price_snapshot,

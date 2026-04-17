@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from src.output.schema import SCHEMA_VERSION
 
 def write_analysis_quality_output(
     *,
@@ -16,6 +17,7 @@ def write_analysis_quality_output(
     runs = _load_quality_runs(summaries_root, limit=limit)
     latest = runs[0] if runs else {}
     payload = {
+        "schema_version": SCHEMA_VERSION,
         "runs": runs,
         "latest": latest,
     }

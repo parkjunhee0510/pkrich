@@ -42,7 +42,7 @@ from datetime import date, datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Iterable
 
-from src.collector.news_base import NewsContext, NewsProvider, NewsResult
+from src.collector.news_base import NewsContext, NewsProvider
 from src.collector.rate_limiter import RateLimiterHub
 from src.types import NewsItem, WatchlistItem
 from src.utils.pipeline_logging import record_pipeline_event

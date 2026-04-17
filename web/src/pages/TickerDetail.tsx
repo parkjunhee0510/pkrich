@@ -1,6 +1,8 @@
 ﻿import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { useTickerAnalysis } from '../hooks/useTickerAnalysis'
+import { useTickerHistory } from '../hooks/useTickerHistory'
 import { usePriceHistory } from '../hooks/usePriceHistory'
 import { useTickerTimeline } from '../hooks/useTickerTimeline'
 import { DataSnapshot } from '../components/DataSnapshot'
@@ -15,6 +17,7 @@ import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../
 import { parseNumericChange, changeColor } from '../utils/format'
 import { EpsSurpriseChart } from '../components/EpsSurpriseChart'
 import { buildPositionSizingSummary, buildPriceActionTags, extractActionPlan, getLatestCatalystItem } from '../utils/trader'
+import { buildThesisDiff } from '../utils/thesisDiff'
 
 const HEADER_ENSEMBLE_BADGES: Record<string, { symbol: string; label: string; className: string }> = {
   agree: { symbol: '✓✓', label: '합의 일치', className: 'ticker-ensemble-badge-agree' },
@@ -85,7 +88,11 @@ const PriceChart = lazy(() =>
 
 export function TickerDetail() {
   const { ticker } = useParams<{ ticker: string }>()
-  const { data, loading, error } = useDashboardData()
+  const { analysis: shardAnalysis, loading: shardLoading, missing: shardMissing } = useTickerAnalysis(ticker, undefined, 60000)
+  const { history: tickerHistory } = useTickerHistory(ticker, undefined, 60000)
+  const needsDashboardFallback = shardMissing
+  const { data, loading: dashboardLoading, error } = useDashboardData({ enabled: needsDashboardFallback, pollIntervalMs: 60000 })
+  const loading = shardLoading || (needsDashboardFallback && dashboardLoading)
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
   const [timelineWindow, setTimelineWindow] = useState<'30' | '90'>('30')
@@ -95,7 +102,32 @@ export function TickerDetail() {
   const [selectedFormType, setSelectedFormType] = useState('ALL')
 
   const latestDay = data?.days[data.days.length - 1]
-  const analysis = latestDay?.tickers.find((t) => t.ticker === ticker)
+  const analysis = shardAnalysis ?? latestDay?.tickers.find((t) => t.ticker === ticker)
+  const previousAnalysis = useMemo(() => {
+    if (!analysis) {
+      return null
+    }
+    const historicalAnalyses = tickerHistory
+      .map((day) => day.tickers[0])
+      .filter((entry): entry is typeof analysis => Boolean(entry))
+      .sort((left, right) => left.date.localeCompare(right.date))
+
+    const previousByDate = historicalAnalyses.filter((entry) => entry.date < analysis.date).at(-1)
+    if (previousByDate) {
+      return previousByDate
+    }
+
+    const latestIndex = historicalAnalyses.findIndex((entry) => entry.date === analysis.date)
+    if (latestIndex >= 1) {
+      return historicalAnalyses[latestIndex - 1]
+    }
+
+    return historicalAnalyses.length >= 2 ? historicalAnalyses[historicalAnalyses.length - 2] : null
+  }, [analysis, tickerHistory])
+  const thesisDiff = useMemo(
+    () => (analysis && previousAnalysis ? buildThesisDiff(analysis, previousAnalysis) : null),
+    [analysis, previousAnalysis],
+  )
   const fallbackSignalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
   const pct = parseNumericChange(analysis?.data_snapshot['Daily Change'] ?? '0')
   const visibleTimeline = useMemo(() => {
@@ -186,7 +218,7 @@ export function TickerDetail() {
 
   if (loading) return <TickerDetailSkeleton />
   if (error) return <ErrorState message={error} />
-  if (!data || !ticker) return <p className="status">No data available.</p>
+  if (!ticker) return <p className="status">No data available.</p>
   if (!analysis) return <p className="status">Ticker {ticker} not found.</p>
   const headerEnsemble = HEADER_ENSEMBLE_BADGES[analysis.decision?.ensemble_agreement ?? 'single'] ?? HEADER_ENSEMBLE_BADGES.single
   const headerSelectionReason = analysis.analysis_consensus?.selection_reason
@@ -287,6 +319,49 @@ export function TickerDetail() {
       {analysis.decision && (
         <DecisionCard decision={analysis.decision} analysisConsensus={analysis.analysis_consensus} />
       )}
+
+      {thesisDiff && previousAnalysis ? (
+        <section className="thesis-diff-section">
+          <div className="section-header-with-kicker">
+            <div>
+              <h3>전일 대비 시각 변화</h3>
+              <p className="section-kicker">
+                {previousAnalysis.date} → {analysis.date} 기준 thesis diff
+              </p>
+            </div>
+            <span className={`thesis-diff-status ${thesisDiff.changed ? 'changed' : 'steady'}`}>
+              {thesisDiff.changed ? `${thesisDiff.changedCount}개 변화` : '큰 변화 없음'}
+            </span>
+          </div>
+          <div className="thesis-diff-summary-card">
+            <strong>{thesisDiff.headline}</strong>
+            <p>{thesisDiff.summary}</p>
+          </div>
+          <div className="thesis-diff-grid">
+            {thesisDiff.items.map((item) => (
+              <article key={item.key} className={`thesis-diff-card ${item.changed ? 'changed' : 'steady'}`}>
+                <div className="thesis-diff-card-head">
+                  <span className="thesis-diff-label">{item.label}</span>
+                  <span className={`thesis-diff-chip ${item.changed ? 'changed' : 'steady'}`}>
+                    {item.changed ? '변화' : '유지'}
+                  </span>
+                </div>
+                <p className="thesis-diff-emphasis">{item.emphasis}</p>
+                <div className="thesis-diff-copy">
+                  <div>
+                    <span className="thesis-diff-copy-label">어제</span>
+                    <p>{item.before}</p>
+                  </div>
+                  <div>
+                    <span className="thesis-diff-copy-label">오늘</span>
+                    <p>{item.after}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {actionPlan && (
         <TraderDecisionBoard

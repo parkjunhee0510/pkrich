@@ -1,0 +1,552 @@
+{
+  "__type__": "object",
+  "keys": {
+    "days": {
+      "__type__": "array",
+      "item": {
+        "__type__": "object",
+        "keys": {
+          "date": {
+            "__type__": "str"
+          },
+          "macro_context": {
+            "__type__": "object",
+            "keys": {}
+          },
+          "market_overview": {
+            "__type__": "array",
+            "item": {
+              "__type__": "empty"
+            }
+          },
+          "market_regime": {
+            "__type__": "object",
+            "keys": {}
+          },
+          "portfolio_risk": {
+            "__type__": "object",
+            "keys": {}
+          },
+          "portfolio_summary": {
+            "__type__": "null"
+          },
+          "tickers": {
+            "__type__": "array",
+            "item": {
+              "__type__": "object",
+              "keys": {
+                "analysis_consensus": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "data_snapshot": {
+                  "__type__": "object",
+                  "keys": {
+                    "200D SMA": {
+                      "__type__": "str"
+                    },
+                    "3M Avg Volume": {
+                      "__type__": "str"
+                    },
+                    "50D SMA": {
+                      "__type__": "str"
+                    },
+                    "52W High": {
+                      "__type__": "str"
+                    },
+                    "52W Low": {
+                      "__type__": "str"
+                    },
+                    "Daily Change": {
+                      "__type__": "str"
+                    },
+                    "Dividend Yield": {
+                      "__type__": "str"
+                    },
+                    "EPS": {
+                      "__type__": "str"
+                    },
+                    "Market Cap": {
+                      "__type__": "str"
+                    },
+                    "Price": {
+                      "__type__": "str"
+                    },
+                    "Price/Book": {
+                      "__type__": "str"
+                    },
+                    "Sector": {
+                      "__type__": "str"
+                    },
+                    "Trailing P/E": {
+                      "__type__": "str"
+                    },
+                    "Volume": {
+                      "__type__": "str"
+                    }
+                  }
+                },
+                "date": {
+                  "__type__": "str"
+                },
+                "earnings_pattern": {
+                  "__type__": "object",
+                  "keys": {
+                    "avg_surprise_pct": {
+                      "__type__": "str"
+                    },
+                    "beat_streak": {
+                      "__type__": "int"
+                    },
+                    "pattern_note": {
+                      "__type__": "str"
+                    },
+                    "quarters_analyzed": {
+                      "__type__": "int"
+                    },
+                    "surprise_trend": {
+                      "__type__": "str"
+                    }
+                  }
+                },
+                "earnings_setup": {
+                  "__type__": "object",
+                  "keys": {
+                    "earnings_growth": {
+                      "__type__": "str"
+                    },
+                    "forward_eps": {
+                      "__type__": "str"
+                    },
+                    "forward_vs_ttm": {
+                      "__type__": "str"
+                    },
+                    "latest_beat_miss": {
+                      "__type__": "str"
+                    },
+                    "latest_estimated_eps": {
+                      "__type__": "str"
+                    },
+                    "latest_surprise_pct": {
+                      "__type__": "str"
+                    },
+                    "next_earnings_event": {
+                      "__type__": "str"
+                    },
+                    "ttm_eps": {
+                      "__type__": "str"
+                    }
+                  }
+                },
+                "earnings_surprise_history": {
+                  "__type__": "object",
+                  "keys": {
+                    "avg_surprise_pct": {
+                      "__type__": "str"
+                    },
+                    "beat_rate": {
+                      "__type__": "str"
+                    },
+                    "consecutive_beats": {
+                      "__type__": "int"
+                    },
+                    "consecutive_misses": {
+                      "__type__": "int"
+                    },
+                    "pattern": {
+                      "__type__": "str"
+                    },
+                    "post_earnings_hint": {
+                      "__type__": "str"
+                    },
+                    "quarters_analyzed": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "financial_highlights": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "str"
+                  }
+                },
+                "fundamentals": {
+                  "__type__": "object",
+                  "keys": {
+                    "52w_high": {
+                      "__type__": "str"
+                    },
+                    "52w_low": {
+                      "__type__": "str"
+                    },
+                    "analyst_count": {
+                      "__type__": "str"
+                    },
+                    "analyst_recommendation": {
+                      "__type__": "str"
+                    },
+                    "analyst_target_price": {
+                      "__type__": "str"
+                    },
+                    "avg_volume_3m": {
+                      "__type__": "str"
+                    },
+                    "dividend_yield": {
+                      "__type__": "str"
+                    },
+                    "earnings_growth": {
+                      "__type__": "str"
+                    },
+                    "eps": {
+                      "__type__": "str"
+                    },
+                    "forward_eps": {
+                      "__type__": "str"
+                    },
+                    "held_by_insiders": {
+                      "__type__": "str"
+                    },
+                    "held_by_institutions": {
+                      "__type__": "str"
+                    },
+                    "implied_volatility": {
+                      "__type__": "str"
+                    },
+                    "market_cap": {
+                      "__type__": "str"
+                    },
+                    "price_to_book": {
+                      "__type__": "str"
+                    },
+                    "short_float_pct": {
+                      "__type__": "str"
+                    },
+                    "short_ratio": {
+                      "__type__": "str"
+                    },
+                    "trailing_pe": {
+                      "__type__": "str"
+                    },
+                    "volume": {
+                      "__type__": "str"
+                    }
+                  }
+                },
+                "key_news": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "str"
+                  }
+                },
+                "name": {
+                  "__type__": "str"
+                },
+                "news_references": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "object",
+                    "keys": {
+                      "link": {
+                        "__type__": "str"
+                      },
+                      "published_at": {
+                        "__type__": "str"
+                      },
+                      "source": {
+                        "__type__": "str"
+                      },
+                      "title": {
+                        "__type__": "str"
+                      }
+                    }
+                  }
+                },
+                "news_tone": {
+                  "__type__": "object",
+                  "keys": {
+                    "label": {
+                      "__type__": "str"
+                    },
+                    "score": {
+                      "__type__": "float"
+                    }
+                  }
+                },
+                "options_summary": {
+                  "__type__": "object",
+                  "keys": {
+                    "atm_call_iv": {
+                      "__type__": "str"
+                    },
+                    "atm_put_iv": {
+                      "__type__": "str"
+                    },
+                    "expiry": {
+                      "__type__": "str"
+                    },
+                    "iv_percentile_30d": {
+                      "__type__": "str"
+                    },
+                    "oi_change": {
+                      "__type__": "str"
+                    },
+                    "put_call_ratio": {
+                      "__type__": "str"
+                    },
+                    "tone": {
+                      "__type__": "str"
+                    },
+                    "unusual_activity": {
+                      "__type__": "str"
+                    }
+                  }
+                },
+                "peer_rank": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "period_changes": {
+                  "__type__": "object",
+                  "keys": {
+                    "30d": {
+                      "__type__": "str"
+                    },
+                    "7d": {
+                      "__type__": "str"
+                    }
+                  }
+                },
+                "price_action": {
+                  "__type__": "object",
+                  "keys": {
+                    "atr_14d": {
+                      "__type__": "str"
+                    },
+                    "atr_percent": {
+                      "__type__": "str"
+                    },
+                    "gap_percent": {
+                      "__type__": "str"
+                    },
+                    "price_vs_sma200": {
+                      "__type__": "str"
+                    },
+                    "price_vs_sma50": {
+                      "__type__": "str"
+                    },
+                    "relative_volume": {
+                      "__type__": "str"
+                    },
+                    "rs_vs_spy": {
+                      "__type__": "str"
+                    },
+                    "week52_position": {
+                      "__type__": "str"
+                    }
+                  }
+                },
+                "quarterly_financials": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "object",
+                    "keys": {
+                      "beat_miss": {
+                        "__type__": "str"
+                      },
+                      "eps": {
+                        "__type__": "str"
+                      },
+                      "estimated_eps": {
+                        "__type__": "str"
+                      },
+                      "operating_income": {
+                        "__type__": "str"
+                      },
+                      "quarter": {
+                        "__type__": "str"
+                      },
+                      "revenue": {
+                        "__type__": "str"
+                      },
+                      "surprise_pct": {
+                        "__type__": "str"
+                      }
+                    }
+                  }
+                },
+                "risks_or_watchpoints": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "str"
+                  }
+                },
+                "sec_filing_tags": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "str"
+                  }
+                },
+                "sec_filings": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "object",
+                    "keys": {
+                      "catalyst_type": {
+                        "__type__": "str"
+                      },
+                      "form_type": {
+                        "__type__": "str"
+                      },
+                      "importance_score": {
+                        "__type__": "int"
+                      },
+                      "item_number": {
+                        "__type__": "str"
+                      },
+                      "link": {
+                        "__type__": "str"
+                      },
+                      "published_at": {
+                        "__type__": "str"
+                      },
+                      "source": {
+                        "__type__": "str"
+                      },
+                      "tag": {
+                        "__type__": "str"
+                      },
+                      "title": {
+                        "__type__": "str"
+                      }
+                    }
+                  }
+                },
+                "sector_comparison": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "signal_history": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "empty"
+                  }
+                },
+                "signal_or_takeaway": {
+                  "__type__": "str"
+                },
+                "summary": {
+                  "__type__": "str"
+                },
+                "ticker": {
+                  "__type__": "str"
+                },
+                "trade_frame": {
+                  "__type__": "object",
+                  "keys": {
+                    "base_scenario": {
+                      "__type__": "str"
+                    },
+                    "bear_scenario": {
+                      "__type__": "str"
+                    },
+                    "bull_scenario": {
+                      "__type__": "str"
+                    },
+                    "entry_price": {
+                      "__type__": "str"
+                    },
+                    "invalidation_price": {
+                      "__type__": "str"
+                    },
+                    "position_size_note": {
+                      "__type__": "str"
+                    },
+                    "risk_reward_ratio": {
+                      "__type__": "str"
+                    },
+                    "stop_loss": {
+                      "__type__": "str"
+                    },
+                    "target_1": {
+                      "__type__": "str"
+                    },
+                    "target_2": {
+                      "__type__": "str"
+                    },
+                    "watch_period": {
+                      "__type__": "str"
+                    }
+                  }
+                },
+                "upcoming_events": {
+                  "__type__": "array",
+                  "item": {
+                    "__type__": "object",
+                    "keys": {
+                      "date": {
+                        "__type__": "str"
+                      },
+                      "days_until": {
+                        "__type__": "str"
+                      },
+                      "label": {
+                        "__type__": "str"
+                      },
+                      "timing": {
+                        "__type__": "str"
+                      },
+                      "type": {
+                        "__type__": "str"
+                      }
+                    }
+                  }
+                },
+                "valuation_score": {
+                  "__type__": "object",
+                  "keys": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schema_version": {
+      "__type__": "int"
+    },
+    "signal_stats": {
+      "__type__": "object",
+      "keys": {}
+    },
+    "weekly_summary": {
+      "__type__": "object",
+      "keys": {
+        "end_date": {
+          "__type__": "str"
+        },
+        "iso_week": {
+          "__type__": "int"
+        },
+        "iso_year": {
+          "__type__": "int"
+        },
+        "schema_version": {
+          "__type__": "int"
+        },
+        "start_date": {
+          "__type__": "str"
+        },
+        "trading_days": {
+          "__type__": "int"
+        },
+        "weekly_insight": {
+          "__type__": "str"
+        },
+        "weekly_report": {
+          "__type__": "object",
+          "keys": {}
+        }
+      }
+    }
+  }
+}

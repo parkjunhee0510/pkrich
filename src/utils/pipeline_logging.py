@@ -92,6 +92,7 @@ class PipelineRunLogger:
             self.analyzer_quality['fact_warning_count'] += _coerce_int(safe_fields.get('fact_warning_count'))
             self.analyzer_quality['consistency_warning_count'] += _coerce_int(safe_fields.get('consistency_warning_count'))
             self.analyzer_quality['hallucination_warning_count'] += _coerce_int(safe_fields.get('hallucination_warning_count'))
+            self.analyzer_quality['dropped_unsupported_count'] += _coerce_int(safe_fields.get('dropped_unsupported_count'))
         elif event == 'analysis_batch_split_retry':
             self.analyzer_quality['batch_split_retry_count'] += 1
         elif event == 'openai_response_validated':

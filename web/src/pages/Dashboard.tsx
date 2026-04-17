@@ -66,7 +66,7 @@ const PRESET_ACCOUNT_SIZES = [10000, 50000, 100000]
 
 export function Dashboard() {
   const navigate = useNavigate()
-  const { data, loading, refreshing, error, refresh } = useDashboardData()
+  const { data, loading, refreshing, error, refresh } = useDashboardData({ pollIntervalMs: 60000 })
   const searchInputRef = useRef<HTMLInputElement | null>(null)
   const tickerInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)

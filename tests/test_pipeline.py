@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
-from src.pipeline import run_pipeline
+from src.pipeline import collect_only, run_pipeline
 
 
 class PipelineTests(unittest.TestCase):
@@ -41,7 +41,8 @@ class PipelineTests(unittest.TestCase):
             ticker_path = temp_path / 'output' / 'tickers' / 'AAPL' / '2026-04-08.md'
             csv_path = temp_path / 'output' / 'data' / 'price_history.csv'
             signal_csv_path = temp_path / 'output' / 'data' / 'signal_tracker.csv'
-            dashboard_path = temp_path / 'output' / 'data' / 'dashboard.json'
+            index_path = temp_path / 'output' / 'data' / 'index.json'
+            dashboard_history_path = temp_path / 'output' / 'data' / 'dashboard_history.json'
             timeline_path = temp_path / 'output' / 'data' / 'ticker_timelines.json'
             log_summary_path = temp_path / 'logs' / 'pipeline' / '2026-04-08.summary.json'
 
@@ -49,7 +50,8 @@ class PipelineTests(unittest.TestCase):
             self.assertTrue(ticker_path.exists())
             self.assertTrue(csv_path.exists())
             self.assertTrue(signal_csv_path.exists())
-            self.assertTrue(dashboard_path.exists())
+            self.assertTrue(index_path.exists())
+            self.assertTrue(dashboard_history_path.exists())
             self.assertTrue(timeline_path.exists())
             self.assertTrue(log_summary_path.exists())
             self.assertIn('AAPL', daily_path.read_text(encoding='utf-8'))
@@ -133,6 +135,39 @@ class PipelineTests(unittest.TestCase):
 
             sqlite_path = temp_path / 'output' / 'data' / 'price_history.sqlite'
             self.assertTrue(sqlite_path.exists())
+
+    def test_collect_only_refreshes_index_without_daily_outputs(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            temp_path = Path(temp_dir)
+            config_dir = temp_path / 'config'
+            config_dir.mkdir(parents=True, exist_ok=True)
+            (config_dir / 'watchlist.yaml').write_text(
+                '\n'.join(
+                    [
+                        'watchlist:',
+                        '  - ticker: AAPL',
+                        '    name: Apple Inc.',
+                        '    sector: Technology',
+                        '    keywords: ["iPhone", "AI"]',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            with patch.dict(os.environ, {'ENABLE_EXTERNAL_FETCH': 'false'}, clear=False):
+                current_dir = os.getcwd()
+                try:
+                    os.chdir(temp_path)
+                    run_pipeline(run_date=date(2026, 4, 8))
+                    refresh_payload = collect_only(run_date=date(2026, 4, 8))
+                finally:
+                    os.chdir(current_dir)
+
+            index_path = temp_path / 'output' / 'data' / 'index.json'
+            latest_shard_path = temp_path / 'output' / 'data' / 'tickers' / 'AAPL' / 'latest.json'
+            self.assertEqual(refresh_payload['date'], '2026-04-08')
+            self.assertTrue(index_path.exists())
+            self.assertTrue(latest_shard_path.exists())
 
 
 if __name__ == '__main__':

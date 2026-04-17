@@ -13,10 +13,14 @@ def answer_question(
     messages: list[dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     root = output_root or Path("output")
-    dashboard = _load_json(root / "data" / "dashboard.json", default={"days": []})
-    days = dashboard.get("days", [])
-    latest_day = days[-1] if days else {}
-    tickers = latest_day.get("tickers", [])
+    index_payload = _load_json(root / "data" / "index.json", default={})
+    if isinstance(index_payload, dict) and index_payload.get("date"):
+        tickers = index_payload.get("tickers", [])
+    else:
+        dashboard = _load_json(root / "data" / "dashboard.json", default={"days": []})
+        days = dashboard.get("days", [])
+        latest_day = days[-1] if days else {}
+        tickers = latest_day.get("tickers", [])
     normalized_question = question.strip()
     if not normalized_question:
         return {

@@ -22,6 +22,20 @@ class SignalRecordFactor(DecisionFactor):
         if not ticker_signals:
             return FactorScore(value=0, confidence=0.2, reasoning="검증된 시그널 이력이 부족")
 
+        # Look-ahead guard: exclude rows whose signal_date equals today's
+        # analysis date. Even if a same-day signal somehow appears with a
+        # return attached (pipeline ordering bug, data correction, etc.),
+        # we must not let today's decision read a performance signal that
+        # was partly produced by today's factors.
+        today = str(analysis.date or "").strip()
+        if today:
+            ticker_signals = [
+                item for item in ticker_signals
+                if str(item.get("signal_date", item.get("date", ""))).strip() < today
+            ]
+            if not ticker_signals:
+                return FactorScore(value=0, confidence=0.2, reasoning="과거 시그널 이력이 부족")
+
         evaluated = [item for item in ticker_signals if item.get("return_5d") not in ("", "N/A", None)]
         if not evaluated:
             return FactorScore(value=0, confidence=0.3, reasoning="수익률이 확인된 시그널이 부족")
