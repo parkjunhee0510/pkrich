@@ -97,7 +97,17 @@ export class StaticJsonRepository implements DashboardRepository {
   }
 
   private async loadDashboardHistory(refreshToken: number): Promise<DashboardHistoryPayload | null> {
-    return fetchJson<DashboardHistoryPayload>(DASHBOARD_HISTORY_URL, refreshToken)
+    const history = await fetchJson<DashboardHistoryPayload>(DASHBOARD_HISTORY_URL, refreshToken)
+    if (history?.days?.length) {
+      return history
+    }
+
+    const legacyDashboard = await fetchJson<DashboardHistoryPayload>(DASHBOARD_URL, refreshToken)
+    if (legacyDashboard?.days?.length) {
+      return legacyDashboard
+    }
+
+    return null
   }
 
   async loadTickerLatest(ticker: string, refreshToken: number): Promise<TickerAnalysisData | null> {
