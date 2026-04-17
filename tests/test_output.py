@@ -2,13 +2,18 @@
 
 import csv
 import json
+import os
+import sqlite3
 import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
-from src.output.json_export import write_json_outputs
+from src.output.json_export import _serialize_analysis, write_json_outputs
 from src.output.markdown import append_price_history, render_daily_markdown, render_ticker_markdown
+from src.output.schema import SCHEMA_VERSION
 from src.types import NewsItem, PortfolioPosition, PortfolioSummary, TickerAnalysis
 
 
@@ -125,6 +130,16 @@ def _sample_analysis() -> TickerAnalysis:
             'invalidation_price': '50일 이동평균선인 98.50 USD 하향 이탈 시',
             'watch_period': '2026-04-14 실적 발표 전까지',
         },
+        options_summary={
+            'expiry': '2026-05-15',
+            'atm_call_iv': '28.5%',
+            'atm_put_iv': '30.1%',
+            'put_call_ratio': '0.72',
+            'iv_percentile_30d': '68%',
+            'tone': 'bullish',
+            'unusual_activity': 'CALL $270, vol 8200, OI ?? 42%',
+            'oi_change': '? OI +25.0% / ? OI +16.7%',
+        },
     )
 
 
@@ -164,6 +179,35 @@ class OutputTests(unittest.TestCase):
         self.assertNotIn('## 주요 움직임', content)
         self.assertIn('**AAPL** 실적 발표: 2026-04-14 (D-6 · AMC)', content)
         self.assertIn('**AAPL** [실적] [Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출](https://example.com/apple-sec-10q) (2026-04-06)', content)
+
+    def test_serialize_analysis_includes_earnings_pattern(self) -> None:
+        serialized = _serialize_analysis(_sample_analysis(), {})
+        self.assertIn('earnings_pattern', serialized)
+        self.assertIn('peer_rank', serialized)
+        self.assertIn('analysis_consensus', serialized)
+        self.assertEqual(serialized['earnings_pattern']['beat_streak'], 1)
+        self.assertEqual(serialized['earnings_pattern']['surprise_trend'], 'improving')
+        self.assertEqual(serialized['earnings_pattern']['avg_surprise_pct'], '-1.7%')
+        self.assertEqual(serialized['options_summary']['tone'], 'bullish')
+        self.assertIn('CALL $270', serialized['options_summary']['unusual_activity'])
+
+    def test_serialize_analysis_maps_decision_ensemble_agreement(self) -> None:
+        analysis = _sample_analysis()
+        analysis = TickerAnalysis(**{**analysis.__dict__, 'analysis_consensus': {'status': 'conflicted'}})
+        serialized = _serialize_analysis(
+            analysis,
+            {},
+            decision=SimpleNamespace(
+                action='watch',
+                conviction=55,
+                reason='테스트',
+                valid_until='2026-04-15',
+                factors={},
+                final_consensus='resolved',
+            ),
+        )
+        self.assertEqual(serialized['decision']['ensemble_agreement'], 'conflict')
+        self.assertEqual(serialized['decision']['final_consensus'], 'resolved')
 
     def test_render_ticker_markdown_includes_period_quarterly_events_and_timeline(self) -> None:
         content = render_ticker_markdown(
@@ -229,7 +273,7 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(rows[0]['ticker'], 'AAPL')
 
     def test_write_json_outputs_writes_dashboard_price_history_and_timeline(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
             temp_path = Path(temp_dir)
             output_root = temp_path / 'output'
             data_dir = output_root / 'data'
@@ -247,39 +291,81 @@ class OutputTests(unittest.TestCase):
                 encoding='utf-8',
             )
 
-            timelines = write_json_outputs(
-                [_sample_analysis()],
-                date(2026, 4, 8),
-                market_overview=[{'label': 'S&P 500', 'symbol': '^GSPC', 'price': '5,234.18', 'change': '+0.45%'}],
-                output_root=output_root,
-                period_changes_by_ticker={'AAPL': {'7d': '+3.25%', '30d': 'N/A'}},
-                portfolio_summary=PortfolioSummary(
-                    positions=[
-                        PortfolioPosition(
-                            ticker='AAPL',
-                            shares=10,
-                            avg_cost=90.0,
-                            currency='USD',
-                            market_price=100.0,
-                            market_value=1000.0,
-                            cost_basis=900.0,
-                            unrealized_pnl=100.0,
-                            unrealized_return_pct=11.11,
-                        )
-                    ],
-                    total_market_value=1000.0,
-                    total_cost_basis=900.0,
-                    total_unrealized_pnl=100.0,
-                    total_unrealized_return_pct=11.11,
-                ),
-            )
+            with patch.dict(os.environ, {'EMIT_LEGACY_DASHBOARD': 'true'}, clear=False):
+                timelines = write_json_outputs(
+                    [_sample_analysis()],
+                    date(2026, 4, 8),
+                    market_overview=[{'label': 'S&P 500', 'symbol': '^GSPC', 'price': '5,234.18', 'change': '+0.45%'}],
+                    output_root=output_root,
+                    period_changes_by_ticker={'AAPL': {'7d': '+3.25%', '30d': 'N/A'}},
+                    portfolio_risk={
+                        'hhi': 2550.0,
+                        'portfolio_beta': 1.18,
+                        'correlation_matrix': {'AAPL': {'AAPL': 1.0}},
+                        'mdd_20d': 6.2,
+                        'var_95': 2.4,
+                        'risk_grade': 'C',
+                        'recommendations': ['기술 섹터 비중을 점검하세요.'],
+                        'positions_by_weight': [],
+                    },
+                    portfolio_summary=PortfolioSummary(
+                        positions=[
+                            PortfolioPosition(
+                                ticker='AAPL',
+                                shares=10,
+                                avg_cost=90.0,
+                                currency='USD',
+                                market_price=100.0,
+                                market_value=1000.0,
+                                cost_basis=900.0,
+                                unrealized_pnl=100.0,
+                                unrealized_return_pct=11.11,
+                            )
+                        ],
+                        total_market_value=1000.0,
+                        total_cost_basis=900.0,
+                        total_unrealized_pnl=100.0,
+                        total_unrealized_return_pct=11.11,
+                    ),
+                    weekly_summary=SimpleNamespace(
+                        iso_year=2026,
+                        iso_week=15,
+                        start_date='2026-04-06',
+                        end_date='2026-04-08',
+                        trading_days=3,
+                        weekly_insight='주간 요약',
+                        weekly_report={
+                            'headline': '2026-W15 주간 리포트',
+                            'summary': '구조화된 주간 리포트입니다.',
+                            'market_environment': {'summary': '중립', 'details': ['VIX 안정']},
+                            'top_movers': {'summary': '핵심 이동 종목', 'items': []},
+                            'signal_review': {'summary': '시그널 리뷰', 'details': []},
+                            'risk_points': {'summary': '리스크', 'items': []},
+                            'next_week_action_plan': {'summary': '액션 플랜', 'items': []},
+                            'portfolio_suggestions': {'summary': '포트폴리오 제안', 'items': []},
+                        },
+                    ),
+                )
 
             dashboard = json.loads((web_data_dir / 'dashboard.json').read_text(encoding='utf-8'))
+            dashboard_history = json.loads((web_data_dir / 'dashboard_history.json').read_text(encoding='utf-8'))
             price_history = json.loads((web_data_dir / 'price_history.json').read_text(encoding='utf-8'))
             timeline = json.loads((web_data_dir / 'ticker_timelines.json').read_text(encoding='utf-8'))
+            index = json.loads((web_data_dir / 'index.json').read_text(encoding='utf-8'))
 
+            self.assertEqual(dashboard['schema_version'], SCHEMA_VERSION)
+            self.assertEqual(dashboard_history['schema_version'], SCHEMA_VERSION)
+            self.assertEqual(dashboard['weekly_summary']['schema_version'], SCHEMA_VERSION)
+            self.assertEqual(index['schema_version'], SCHEMA_VERSION)
+            self.assertEqual(index['weekly_summary']['weekly_report']['headline'], '2026-W15 주간 리포트')
+            self.assertEqual(index['signal_stats'], {})
             self.assertIn('AAPL', timelines)
+            self.assertEqual(len(dashboard['days']), 1)
+            self.assertEqual(len(dashboard_history['days']), 1)
             self.assertEqual(dashboard['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
+            self.assertEqual(dashboard['days'][0]['portfolio_risk']['risk_grade'], 'C')
+            self.assertEqual(dashboard['days'][0]['portfolio_risk']['hhi'], 2550.0)
+            self.assertEqual(dashboard_history['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['period_changes']['7d'], '+3.25%')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['news_tone']['label'], 'bullish')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['earnings_setup']['forward_eps'], '6.80 USD/share')
@@ -289,6 +375,7 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(dashboard['days'][0]['tickers'][0]['fundamentals']['analyst_target_price'], '130.00 USD')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['trade_frame']['watch_period'], '2026-04-14 실적 발표 전까지')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['upcoming_events'][0]['label'], '실적 발표')
+            self.assertEqual(dashboard['weekly_summary']['weekly_report']['headline'], '2026-W15 주간 리포트')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['sec_filing_tags'], ['실적'])
             self.assertEqual(dashboard['days'][0]['tickers'][0]['sec_filings'][0]['tag'], '실적')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['sec_filings'][0]['form_type'], '10-Q')
@@ -298,6 +385,166 @@ class OutputTests(unittest.TestCase):
             )
             self.assertEqual(price_history[-1]['ticker'], 'AAPL')
             self.assertEqual(timeline['AAPL'][0]['top_news_summary'], '애플 실적이 예상치를 웃돌았습니다.')
+            with (data_dir / 'price_history.csv').open('r', encoding='utf-8', newline='') as handle:
+                csv_rows = list(csv.DictReader(handle))
+            self.assertEqual(len(csv_rows), 2)
+
+    def test_write_json_outputs_reconciles_history_snapshot_from_sqlite(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            temp_path = Path(temp_dir)
+            output_root = temp_path / 'output'
+            data_dir = output_root / 'data'
+            web_data_dir = temp_path / 'web' / 'public' / 'output' / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            (temp_path / 'web').mkdir(parents=True, exist_ok=True)
+
+            history_payload = {
+                'days': [
+                    {
+                        'date': '2026-04-10',
+                        'market_overview': [],
+                        'tickers': [
+                            {
+                                'ticker': 'AAPL',
+                                'name': 'Apple Inc.',
+                                'date': '2026-04-10',
+                                'summary': 'Apple은 999.99 USD (+9.99%)로 거래 중입니다.',
+                                'key_news': [],
+                                'news_references': [],
+                                'financial_highlights': [],
+                                'risks_or_watchpoints': [],
+                                'signal_or_takeaway': '관찰',
+                                'data_snapshot': {
+                                    'Price': '999.99 USD',
+                                    'Daily Change': '+9.99%',
+                                    'Open': '999.99',
+                                    'High': '999.99',
+                                    'Low': '999.99',
+                                    'Close': '999.99',
+                                    'Volume': '9.99M',
+                                },
+                                'fundamentals': {},
+                                'earnings_setup': {},
+                                'earnings_surprise_history': [],
+                                'price_action': {},
+                                'quarterly_financials': [],
+                                'upcoming_events': [],
+                                'news_tone': {'label': 'neutral', 'score': 0.0},
+                                'trade_frame': {},
+                                'options_summary': {},
+                                'signal_history': [],
+                                'sector_comparison': {},
+                                'valuation_score': {},
+                                'period_changes': {'7d': 'N/A', '30d': 'N/A'},
+                                'sec_filing_tags': [],
+                                'sec_filings': [],
+                            }
+                        ],
+                    }
+                ],
+                'signal_stats': {},
+                'weekly_summary': {},
+            }
+            (data_dir / 'dashboard_history.json').write_text(
+                json.dumps(history_payload, ensure_ascii=False, indent=2),
+                encoding='utf-8',
+            )
+            (data_dir / 'price_history.csv').write_text(
+                '\n'.join(
+                    [
+                        'date,ticker,price,daily_change,market_cap,trailing_pe,eps,52w_high,52w_low',
+                        '2026-04-10,AAPL,250.75 USD,+1.25%,1.00T,25.00,6.10,110.00,80.00',
+                        '2026-04-13,AAPL,100.00 USD,+1.23%,1.00T,25.00,6.10,110.00,80.00',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            price_history_rows = [
+                {
+                    'date': '2026-04-10', 'ticker': 'AAPL', 'open': '250.10', 'high': '251.00',
+                    'low': '249.50', 'close': '250.75', 'volume': '11.20M',
+                    'price': '250.75 USD', 'daily_change': '+1.25%',
+                },
+                {
+                    'date': '2026-04-13', 'ticker': 'AAPL', 'open': '99.50', 'high': '100.50',
+                    'low': '98.90', 'close': '100.00', 'volume': '12.30M',
+                    'price': '100.00 USD', 'daily_change': '+1.23%',
+                },
+            ]
+
+            write_json_outputs(
+                [_sample_analysis()],
+                date(2026, 4, 13),
+                market_overview=[],
+                output_root=output_root,
+                price_history_rows=price_history_rows,
+            )
+
+            repaired = json.loads((data_dir / 'dashboard_history.json').read_text(encoding='utf-8'))
+            repaired_day = next(day for day in repaired['days'] if day['date'] == '2026-04-10')
+            repaired_ticker = next(t for t in repaired_day['tickers'] if t['ticker'] == 'AAPL')
+            self.assertEqual(repaired_ticker['summary'], 'Apple은 250.75 USD (+1.25%)로 거래 중입니다.')
+            self.assertEqual(repaired_ticker['data_snapshot']['Price'], '250.75 USD')
+            self.assertEqual(repaired_ticker['data_snapshot']['Daily Change'], '+1.25%')
+            self.assertEqual(repaired_ticker['data_snapshot']['Open'], '250.10')
+            self.assertEqual(repaired_ticker['data_snapshot']['Close'], '250.75')
+            self.assertTrue((web_data_dir / 'dashboard_history.json').exists())
+            self.assertFalse((web_data_dir / 'dashboard.json').exists())
+
+    def test_write_json_outputs_rebuilds_price_history_from_sqlite(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            temp_path = Path(temp_dir)
+            output_root = temp_path / 'output'
+            data_dir = output_root / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            (temp_path / 'web').mkdir(parents=True, exist_ok=True)
+
+            (data_dir / 'price_history.csv').write_text(
+                '\n'.join(
+                    [
+                        'date,ticker,price,daily_change,market_cap,trailing_pe,eps,52w_high,52w_low,open,high,low,close,volume',
+                        '2026-04-10,AAPL,999.99 USD,+9.99%,1.00T,25.00,6.10,110.00,80.00,999.99,999.99,999.99,999.99,9.99M',
+                        '2026-04-11,AAPL,998.99 USD,+8.99%,1.00T,25.00,6.10,110.00,80.00,998.99,998.99,998.99,998.99,8.99M',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+            price_history_rows = [
+                {
+                    'date': '2026-04-10', 'ticker': 'AAPL', 'price': '250.75 USD',
+                    'daily_change': '+1.25%', 'market_cap': '1.00T', 'trailing_pe': '25.00',
+                    'eps': '6.10', '52w_high': '110.00', '52w_low': '80.00',
+                    'open': '250.10', 'high': '251.00', 'low': '249.50',
+                    'close': '250.75', 'volume': '11.20M',
+                },
+                {
+                    'date': '2026-04-13', 'ticker': 'AAPL', 'price': '100.00 USD',
+                    'daily_change': '+1.23%', 'market_cap': '1.00T', 'trailing_pe': '25.00',
+                    'eps': '6.10', '52w_high': '110.00', '52w_low': '80.00',
+                    'open': '99.50', 'high': '100.50', 'low': '98.90',
+                    'close': '100.00', 'volume': '12.30M',
+                },
+            ]
+
+            write_json_outputs(
+                [_sample_analysis()],
+                date(2026, 4, 13),
+                market_overview=[],
+                output_root=output_root,
+                price_history_rows=price_history_rows,
+            )
+
+            json_rows = json.loads((data_dir / 'price_history.json').read_text(encoding='utf-8'))
+            with (data_dir / 'price_history.csv').open('r', encoding='utf-8', newline='') as handle:
+                csv_rows = list(csv.DictReader(handle))
+            self.assertEqual(len(json_rows), 2)
+            self.assertEqual(len(csv_rows), 2)
+            self.assertEqual(json_rows[0]['date'], '2026-04-10')
+            self.assertEqual(json_rows[0]['price'], '250.75 USD')
+            self.assertEqual(json_rows[1]['date'], '2026-04-13')
+            self.assertEqual(csv_rows[0]['price'], '250.75 USD')
+            self.assertEqual(csv_rows[1]['date'], '2026-04-13')
 
 
 if __name__ == '__main__':

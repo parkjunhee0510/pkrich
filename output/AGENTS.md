@@ -247,7 +247,7 @@ Do NOT:
 ---
 
 ## Validation Rules
-
+    
 Before considering output changes complete:
 
 * verify rendered Markdown is readable as raw text

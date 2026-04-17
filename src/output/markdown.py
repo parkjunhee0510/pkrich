@@ -10,11 +10,12 @@ from typing import Any
 from src.collector.news_rss import load_source_priorities
 from src.output.json_export import write_json_outputs
 from src.output.obsidian import mirror_markdown_outputs
-from src.types import PortfolioSummary, TickerAnalysis
+from src.types import MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
 from src.utils.config import load_simple_mapping
 from src.utils.datastore import get_datastore
 from src.utils.datastore_csv import append_price_history_csv
 from src.utils.earnings_history import build_earnings_surprise_summary
+from src.utils.earnings_pattern import build_earnings_pattern
 from src.utils.earnings_setup import build_earnings_setup, extract_earnings_countdown
 from src.utils.monthly_summary import load_monthly_summary
 from src.utils.news_tone import build_news_tone
@@ -65,6 +66,8 @@ def write_outputs(
     signal_stats: dict[str, Any] | None = None,
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
+    market_regime: MarketRegime | None = None,
+    decisions: list[TickerDecision] | None = None,
 ) -> dict[str, Any]:
     output_root = Path("output")
     daily_dir = output_root / "daily"
@@ -83,7 +86,24 @@ def write_outputs(
     datastore.append_analysis_snapshots(enriched_analyses)
     csv_period_changes = datastore.load_period_changes(run_date)
     period_changes_by_ticker = _merge_period_changes(csv_period_changes, direct_period_changes or {})
-    weekly_summary = load_weekly_summary(run_date, output_root=output_root)
+    weekly_summary = load_weekly_summary(
+        run_date,
+        output_root=output_root,
+        macro_context=macro_context,
+        market_regime=market_regime,
+        portfolio_risk=portfolio_risk,
+        decisions=decisions,
+    )
+    from src.analyzer.derive import (
+        build_backtest_summary,
+        build_derivations_by_ticker,
+        load_monthly_summary as _load_monthly_summary,
+    )
+
+    backtest_summary = build_backtest_summary(datastore.signal_csv_path)
+    monthly_summary = _load_monthly_summary(run_date, output_root=output_root)
+    derived_by_ticker = build_derivations_by_ticker(enriched_analyses)
+    price_history_rows = datastore.query_prices()
     timeline_map = write_json_outputs(
         enriched_analyses,
         run_date,
@@ -95,6 +115,12 @@ def write_outputs(
         macro_context=macro_context,
         portfolio_risk=portfolio_risk,
         weekly_summary=weekly_summary,
+        market_regime=market_regime,
+        decisions=decisions,
+        backtest_summary=backtest_summary,
+        monthly_summary=monthly_summary,
+        derived_by_ticker=derived_by_ticker,
+        price_history_rows=price_history_rows,
     )
 
     daily_path = daily_dir / f"{run_date.isoformat()}.md"
@@ -107,6 +133,8 @@ def write_outputs(
             portfolio_summary=portfolio_summary,
             macro_context=macro_context,
             portfolio_risk=portfolio_risk,
+            market_regime=market_regime,
+            decisions=decisions,
         ),
         artifact="daily_note",
     )
@@ -129,7 +157,11 @@ def write_outputs(
         ticker_paths[analysis.ticker] = ticker_path
 
     weekly_path = weekly_dir / f"{weekly_summary.iso_year}-W{weekly_summary.iso_week:02d}.md"
-    _write_text_artifact(weekly_path, render_weekly_markdown(weekly_summary), artifact="weekly_note")
+    _write_text_artifact(
+        weekly_path,
+        render_weekly_markdown(weekly_summary, macro_context=macro_context),
+        artifact="weekly_note",
+    )
     monthly_summary = load_monthly_summary(run_date, output_root=output_root)
     monthly_path = weekly_dir / f"{run_date.strftime('%Y-%m')}.md"
     _write_text_artifact(monthly_path, render_monthly_markdown(monthly_summary), artifact="monthly_note")
@@ -150,6 +182,8 @@ def render_daily_markdown(
     portfolio_summary: PortfolioSummary | None = None,
     macro_context: dict[str, Any] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
+    market_regime: MarketRegime | None = None,
+    decisions: list[TickerDecision] | None = None,
 ) -> str:
     watchlist_rows = "\n".join(
         f"| {analysis.ticker} | {analysis.data_snapshot['Price']} | {analysis.data_snapshot['Daily Change']} | {analysis.signal_or_takeaway} |"
@@ -168,7 +202,51 @@ def render_daily_markdown(
     ]
 
     if macro_context:
-        lines.extend(["## 매크로 환경", _render_macro_context(macro_context), ""])
+        lines.extend(
+            [
+                "## 매크로 환경",
+                _render_macro_context(macro_context),
+                "",
+                "## 이번 주 시장 주요 일정",
+                _render_weekly_macro_schedule(macro_context),
+                "",
+                "## 보유 종목 민감도",
+                _render_portfolio_macro_sensitivity(macro_context),
+                "",
+            ]
+        )
+
+    if market_regime and market_regime.regime != "neutral":
+        regime_labels = {"risk_on": "🟢 위험선호", "neutral": "🟡 중립", "risk_off": "🔴 위험회피"}
+        lines.extend([
+            "## 시장 리짐",
+            f"**{regime_labels.get(market_regime.regime, market_regime.regime)}** (확신도 {market_regime.confidence}%)",
+            "",
+            market_regime.implication,
+            "",
+        ])
+    elif market_regime:
+        lines.extend([
+            "## 시장 리짐",
+            f"**🟡 중립** (확신도 {market_regime.confidence}%)",
+            "",
+            market_regime.implication,
+            "",
+        ])
+
+    if decisions:
+        decision_map = {d.ticker: d for d in decisions}
+        decision_rows = "\n".join(
+            f"| {d.ticker} | {d.action} | {d.conviction} | {d.reason} | {d.valid_until} |"
+            for d in decisions
+        )
+        lines.extend([
+            "## 의사결정 요약",
+            "| 티커 | 액션 | 확신도 | 근거 | 유효기간 |",
+            "|------|------|--------|------|----------|",
+            decision_rows,
+            "",
+        ])
 
     lines.extend([
         "## 관심 종목 요약",
@@ -250,6 +328,9 @@ def render_ticker_markdown(
             "## 밸류에이션 점수",
             _render_valuation_score(getattr(analysis, 'valuation_score', {})),
             "",
+            "## Peer Rank",
+            _render_peer_rank(getattr(analysis, 'peer_rank', {})),
+            "",
             "## 트레이드 프레임",
             _render_trade_frame(analysis.trade_frame),
             "",
@@ -260,7 +341,7 @@ def render_ticker_markdown(
     )
 
 
-def render_weekly_markdown(summary: WeeklySummaryData) -> str:
+def render_weekly_markdown(summary: WeeklySummaryData, macro_context: dict[str, Any] | None = None) -> str:
     lines = [
         f"# 주간 리서치 - {summary.iso_year}-W{summary.iso_week:02d}",
         "",
@@ -270,8 +351,21 @@ def render_weekly_markdown(summary: WeeklySummaryData) -> str:
     ]
     if summary.is_partial:
         lines.extend(["> 데이터 축적 중: 이번 주 영업일 데이터가 3일 미만입니다.", ""])
+    if macro_context:
+        lines.extend(
+            [
+                "## 이번 주 시장 주요 일정",
+                _render_weekly_macro_schedule(macro_context),
+                "",
+                "## 보유 종목 민감도",
+                _render_portfolio_macro_sensitivity(macro_context),
+                "",
+            ]
+        )
     if summary.weekly_insight:
         lines.extend(["## 주간 인사이트", summary.weekly_insight, ""])
+    if summary.weekly_report:
+        lines.extend(["## 구조화 주간 보고서", _render_weekly_report(summary.weekly_report), ""])
     lines.extend(
         [
             "## 주간 시장 개요",
@@ -653,17 +747,20 @@ def _render_price_action(price_action: dict[str, str]) -> str:
             f"- vs SMA200: {_render_directional_value(price_action.get('price_vs_sma200', 'N/A'))}",
             f"- 52주 위치: {price_action.get('week52_position', 'N/A')}",
             f"- RS vs SPY(30D): {price_action.get('rs_vs_spy', 'N/A')}",
+            f"- RS vs Sector ETF: {price_action.get('rs_vs_sector_etf', 'N/A')}",
         ]
     )
 
 
 def _render_earnings_surprise_pattern(quarterly_financials: list[dict[str, str]]) -> str:
     summary = build_earnings_surprise_summary(quarterly_financials)
+    pattern = build_earnings_pattern(quarterly_financials)
     if summary["pattern"] == "insufficient_data":
         return "- 실적 서프라이즈 데이터가 2분기 미만으로 패턴 분석 불가"
     lines = [
         f"- **패턴**: {summary['pattern']} (최근 {summary['quarters_analyzed']}분기 분석)",
         f"- **Beat 비율**: {summary['beat_rate']} | 평균 서프라이즈: {summary['avg_surprise_pct']}",
+        f"- **연속 상회**: {pattern['beat_streak']}분기 | 추세: {_display_surprise_trend(pattern['surprise_trend'])} | 평균 서프라이즈: {pattern['avg_surprise_pct']}",
     ]
     if summary["consecutive_beats"] > 0:
         lines.append(f"- **연속 Beat**: {summary['consecutive_beats']}분기")
@@ -671,6 +768,16 @@ def _render_earnings_surprise_pattern(quarterly_financials: list[dict[str, str]]
         lines.append(f"- **연속 Miss**: {summary['consecutive_misses']}분기")
     lines.append(f"- **힌트**: {summary['post_earnings_hint']}")
     return "\n".join(lines)
+
+
+def _display_surprise_trend(value: object) -> str:
+    labels = {
+        "improving": "개선",
+        "deteriorating": "악화",
+        "stable": "안정",
+        "insufficient_data": "데이터 부족",
+    }
+    return labels.get(str(value), str(value))
 
 
 def _render_quarterly_financials(rows: list[dict[str, str]]) -> str:
@@ -899,6 +1006,7 @@ def _display_snapshot_label(label: str) -> str:
         "Price/Book": "PBR",
         "Dividend Yield": "배당수익률",
         "Sector": "섹터",
+        "RS vs Sector ETF": "섹터 ETF 대비 상대강도",
     }
     return labels.get(label, label)
 
@@ -922,6 +1030,7 @@ def _render_snapshot_rows(snapshot: dict[str, str], analysis: TickerAnalysis | N
             f"| vs SMA200 | {_render_directional_value(price_action.get('price_vs_sma200', 'N/A'))} |",
             f"| 52주 위치 | {price_action.get('week52_position', 'N/A')} |",
             f"| RS vs SPY(30D) | {price_action.get('rs_vs_spy', 'N/A')} |",
+            f"| RS vs Sector ETF | {price_action.get('rs_vs_sector_etf', 'N/A')} |",
             f"| 공매도 | {_render_short_interest(fundamentals)} |",
             f"| 애널리스트 | {_render_analyst_view(fundamentals)} |",
             f"| 내부자 보유 | {fundamentals.get('held_by_insiders', 'N/A')} |",
@@ -945,8 +1054,38 @@ def _render_positioning_data(fundamentals: dict[str, str]) -> str:
 
 def _render_options_summary(options_summary: dict[str, str]) -> str:
     if not options_summary:
-        return "- 옵션 데이터가 없습니다."
-    return "\n".join(f"- {key}: {value}" for key, value in options_summary.items())
+        return "- ?? ???? ????."
+
+    ordered_labels = {
+        "tone": "?? ?",
+        "unusual_activity": "?? ??",
+        "put_call_ratio": "Put/Call Ratio",
+        "oi_change": "OI ??",
+        "expiry": "?? ??? ??",
+        "atm_call_iv": "ATM Call IV",
+        "atm_put_iv": "ATM Put IV",
+        "iv_percentile_30d": "30D IV Percentile",
+    }
+    lines: list[str] = []
+    seen: set[str] = set()
+
+    for key in ordered_labels:
+        value = str(options_summary.get(key, "")).strip()
+        if not value or value == "N/A":
+            continue
+        lines.append(f"- {ordered_labels[key]}: {value}")
+        seen.add(key)
+
+    for key, value in options_summary.items():
+        if key in seen:
+            continue
+        normalized = str(value).strip()
+        if not normalized or normalized == "N/A":
+            continue
+        lines.append(f"- {key}: {normalized}")
+
+    return "\n".join(lines) if lines else "- ?? ???? ????."
+
 
 
 def _render_position_sizing_hint(
@@ -1198,6 +1337,24 @@ def _render_market_overview(overview: list[dict[str, str]]) -> str:
 
 def _render_portfolio_risk(risk: dict[str, Any]) -> str:
     lines: list[str] = []
+    risk_grade = str(risk.get("risk_grade", "")).strip()
+    if risk_grade:
+        lines.append(f"- **리스크 등급**: {risk_grade}")
+    hhi = risk.get("hhi")
+    if hhi not in (None, "", "N/A", 0):
+        lines.append(f"- **HHI 집중도**: {hhi}")
+    portfolio_beta = risk.get("portfolio_beta")
+    if portfolio_beta not in (None, "", "N/A"):
+        lines.append(f"- **포트폴리오 베타**: {portfolio_beta}")
+    var_95 = risk.get("var_95")
+    if var_95 not in (None, "", "N/A"):
+        lines.append(f"- **1일 VaR (95%)**: {var_95}%")
+    mdd_20d = risk.get("mdd_20d")
+    if mdd_20d not in (None, "", "N/A"):
+        lines.append(f"- **20일 최대 낙폭**: {mdd_20d}%")
+    if lines:
+        lines.append("")
+
     # Sector exposure
     sector_exp = risk.get("sector_exposure", {})
     if sector_exp:
@@ -1227,7 +1384,93 @@ def _render_portfolio_risk(risk: dict[str, Any]) -> str:
     lines.append(f"- **일간 ATR 리스크 합계**: ${risk.get('total_atr_risk_usd', 0):,.0f}")
     lines.append(f"- **2×ATR 최대 손실 추정**: ${risk.get('max_drawdown_2atr_usd', 0):,.0f} ({risk.get('max_drawdown_2atr_pct', 'N/A')})")
 
+    recommendations = risk.get("recommendations", [])
+    if recommendations:
+        lines.append("")
+        lines.append("**리스크 완화 제안**:")
+        for recommendation in recommendations:
+            lines.append(f"- {recommendation}")
+
     return "\n".join(lines)
+
+
+def _render_weekly_report(report: dict[str, Any]) -> str:
+    lines: list[str] = []
+    headline = str(report.get("headline", "")).strip()
+    summary = str(report.get("summary", "")).strip()
+    if headline:
+        lines.append(f"**{headline}**")
+    if summary:
+        lines.extend([summary, ""])
+
+    section_labels = [
+        ("market_environment", "1. 시장 환경 요약"),
+        ("top_movers", "2. 핵심 이동 종목 Top 3"),
+        ("signal_review", "3. 시그널 성과 리뷰"),
+        ("risk_points", "4. 리스크 포인트"),
+        ("next_week_action_plan", "5. 다음 주 액션 플랜"),
+        ("portfolio_suggestions", "6. 포트폴리오 제안"),
+    ]
+    for key, label in section_labels:
+        section = report.get(key, {})
+        if not isinstance(section, dict):
+            continue
+        lines.append(f"### {label}")
+        section_summary = str(section.get("summary", "")).strip()
+        if section_summary:
+            lines.append(section_summary)
+        details = section.get("details", [])
+        if isinstance(details, list):
+            for item in details:
+                normalized = str(item).strip()
+                if normalized:
+                    lines.append(f"- {normalized}")
+        items = section.get("items", [])
+        if key == "top_movers" and isinstance(items, list):
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                lines.append(
+                    "- {ticker} ({name}): {weekly_change} | 촉매 {catalyst} | decision {decision_change}".format(
+                        ticker=item.get("ticker", "N/A"),
+                        name=item.get("name", item.get("ticker", "N/A")),
+                        weekly_change=item.get("weekly_change", "N/A"),
+                        catalyst=item.get("catalyst", "N/A"),
+                        decision_change=item.get("decision_change", "N/A"),
+                    )
+                )
+        elif isinstance(items, list):
+            for item in items:
+                normalized = str(item).strip()
+                if normalized:
+                    lines.append(f"- {normalized}")
+        lines.append("")
+
+    return "\n".join(lines).strip() or "- 구조화된 주간 보고서 데이터가 없습니다."
+
+
+def _render_peer_rank(peer_rank: dict[str, object]) -> str:
+    if not peer_rank:
+        return "- peer rank 데이터가 없습니다."
+
+    summary = str(peer_rank.get('summary', '')).strip()
+    lines: list[str] = []
+    if summary:
+        lines.append(f"- {summary}")
+
+    labels = {
+        'per_pctl': 'PER 퍼센타일',
+        'rs_pctl': 'RS 30D 퍼센타일',
+        'roe_pctl': 'ROE 퍼센타일',
+        'revenue_growth_pctl': '매출 성장률 퍼센타일',
+        'dividend_yield_pctl': '배당수익률 퍼센타일',
+    }
+    for key, label in labels.items():
+        value = peer_rank.get(key, 'N/A')
+        if value in ('', None, 'N/A'):
+            continue
+        lines.append(f"- {label}: {value}")
+    return "\n".join(lines) if lines else "- peer rank 데이터가 없습니다."
 
 
 def _render_macro_context(macro: dict[str, Any]) -> str:
@@ -1245,6 +1488,56 @@ def _render_macro_context(macro: dict[str, Any]) -> str:
         lines.append("- 향후 14일 내 주요 매크로 이벤트 없음")
 
     return "\n".join(lines) if lines else "매크로 데이터가 없습니다."
+
+
+def _render_weekly_macro_schedule(macro: dict[str, Any]) -> str:
+    events = [
+        event for event in macro.get("upcoming_macro_events", [])
+        if isinstance(event, dict) and str(event.get("days_until", "999")).isdigit() and int(str(event.get("days_until"))) <= 7
+    ]
+    if not events:
+        return "- 이번 주 예정된 핵심 매크로 이벤트가 없습니다."
+
+    rows = [
+        "| 코드 | 일정 | D-Day | 영향도 | 해석 포인트 |",
+        "|------|------|-------|--------|-------------|",
+    ]
+    for event in events[:6]:
+        rows.append(
+            "| {code} | {date} | D-{days} | {impact} | {bias} |".format(
+                code=event.get("event_code", event.get("type", "N/A")),
+                date=event.get("date", "N/A"),
+                days=event.get("days_until", "?"),
+                impact=event.get("impact", "N/A"),
+                bias=event.get("market_bias", event.get("label", "N/A")),
+            )
+        )
+    return "\n".join(rows)
+
+
+def _render_portfolio_macro_sensitivity(macro: dict[str, Any]) -> str:
+    event_rows = [
+        event for event in macro.get("portfolio_event_sensitivity", [])
+        if isinstance(event, dict)
+    ]
+    if not event_rows:
+        return "- 현재 보유 종목과 연결된 매크로 민감도 데이터가 없습니다."
+
+    lines: list[str] = []
+    for event in event_rows[:6]:
+        holdings = event.get("sensitive_holdings", [])
+        if not holdings:
+            continue
+        lines.append(f"- **{event.get('event_code', event.get('type', 'N/A'))} / {event.get('date', 'N/A')}**")
+        for holding in holdings[:5]:
+            lines.append(
+                "  - {ticker} ({sensitivity}): {reason}".format(
+                    ticker=holding.get("ticker", "N/A"),
+                    sensitivity=holding.get("sensitivity", "N/A"),
+                    reason=holding.get("reason", "N/A"),
+                )
+            )
+    return "\n".join(lines) if lines else "- 현재 보유 종목과 연결된 매크로 민감도 데이터가 없습니다."
 
 
 def _write_text_artifact(path: Path, content: str, *, artifact: str, ticker: str | None = None) -> None:

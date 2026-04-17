@@ -1,9 +1,16 @@
 ﻿import { useState } from 'react'
+
+const BEAT_MISS_LABELS: Record<string, string> = {
+  beat: '상회',
+  miss: '하회',
+  'in-line': '부합',
+  'N/A': '미확인',
+}
 import { Link } from 'react-router-dom'
 import type { CatalystFeedSections, EarningsBoardSection, SetupScoreCard, SignalPerformanceHighlight } from '../utils/trader'
 import type { TickerAnalysisData } from '../types'
 import { SecFilingBadges } from './SecFilingBadges'
-import { buildPriceActionTags, computeSetupScore } from '../utils/trader'
+import { buildPriceActionTags, buildOptionsSignalTags, computeSetupScore, getUnusualActivityMeta, summarizeUnusualActivityShort } from '../utils/trader'
 import { InfoTooltip } from './InfoTooltip'
 
 export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
@@ -31,10 +38,14 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
         </div>
       </div>
       <div className="setup-card-grid">
-        {cards.map((card) => (
+        {cards.map((card) => {
+          const unusualMeta = getUnusualActivityMeta(card.rawOptionsUnusualActivity)
+          const unusualSummary = summarizeUnusualActivityShort(card.rawOptionsUnusualActivity)
+
+          return (
           <Link key={card.ticker} to={`/ticker/${card.ticker}`} className="setup-card">
             <div className="setup-card-head">
-              <div>
+              <div className="setup-card-title-block">
                 <strong>{card.ticker}</strong>
                 <span>{card.name}</span>
               </div>
@@ -44,10 +55,26 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
               </div>
             </div>
             <div className="setup-metric-row">
-              <span>{card.earningsDday}</span>
-              <span>{card.forwardVsTtm}</span>
-              <span>{card.latestBeatMiss}</span>
-              <span>{card.epsGrowth}</span>
+              <div className="setup-metric-cell">
+                <span className="setup-metric-label">실적 일정</span>
+                <strong className="setup-metric-value">{card.earningsDday}</strong>
+              </div>
+              <div className="setup-metric-cell">
+                <span className="setup-metric-label">섹터 RS</span>
+                <strong className="setup-metric-value">{card.sectorRs}</strong>
+              </div>
+              <div className="setup-metric-cell">
+                <span className="setup-metric-label">Forward vs TTM</span>
+                <strong className="setup-metric-value">{card.forwardVsTtm}</strong>
+              </div>
+              <div className="setup-metric-cell">
+                <span className="setup-metric-label">최근 분기 결과</span>
+                <strong className="setup-metric-value">{BEAT_MISS_LABELS[card.latestBeatMiss] ?? card.latestBeatMiss}</strong>
+              </div>
+              <div className="setup-metric-cell">
+                <span className="setup-metric-label">EPS 성장률</span>
+                <strong className="setup-metric-value">{card.epsGrowth}</strong>
+              </div>
             </div>
             <div className="setup-action-stack">
               <span className="setup-direction">{card.actionPlan.direction}</span>
@@ -55,8 +82,36 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
               <p>진입존 {card.actionPlan.entry}</p>
               <p>무효화 {card.actionPlan.invalidation}</p>
               <p>다음 촉매 {card.actionPlan.nextCatalyst}</p>
+              {unusualSummary ? (
+                <>
+                  <div className="options-context-badges">
+                    <span className={`options-context-badge posture-${unusualMeta?.postureTone ?? 'mixed'}`}>
+                      {unusualMeta?.postureLabel ?? '변동성 대응'}
+                    </span>
+                    {unusualMeta?.strengthLabel ? (
+                      <span className={`options-context-badge strength-${unusualMeta.strengthTone}`}>
+                        {unusualMeta.strengthLabel}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="setup-option-note">옵션: {unusualSummary}</p>
+                </>
+              ) : null}
             </div>
             <div className="setup-tag-row">
+              {card.beatStreak > 0 && (
+                <span className="setup-tag">
+                  연속 상회 {card.beatStreak}분기
+                </span>
+              )}
+              {card.optionTags.map((tag) => (
+                <span
+                  key={tag.label}
+                  className={`setup-tag ${tag.tone ? `options-chip options-chip-${tag.tone}` : ''} ${tag.emphasis === 'alert' ? 'setup-tag-alert' : ''}`.trim()}
+                >
+                  {tag.label}
+                </span>
+              ))}
               {card.tags.map((tag) => (
                 <span key={tag} className="setup-tag">
                   {tag}
@@ -64,7 +119,8 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
               ))}
             </div>
           </Link>
-        ))}
+          )
+        })}
       </div>
     </section>
   )
@@ -77,7 +133,7 @@ export function EarningsBoard({ sections }: { sections: EarningsBoardSection[] }
       <section className="dashboard-panel-section">
         <div className="section-header-with-kicker">
           <div>
-            <h3>실적 플레이 보드</h3>
+            <h3>실적 발표</h3>
             <p className="section-kicker">가까운 실적 이벤트가 없습니다. 점수순 카드나 하드 촉매 피드로 이동해 다음 일정이 있는 종목부터 확인해보세요.</p>
           </div>
         </div>
@@ -114,7 +170,7 @@ export function EarningsBoard({ sections }: { sections: EarningsBoardSection[] }
                     <span>{item.date}</span>
                   </div>
                   <div className="earnings-board-chip-row">
-                    <span className="setup-tag">{item.beatMiss}</span>
+                    <span className="setup-tag">{BEAT_MISS_LABELS[item.beatMiss] ?? item.beatMiss}</span>
                     <span className="setup-tag">{item.forwardVsTtm}</span>
                     <span className="setup-tag">{item.surprise}</span>
                     <span className="setup-tag">{item.signal}</span>
@@ -250,6 +306,7 @@ export function SignalPerformanceBoard({ highlights }: { highlights: SignalPerfo
 export function TickerMetaStack({ ticker }: { ticker: TickerAnalysisData }) {
   const setup = computeSetupScore(ticker)
   const priceActionTags = buildPriceActionTags(ticker)
+  const optionsTags = buildOptionsSignalTags(ticker)
 
   return (
     <>
@@ -259,8 +316,16 @@ export function TickerMetaStack({ ticker }: { ticker: TickerAnalysisData }) {
         <span className="watchlist-focus-label">{setup.focusLabel}</span>
       </div>
       <SecFilingBadges tags={ticker.sec_filing_tags} />
-      {priceActionTags.length > 0 && (
+      {(priceActionTags.length > 0 || optionsTags.length > 0) && (
         <div className="watchlist-chip-row">
+          {optionsTags.map((tag) => (
+            <span
+              key={tag.label}
+              className={`setup-tag ${tag.tone ? `options-chip options-chip-${tag.tone}` : ''} ${tag.emphasis === 'alert' ? 'setup-tag-alert' : ''}`.trim()}
+            >
+              {tag.label}
+            </span>
+          ))}
           {priceActionTags.map((tag) => (
             <span key={tag} className="setup-tag">
               {tag}

@@ -27,16 +27,21 @@ def health() -> dict[str, str]:
 
 @app.get("/api/daily")
 def daily() -> dict[str, Any]:
-    return _load_json(OUTPUT_ROOT / "data" / "dashboard.json", default={"days": []})
+    return _load_dashboard_payload()
 
 
 @app.get("/api/ticker/{ticker}")
 def ticker_detail(ticker: str) -> dict[str, Any]:
-    payload = _load_json(OUTPUT_ROOT / "data" / "dashboard.json", default={"days": []})
-    days = payload.get("days", [])
-    if not days:
-        raise HTTPException(status_code=404, detail="No daily data available")
-    latest_day = days[-1]
+    shard_path = OUTPUT_ROOT / "data" / "tickers" / ticker.upper() / "latest.json"
+    shard = _load_json(shard_path, default={})
+    payload = shard.get("payload") if isinstance(shard, dict) else None
+    if isinstance(payload, dict):
+        history = _get_datastore().get_ticker_history(ticker)
+        if history:
+            return {**payload, "history": history}
+        return payload
+
+    latest_day = _load_latest_day()
     for entry in latest_day.get("tickers", []):
         if str(entry.get("ticker", "")).upper() == ticker.upper():
             history = _get_datastore().get_ticker_history(ticker)
@@ -59,7 +64,7 @@ def signals() -> dict[str, Any]:
     signal_stats = _get_datastore().get_signal_stats()
     if signal_stats is not None:
         return signal_stats
-    payload = _load_json(OUTPUT_ROOT / "data" / "dashboard.json", default={"signal_stats": {}})
+    payload = _load_dashboard_payload()
     return payload.get("signal_stats", {})
 
 
@@ -86,6 +91,7 @@ def analytics_cost() -> dict[str, Any]:
     runs = _get_datastore().get_analysis_quality()
     if not runs:
         runs = _load_analysis_runs_from_logs()
+    cost_log = _load_json(OUTPUT_ROOT / "data" / "cost_log.json", default={"runs": [], "latest": {}})
     total_cost = sum(float(run.get("daily_api_cost_usd", 0.0) or 0.0) for run in runs)
     successful_runs = sum(1 for run in runs if bool(run.get("success")))
     return {
@@ -93,6 +99,7 @@ def analytics_cost() -> dict[str, Any]:
         "total_cost_usd": round(total_cost, 6),
         "average_cost_usd": round(total_cost / len(runs), 6) if runs else 0.0,
         "successful_runs": successful_runs,
+        "cost_log": cost_log,
     }
 
 
@@ -108,6 +115,36 @@ def _load_json(path: Path, *, default: Any) -> Any:
         return json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return default
+
+
+def _load_dashboard_payload() -> dict[str, Any]:
+    index_payload = _load_json(OUTPUT_ROOT / "data" / "index.json", default={})
+    if isinstance(index_payload, dict) and index_payload.get("date"):
+        return {
+            "schema_version": index_payload.get("schema_version"),
+            "days": [
+                {
+                    "date": index_payload.get("date", ""),
+                    "market_overview": index_payload.get("market_overview", []),
+                    "macro_context": index_payload.get("macro_context", {}),
+                    "market_regime": index_payload.get("market_regime", {}),
+                    "portfolio_summary": index_payload.get("portfolio_summary"),
+                    "portfolio_risk": index_payload.get("portfolio_risk", {}),
+                    "tickers": index_payload.get("tickers", []),
+                }
+            ],
+            "signal_stats": index_payload.get("signal_stats", {}),
+            "weekly_summary": index_payload.get("weekly_summary", {}),
+        }
+    return _load_json(OUTPUT_ROOT / "data" / "dashboard.json", default={"days": []})
+
+
+def _load_latest_day() -> dict[str, Any]:
+    payload = _load_dashboard_payload()
+    days = payload.get("days", [])
+    if not days:
+        raise HTTPException(status_code=404, detail="No daily data available")
+    return days[-1]
 
 
 def _get_datastore():

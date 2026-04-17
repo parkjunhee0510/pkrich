@@ -6,7 +6,7 @@ from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from src.types import TickerAnalysis
+from src.types import CollectedTickerData, TickerAnalysis
 
 if TYPE_CHECKING:
     from src.utils.datastore_csv import CsvDatastore
@@ -21,6 +21,7 @@ class Datastore(ABC):
         self.data_dir = self.output_root / 'data'
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.csv_path = self.data_dir / 'price_history.csv'
+        self.signal_csv_path = self.data_dir / 'signal_tracker.csv'
 
     @abstractmethod
     def append_prices(self, analyses: list[TickerAnalysis]) -> None:
@@ -44,6 +45,13 @@ class Datastore(ABC):
     def compare_tickers(self, tickers: list[str], run_date: date) -> dict[str, dict[str, str]]:
         raise NotImplementedError
 
+    def upsert_collected_prices(
+        self,
+        collected: dict[str, CollectedTickerData],
+        run_date: date,
+    ) -> None:
+        return None
+
     def sync_signal_history(self, csv_path: Path) -> None:
         return None
 
@@ -62,6 +70,63 @@ class Datastore(ABC):
     def get_analysis_quality(self, *, limit: int = 30) -> list[dict[str, Any]]:
         return []
 
+    def get_peer_selection_cache(self, ticker: str, month_key: str) -> dict[str, Any] | None:
+        return None
+
+    def set_peer_selection_cache(self, ticker: str, month_key: str, payload: dict[str, Any]) -> None:
+        return None
+
+    def record_signals(
+        self,
+        analyses: list[TickerAnalysis],
+        run_date: date,
+        price_lookup: dict[str, float],
+        *,
+        decisions: list[Any] | None = None,
+        market_regime: Any | None = None,
+    ) -> None:
+        from src.utils.signal_tracker import record_signals as _record_signals
+
+        _record_signals(
+            analyses,
+            run_date,
+            price_lookup,
+            self.signal_csv_path,
+            decisions=decisions,
+            market_regime=market_regime,
+        )
+
+    def update_signal_returns(
+        self,
+        run_date: date,
+        price_lookup: dict[str, float],
+        *,
+        price_history_rows: list[dict[str, str]] | None = None,
+    ) -> int:
+        from src.utils.signal_tracker import update_signal_returns as _update_signal_returns
+
+        return _update_signal_returns(
+            self.signal_csv_path,
+            run_date,
+            price_lookup,
+            price_history_rows=price_history_rows,
+        )
+
+    def load_signal_stats_data(self) -> dict[str, Any]:
+        from src.utils.signal_tracker import load_signal_stats as _load_signal_stats
+
+        return _load_signal_stats(self.signal_csv_path)
+
+    def load_recent_signals_data(self, ticker: str, limit: int = 5) -> list[dict[str, str]]:
+        from src.utils.signal_tracker import load_recent_signals as _load_recent_signals
+
+        return _load_recent_signals(self.signal_csv_path, ticker, limit)
+
+    def load_signal_rows_data(self) -> list[dict[str, str]]:
+        from src.utils.signal_tracker import load_signal_rows as _load_signal_rows
+
+        return _load_signal_rows(self.signal_csv_path)
+
 
 def get_datastore(output_root: Path | None = None, backend: str | None = None) -> Datastore:
     normalized_backend = (backend or os.getenv('DATASTORE_BACKEND', 'csv')).strip().lower()
@@ -76,8 +141,31 @@ def get_datastore(output_root: Path | None = None, backend: str | None = None) -
 
 
 def build_price_history_rows(analyses: list[TickerAnalysis]) -> list[dict[str, str]]:
-    return [
-        {
+    rows_by_key: dict[tuple[str, str], dict[str, str]] = {}
+    for analysis in analyses:
+        for historical_row in analysis.historical_prices:
+            row_date = str(historical_row.get('date', '')).strip()
+            ticker = str(historical_row.get('ticker', analysis.ticker)).strip().upper()
+            if not row_date or not ticker:
+                continue
+            rows_by_key[(row_date, ticker)] = {
+                'date': row_date,
+                'ticker': ticker,
+                'price': str(historical_row.get('price', 'N/A')),
+                'daily_change': str(historical_row.get('daily_change', 'N/A')),
+                'market_cap': str(historical_row.get('market_cap', 'N/A')),
+                'trailing_pe': str(historical_row.get('trailing_pe', 'N/A')),
+                'eps': str(historical_row.get('eps', 'N/A')),
+                '52w_high': str(historical_row.get('52w_high', 'N/A')),
+                '52w_low': str(historical_row.get('52w_low', 'N/A')),
+                'open': str(historical_row.get('open', 'N/A')),
+                'high': str(historical_row.get('high', 'N/A')),
+                'low': str(historical_row.get('low', 'N/A')),
+                'close': str(historical_row.get('close', 'N/A')),
+                'volume': str(historical_row.get('volume', 'N/A')),
+            }
+
+        rows_by_key[(analysis.date, analysis.ticker)] = {
             'date': analysis.date,
             'ticker': analysis.ticker,
             'price': analysis.data_snapshot.get('Price', 'N/A'),
@@ -93,5 +181,45 @@ def build_price_history_rows(analyses: list[TickerAnalysis]) -> list[dict[str, s
             'close': analysis.data_snapshot.get('Close', 'N/A'),
             'volume': analysis.data_snapshot.get('Volume', 'N/A'),
         }
-        for analysis in analyses
-    ]
+
+    return [rows_by_key[key] for key in sorted(rows_by_key)]
+
+
+def build_price_rows_from_collected(
+    collected: dict[str, CollectedTickerData],
+    run_date: date,
+) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    row_date = run_date.isoformat()
+    for ticker, data in collected.items():
+        rows.append(
+            {
+                "date": row_date,
+                "ticker": ticker,
+                "price": _format_price_text(data.price, data.currency),
+                "daily_change": _format_signed_percent(data.change_percent),
+                "market_cap": data.market_cap,
+                "trailing_pe": data.pe_ratio,
+                "eps": data.eps,
+                "52w_high": data.week52_high,
+                "52w_low": data.week52_low,
+                "open": data.open_price,
+                "high": data.high_price,
+                "low": data.low_price,
+                "close": data.close_price,
+                "volume": data.day_volume,
+            }
+        )
+    return sorted(rows, key=lambda row: (row["date"], row["ticker"]))
+
+
+def _format_price_text(value: float | None, currency: str) -> str:
+    if value is None:
+        return "N/A"
+    return f"{value:,.2f} {currency or 'USD'}"
+
+
+def _format_signed_percent(value: float | None) -> str:
+    if value is None:
+        return "N/A"
+    return f"{value:+.2f}%"

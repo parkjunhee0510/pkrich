@@ -38,9 +38,21 @@ jobs:
       - name: Copy data files into build output
         run: |
           mkdir -p web/dist/output/data
-          cp output/data/dashboard.json web/dist/output/data/ 2>/dev/null || echo "No dashboard.json yet"
-          cp output/data/price_history.json web/dist/output/data/ 2>/dev/null || echo "No price_history.json yet"
-          cp output/data/ticker_timelines.json web/dist/output/data/ 2>/dev/null || echo "No ticker_timelines.json yet"
+          for f in \
+            dashboard.json \
+            dashboard_history.json \
+            price_history.json \
+            ticker_timelines.json \
+            backtest_summary.json \
+            monthly_summary.json \
+            api_status.json \
+            api_ticker_matrix.json \
+            calibration.json \
+            factor_audit.json \
+            tuning_report.json \
+            validation_warnings.json; do
+            cp "output/data/$f" web/dist/output/data/ 2>/dev/null || echo "No $f yet"
+          done
 
       - uses: actions/upload-pages-artifact@v3
         with:

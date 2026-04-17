@@ -51,6 +51,7 @@ export interface PriceAction {
   price_vs_sma200: string
   week52_position: string
   rs_vs_spy: string
+  rs_vs_sector_etf: string
 }
 
 export interface EarningsSetup {
@@ -62,6 +63,14 @@ export interface EarningsSetup {
   latest_surprise_pct: string
   latest_beat_miss: 'beat' | 'miss' | 'in-line' | 'N/A'
   next_earnings_event: string
+}
+
+export interface EarningsPattern {
+  beat_streak: number
+  surprise_trend: 'improving' | 'deteriorating' | 'stable' | 'insufficient_data'
+  avg_surprise_pct: string
+  quarters_analyzed: number
+  pattern_note: string
 }
 
 export interface NewsTone {
@@ -99,6 +108,9 @@ export interface OptionsSummary {
   atm_put_iv?: string
   put_call_ratio?: string
   iv_percentile_30d?: string
+  tone?: 'bullish' | 'neutral' | 'bearish' | string
+  unusual_activity?: string
+  oi_change?: string
 }
 
 export interface TradeFrame {
@@ -115,6 +127,39 @@ export interface TradeFrame {
   watch_period: string
 }
 
+export interface MarketRegimeData {
+  regime: 'risk_on' | 'neutral' | 'risk_off'
+  confidence: number
+  drivers: Record<string, string>
+  implication: string
+  assessed_at: string
+}
+
+export interface TickerDecisionData {
+  action: 'buy' | 'watch' | 'avoid'
+  conviction: number
+  reason: string
+  valid_until: string
+  factors: Record<string, number>
+  ensemble_agreement?: 'agree' | 'conflict' | 'single'
+  final_consensus?: 'agree' | 'resolved' | 'conflict' | 'single'
+}
+
+export interface AnalysisConsensusData {
+  status?: 'agreed' | 'conflicted' | 'not_applicable' | string
+  economy_action?: string
+  economy_reason?: string
+  deep_action?: string
+  deep_reason?: string
+  third_action?: string
+  third_reason?: string
+  third_review_completed?: boolean
+  final_action?: string
+  final_consensus?: 'agree' | 'resolved' | 'conflict' | 'single' | string
+  direction_agreement?: boolean | null
+  selection_reason?: string
+}
+
 export interface TickerAnalysisData {
   ticker: string
   name: string
@@ -128,6 +173,7 @@ export interface TickerAnalysisData {
   data_snapshot: Record<string, string>
   fundamentals: Record<string, string>
   earnings_setup: EarningsSetup
+  earnings_pattern?: EarningsPattern
   price_action: PriceAction
   quarterly_financials: QuarterlyFinancialRow[]
   upcoming_events: UpcomingEvent[]
@@ -140,6 +186,8 @@ export interface TickerAnalysisData {
   sector_comparison?: SectorComparison
   options_summary?: OptionsSummary
   valuation_score?: ValuationScore
+  decision?: TickerDecisionData
+  analysis_consensus?: AnalysisConsensusData
 }
 
 export interface ValuationScore {
@@ -192,10 +240,21 @@ export interface MacroContextVix {
 
 export interface MacroEvent {
   type: string
+  event_code?: string
+  category?: string
   date: string
   days_until: string
   label: string
   impact?: 'high' | 'medium' | 'low'
+  source?: string
+  actual?: string
+  consensus?: string
+  previous?: string
+  surprise_direction?: string
+  market_bias?: string
+  description?: string
+  sensitivity_tags?: string | string[]
+  sensitive_holdings?: SensitiveHolding[]
 }
 
 export interface MacroContext {
@@ -216,6 +275,21 @@ export interface MacroContext {
     change?: string
   }
   upcoming_macro_events?: MacroEvent[]
+  portfolio_event_sensitivity?: PortfolioMacroSensitivity[]
+  ticker_macro_sensitivity?: Record<string, Array<{ event_code: string; label: string; date: string; sensitivity: string; reason: string }>>
+  portfolio_sensitivity_summary?: string
+}
+
+export interface SensitiveHolding {
+  ticker: string
+  name: string
+  sector: string
+  sensitivity: 'high' | 'medium' | 'low'
+  reason: string
+}
+
+export interface PortfolioMacroSensitivity extends MacroEvent {
+  sensitive_holdings?: SensitiveHolding[]
 }
 
 export interface PortfolioRiskPosition {
@@ -239,29 +313,65 @@ export interface PortfolioRisk {
   concentration_warning?: string
   sector_concentration_alerts?: string[]
   correlation_pairs?: CorrelationPair[]
+  correlation_matrix?: Record<string, Record<string, number | null>>
   position_sizing?: Array<{ ticker: string; recommended_shares: string; max_risk_usd: string; stop_distance: string }>
   total_atr_risk_usd?: number
   max_drawdown_2atr_usd?: number
   max_drawdown_2atr_pct?: string
   total_market_value?: number
+  hhi?: number
+  portfolio_beta?: number | null
+  mdd_20d?: number | null
+  mdd_20d_series?: Array<{ date: string; drawdown_pct: number }>
+  var_95?: number | null
+  risk_grade?: 'A' | 'B' | 'C' | 'D' | string
+  recommendations?: string[]
 }
 
 export interface DailyEntry {
   date: string
   market_overview: MarketOverviewEntry[]
   macro_context?: MacroContext | null
+  market_regime?: MarketRegimeData | null
   portfolio_risk?: PortfolioRisk | null
   portfolio_summary?: PortfolioSummaryData | null
   tickers: TickerAnalysisData[]
 }
 
 export interface WeeklySummaryPreview {
+  schema_version?: number
   iso_year: number
   iso_week: number
   start_date: string
   end_date: string
   trading_days: number
   weekly_insight?: string
+  weekly_report?: WeeklyReport
+}
+
+export interface WeeklyReportListItem {
+  ticker?: string
+  name?: string
+  weekly_change?: string
+  catalyst?: string
+  decision_change?: string
+}
+
+export interface WeeklyReportSection {
+  summary?: string
+  details?: string[]
+  items?: string[] | WeeklyReportListItem[]
+}
+
+export interface WeeklyReport {
+  headline?: string
+  summary?: string
+  market_environment?: WeeklyReportSection
+  top_movers?: WeeklyReportSection
+  signal_review?: WeeklyReportSection
+  risk_points?: WeeklyReportSection
+  next_week_action_plan?: WeeklyReportSection
+  portfolio_suggestions?: WeeklyReportSection
 }
 
 export interface SignalHistoryRow {
@@ -301,6 +411,7 @@ export interface SignalStats {
 }
 
 export interface DashboardData {
+  schema_version?: number
   days: DailyEntry[]
   signal_stats?: SignalStats
   weekly_summary?: WeeklySummaryPreview
@@ -365,6 +476,53 @@ export interface MonthlySummaryData {
   top_sectors?: Array<{ sector: string; avg_daily_change: string }>
 }
 
+export interface RoutingOutcomeSummary {
+  deep_selected_count: number
+  economy_only_count: number
+  portfolio_priority_count: number
+  deep_selected_avg_return_20d: number | null
+  economy_only_avg_return_20d: number | null
+  portfolio_priority_avg_return_20d: number | null
+  deep_selected_hit_rate: number | null
+  economy_only_hit_rate: number | null
+  portfolio_priority_hit_rate: number | null
+  avg_return_delta_20d: number | null
+  hit_rate_delta: number | null
+}
+
+export interface RoutingOutcomePeriod extends RoutingOutcomeSummary {
+  period: string
+}
+
+export interface RoutingOutcomeLatestRunTicker {
+  ticker: string
+  selected_for_deep: boolean
+  reason: string
+  in_portfolio: boolean
+  conviction: number | null
+  action: string | null
+}
+
+export interface RoutingOutcomeLatestRun {
+  run_date: string
+  trigger_range: number[]
+  max_daily_ensemble: number
+  portfolio_priority: boolean
+  deep_pass_count: number
+  tickers: RoutingOutcomeLatestRunTicker[]
+}
+
+export interface RoutingOutcomePayload {
+  schema_version?: number
+  run_count: number
+  evaluated_signals: number
+  latest_run_date: string
+  summary: RoutingOutcomeSummary
+  periods: RoutingOutcomePeriod[]
+  latest_run: RoutingOutcomeLatestRun | Record<string, never>
+  status: string
+}
+
 export interface ChatResponse {
   answer: string
   matched_tickers: string[]
@@ -389,11 +547,103 @@ export interface AnalyticsRun {
   validation_failure_count: number
 }
 
+export interface CostLogProfileBreakdown {
+  cost_usd: number
+  tokens: number
+  calls: number
+  models: Record<string, number>
+}
+
+export interface CostLogRoutingSummary {
+  ensemble_enabled: boolean
+  eligible_count: number
+  selected_count: number
+  skipped_due_to_cap_count: number
+  conflicted_count: number
+}
+
+export interface CostLogDeepValue {
+  deep_cost_usd: number
+  selected_ticker_count: number
+  cost_per_selected_ticker_usd: number
+  share_of_total_cost: number
+  worth_it_hint: string
+}
+
+export interface CostLogRun {
+  run_date: string
+  success: boolean
+  total_cost_usd: number
+  profiles: Record<string, CostLogProfileBreakdown>
+  routing: CostLogRoutingSummary
+  deep_pass_value: CostLogDeepValue
+}
+
+export interface CostLogPayload {
+  schema_version?: number
+  runs: CostLogRun[]
+  latest: CostLogRun | Record<string, never>
+}
+
 export interface AnalyticsCostResponse {
   runs: AnalyticsRun[]
   total_cost_usd: number
   average_cost_usd: number
   successful_runs: number
+  cost_log?: CostLogPayload
+}
+
+export type ApiProviderState = 'used' | 'failed' | 'throttled' | 'unavailable' | 'not_used'
+
+export interface ApiProviderSummary {
+  overall_status: 'active' | 'partial' | 'limited' | 'failing' | 'idle'
+  used_tickers: number
+  throttled_tickers: number
+  unavailable_tickers: number
+  failed_tickers: number
+  not_used_tickers: number
+}
+
+export interface ApiStatusSummary {
+  schema_version?: number
+  run_date: string
+  log_path: string
+  pipeline_completed: boolean
+  providers: Record<string, ApiProviderSummary>
+  llm: {
+    used: boolean
+    planned_batches: number
+    completed_batches: number
+    failed_batches: number
+    validation_failures: number
+    estimated_cost_usd: number
+    latest_model: string
+    models_used: Record<string, number>
+    quality?: {
+      run_date?: string
+      validated_ticker_count?: number
+      validation_failure_count?: number
+      schema_violation_count?: number
+      fact_warning_count?: number
+      consistency_warning_count?: number
+      hallucination_warning_count?: number
+      hallucination_ratio?: number
+    }
+  }
+}
+
+export interface ApiTickerMatrixRow {
+  schema_version?: number
+  ticker: string
+  name: string
+  sector: string
+  yfinance: ApiProviderState
+  alpha_vantage: ApiProviderState
+  polygon: ApiProviderState
+  fmp: ApiProviderState
+  finnhub: ApiProviderState
+  sec_edgar: ApiProviderState
+  ir_rss: ApiProviderState
 }
 
 export interface PriceHistoryRow {

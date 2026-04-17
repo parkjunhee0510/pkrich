@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { DashboardData } from '../types'
+import { staticRepository } from '../data/StaticJsonRepository'
+import type { DashboardRepository } from '../data/DashboardRepository'
 
-const DATA_URL = `${import.meta.env.BASE_URL}output/data/dashboard.json`
+interface Options {
+  enabled?: boolean
+  repository?: DashboardRepository
+  pollIntervalMs?: number
+}
 
-export function useDashboardData() {
+export function useDashboardData(options: Options = {}) {
+  const { enabled = true, repository = staticRepository, pollIntervalMs = 0 } = options
   const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(enabled)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [refreshToken, setRefreshToken] = useState(0)
@@ -18,13 +25,14 @@ export function useDashboardData() {
   }, [])
 
   useEffect(() => {
-    fetch(`${DATA_URL}?ts=${refreshToken}`, { cache: 'no-store' })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json()
-      })
-      .then((json: DashboardData) => setData(json))
-      .catch((err) => setError(err.message))
+    if (!enabled) {
+      setLoading(false)
+      return
+    }
+    repository
+      .loadDashboard(refreshToken)
+      .then((merged) => setData(merged))
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)))
       .finally(() => {
         if (!hasLoadedRef.current) {
           hasLoadedRef.current = true
@@ -32,7 +40,17 @@ export function useDashboardData() {
         }
         setRefreshing(false)
       })
-  }, [refreshToken])
+  }, [refreshToken, repository, enabled])
+
+  useEffect(() => {
+    if (!enabled || pollIntervalMs <= 0) {
+      return
+    }
+    const timer = window.setInterval(() => {
+      setRefreshToken((current) => current + 1)
+    }, pollIntervalMs)
+    return () => window.clearInterval(timer)
+  }, [enabled, pollIntervalMs])
 
   return { data, loading, refreshing, error, refresh }
 }

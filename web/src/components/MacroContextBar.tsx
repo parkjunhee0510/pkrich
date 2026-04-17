@@ -1,5 +1,24 @@
 import type { MacroContext } from '../types'
 
+const EVENT_LABEL_KO: Record<string, string> = {
+  'FOMC Rate Decision': 'FOMC 금리 결정',
+  'CPI Consumer Inflation': 'CPI 소비자물가',
+  'PPI Producer Inflation': 'PPI 생산자물가',
+  'NFP Payrolls': 'NFP 비농업고용',
+  'Unemployment Rate': '실업률',
+  'Retail Sales': '소매판매',
+}
+
+function localizeLabel(label: string): string {
+  return EVENT_LABEL_KO[label] ?? label
+}
+
+function sensitivityLabel(value: string | undefined): string {
+  if (value === 'high') return 'high'
+  if (value === 'medium') return 'medium'
+  return 'low'
+}
+
 export function MacroContextBar({ macroContext }: { macroContext?: MacroContext | null }) {
   const vix = macroContext?.vix
   const macroSeries = [
@@ -7,7 +26,8 @@ export function MacroContextBar({ macroContext }: { macroContext?: MacroContext 
     { label: 'DXY', value: macroContext?.dxy?.level ?? macroContext?.dxy?.price, change: macroContext?.dxy?.change },
     { label: 'Copper', value: macroContext?.copper?.level ?? macroContext?.copper?.price, change: macroContext?.copper?.change },
   ].filter((item) => item.value)
-  const macroEvents = (macroContext?.upcoming_macro_events ?? []).slice(0, 3)
+  const macroEvents = (macroContext?.portfolio_event_sensitivity ?? macroContext?.upcoming_macro_events ?? []).slice(0, 3)
+  const sensitivitySummary = macroContext?.portfolio_sensitivity_summary
 
   if (!vix && macroEvents.length === 0 && macroSeries.length === 0) {
     return null
@@ -16,12 +36,15 @@ export function MacroContextBar({ macroContext }: { macroContext?: MacroContext 
   return (
     <section className="macro-context-bar">
       <div className="macro-context-summary">
-        <span className="macro-context-eyebrow">Macro Context</span>
+        <span className="macro-context-eyebrow">거시경제 현황 요약</span>
         <div className="macro-context-main">
           <strong>VIX {vix?.level ?? 'N/A'}</strong>
-          <span>{vix?.regime ?? '레짐 데이터 없음'}</span>
+          <span>{vix?.regime ?? '정보 없음'}</span>
           {vix?.change && vix.change !== 'N/A' ? <small>{vix.change}</small> : null}
         </div>
+        {sensitivitySummary && sensitivitySummary !== 'N/A' ? (
+          <p className="macro-context-summary-text">{sensitivitySummary}</p>
+        ) : null}
       </div>
 
       <div className="macro-context-detail">
@@ -31,7 +54,7 @@ export function MacroContextBar({ macroContext }: { macroContext?: MacroContext 
               <div key={item.label} className="macro-series-card">
                 <span className="macro-event-type">{item.label}</span>
                 <strong>{item.value}</strong>
-                {item.change && item.change !== 'N/A' ? <small>{item.change}</small> : <small>변화 데이터 없음</small>}
+                {item.change && item.change !== 'N/A' ? <small>{item.change}</small> : null}
               </div>
             ))}
           </div>
@@ -39,17 +62,27 @@ export function MacroContextBar({ macroContext }: { macroContext?: MacroContext 
         {macroEvents.length > 0 ? (
           <div className="macro-event-list">
             {macroEvents.map((event) => (
-              <div key={`${event.type}-${event.date}`} className={`macro-event-card impact-${event.impact ?? 'medium'}`}>
-                <span className="macro-event-type">{event.type}</span>
-                <strong>{event.label}</strong>
+              <div key={`${event.event_code ?? event.type}-${event.date}`} className={`macro-event-card impact-${event.impact ?? 'medium'}`}>
+                <span className="macro-event-type">{event.event_code ?? event.type}</span>
+                <strong>{localizeLabel(event.label)}</strong>
                 <small>
                   {event.date} · D-{event.days_until}
                 </small>
+                {event.market_bias ? <small>{event.market_bias}</small> : null}
+                {event.sensitive_holdings && event.sensitive_holdings.length > 0 ? (
+                  <div className="macro-sensitive-holdings">
+                    {event.sensitive_holdings.slice(0, 3).map((holding) => (
+                      <span key={`${event.event_code}-${holding.ticker}`} className={`macro-sensitive-chip sensitivity-${sensitivityLabel(holding.sensitivity)}`}>
+                        {holding.ticker} ({holding.sensitivity})
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
         ) : (
-          <div className="macro-event-empty">예정된 매크로 이벤트가 없습니다.</div>
+          <div className="macro-event-empty">예정된 주요 매크로 이벤트가 없습니다.</div>
         )}
       </div>
     </section>

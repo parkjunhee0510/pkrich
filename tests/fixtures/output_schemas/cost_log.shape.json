@@ -1,0 +1,217 @@
+{
+  "__type__": "object",
+  "keys": {
+    "latest": {
+      "__type__": "object",
+      "keys": {
+        "deep_pass_value": {
+          "__type__": "object",
+          "keys": {
+            "cost_per_selected_ticker_usd": {
+              "__type__": "float"
+            },
+            "deep_cost_usd": {
+              "__type__": "float"
+            },
+            "selected_ticker_count": {
+              "__type__": "int"
+            },
+            "share_of_total_cost": {
+              "__type__": "float"
+            },
+            "worth_it_hint": {
+              "__type__": "str"
+            }
+          }
+        },
+        "profiles": {
+          "__type__": "object",
+          "keys": {
+            "deep": {
+              "__type__": "object",
+              "keys": {
+                "calls": {
+                  "__type__": "int"
+                },
+                "cost_usd": {
+                  "__type__": "float"
+                },
+                "models": {
+                  "__type__": "object",
+                  "keys": {
+                    "o3-mini": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "tokens": {
+                  "__type__": "int"
+                }
+              }
+            },
+            "economy": {
+              "__type__": "object",
+              "keys": {
+                "calls": {
+                  "__type__": "int"
+                },
+                "cost_usd": {
+                  "__type__": "float"
+                },
+                "models": {
+                  "__type__": "object",
+                  "keys": {
+                    "gpt-5.4-mini": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "tokens": {
+                  "__type__": "int"
+                }
+              }
+            }
+          }
+        },
+        "routing": {
+          "__type__": "object",
+          "keys": {
+            "conflicted_count": {
+              "__type__": "int"
+            },
+            "eligible_count": {
+              "__type__": "int"
+            },
+            "ensemble_enabled": {
+              "__type__": "bool"
+            },
+            "selected_count": {
+              "__type__": "int"
+            },
+            "skipped_due_to_cap_count": {
+              "__type__": "int"
+            }
+          }
+        },
+        "run_date": {
+          "__type__": "str"
+        },
+        "success": {
+          "__type__": "bool"
+        },
+        "total_cost_usd": {
+          "__type__": "float"
+        }
+      }
+    },
+    "runs": {
+      "__type__": "array",
+      "item": {
+        "__type__": "object",
+        "keys": {
+          "deep_pass_value": {
+            "__type__": "object",
+            "keys": {
+              "cost_per_selected_ticker_usd": {
+                "__type__": "float"
+              },
+              "deep_cost_usd": {
+                "__type__": "float"
+              },
+              "selected_ticker_count": {
+                "__type__": "int"
+              },
+              "share_of_total_cost": {
+                "__type__": "float"
+              },
+              "worth_it_hint": {
+                "__type__": "str"
+              }
+            }
+          },
+          "profiles": {
+            "__type__": "object",
+            "keys": {
+              "deep": {
+                "__type__": "object",
+                "keys": {
+                  "calls": {
+                    "__type__": "int"
+                  },
+                  "cost_usd": {
+                    "__type__": "float"
+                  },
+                  "models": {
+                    "__type__": "object",
+                    "keys": {
+                      "o3-mini": {
+                        "__type__": "int"
+                      }
+                    }
+                  },
+                  "tokens": {
+                    "__type__": "int"
+                  }
+                }
+              },
+              "economy": {
+                "__type__": "object",
+                "keys": {
+                  "calls": {
+                    "__type__": "int"
+                  },
+                  "cost_usd": {
+                    "__type__": "float"
+                  },
+                  "models": {
+                    "__type__": "object",
+                    "keys": {
+                      "gpt-5.4-mini": {
+                        "__type__": "int"
+                      }
+                    }
+                  },
+                  "tokens": {
+                    "__type__": "int"
+                  }
+                }
+              }
+            }
+          },
+          "routing": {
+            "__type__": "object",
+            "keys": {
+              "conflicted_count": {
+                "__type__": "int"
+              },
+              "eligible_count": {
+                "__type__": "int"
+              },
+              "ensemble_enabled": {
+                "__type__": "bool"
+              },
+              "selected_count": {
+                "__type__": "int"
+              },
+              "skipped_due_to_cap_count": {
+                "__type__": "int"
+              }
+            }
+          },
+          "run_date": {
+            "__type__": "str"
+          },
+          "success": {
+            "__type__": "bool"
+          },
+          "total_cost_usd": {
+            "__type__": "float"
+          }
+        }
+      }
+    },
+    "schema_version": {
+      "__type__": "int"
+    }
+  }
+}

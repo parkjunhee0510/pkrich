@@ -13,6 +13,7 @@
   'Price/Book': 'PBR',
   'Dividend Yield': '배당수익률',
   Sector: '섹터',
+  'RS vs Sector ETF': '섹터 ETF 대비 상대강도',
 }
 
 export function DataSnapshot({ snapshot }: { snapshot: Record<string, string> }) {

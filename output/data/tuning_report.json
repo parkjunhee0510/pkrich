@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "horizons": {
+    "5": {
+      "horizon": 5,
+      "regime_multipliers": {
+        "status": "ok",
+        "horizon": 5,
+        "tunable_factors": [
+          "momentum",
+          "valuation",
+          "signal_track_record",
+          "catalyst_recency",
+          "news_tone"
+        ],
+        "grid": [
+          0.7,
+          1.0,
+          1.3
+        ],
+        "regimes": {
+          "risk_on": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 30,
+            "best": null,
+            "candidates": []
+          },
+          "risk_off": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 30,
+            "best": null,
+            "candidates": []
+          },
+          "neutral": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 30,
+            "best": null,
+            "candidates": []
+          }
+        }
+      },
+      "thresholds": {
+        "status": "insufficient_data",
+        "sample_size": 0,
+        "min_required": 50,
+        "horizon": 5
+      },
+      "walk_forward": {
+        "status": "ok",
+        "horizon": 5,
+        "n_folds_requested": 5,
+        "regimes": {
+          "risk_on": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "in_sample_spearman": null,
+            "selected_multipliers": null
+          },
+          "risk_off": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "in_sample_spearman": null,
+            "selected_multipliers": null
+          },
+          "neutral": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "in_sample_spearman": null,
+            "selected_multipliers": null
+          }
+        }
+      }
+    },
+    "20": {
+      "horizon": 20,
+      "regime_multipliers": {
+        "status": "ok",
+        "horizon": 20,
+        "tunable_factors": [
+          "momentum",
+          "valuation",
+          "signal_track_record",
+          "catalyst_recency",
+          "news_tone"
+        ],
+        "grid": [
+          0.7,
+          1.0,
+          1.3
+        ],
+        "regimes": {
+          "risk_on": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 30,
+            "best": null,
+            "candidates": []
+          },
+          "risk_off": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 30,
+            "best": null,
+            "candidates": []
+          },
+          "neutral": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 30,
+            "best": null,
+            "candidates": []
+          }
+        }
+      },
+      "thresholds": {
+        "status": "insufficient_data",
+        "sample_size": 0,
+        "min_required": 50,
+        "horizon": 20
+      },
+      "walk_forward": {
+        "status": "ok",
+        "horizon": 20,
+        "n_folds_requested": 5,
+        "regimes": {
+          "risk_on": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "in_sample_spearman": null,
+            "selected_multipliers": null
+          },
+          "risk_off": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "in_sample_spearman": null,
+            "selected_multipliers": null
+          },
+          "neutral": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "in_sample_spearman": null,
+            "selected_multipliers": null
+          }
+        }
+      }
+    }
+  }
+}

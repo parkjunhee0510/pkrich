@@ -13,6 +13,8 @@ from src.collector.polygon_options import (
     _compute_unusual_activity_v2,
     _extract_spot_price,
     _parse_contracts,
+    build_options_flow_from_snapshot,
+    extract_snapshot_metrics,
 )
 
 
@@ -277,3 +279,54 @@ class TestExtractSpotPrice:
     def test_missing(self):
         assert _extract_spot_price({}) is None
         assert _extract_spot_price({"results": []}) is None
+
+
+class TestSnapshotMetrics:
+    def test_extract_snapshot_metrics_includes_ratios_and_unusual(self):
+        data = {
+            "results": [
+                {
+                    "details": {"contract_type": "call", "strike_price": 150, "expiration_date": "2026-05-01"},
+                    "day": {"volume": 80, "close": 3.5},
+                    "open_interest": 100,
+                    "implied_volatility": 0.28,
+                    "greeks": {"delta": 0.55, "gamma": 0.03},
+                    "underlying_asset": {"price": 148.72},
+                },
+                {
+                    "details": {"contract_type": "put", "strike_price": 145, "expiration_date": "2026-05-01"},
+                    "day": {"volume": 40, "close": 2.1},
+                    "open_interest": 50,
+                    "implied_volatility": 0.30,
+                    "greeks": {"delta": -0.40, "gamma": 0.02},
+                },
+            ]
+        }
+        result = extract_snapshot_metrics(data)
+        assert result["put_call_volume_ratio"] == "0.50"
+        assert result["put_call_oi_ratio"] == "0.50"
+        assert len(result["unusual_contracts"]) == 2
+
+    def test_build_options_flow_from_snapshot_keeps_unusual_activity(self):
+        data = {
+            "results": [
+                {
+                    "details": {"contract_type": "call", "strike_price": 150, "expiration_date": "2026-05-01"},
+                    "day": {"volume": 80, "close": 3.5},
+                    "open_interest": 100,
+                    "implied_volatility": 0.28,
+                    "greeks": {"delta": 0.55, "gamma": 0.03},
+                    "underlying_asset": {"price": 148.72},
+                },
+                {
+                    "details": {"contract_type": "put", "strike_price": 145, "expiration_date": "2026-05-01"},
+                    "day": {"volume": 40, "close": 2.1},
+                    "open_interest": 50,
+                    "implied_volatility": 0.30,
+                    "greeks": {"delta": -0.40, "gamma": 0.02},
+                },
+            ]
+        }
+        result = build_options_flow_from_snapshot(data)
+        assert "put_call_volume_ratio" in result
+        assert "unusual_activity" in result

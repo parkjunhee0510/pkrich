@@ -16,8 +16,9 @@ import time
 from datetime import date, timedelta
 from typing import Any
 from urllib import request
-from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError
 
+from src.utils.env import is_env_flag_enabled
 from src.utils.network import can_open_tcp_connection
 from src.utils.pipeline_logging import record_pipeline_event
 
@@ -37,6 +38,14 @@ _PLAN_LIMITED_PATTERNS = (
 
 class FmpPlanLimitedError(RuntimeError):
     """Raised when the active FMP plan does not include an endpoint."""
+
+    def __init__(self, endpoint: str) -> None:
+        super().__init__(endpoint)
+        self.endpoint = endpoint
+
+
+class FmpRateLimitedError(RuntimeError):
+    """Raised when the active FMP key is temporarily rate-limited."""
 
     def __init__(self, endpoint: str) -> None:
         super().__init__(endpoint)
@@ -73,6 +82,10 @@ def _fetch_json(endpoint: str, params: dict[str, str] | None = None) -> Any:
         with request.urlopen(req, timeout=15) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except HTTPError as exc:
+        if exc.code == 404:
+            raise FmpPlanLimitedError(normalized_endpoint) from exc
+        if exc.code == 429:
+            raise FmpRateLimitedError(normalized_endpoint) from exc
         if exc.code == 402:
             if any(normalized_endpoint.startswith(pattern) for pattern in _PLAN_LIMITED_PATTERNS):
                 if normalized_endpoint not in _PLAN_LIMITED_ENDPOINTS:
@@ -93,6 +106,11 @@ def is_fmp_ready() -> bool:
     if not _get_api_key():
         return False
     return can_open_tcp_connection("financialmodelingprep.com", 443)
+
+
+def should_collect_fmp_extended() -> bool:
+    """Whether to call lower-priority, higher-volume FMP endpoints."""
+    return is_env_flag_enabled("ENABLE_FMP_EXTENDED_FETCH", default=False)
 
 
 # ── Analyst Estimate Revisions ──────────────────────────────────────
@@ -168,6 +186,12 @@ def collect_fmp_analyst_estimates(ticker: str, run_date: date) -> dict[str, str]
             ticker=ticker, endpoint=exc.endpoint,
         )
         return {}
+    except FmpRateLimitedError as exc:
+        record_pipeline_event(
+            "collector", "info", "fmp_analyst_estimates_throttled",
+            ticker=ticker, endpoint=exc.endpoint,
+        )
+        return {}
     except Exception as exc:
         record_pipeline_event(
             "collector", "warning", "fmp_analyst_estimates_failed",
@@ -224,6 +248,12 @@ def collect_fmp_insider_trading(ticker: str, run_date: date) -> list[dict[str, s
     except FmpPlanLimitedError as exc:
         record_pipeline_event(
             "collector", "info", "fmp_insider_trading_unavailable",
+            ticker=ticker, endpoint=exc.endpoint,
+        )
+        return []
+    except FmpRateLimitedError as exc:
+        record_pipeline_event(
+            "collector", "info", "fmp_insider_trading_throttled",
             ticker=ticker, endpoint=exc.endpoint,
         )
         return []
@@ -293,6 +323,12 @@ def collect_fmp_institutional_holders(ticker: str) -> dict[str, str]:
             ticker=ticker, endpoint=exc.endpoint,
         )
         return {}
+    except FmpRateLimitedError as exc:
+        record_pipeline_event(
+            "collector", "info", "fmp_institutional_holders_throttled",
+            ticker=ticker, endpoint=exc.endpoint,
+        )
+        return {}
     except Exception as exc:
         record_pipeline_event(
             "collector", "warning", "fmp_institutional_holders_failed",
@@ -340,6 +376,12 @@ def collect_fmp_earnings_surprises(ticker: str) -> list[dict[str, str]]:
     except FmpPlanLimitedError as exc:
         record_pipeline_event(
             "collector", "info", "fmp_earnings_surprises_unavailable",
+            ticker=ticker, endpoint=exc.endpoint,
+        )
+        return []
+    except FmpRateLimitedError as exc:
+        record_pipeline_event(
+            "collector", "info", "fmp_earnings_surprises_throttled",
             ticker=ticker, endpoint=exc.endpoint,
         )
         return []
@@ -427,6 +469,12 @@ def collect_fmp_key_metrics(ticker: str) -> dict[str, str]:
             ticker=ticker, endpoint=exc.endpoint,
         )
         return {}
+    except FmpRateLimitedError as exc:
+        record_pipeline_event(
+            "collector", "info", "fmp_key_metrics_throttled",
+            ticker=ticker, endpoint=exc.endpoint,
+        )
+        return {}
     except Exception as exc:
         record_pipeline_event(
             "collector", "warning", "fmp_key_metrics_failed",
@@ -445,10 +493,15 @@ def collect_fmp_peer_metrics(tickers: list[str]) -> dict[str, dict[str, str]]:
         try:
             metrics = collect_fmp_key_metrics(ticker)
             ratios = collect_fmp_financial_ratios(ticker)
-            if metrics or ratios:
+            profile = collect_fmp_company_profile(ticker)
+            if metrics or ratios or profile:
                 combined: dict[str, str] = {}
                 for key in ('roe', 'gross_margin'):
                     val = metrics.get(key) or ratios.get(key)
+                    if val:
+                        combined[key] = val
+                for key in ('market_cap', 'pe_ratio', 'avg_volume', 'sector'):
+                    val = profile.get(key)
                     if val:
                         combined[key] = val
                 result[ticker] = combined
@@ -503,6 +556,12 @@ def collect_fmp_financial_ratios(ticker: str) -> dict[str, str]:
     except FmpPlanLimitedError as exc:
         record_pipeline_event(
             "collector", "info", "fmp_financial_ratios_unavailable",
+            ticker=ticker, endpoint=exc.endpoint,
+        )
+        return {}
+    except FmpRateLimitedError as exc:
+        record_pipeline_event(
+            "collector", "info", "fmp_financial_ratios_throttled",
             ticker=ticker, endpoint=exc.endpoint,
         )
         return {}
@@ -578,6 +637,12 @@ def collect_fmp_dividend_history(ticker: str) -> dict[str, str]:
             ticker=ticker, endpoint=exc.endpoint,
         )
         return {}
+    except FmpRateLimitedError as exc:
+        record_pipeline_event(
+            "collector", "info", "fmp_dividend_history_throttled",
+            ticker=ticker, endpoint=exc.endpoint,
+        )
+        return {}
     except Exception as exc:
         record_pipeline_event(
             "collector", "warning", "fmp_dividend_history_failed",
@@ -607,6 +672,22 @@ def collect_fmp_company_profile(ticker: str) -> dict[str, str]:
         if industry and str(industry).strip() and str(industry).strip() != "N/A":
             result["industry"] = str(industry).strip()
 
+        beta = _safe_float(entry.get("beta"))
+        if beta is not None:
+            result["beta"] = f"{beta:.2f}"
+
+        market_cap = _safe_float(entry.get("marketCap") or entry.get("mktCap"))
+        if market_cap is not None and market_cap > 0:
+            result["market_cap"] = f"{market_cap:.0f}"
+
+        pe_ratio = _safe_float(entry.get("pe") or entry.get("priceEarningsRatioTTM"))
+        if pe_ratio is not None and pe_ratio > 0:
+            result["pe_ratio"] = f"{pe_ratio:.2f}x"
+
+        avg_volume = _safe_float(entry.get("volAvg") or entry.get("avgVolume"))
+        if avg_volume is not None and avg_volume > 0:
+            result["avg_volume"] = f"{avg_volume:.0f}"
+
         employees = entry.get("fullTimeEmployees")
         if employees:
             result["full_time_employees"] = str(employees)
@@ -629,6 +710,12 @@ def collect_fmp_company_profile(ticker: str) -> dict[str, str]:
     except FmpPlanLimitedError as exc:
         record_pipeline_event(
             "collector", "info", "fmp_company_profile_unavailable",
+            ticker=ticker, endpoint=exc.endpoint,
+        )
+        return {}
+    except FmpRateLimitedError as exc:
+        record_pipeline_event(
+            "collector", "info", "fmp_company_profile_throttled",
             ticker=ticker, endpoint=exc.endpoint,
         )
         return {}

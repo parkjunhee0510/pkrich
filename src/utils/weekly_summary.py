@@ -3,9 +3,10 @@ from __future__ import annotations
 import json
 import re
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 from src.utils.datastore import get_datastore
 from src.utils.signal_tracker import load_signal_stats
@@ -63,6 +64,7 @@ class WeeklySummaryData:
     signal_validation_rows: list[dict[str, str]]
     signal_summary: list[str]
     action_items: list[str]
+    weekly_report: dict[str, object] = field(default_factory=dict)
     weekly_insight: str = ""
 
 
@@ -70,9 +72,14 @@ def load_weekly_summary(
     run_date: date,
     *,
     output_root: Path | None = None,
+    macro_context: dict[str, Any] | None = None,
+    market_regime: dict[str, Any] | Any | None = None,
+    portfolio_risk: dict[str, Any] | None = None,
+    decisions: list[Any] | None = None,
 ) -> WeeklySummaryData:
     root = output_root or Path("output")
-    dashboard_days = _load_dashboard_days(root / "data" / "dashboard.json")
+    history_path = root / "data" / "dashboard_history.json"
+    dashboard_days = _load_dashboard_days(history_path if history_path.exists() else root / "data" / "dashboard.json")
     week_days = _filter_week_days(dashboard_days, run_date)
 
     iso_year, iso_week, _ = run_date.isocalendar()
@@ -97,7 +104,25 @@ def load_weekly_summary(
         [move for move in ticker_moves if move.weekly_change_value < 0],
         key=lambda item: (item.weekly_change_value, item.ticker),
     )[:3]
-    weekly_insight = _load_weekly_insight(
+    weekly_report = _load_weekly_report(
+        iso_year,
+        iso_week,
+        week_start.isoformat(),
+        min(run_date, week_end).isoformat(),
+        market_moves,
+        sector_performance,
+        top_gainers=top_gainers,
+        top_losers=top_losers,
+        repeated_news=repeated_news,
+        signal_summary=signal_summary,
+        action_items=action_items,
+        macro_context=macro_context or {},
+        market_regime=market_regime,
+        portfolio_risk=portfolio_risk or {},
+        decisions=decisions or [],
+        week_days=week_days,
+    )
+    weekly_insight = str(weekly_report.get("summary", "")).strip() or _load_weekly_insight(
         iso_year,
         iso_week,
         week_start.isoformat(),
@@ -134,8 +159,53 @@ def load_weekly_summary(
         signal_validation_rows=signal_validation_rows,
         signal_summary=signal_summary,
         action_items=action_items,
+        weekly_report=weekly_report,
         weekly_insight=weekly_insight,
     )
+
+
+def _load_weekly_report(
+    iso_year: int,
+    iso_week: int,
+    start_date: str,
+    end_date: str,
+    market_moves: list[WeeklyMarketMove],
+    sector_performance: list[WeeklySectorPerformance],
+    top_gainers: list[WeeklyTickerMove],
+    top_losers: list[WeeklyTickerMove],
+    repeated_news: list[WeeklyRepeatedNews],
+    signal_summary: list[str],
+    action_items: list[str],
+    *,
+    macro_context: dict[str, Any],
+    market_regime: dict[str, Any] | Any | None,
+    portfolio_risk: dict[str, Any],
+    decisions: list[Any],
+    week_days: list[dict[str, Any]],
+) -> dict[str, object]:
+    try:
+        from src.analyzer.weekly_insight import generate_weekly_report
+
+        return generate_weekly_report(
+            iso_year=iso_year,
+            iso_week=iso_week,
+            start_date=start_date,
+            end_date=end_date,
+            market_moves=market_moves,
+            sector_performance=sector_performance,
+            top_gainers=top_gainers,
+            top_losers=top_losers,
+            repeated_news=repeated_news,
+            signal_summary=signal_summary,
+            action_items=action_items,
+            macro_context=macro_context,
+            market_regime=market_regime,
+            portfolio_risk=portfolio_risk,
+            decisions=decisions,
+            week_days=week_days,
+        )
+    except Exception:
+        return {}
 
 
 def _load_weekly_insight(
@@ -218,7 +288,10 @@ def _load_weekly_ticker_moves(
 
     iso_year, iso_week, _ = run_date.isocalendar()
     grouped: dict[str, list[dict[str, str]]] = defaultdict(list)
-    datastore = get_datastore(output_root=output_root)
+    sqlite_path = output_root / "data" / "price_history.sqlite"
+    csv_path = output_root / "data" / "price_history.csv"
+    backend = "sqlite" if sqlite_path.exists() else "csv" if csv_path.exists() else None
+    datastore = get_datastore(output_root=output_root, backend=backend)
     week_start = date.fromisocalendar(iso_year, iso_week, 1)
     week_end = min(run_date, date.fromisocalendar(iso_year, iso_week, 7))
     for row in datastore.query_prices(start_date=week_start, end_date=week_end):
@@ -272,6 +345,7 @@ def _build_weekly_market_moves(week_days: list[dict]) -> list[WeeklyMarketMove]:
         for entry in week_days[-1].get("market_overview", [])
         if isinstance(entry, dict) and entry.get("label")
     ]
+    single_day = len(week_days) == 1
 
     moves: list[WeeklyMarketMove] = []
     for entry in latest_entries:
@@ -281,13 +355,28 @@ def _build_weekly_market_moves(week_days: list[dict]) -> list[WeeklyMarketMove]:
         first_entry = first_entries.get(label, entry)
         start_price = str(first_entry.get("price", "N/A"))
         end_price = str(entry.get("price", "N/A"))
-        change_value = _percent_change(_parse_numeric(start_price), _parse_numeric(end_price))
+
+        if single_day:
+            # Only 1 day in the week: price-to-price diff would be 0.
+            # Use the stored daily change field (previous close → today's close) instead.
+            raw_change = str(entry.get("change", "N/A")).strip()
+            pct = _parse_numeric(raw_change)
+            if pct is not None and raw_change.startswith(("-", "+")):
+                weekly_change = f"{pct:+.2f}%"
+            elif pct is not None:
+                weekly_change = f"{pct:+.2f}%"
+            else:
+                weekly_change = raw_change if raw_change not in ("", "N/A") else "+0.00%"
+        else:
+            change_value = _percent_change(_parse_numeric(start_price), _parse_numeric(end_price))
+            weekly_change = _format_percent(change_value)
+
         moves.append(
             WeeklyMarketMove(
                 label=label,
                 start_price=start_price,
                 end_price=end_price,
-                weekly_change=_format_percent(change_value),
+                weekly_change=weekly_change,
             )
         )
     return moves

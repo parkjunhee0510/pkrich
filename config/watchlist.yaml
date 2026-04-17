@@ -1,3 +1,10 @@
+﻿sector_etf_map:
+  Technology: XLK
+  Energy: XLE
+  Industrials: XLI
+  Consumer Staples: XLP
+  Communication Services: XLC
+  Utilities: XLU
 watchlist:
   - ticker: AAPL
     name: Apple Inc.
@@ -43,7 +50,38 @@ watchlist:
     sector: Technology
     keywords: ["quantum computing", "enterprise", "cloud partnerships"]
     cik: "0001824920"
+  
+  - ticker: OXY
+    name: Occidental Petroleum Corporation
+    sector: Energy
+    keywords: ["oil", "carbon capture", "permian basin", "LNG"]
+    cik: "0000797468"
+
+  - ticker: ORA
+    name: Ormat Technologies, Inc.
+    sector: Utilities
+    keywords: ["geothermal", "renewable energy", "energy storage", "baseload power"]
+    cik: "0001296445"
+
+  - ticker: SPIR
+    name: Spire Global, Inc.
+    sector: Technology
+    keywords: ["satellite data", "weather analytics", "maritime tracking", "space data"]
+    cik: "0001816017"
+
   - ticker: PLUG
-    name: PLUG
-    sector: ""
-    keywords: []
+    name: Plug Power Inc.
+    sector: Industrials
+    keywords: ["hydrogen fuel", "fuel cells", "green hydrogen", "energy transition"]
+    cik: "0001093691"
+
+  - ticker: RKLB
+    name: Rocket Lab USA, Inc.
+    sector: Industrials
+    keywords: ["space launch", "satellite buses", "space systems", "defense contracts"]
+
+  - ticker: PL
+    name: Planet Labs PBC
+    sector: Technology
+    keywords: ["earth observation", "satellite imagery", "geospatial data", "AI analytics"]
+

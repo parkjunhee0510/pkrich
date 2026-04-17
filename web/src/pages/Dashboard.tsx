@@ -1,9 +1,10 @@
-import type { Dispatch, SetStateAction } from 'react'
+﻿import type { Dispatch, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { MacroContextBar } from '../components/MacroContextBar'
 import { MarketOverview } from '../components/MarketOverview'
+import { MarketRegimeBanner } from '../components/MarketRegimeBanner'
 import { SectorSummary } from '../components/SectorSummary'
 import { DashboardSkeleton } from '../components/Skeleton'
 import {
@@ -15,7 +16,7 @@ import {
 import { WatchlistTable } from '../components/WatchlistTable'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useLocalResearchAutomation } from '../hooks/useLocalResearchAutomation'
-import type { TickerAnalysisData } from '../types'
+import type { TickerAnalysisData, WeeklyReportSection } from '../types'
 import {
   buildCatalystFeedSections,
   buildEarningsBoardSections,
@@ -65,7 +66,7 @@ const PRESET_ACCOUNT_SIZES = [10000, 50000, 100000]
 
 export function Dashboard() {
   const navigate = useNavigate()
-  const { data, loading, refreshing, error, refresh } = useDashboardData()
+  const { data, loading, refreshing, error, refresh } = useDashboardData({ pollIntervalMs: 60000 })
   const searchInputRef = useRef<HTMLInputElement | null>(null)
   const tickerInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
@@ -74,6 +75,15 @@ export function Dashboard() {
   const [accountSize, setAccountSize] = useState(10000)
   const [watchlistSort, setWatchlistSort] = useState<WatchlistSortMode>('score')
   const [density, setDensity] = useState<DensityMode>('comfortable')
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const sync = () => { setDensity(mq.matches ? 'compact' : 'comfortable') }
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
   const [tickerInput, setTickerInput] = useState('')
   const [autoRunAfterAdd, setAutoRunAfterAdd] = useState(false)
   const [pendingNavigationTicker, setPendingNavigationTicker] = useState<string | null>(null)
@@ -264,7 +274,7 @@ export function Dashboard() {
       )}
 
       <div className="dashboard-header">
-        <h2>트레이더 워크스페이스 · {day.date}</h2>
+        <h2>부자 되고 싶어요 · {day.date}</h2>
         {data.days.length > 1 && (
           <select className="date-select" value={idx} onChange={(e) => setSelectedIdx(Number(e.target.value))}>
             {data.days.map((entry, index) => (
@@ -469,18 +479,40 @@ export function Dashboard() {
         <SignalPerformanceBoard highlights={signalHighlights} />
       </div>
 
+      <MarketRegimeBanner regime={day.market_regime} />
       <MacroContextBar macroContext={day.macro_context} />
-      {data.weekly_summary?.weekly_insight ? (
+      {(data.weekly_summary?.weekly_report || data.weekly_summary?.weekly_insight) ? (
         <section className="ticker-detail-section-shell">
           <h3>주간 인사이트</h3>
           <div className="detail-note-card">
-            <p>{data.weekly_summary.weekly_insight}</p>
+            {data.weekly_summary?.weekly_report ? (
+              <div className="weekly-report-panel">
+                {data.weekly_summary.weekly_report.headline ? (
+                  <strong className="weekly-report-headline">{data.weekly_summary.weekly_report.headline}</strong>
+                ) : null}
+                {data.weekly_summary.weekly_report.summary ? (
+                  <p className="weekly-report-summary">{data.weekly_summary.weekly_report.summary}</p>
+                ) : data.weekly_summary.weekly_insight ? (
+                  <p className="weekly-report-summary">{data.weekly_summary.weekly_insight}</p>
+                ) : null}
+                <div className="weekly-report-grid">
+                  <WeeklyReportCard index={1} title="시장 환경 요약" section={data.weekly_summary.weekly_report.market_environment} />
+                  <WeeklyReportCard index={2} title="핵심 이동 종목 Top 3" section={data.weekly_summary.weekly_report.top_movers} />
+                  <WeeklyReportCard index={3} title="시그널 성과 리뷰" section={data.weekly_summary.weekly_report.signal_review} />
+                  <WeeklyReportCard index={4} title="리스크 포인트" section={data.weekly_summary.weekly_report.risk_points} />
+                  <WeeklyReportCard index={5} title="다음 주 액션 플랜" section={data.weekly_summary.weekly_report.next_week_action_plan} />
+                  <WeeklyReportCard index={6} title="포트폴리오 제안" section={data.weekly_summary.weekly_report.portfolio_suggestions} />
+                </div>
+              </div>
+            ) : (
+              <p>{data.weekly_summary?.weekly_insight}</p>
+            )}
             <div className="watchlist-chip-row">
               <span className="period-badge">
-                {data.weekly_summary.iso_year}-W{String(data.weekly_summary.iso_week).padStart(2, '0')}
+                {data.weekly_summary?.iso_year}-W{String(data.weekly_summary?.iso_week).padStart(2, '0')}
               </span>
               <span className="period-badge">
-                {data.weekly_summary.start_date} ~ {data.weekly_summary.end_date}
+                {data.weekly_summary?.start_date} ~ {data.weekly_summary?.end_date}
               </span>
             </div>
           </div>
@@ -504,6 +536,51 @@ export function Dashboard() {
 function normalizeTickerInput(value: string): string {
   const normalized = value.trim().toUpperCase()
   return /^[A-Z][A-Z0-9.-]{0,14}$/.test(normalized) ? normalized : ''
+}
+
+function WeeklyReportCard({
+  index,
+  title,
+  section,
+}: {
+  index: number
+  title: string
+  section?: WeeklyReportSection
+}) {
+  const normalizedItems = normalizeWeeklyReportItems(section)
+  return (
+    <article className="weekly-report-card">
+      <span className="weekly-report-card-kicker">{index}. {title}</span>
+      <p className="weekly-report-card-summary">{section?.summary ?? '데이터가 아직 충분하지 않습니다.'}</p>
+      {normalizedItems.length > 0 ? (
+        <ul className="weekly-report-card-list">
+          {normalizedItems.map((item, idx) => (
+            <li key={`${title}-${idx}`}>{item}</li>
+          ))}
+        </ul>
+      ) : null}
+    </article>
+  )
+}
+
+function normalizeWeeklyReportItems(section?: WeeklyReportSection): string[] {
+  if (!section) return []
+  const details = Array.isArray(section.details) ? section.details.filter(Boolean) : []
+  const items = Array.isArray(section.items) ? section.items : []
+  const normalizedItems = items
+    .map((item) => {
+      if (typeof item === 'string') return item
+      if (!item || typeof item !== 'object') return ''
+      const parts = [
+        item.ticker ? `${item.ticker}${item.name ? ` (${item.name})` : ''}` : item.name ?? '',
+        item.weekly_change,
+        item.catalyst,
+        item.decision_change,
+      ].filter(Boolean)
+      return parts.join(' · ')
+    })
+    .filter(Boolean)
+  return [...details, ...normalizedItems]
 }
 
 function applyTraderFilters(ticker: TickerAnalysisData, filters: TraderFilters): boolean {

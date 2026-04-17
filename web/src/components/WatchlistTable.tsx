@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   DndContext,
   closestCenter,
@@ -23,6 +23,7 @@ import { SignalBadge } from './SignalBadge'
 import { SecFilingBadges } from './SecFilingBadges'
 import { InfoTooltip } from './InfoTooltip'
 import {
+  buildOptionsSignalTags,
   buildPositioningGrid,
   buildPositionSizingSummary,
   buildPriceActionTags,
@@ -30,9 +31,17 @@ import {
   extractActionPlan,
   getLatestCatalystItem,
   getNextEarningsEvent,
+  getUnusualActivityMeta,
+  summarizeUnusualActivityShort,
 } from '../utils/trader'
 
 type DensityMode = 'compact' | 'comfortable' | 'focus'
+
+const DECISION_LABEL: Record<string, string> = {
+  buy: '매수',
+  watch: '관찰',
+  avoid: '회피',
+}
 
 const STORAGE_KEY = 'pkrich-watchlist-order'
 
@@ -164,6 +173,7 @@ function SortableWatchlistCard({
     zIndex: isDragging ? 10 : undefined,
   }
 
+  const navigate = useNavigate()
   const pct = parseNumericChange(ticker.data_snapshot['Daily Change'] ?? '0')
   const signalDirection = extractSignalDirection(ticker.signal_or_takeaway)
   const setup = computeSetupScore(ticker)
@@ -174,13 +184,24 @@ function SortableWatchlistCard({
   const earningsEvent = getNextEarningsEvent(ticker)
   const latestCatalyst = getLatestCatalystItem(ticker)
   const positioningGrid = buildPositioningGrid(ticker)
+  const optionTags = buildOptionsSignalTags(ticker)
+  const unusualActivitySummary = summarizeUnusualActivityShort(ticker.options_summary?.unusual_activity)
+  const unusualMeta = getUnusualActivityMeta(ticker.options_summary?.unusual_activity)
   const contextSummary = buildContextSummary(ticker)
+
+  function handleCardClick(e: React.MouseEvent<HTMLElement>) {
+    if (isDragging) return
+    const target = e.target as HTMLElement
+    if (target.closest('a, button, [role="button"]')) return
+    navigate(`/ticker/${ticker.ticker}`)
+  }
 
   return (
     <article
       ref={setNodeRef}
-      style={style}
+      style={{ ...style, cursor: 'pointer' }}
       className={`watchlist-card ${getSetupToneClass(setup.score)}${isDragging ? ' dragging' : ''}`}
+      onClick={handleCardClick}
     >
       <div className="watchlist-card-head">
         <div className="watchlist-card-title-block">
@@ -193,6 +214,11 @@ function SortableWatchlistCard({
             <Link to={`/ticker/${ticker.ticker}`} className="ticker-link">
               {ticker.ticker}
             </Link>
+            {ticker.decision && (
+              <span className={`watchlist-decision-pill decision-pill-${ticker.decision.action}`}>
+                {DECISION_LABEL[ticker.decision.action] ?? ticker.decision.action}
+              </span>
+            )}
             <SignalBadge changePercent={pct} signalDirection={signalDirection} />
             <span className="watchlist-focus-pill">{setup.focusLabel}</span>
             {latestCatalyst && (
@@ -247,12 +273,34 @@ function SortableWatchlistCard({
               : 'No scheduled earnings'}
           </span>
         </div>
+      
+        <div className={`watchlist-stat-card ${getSectorRsToneClass(ticker)}`}>
+          <span className="watchlist-stat-label">
+            Sector RS
+            <InfoTooltip content="Performance relative to the mapped sector ETF. Positive means stronger than the sector benchmark, negative means weaker than peers." />
+          </span>
+          <strong>{ticker.price_action?.rs_vs_sector_etf ?? 'N/A'}</strong>
+          <span className="watchlist-stat-sub">vs mapped sector ETF</span>
+        </div>
       </div>
 
       <div className="watchlist-card-chip-row">
+        {ticker.analysis_consensus?.selection_reason === 'cap_exceeded' && (
+          <span className="setup-tag setup-tag-alert" title="일일 앙상블 상한에 걸려 2차 deep 재분석 대상에서 제외됐습니다.">
+            앙상블 보류
+          </span>
+        )}
         {scoreFactorTags.map((tag) => (
           <span key={`score-${tag}`} className="setup-tag score-factor-chip">
             {tag}
+          </span>
+        ))}
+        {optionTags.map((tag) => (
+          <span
+            key={tag.label}
+            className={`setup-tag ${tag.tone ? `options-chip options-chip-${tag.tone}` : ''} ${tag.emphasis === 'alert' ? 'setup-tag-alert' : ''}`.trim()}
+          >
+            {tag.label}
           </span>
         ))}
         {ticker.sec_filing_tags.length > 0 && <SecFilingBadges tags={ticker.sec_filing_tags.slice(0, 2)} />}
@@ -264,7 +312,7 @@ function SortableWatchlistCard({
         {earningsEvent && (
           <span className="event-badge">
             {earningsEvent.label} D-{earningsEvent.days_until}
-            {earningsEvent.timing ? ` · ${earningsEvent.timing}` : ''}
+            {earningsEvent.timing ? ` ? ${earningsEvent.timing}` : ''}
           </span>
         )}
       </div>
@@ -278,6 +326,21 @@ function SortableWatchlistCard({
               <span>{buildActionSummary(actionPlan, latestCatalyst, earningsEvent)}</span>
             </summary>
             <div className="watchlist-action-expanded">
+              {unusualActivitySummary ? (
+                <>
+                  <div className="options-context-badges">
+                    <span className={`options-context-badge posture-${unusualMeta?.postureTone ?? 'mixed'}`}>
+                      {unusualMeta?.postureLabel ?? '변동성 대응'}
+                    </span>
+                    {unusualMeta?.strengthLabel ? (
+                      <span className={`options-context-badge strength-${unusualMeta.strengthTone}`}>
+                        {unusualMeta.strengthLabel}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="watchlist-option-note">옵션: {unusualActivitySummary}</p>
+                </>
+              ) : null}
               <p>{actionPlan.thesis}</p>
               <p>진입존 {actionPlan.entry}</p>
               <p>무효화 {actionPlan.invalidation}</p>
@@ -415,6 +478,14 @@ function getEarningsToneClass(earningsEvent: ReturnType<typeof getNextEarningsEv
   return 'stat-tone-positive'
 }
 
+function getSectorRsToneClass(ticker: TickerAnalysisData): string {
+  const sectorRs = parseSignedNumber(ticker.price_action?.rs_vs_sector_etf)
+  if (sectorRs === null) return 'stat-tone-neutral'
+  if (sectorRs >= 2) return 'stat-tone-positive'
+  if (sectorRs <= -2) return 'stat-tone-negative'
+  return 'stat-tone-caution'
+}
+
 function parseSignedNumber(value?: string): number | null {
   if (!value) return null
   const match = value.replace(/,/g, '').match(/[-+]?\d*\.?\d+/)
@@ -427,7 +498,7 @@ function buildContextSummary(ticker: TickerAnalysisData): string {
   const parts: string[] = []
 
   if (typeof ticker.news_tone?.confidence === 'number') {
-    parts.push(`톤 확신도 ${(ticker.news_tone.confidence * 100).toFixed(0)}%`)
+    parts.push(formatNewsToneConfidence(ticker.news_tone.confidence))
   }
 
   if (ticker.sector_comparison?.summary) {
@@ -435,4 +506,17 @@ function buildContextSummary(ticker: TickerAnalysisData): string {
   }
 
   return parts.join(' · ')
+}
+
+function formatNewsToneConfidence(confidence: number): string {
+  const normalized = Math.max(1, Math.min(5, Math.round(confidence)))
+  const percentage = normalized * 20
+  const levelMap: Record<number, string> = {
+    1: '낮음',
+    2: '보통',
+    3: '높음',
+    4: '매우 높음',
+    5: '매우 높음',
+  }
+  return `신뢰도 ${levelMap[normalized]} (${percentage}%)`
 }

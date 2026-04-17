@@ -1,20 +1,55 @@
-import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
+﻿import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { useTickerAnalysis } from '../hooks/useTickerAnalysis'
+import { useTickerHistory } from '../hooks/useTickerHistory'
 import { usePriceHistory } from '../hooks/usePriceHistory'
 import { useTickerTimeline } from '../hooks/useTickerTimeline'
 import { DataSnapshot } from '../components/DataSnapshot'
 import { NewsItem } from '../components/NewsItem'
 import { SecFilingBadges } from '../components/SecFilingBadges'
-import { SignalBadge } from '../components/SignalBadge'
 import { InfoTooltip } from '../components/InfoTooltip'
+import { DecisionCard } from '../components/DecisionCard'
 import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
 import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
 import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../types'
-import { parseNumericChange, changeColor, extractSignalDirection } from '../utils/format'
+import { parseNumericChange, changeColor } from '../utils/format'
 import { EpsSurpriseChart } from '../components/EpsSurpriseChart'
 import { buildPositionSizingSummary, buildPriceActionTags, extractActionPlan, getLatestCatalystItem } from '../utils/trader'
+import { buildThesisDiff } from '../utils/thesisDiff'
+
+const HEADER_ENSEMBLE_BADGES: Record<string, { symbol: string; label: string; className: string }> = {
+  agree: { symbol: '✓✓', label: '합의 일치', className: 'ticker-ensemble-badge-agree' },
+  conflict: { symbol: '✓✗', label: '합의 불일치', className: 'ticker-ensemble-badge-conflict' },
+  single: { symbol: '•', label: '단일 판단', className: 'ticker-ensemble-badge-single' },
+}
+
+const HEADER_SELECTION_REASON_LABELS: Record<string, string> = {
+  selected: '2차 검토 완료',
+  cap_exceeded: '2차 검토 대기',
+  out_of_range: '재검토 범위 밖',
+  disabled: '앙상블 비활성화',
+}
+
+const HEADER_FINAL_CONSENSUS_LABELS: Record<string, string> = {
+  agree: '최종 합의 일치',
+  resolved: '3차 검토로 합의',
+  conflict: '3차 후에도 불일치',
+  single: '단일 판단',
+}
+
+const NEWS_TONE_LABELS: Record<string, string> = {
+  bullish: '강세',
+  bearish: '약세',
+  neutral: '중립',
+}
+
+const DECISION_ACTION_LABELS: Record<string, string> = {
+  buy: '매수',
+  watch: '관찰',
+  avoid: '회피',
+}
 
 const FILING_TABS = ['실적', '배당', '주주총회', '기타 공시'] as const
 
@@ -53,7 +88,11 @@ const PriceChart = lazy(() =>
 
 export function TickerDetail() {
   const { ticker } = useParams<{ ticker: string }>()
-  const { data, loading, error } = useDashboardData()
+  const { analysis: shardAnalysis, loading: shardLoading, missing: shardMissing } = useTickerAnalysis(ticker, undefined, 60000)
+  const { history: tickerHistory } = useTickerHistory(ticker, undefined, 60000)
+  const needsDashboardFallback = shardMissing
+  const { data, loading: dashboardLoading, error } = useDashboardData({ enabled: needsDashboardFallback, pollIntervalMs: 60000 })
+  const loading = shardLoading || (needsDashboardFallback && dashboardLoading)
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
   const [timelineWindow, setTimelineWindow] = useState<'30' | '90'>('30')
@@ -63,10 +102,34 @@ export function TickerDetail() {
   const [selectedFormType, setSelectedFormType] = useState('ALL')
 
   const latestDay = data?.days[data.days.length - 1]
-  const analysis = latestDay?.tickers.find((t) => t.ticker === ticker)
+  const analysis = shardAnalysis ?? latestDay?.tickers.find((t) => t.ticker === ticker)
+  const previousAnalysis = useMemo(() => {
+    if (!analysis) {
+      return null
+    }
+    const historicalAnalyses = tickerHistory
+      .map((day) => day.tickers[0])
+      .filter((entry): entry is typeof analysis => Boolean(entry))
+      .sort((left, right) => left.date.localeCompare(right.date))
+
+    const previousByDate = historicalAnalyses.filter((entry) => entry.date < analysis.date).at(-1)
+    if (previousByDate) {
+      return previousByDate
+    }
+
+    const latestIndex = historicalAnalyses.findIndex((entry) => entry.date === analysis.date)
+    if (latestIndex >= 1) {
+      return historicalAnalyses[latestIndex - 1]
+    }
+
+    return historicalAnalyses.length >= 2 ? historicalAnalyses[historicalAnalyses.length - 2] : null
+  }, [analysis, tickerHistory])
+  const thesisDiff = useMemo(
+    () => (analysis && previousAnalysis ? buildThesisDiff(analysis, previousAnalysis) : null),
+    [analysis, previousAnalysis],
+  )
   const fallbackSignalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
   const pct = parseNumericChange(analysis?.data_snapshot['Daily Change'] ?? '0')
-  const signalDirection = extractSignalDirection(analysis?.signal_or_takeaway)
   const visibleTimeline = useMemo(() => {
     const limit = timelineWindow === '30' ? 30 : 90
     return timelineEntries.slice(0, limit)
@@ -155,8 +218,14 @@ export function TickerDetail() {
 
   if (loading) return <TickerDetailSkeleton />
   if (error) return <ErrorState message={error} />
-  if (!data || !ticker) return <p className="status">No data available.</p>
+  if (!ticker) return <p className="status">No data available.</p>
   if (!analysis) return <p className="status">Ticker {ticker} not found.</p>
+  const headerEnsemble = HEADER_ENSEMBLE_BADGES[analysis.decision?.ensemble_agreement ?? 'single'] ?? HEADER_ENSEMBLE_BADGES.single
+  const headerSelectionReason = analysis.analysis_consensus?.selection_reason
+    ? HEADER_SELECTION_REASON_LABELS[analysis.analysis_consensus.selection_reason] ?? analysis.analysis_consensus.selection_reason
+    : null
+  const headerThirdReviewCompleted = Boolean(analysis.analysis_consensus?.third_review_completed || analysis.analysis_consensus?.third_action)
+  const headerFinalConsensus = analysis.decision?.final_consensus ?? analysis.analysis_consensus?.final_consensus ?? 'single'
 
   return (
     <div className="ticker-detail">
@@ -168,10 +237,61 @@ export function TickerDetail() {
           <span className="ticker-date">{analysis.date}</span>
           <div className="ticker-meta-row">
             <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
-              Tone: {analysis.news_tone?.label ?? 'neutral'}
+              뉴스 톤: {NEWS_TONE_LABELS[analysis.news_tone?.label ?? 'neutral'] ?? '중립'}
             </span>
             {typeof analysis.news_tone?.confidence === 'number' ? (
-              <span className="period-badge">신뢰도 {(analysis.news_tone.confidence * 100).toFixed(0)}%</span>
+              <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
+            ) : null}
+            <span className={`period-badge ticker-ensemble-badge ${headerEnsemble.className}`}>
+              {headerEnsemble.symbol} {headerEnsemble.label}
+              <InfoTooltip
+                content={
+                  <span className="metric-tooltip-copy">
+                    {headerSelectionReason ? (
+                      <>
+                        <strong>선정 사유</strong>
+                        <span>{headerSelectionReason}</span>
+                      </>
+                    ) : null}
+                    {analysis.decision?.ensemble_agreement === 'conflict' ? (
+                      <>
+                        <strong>1차 판단</strong>
+                        <span>{DECISION_ACTION_LABELS[analysis.analysis_consensus?.economy_action ?? 'watch'] ?? '관찰'} - {analysis.analysis_consensus?.economy_reason ?? '사유 없음'}</span>
+                        <strong>2차 판단</strong>
+                        <span>{DECISION_ACTION_LABELS[analysis.analysis_consensus?.deep_action ?? analysis.decision?.action ?? 'watch'] ?? '관찰'} - {analysis.analysis_consensus?.deep_reason ?? analysis.decision?.reason ?? '사유 없음'}</span>
+                        {headerThirdReviewCompleted ? (
+                          <>
+                            <strong>3차 판단</strong>
+                            <span>{DECISION_ACTION_LABELS[analysis.analysis_consensus?.third_action ?? analysis.decision?.action ?? 'watch'] ?? '관찰'} - {analysis.analysis_consensus?.third_reason ?? '사유 없음'}</span>
+                            <strong>최종 합의</strong>
+                            <span>{HEADER_FINAL_CONSENSUS_LABELS[headerFinalConsensus] ?? headerFinalConsensus}</span>
+                          </>
+                        ) : null}
+                      </>
+                    ) : (
+                      <>
+                        <strong>합의 상태</strong>
+                        <span>{headerEnsemble.label}</span>
+                      </>
+                    )}
+                  </span>
+                }
+              />
+            </span>
+            {headerThirdReviewCompleted ? (
+              <span className="period-badge ticker-third-review-badge">
+                ③ 3차 검토 완료
+                <InfoTooltip
+                  content={
+                    <span className="metric-tooltip-copy">
+                      <strong>3차 판단</strong>
+                      <span>{DECISION_ACTION_LABELS[analysis.analysis_consensus?.third_action ?? analysis.decision?.action ?? 'watch'] ?? '관찰'} - {analysis.analysis_consensus?.third_reason ?? '사유 없음'}</span>
+                      <strong>최종 합의</strong>
+                      <span>{HEADER_FINAL_CONSENSUS_LABELS[headerFinalConsensus] ?? headerFinalConsensus}</span>
+                    </span>
+                  }
+                />
+              </span>
             ) : null}
             <span className="period-badge">7D {analysis.period_changes?.['7d'] ?? 'N/A'}</span>
             <span className="period-badge">30D {analysis.period_changes?.['30d'] ?? 'N/A'}</span>
@@ -193,9 +313,55 @@ export function TickerDetail() {
           <span style={{ color: changeColor(pct), fontWeight: 600, fontSize: '1.1rem' }}>
             {analysis.data_snapshot['Daily Change']}
           </span>
-          <SignalBadge changePercent={pct} signalDirection={signalDirection} />
         </div>
       </div>
+
+      {analysis.decision && (
+        <DecisionCard decision={analysis.decision} analysisConsensus={analysis.analysis_consensus} />
+      )}
+
+      {thesisDiff && previousAnalysis ? (
+        <section className="thesis-diff-section">
+          <div className="section-header-with-kicker">
+            <div>
+              <h3>전일 대비 시각 변화</h3>
+              <p className="section-kicker">
+                {previousAnalysis.date} → {analysis.date} 기준 thesis diff
+              </p>
+            </div>
+            <span className={`thesis-diff-status ${thesisDiff.changed ? 'changed' : 'steady'}`}>
+              {thesisDiff.changed ? `${thesisDiff.changedCount}개 변화` : '큰 변화 없음'}
+            </span>
+          </div>
+          <div className="thesis-diff-summary-card">
+            <strong>{thesisDiff.headline}</strong>
+            <p>{thesisDiff.summary}</p>
+          </div>
+          <div className="thesis-diff-grid">
+            {thesisDiff.items.map((item) => (
+              <article key={item.key} className={`thesis-diff-card ${item.changed ? 'changed' : 'steady'}`}>
+                <div className="thesis-diff-card-head">
+                  <span className="thesis-diff-label">{item.label}</span>
+                  <span className={`thesis-diff-chip ${item.changed ? 'changed' : 'steady'}`}>
+                    {item.changed ? '변화' : '유지'}
+                  </span>
+                </div>
+                <p className="thesis-diff-emphasis">{item.emphasis}</p>
+                <div className="thesis-diff-copy">
+                  <div>
+                    <span className="thesis-diff-copy-label">어제</span>
+                    <p>{item.before}</p>
+                  </div>
+                  <div>
+                    <span className="thesis-diff-copy-label">오늘</span>
+                    <p>{item.after}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {actionPlan && (
         <TraderDecisionBoard
@@ -282,10 +448,10 @@ export function TickerDetail() {
           <div className="detail-note-card">
             <div className="detail-note-row">
               <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
-                {analysis.news_tone?.label ?? 'neutral'}
+                {NEWS_TONE_LABELS[analysis.news_tone?.label ?? 'neutral'] ?? '중립'}
               </span>
               {typeof analysis.news_tone?.confidence === 'number' ? (
-                <span className="period-badge">확신도 {(analysis.news_tone.confidence * 100).toFixed(0)}%</span>
+                <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
               ) : null}
             </div>
             {analysis.news_tone?.reasoning ? <p>{analysis.news_tone.reasoning}</p> : null}
@@ -562,7 +728,7 @@ export function TickerDetail() {
               <li key={`${entry.date}-${entry.price}`} className="timeline-item">
                 <div className="timeline-item-head"><strong>{entry.date}</strong><span>{entry.price} / {entry.daily_change}</span></div>
                 <div className="timeline-item-meta">
-                  <span className={`tone-badge tone-${entry.news_tone?.label ?? 'neutral'}`}>{entry.news_tone?.label ?? 'neutral'}</span>
+                  <span className={`tone-badge tone-${entry.news_tone?.label ?? 'neutral'}`}>{NEWS_TONE_LABELS[entry.news_tone?.label ?? 'neutral'] ?? '중립'}</span>
                   {entry.upcoming_events?.[0] && <span className="event-badge">{entry.upcoming_events[0].label} D-{entry.upcoming_events[0].days_until}</span>}
                 </div>
                 <p>{entry.signal_or_takeaway}</p>
@@ -1008,6 +1174,19 @@ function parseFirstNumber(value?: string): number | null {
   if (!match) return null
   const numeric = Number.parseFloat(match[0])
   return Number.isNaN(numeric) ? null : numeric
+}
+
+function formatNewsToneConfidence(confidence: number): string {
+  const normalized = Math.max(1, Math.min(5, Math.round(confidence)))
+  const percentage = normalized * 20
+  const levelMap: Record<number, string> = {
+    1: '낮음',
+    2: '보통',
+    3: '높음',
+    4: '매우 높음',
+    5: '매우 높음',
+  }
+  return `신뢰도 ${levelMap[normalized]} (${percentage}%)`
 }
 
 function extractCurrency(value?: string): string {

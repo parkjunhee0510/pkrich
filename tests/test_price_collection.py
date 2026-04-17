@@ -170,7 +170,7 @@ class _FakeYFinanceTicker:
         self.quarterly_income_stmt = _FakeStatement()
         self.earnings_history = _FakeEarningsHistory()
 
-    def history(self, period: str = "", interval: str = "") -> _FakeHistory:
+    def history(self, period: str = "", interval: str = "", auto_adjust: bool = True) -> _FakeHistory:
         return _FakeHistory([240.0, 242.0, 245.0, 250.0])
 
 

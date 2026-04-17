@@ -6,11 +6,19 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from src.types import TickerAnalysis
-from src.utils.datastore import Datastore, FIELDNAMES, build_price_history_rows
+from src.types import CollectedTickerData, TickerAnalysis
+from src.utils.datastore import Datastore, build_price_history_rows, build_price_rows_from_collected
 from src.utils.datastore_csv import append_price_history_csv
 from src.utils.period_changes import load_period_changes_from_rows
 from src.utils.signal_tracker import build_signal_stats_from_rows, load_signal_rows
+
+PRICE_COLUMN_DEFAULTS: dict[str, str] = {
+    'open': "TEXT NOT NULL DEFAULT 'N/A'",
+    'high': "TEXT NOT NULL DEFAULT 'N/A'",
+    'low': "TEXT NOT NULL DEFAULT 'N/A'",
+    'close': "TEXT NOT NULL DEFAULT 'N/A'",
+    'volume': "TEXT NOT NULL DEFAULT 'N/A'",
+}
 
 
 class SqliteDatastore(Datastore):
@@ -23,6 +31,17 @@ class SqliteDatastore(Datastore):
         rows = build_price_history_rows(analyses)
         self._upsert_price_rows(rows)
         append_price_history_csv(self.csv_path, analyses)
+
+    def upsert_collected_prices(
+        self,
+        collected: dict[str, CollectedTickerData],
+        run_date: date,
+    ) -> None:
+        rows = build_price_rows_from_collected(collected, run_date)
+        self._upsert_price_rows(rows)
+        from src.utils.datastore_csv import _write_price_rows
+
+        _write_price_rows(self.csv_path, rows)
 
     def append_analysis_snapshots(self, analyses: list[TickerAnalysis]) -> None:
         if not analyses:
@@ -64,6 +83,39 @@ class SqliteDatastore(Datastore):
             connection.commit()
         finally:
             connection.close()
+
+    def record_signals(
+        self,
+        analyses: list[TickerAnalysis],
+        run_date: date,
+        price_lookup: dict[str, float],
+        *,
+        decisions: list[Any] | None = None,
+        market_regime: Any | None = None,
+    ) -> None:
+        super().record_signals(
+            analyses,
+            run_date,
+            price_lookup,
+            decisions=decisions,
+            market_regime=market_regime,
+        )
+        self.sync_signal_history(self.signal_csv_path)
+
+    def update_signal_returns(
+        self,
+        run_date: date,
+        price_lookup: dict[str, float],
+        *,
+        price_history_rows: list[dict[str, str]] | None = None,
+    ) -> int:
+        updated = super().update_signal_returns(
+            run_date,
+            price_lookup,
+            price_history_rows=price_history_rows,
+        )
+        self.sync_signal_history(self.signal_csv_path)
+        return updated
 
     def sync_signal_history(self, csv_path: Path) -> None:
         rows = load_signal_rows(csv_path)
@@ -330,6 +382,52 @@ class SqliteDatastore(Datastore):
             return None
         return build_signal_stats_from_rows(rows)
 
+    def load_signal_rows_data(self) -> list[dict[str, str]]:
+        connection = sqlite3.connect(self.sqlite_path)
+        try:
+            cursor = connection.execute(
+                '''
+                SELECT
+                    signal_date,
+                    ticker,
+                    signal_type,
+                    signal_direction,
+                    signal_price,
+                    catalyst_tag,
+                    news_tone,
+                    trade_frame_scenario,
+                    return_1d,
+                    return_5d,
+                    return_20d,
+                    evaluated_1d,
+                    evaluated_5d,
+                    evaluated_20d
+                FROM signal_history
+                ORDER BY signal_date DESC, ticker ASC
+                '''
+            )
+            return [
+                {
+                    'signal_date': row[0],
+                    'ticker': row[1],
+                    'signal_type': row[2],
+                    'signal_direction': row[3],
+                    'signal_price': row[4],
+                    'catalyst_tag': row[5],
+                    'news_tone': row[6],
+                    'trade_frame_scenario': row[7],
+                    'return_1d': row[8],
+                    'return_5d': row[9],
+                    'return_20d': row[10],
+                    'evaluated_1d': row[11],
+                    'evaluated_5d': row[12],
+                    'evaluated_20d': row[13],
+                }
+                for row in cursor.fetchall()
+            ]
+        finally:
+            connection.close()
+
     def get_analysis_quality(self, *, limit: int = 30) -> list[dict[str, Any]]:
         connection = sqlite3.connect(self.sqlite_path)
         try:
@@ -366,6 +464,53 @@ class SqliteDatastore(Datastore):
         finally:
             connection.close()
 
+    def get_peer_selection_cache(self, ticker: str, month_key: str) -> dict[str, Any] | None:
+        normalized = ticker.strip().upper()
+        if not normalized or not month_key:
+            return None
+        connection = sqlite3.connect(self.sqlite_path)
+        try:
+            cursor = connection.execute(
+                '''
+                SELECT payload_json
+                FROM peer_selection_cache
+                WHERE ticker = ? AND month_key = ?
+                ''',
+                (normalized, month_key),
+            )
+            row = cursor.fetchone()
+            if not row:
+                return None
+            return _safe_load_json(row[0], default=None)
+        finally:
+            connection.close()
+
+    def set_peer_selection_cache(self, ticker: str, month_key: str, payload: dict[str, Any]) -> None:
+        normalized = ticker.strip().upper()
+        if not normalized or not month_key:
+            return
+        connection = sqlite3.connect(self.sqlite_path)
+        try:
+            connection.execute(
+                '''
+                INSERT OR REPLACE INTO peer_selection_cache (
+                    month_key,
+                    ticker,
+                    payload_json,
+                    updated_at
+                ) VALUES (?, ?, ?, ?)
+                ''',
+                (
+                    month_key,
+                    normalized,
+                    json.dumps(payload, ensure_ascii=False),
+                    date.today().isoformat(),
+                ),
+            )
+            connection.commit()
+        finally:
+            connection.close()
+
     def _ensure_schema(self) -> None:
         self.data_dir.mkdir(parents=True, exist_ok=True)
         connection = sqlite3.connect(self.sqlite_path)
@@ -391,6 +536,7 @@ class SqliteDatastore(Datastore):
                 )
                 '''
             )
+            self._ensure_price_columns(connection)
             connection.execute(
                 '''
                 CREATE TABLE IF NOT EXISTS signal_history (
@@ -443,9 +589,30 @@ class SqliteDatastore(Datastore):
                 )
                 '''
             )
+            connection.execute(
+                '''
+                CREATE TABLE IF NOT EXISTS peer_selection_cache (
+                    month_key TEXT NOT NULL,
+                    ticker TEXT NOT NULL,
+                    payload_json TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY (month_key, ticker)
+                )
+                '''
+            )
             connection.commit()
         finally:
             connection.close()
+
+    def _ensure_price_columns(self, connection: sqlite3.Connection) -> None:
+        existing_columns = {
+            str(row[1]).strip().lower()
+            for row in connection.execute("PRAGMA table_info(prices)").fetchall()
+        }
+        for column_name, column_spec in PRICE_COLUMN_DEFAULTS.items():
+            if column_name in existing_columns:
+                continue
+            connection.execute(f'ALTER TABLE prices ADD COLUMN "{column_name}" {column_spec}')
 
     def _upsert_price_rows(self, rows: list[dict[str, str]]) -> None:
         if not rows:

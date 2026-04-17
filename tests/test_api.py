@@ -48,16 +48,33 @@ class ApiTests(unittest.TestCase):
             output_root = Path(temp_dir) / 'output'
             data_dir = output_root / 'data'
             data_dir.mkdir(parents=True, exist_ok=True)
-            dashboard_path = data_dir / 'dashboard.json'
-            dashboard_path.write_text(
+            (data_dir / 'index.json').write_text(
                 json.dumps(
                     {
-                        'days': [
-                            {
-                                'date': '2026-04-08',
-                                'tickers': [{'ticker': 'AAPL', 'name': 'Apple Inc.', 'summary': 'latest'}],
-                            }
-                        ]
+                        'schema_version': 1,
+                        'date': '2026-04-08',
+                        'market_overview': [],
+                        'macro_context': {},
+                        'market_regime': {},
+                        'portfolio_summary': None,
+                        'portfolio_risk': {},
+                        'signal_stats': {},
+                        'weekly_summary': {},
+                        'tickers': [{'ticker': 'AAPL', 'name': 'Apple Inc.', 'summary': 'latest'}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding='utf-8',
+            )
+            shard_dir = data_dir / 'tickers' / 'AAPL'
+            shard_dir.mkdir(parents=True, exist_ok=True)
+            (shard_dir / 'latest.json').write_text(
+                json.dumps(
+                    {
+                        'schema_version': 1,
+                        'date': '2026-04-08',
+                        'ticker': 'AAPL',
+                        'payload': {'ticker': 'AAPL', 'name': 'Apple Inc.', 'summary': 'latest'},
                     },
                     ensure_ascii=False,
                 ),
@@ -139,6 +156,57 @@ class ApiTests(unittest.TestCase):
             self.assertEqual(payload['successful_runs'], 1)
             self.assertEqual(len(payload['runs']), 1)
             self.assertAlmostEqual(payload['total_cost_usd'], 0.12)
+
+    def test_analytics_cost_includes_cost_log_payload_when_present(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            output_root = workspace / 'output'
+            data_dir = output_root / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            (data_dir / 'cost_log.json').write_text(
+                json.dumps(
+                    {
+                        'runs': [
+                            {
+                                'run_date': '2026-04-17',
+                                'success': True,
+                                'total_cost_usd': 0.42,
+                                'profiles': {
+                                    'economy': {'cost_usd': 0.12, 'tokens': 1000, 'calls': 1, 'models': {'gpt-5.4-mini': 1}},
+                                    'deep': {'cost_usd': 0.30, 'tokens': 2200, 'calls': 1, 'models': {'o3-mini': 1}},
+                                },
+                                'routing': {
+                                    'ensemble_enabled': True,
+                                    'eligible_count': 6,
+                                    'selected_count': 3,
+                                    'skipped_due_to_cap_count': 0,
+                                    'conflicted_count': 2,
+                                },
+                                'deep_pass_value': {
+                                    'deep_cost_usd': 0.30,
+                                    'selected_ticker_count': 3,
+                                    'cost_per_selected_ticker_usd': 0.10,
+                                    'share_of_total_cost': 0.7143,
+                                    'worth_it_hint': 'efficient',
+                                },
+                            }
+                        ],
+                        'latest': {'run_date': '2026-04-17'},
+                    }
+                ),
+                encoding='utf-8',
+            )
+
+            original_root = api_main.OUTPUT_ROOT
+            try:
+                with patch.dict(os.environ, {'DATASTORE_BACKEND': 'csv'}, clear=False):
+                    api_main.OUTPUT_ROOT = output_root
+                    payload = api_main.analytics_cost()
+            finally:
+                api_main.OUTPUT_ROOT = original_root
+
+            self.assertIn('cost_log', payload)
+            self.assertEqual(payload['cost_log']['latest']['run_date'], '2026-04-17')
 
 
 if __name__ == '__main__':
