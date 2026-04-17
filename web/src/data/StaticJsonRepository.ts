@@ -52,6 +52,8 @@ async function fetchJson<T>(url: string, refreshToken: number): Promise<T | null
 export class StaticJsonRepository implements DashboardRepository {
   async loadDashboard(refreshToken: number): Promise<DashboardData> {
     const latestIndex = await this.loadDashboardIndex(refreshToken)
+    const history = await this.loadDashboardHistory(refreshToken)
+
     if (latestIndex) {
       const latestDay: DailyEntry = {
         date: latestIndex.date,
@@ -63,15 +65,21 @@ export class StaticJsonRepository implements DashboardRepository {
         tickers: Array.isArray(latestIndex.tickers) ? latestIndex.tickers : [],
       }
 
+      const mergedDays = history?.days?.length
+        ? [
+            ...history.days.filter((day) => day.date !== latestDay.date),
+            latestDay,
+          ].sort((left, right) => left.date.localeCompare(right.date))
+        : [latestDay]
+
       return {
         schema_version: latestIndex.schema_version,
-        days: [latestDay],
-        signal_stats: latestIndex.signal_stats ?? { recent_signals: [], summary_by_direction: {} },
-        weekly_summary: latestIndex.weekly_summary,
+        days: mergedDays,
+        signal_stats: latestIndex.signal_stats ?? history?.signal_stats ?? { recent_signals: [], summary_by_direction: {} },
+        weekly_summary: latestIndex.weekly_summary ?? history?.weekly_summary,
       }
     }
 
-    const history = await this.loadDashboardHistory(refreshToken)
     if (history?.days?.length) {
       return {
         schema_version: history.schema_version,
