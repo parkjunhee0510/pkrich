@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "cd web && npm ci && npm run build && cd .. && mkdir -p web/dist/output/data && for f in index.json dashboard.json dashboard_history.json price_history.json ticker_timelines.json backtest_summary.json monthly_summary.json api_status.json api_ticker_matrix.json calibration.json factor_audit.json tuning_report.json validation_warnings.json; do cp output/data/$f web/dist/output/data/ 2>/dev/null || true; done",
+  "buildCommand": "cd web && npm ci && npm run build && cd .. && mkdir -p web/dist/output/data web/dist/output/data/tickers && for f in index.json dashboard.json dashboard_history.json price_history.json ticker_timelines.json backtest_summary.json monthly_summary.json api_status.json api_ticker_matrix.json calibration.json factor_audit.json tuning_report.json validation_warnings.json; do cp output/data/$f web/dist/output/data/ 2>/dev/null || true; done && cp -R output/data/tickers/. web/dist/output/data/tickers/ 2>/dev/null || true",
   "outputDirectory": "web/dist",
   "rewrites": [
     {

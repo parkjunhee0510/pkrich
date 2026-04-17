@@ -37,7 +37,7 @@ jobs:
 
       - name: Copy data files into build output
         run: |
-          mkdir -p web/dist/output/data
+          mkdir -p web/dist/output/data web/dist/output/data/tickers
           for f in \
             index.json \
             dashboard.json \
@@ -54,6 +54,7 @@ jobs:
             validation_warnings.json; do
             cp "output/data/$f" web/dist/output/data/ 2>/dev/null || echo "No $f yet"
           done
+          cp -R output/data/tickers/. web/dist/output/data/tickers/ 2>/dev/null || echo "No ticker shards yet"
 
       - uses: actions/upload-pages-artifact@v3
         with:
