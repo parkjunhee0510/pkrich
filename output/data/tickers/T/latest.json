@@ -6,12 +6,12 @@
     "ticker": "T",
     "name": "AT&T Inc.",
     "date": "2026-04-16",
-    "summary": "주가는 26.40달러로 50일선 27.87달러를 밑돌아 단기 추세는 약세지만, 200일선 26.82달러와는 거의 근접해 방향 전환 여지는 남아 있습니다. 다음 촉매는 4월 22일 실적이며, 그 전까지 27.87달러 회복과 25.72달러 눌림목 방어가 핵심입니다.",
+    "summary": "주가는 26.40달러로 SMA50(27.87) 아래, SMA200(26.82)도 소폭 밑돌아 실적 전까지는 박스권 하단 회복 시도가 필요한 상태입니다. 다음 촉매는 2026-04-22 실적 발표(D-5)이며, 27.87달러 회복 여부와 25~25.7달러 지지력이 초점입니다.",
     "key_news": [
-      "실적 5일 앞두고 배당 스토리 검증 구간",
-      "세그먼트 리포팅 변경으로 사업 구조 가시성 개선 기대",
-      "옵션에서 콜·풋 동시 대량 거래로 이벤트성 수급",
-      "통신업종 내 상대강도는 부진"
+      "세그먼트 리포팅 변경으로 인수 효과 검증 초점 부각",
+      "실적 D-5, 배당 스토리 확인 구간 진입",
+      "옵션은 콜·풋 동반 대량 거래로 이벤트 대비",
+      "섹터 내 상대강도는 약세"
     ],
     "news_references": [
       {
@@ -46,19 +46,16 @@
       }
     ],
     "financial_highlights": [
-      "PER 8.7배, Forward EPS 2.55, TTM EPS 3.04",
-      "전일 +3.69%, 30일 -2.68%, SMA50 대비 -5.28%, SMA200 대비 -1.56%",
-      "RSI 41.7, MACD -0.45/-0.17, RVOL 0.74x, ATR 0.68달러(2.56%)",
-      "EPS YoY -5.60%, 52주 중간권(52W Position 50%)",
-      "애널리스트 Buy 23명, 목표가 30.39달러, 기관 보유 68.00%"
+      "PER 8.7배, 목표가 대비 +15.1%",
+      "Forward EPS 2.55, TTM EPS 3.04, EPS 성장률 -5.6% YoY",
+      "PCR 0.65x, MaxPain 25달러",
+      "RSI 41.7, ATR 0.68달러",
+      "애널리스트 23명 매수, 기관비중 68.00%"
     ],
     "risks_or_watchpoints": [
-      "가격이 27.87달러(SMA50)를 2거래일 연속 상향 회복하지 못하면 반등 실패로 판단.",
-      "26.40달러 아래 종가가 나오면 25.27달러(볼린저 하단)까지 추가 약세 가능성 감시.",
-      "2026-04-22 실적 전까지 MACD가 현재 -0.45/-0.17에서 시그널 하락 폭이 커지면 추세 악화.",
-      "옵션 만기 2026-04-17까지 PUT $25 OI가 7.5K보다 더 늘거나 PUT OI 증가율이 2%를 넘으면 방어적 포지셔닝 강화."
+      "의사결정 전 최근 실적 일정과 주요 헤드라인을 다시 확인하세요."
     ],
-    "signal_or_takeaway": "단기 반등 매수: 26.40 지지 유지 후 27.87 회복 시 진입, 목표가 27.42 / 30.39, 손절가 27.87 이탈 시 반등 실패로 판단.",
+    "signal_or_takeaway": "약세 관망 | 진입 트리거: 27.87 회복 전까진 신규매수 보류, 25.72 지지 시만 단타 | 목표가: 27.42, 30.39 | 손절가: 27.87 이탈 시 손절",
     "data_snapshot": {
       "Price": "26.40 USD",
       "Daily Change": "+3.69%",
@@ -199,7 +196,7 @@
     "news_tone": {
       "label": "중립",
       "confidence": 3,
-      "reasoning": "배당/가시성 개선 기대는 있으나 실적 직전이고 주가 추세가 약해 방향성이 뚜렷하지 않음."
+      "reasoning": "실적 임박과 리포팅 변화가 핵심이지만 방향성은 아직 불명확. 배당 방어력은 있으나 주가/섹터 모멘텀은 약함."
     },
     "trade_frame": {
       "entry_price": "현재가 26.40 또는 눌림 시 25.72 USD",
@@ -227,7 +224,7 @@
     "signal_history": [
       {
         "date": "2026-04-16",
-        "direction": "bull",
+        "direction": "neutral",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "26.40 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
@@ -257,7 +254,7 @@
         "date": "2026-04-12",
         "direction": "bull",
         "catalyst": "실적",
-        "return_5d": "N/A",
+        "return_5d": "-0.23%",
         "note": "실적 전까지 25.82달러에서 27.74달러 사이, 즉 현재가 ±1 ATR 구간에서 횡보 가능성이 큽니다. 25달러 MaxPain 자석이 하단을 지지할 수 있습니다."
       }
     ],
@@ -291,7 +288,7 @@
     "analysis_consensus": {
       "status": "agreed",
       "economy_action": "watch",
-      "economy_conviction": 59,
+      "economy_conviction": 60,
       "economy_reason": "실적 D-5 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 대체로 적정 가치 범위에 위치합니다.",
       "deep_action": "watch",
       "deep_conviction": 60,
@@ -303,9 +300,9 @@
       "third_review_completed": false,
       "final_consensus": "agree",
       "final_action": "watch",
-      "conviction_mean": 59.5,
-      "conviction_stdev": 0.5,
-      "conviction_adjusted": 67,
+      "conviction_mean": 60.0,
+      "conviction_stdev": 0.0,
+      "conviction_adjusted": 68,
       "conviction_prior": 60,
       "conviction_sample_size": 2
     },
@@ -343,8 +340,8 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 67,
-      "reason": "실적 D-5 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 대체로 적정 가치 범위에 위치합니다. / 앙상블 보정: 60→67 (↑7, spread σ=0.5)",
+      "conviction": 68,
+      "reason": "실적 D-5 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 대체로 적정 가치 범위에 위치합니다. / 앙상블 보정: 60→68 (↑8, spread σ=0.0)",
       "valid_until": "2026-04-22",
       "factors": {
         "catalyst_recency": 20.0,

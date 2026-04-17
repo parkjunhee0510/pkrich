@@ -123,11 +123,23 @@ def update_signal_returns(
     *,
     price_history_rows: list[dict[str, str]] | None = None,
 ) -> int:
+    """Backfill return_{1,5,20}d for signals that now have enough sessions.
+
+    `run_date` is the market_date — the latest session whose close is
+    considered authoritative. Evaluation waits for a session to exist in
+    historical data (or be added by a trusted live price) before
+    computing the horizon return, so the 5D for a T-signal evaluates on
+    the next pipeline run after T+5 closes.
+    """
     rows = _load_rows(csv_path)
     if not rows:
         return 0
 
-    price_series = _build_price_series(price_history_rows or [], run_date, price_lookup)
+    price_series = _build_price_series(
+        price_history_rows or [],
+        run_date,
+        price_lookup,
+    )
     updated_row_keys: set[tuple[str, str]] = set()
 
     for row in rows:
@@ -504,7 +516,20 @@ def _build_price_series(
     price_history_rows: list[dict[str, str]],
     run_date: date,
     current_price_lookup: dict[str, float],
+    *,
+    live_price_date: date | None = None,
 ) -> dict[str, list[tuple[date, float]]]:
+    """Merge historical closes with the current live price lookup.
+
+    Historical closes are authoritative — a live/intraday quote must never
+    overwrite a persisted close. When the caller runs the pipeline mid-
+    market, `current_price_lookup` contains today's intraday quote; we
+    stamp it at `live_price_date` (defaults to `run_date` for backcompat),
+    and only if that date has no historical close yet. This prevents the
+    previous failure mode where an intraday quote replaced yesterday's
+    close under the `run_date` key.
+    """
+    stamp_date = live_price_date or run_date
     series_map: dict[str, dict[date, float]] = {}
 
     for row in price_history_rows:
@@ -518,7 +543,10 @@ def _build_price_series(
     for ticker, price in current_price_lookup.items():
         if price is None:
             continue
-        series_map.setdefault(ticker.upper(), {})[run_date] = price
+        series = series_map.setdefault(ticker.upper(), {})
+        if stamp_date in series:
+            continue  # historical close wins over live quote
+        series[stamp_date] = price
 
     return {
         ticker: sorted(price_by_date.items(), key=lambda item: item[0])

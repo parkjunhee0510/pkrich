@@ -16,6 +16,14 @@
         "horizon": 1,
         "bins": [],
         "brier_score": null
+      },
+      "drift": {
+        "status": "insufficient_data",
+        "horizon": 1,
+        "window_days": 30,
+        "series": [],
+        "trend_slope": null,
+        "latest_brier": null
       }
     },
     "5": {
@@ -40,6 +48,14 @@
         "horizon": 5,
         "metric": "alpha",
         "deciles": []
+      },
+      "drift": {
+        "status": "insufficient_data",
+        "horizon": 5,
+        "window_days": 30,
+        "series": [],
+        "trend_slope": null,
+        "latest_brier": null
       }
     },
     "20": {
@@ -57,6 +73,14 @@
         "horizon": 20,
         "bins": [],
         "brier_score": null
+      },
+      "drift": {
+        "status": "insufficient_data",
+        "horizon": 20,
+        "window_days": 30,
+        "series": [],
+        "trend_slope": null,
+        "latest_brier": null
       }
     }
   }

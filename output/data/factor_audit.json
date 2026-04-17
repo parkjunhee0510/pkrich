@@ -15,6 +15,13 @@
         "factors": [],
         "weak_factors": [],
         "threshold": 0.1
+      },
+      "weight_decays": {
+        "status": "insufficient_data",
+        "horizon": 5,
+        "sample_size": 0,
+        "min_required_per_factor": 50,
+        "suggestions": []
       }
     },
     "20": {
@@ -31,6 +38,13 @@
         "factors": [],
         "weak_factors": [],
         "threshold": 0.1
+      },
+      "weight_decays": {
+        "status": "insufficient_data",
+        "horizon": 20,
+        "sample_size": 0,
+        "min_required_per_factor": 50,
+        "suggestions": []
       }
     }
   }

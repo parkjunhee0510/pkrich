@@ -11,7 +11,7 @@
   "tickers": [
     {
       "ticker": "AAPL",
-      "conviction": 66,
+      "conviction": 74,
       "action": "buy",
       "in_portfolio": true,
       "selected_for_deep": true,
@@ -19,30 +19,6 @@
     },
     {
       "ticker": "CAT",
-      "conviction": 65,
-      "action": "buy",
-      "in_portfolio": true,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
-    },
-    {
-      "ticker": "XOM",
-      "conviction": 62,
-      "action": "watch",
-      "in_portfolio": true,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
-    },
-    {
-      "ticker": "AMD",
-      "conviction": 62,
-      "action": "watch",
-      "in_portfolio": true,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
-    },
-    {
-      "ticker": "KO",
       "conviction": 60,
       "action": "watch",
       "in_portfolio": true,
@@ -50,8 +26,32 @@
       "reason": "in_trigger_range"
     },
     {
+      "ticker": "XOM",
+      "conviction": 56,
+      "action": "watch",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "AMD",
+      "conviction": 70,
+      "action": "buy",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "KO",
+      "conviction": 54,
+      "action": "watch",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
       "ticker": "T",
-      "conviction": 59,
+      "conviction": 60,
       "action": "watch",
       "in_portfolio": true,
       "selected_for_deep": true,
@@ -59,8 +59,8 @@
     },
     {
       "ticker": "IONQ",
-      "conviction": 61,
-      "action": "watch",
+      "conviction": 69,
+      "action": "buy",
       "in_portfolio": true,
       "selected_for_deep": true,
       "reason": "in_trigger_range"
@@ -91,8 +91,8 @@
     },
     {
       "ticker": "PLUG",
-      "conviction": 63,
-      "action": "watch",
+      "conviction": 73,
+      "action": "buy",
       "in_portfolio": true,
       "selected_for_deep": true,
       "reason": "in_trigger_range"

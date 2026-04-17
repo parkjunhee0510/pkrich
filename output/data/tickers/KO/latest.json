@@ -6,12 +6,12 @@
     "ticker": "KO",
     "name": "The Coca-Cola Company",
     "date": "2026-04-16",
-    "summary": "주가는 75.18달러로 50일선 77.57달러를 하회해 단기 모멘텀은 약하지만, 200일선 71.60달러 위에 있어 중기 방어력은 유지되고 있습니다. 다음 촉매는 4월 28일 실적이며, D-11 구간에서 77.57달러 회복 여부가 반등 지속의 첫 확인 포인트입니다.",
+    "summary": "주가는 75.18달러로 SMA50(77.57) 아래, SMA200(71.60) 위에 있어 방어주 성격은 유지되지만 단기 모멘텀은 약합니다. 다음 촉매는 2026-04-28 실적 발표(D-11)이며, 77.57달러 회복과 74달러대 지지 유지가 실적 전 체크포인트입니다.",
     "key_news": [
-      "저당·체중감량 트렌드에 맞춘 신제품 혁신 압박",
-      "차기 CEO 체제에서 혁신 속도 강화 기대",
-      "실적 임박, 방어주로서 실적 안정성 주목",
-      "옵션은 풋 우위로 단기 방어 심리"
+      "차기 CEO의 혁신 속도전 언급, 저당·체중감량 트렌드 대응",
+      "실적 D-11, 방어주 내 안정적 실적 기대",
+      "옵션은 풋 우세로 단기 보수적 포지셔닝",
+      "최근 비교 기사 외 추가 모멘텀은 제한적"
     ],
     "news_references": [
       {
@@ -46,16 +46,19 @@
       }
     ],
     "financial_highlights": [
-      "PER 24.73배 (EPS 3.04)",
-      "Forward EPS 3.45, 성장률 +3.60% YoY",
-      "시가총액 323.59B / 배당 2.74%",
-      "52주 범위 59% 위치, SMA50 77.57 USD",
-      "애널리스트 Buy (목표 83.67 USD) / 기관 66.62%"
+      "PER 24.7배, 목표가 대비 +11.3%",
+      "Forward EPS 3.45, TTM EPS 3.04, EPS 성장률 +3.6% YoY",
+      "ATR 1.33달러, RVOL 0.49x",
+      "52주 고점 대비 59%, SMA50 대비 -3.08%",
+      "애널리스트 23명 매수, 숏플로트 1.08%"
     ],
     "risks_or_watchpoints": [
-      "의사결정 전 최근 실적 일정과 주요 헤드라인을 다시 확인하세요."
+      "종가가 77.57달러(SMA50) 아래에서 2거래일 이상 머물면 방어주 재평가 필요",
+      "2026-04-28 실적 발표 전까지 73.85달러(눌림 시 진입가) 아래 종가가 나오면 단기 상승 시나리오 약화",
+      "RVOL 0.49x가 0.7x 미만으로 지속되면 거래량 부족에 따른 돌파 실패 가능성 점검",
+      "RSI(14) 42.9가 40 아래로 내려가면 약세 전환 경고"
     ],
-    "signal_or_takeaway": "보수적 매수: 75.18 구간 유지 후 77.57 회복 시 진입, 목표가 77.18 / 83.67, 손절가 77.57 하회 시 상승 시나리오 무효.",
+    "signal_or_takeaway": "중립/반등매수 대기 | 진입 트리거: 77.57 회복 후 74대 지지 재확인 | 목표가: 77.18, 83.67 | 손절가: 77.57 이탈 시 손절",
     "data_snapshot": {
       "Price": "75.18 USD",
       "Daily Change": "-0.17%",
@@ -188,8 +191,8 @@
     ],
     "news_tone": {
       "label": "중립",
-      "confidence": 3,
-      "reasoning": "방어적 실적 기대는 유효하나 성장 스토리는 혁신 속도에 달려 있어 관망 성격이 강함."
+      "confidence": 2,
+      "reasoning": "펀더멘털은 안정적이나 기사 촉매가 CEO 교체/제품 혁신 기대에 국한. 강한 방향성보다는 방어적 성격이 우세."
     },
     "trade_frame": {
       "entry_price": "현재가 75.18 또는 눌림 시 73.85 USD",
@@ -217,7 +220,7 @@
     "signal_history": [
       {
         "date": "2026-04-16",
-        "direction": "bull",
+        "direction": "neutral",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "75.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -247,7 +250,7 @@
         "date": "2026-04-12",
         "direction": "bull",
         "catalyst": "실적",
-        "return_5d": "N/A",
+        "return_5d": "-2.96%",
         "note": "실적 전까지 76.14달러에서 78.80달러 사이, 즉 현재가 ±1 ATR 구간에서 좁은 박스권 흐름이 유력합니다. RVOL 0.61x는 급등보다 완만한 수급을 시사합니다."
       }
     ],
@@ -281,11 +284,11 @@
     "analysis_consensus": {
       "status": "agreed",
       "economy_action": "watch",
-      "economy_conviction": 60,
-      "economy_reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 대체로 적정 가치 범위에 위치합니다.",
+      "economy_conviction": 54,
+      "economy_reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 최근 시그널 승률 0% (0/3)",
       "deep_action": "watch",
-      "deep_conviction": 60,
-      "deep_reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 대체로 적정 가치 범위에 위치합니다.",
+      "deep_conviction": 54,
+      "deep_reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 최근 시그널 승률 0% (0/3)",
       "direction_agreement": true,
       "conflicted": false,
       "confidence_delta": 5,
@@ -293,10 +296,10 @@
       "third_review_completed": false,
       "final_consensus": "agree",
       "final_action": "watch",
-      "conviction_mean": 60.0,
+      "conviction_mean": 54.0,
       "conviction_stdev": 0.0,
-      "conviction_adjusted": 68,
-      "conviction_prior": 60,
+      "conviction_adjusted": 62,
+      "conviction_prior": 54,
       "conviction_sample_size": 2
     },
     "period_changes": {
@@ -333,8 +336,8 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 68,
-      "reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 대체로 적정 가치 범위에 위치합니다. / 앙상블 보정: 60→68 (↑8, spread σ=0.0)",
+      "conviction": 62,
+      "reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 최근 시그널 승률 0% (0/3) / 앙상블 보정: 54→62 (↑8, spread σ=0.0)",
       "valid_until": "2026-04-28",
       "factors": {
         "catalyst_recency": 18.0,
@@ -345,7 +348,7 @@
         "peer_rank": 0.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 5.0,
-        "signal_track_record": 0.0,
+        "signal_track_record": -10.0,
         "valuation": 10.0
       },
       "ensemble_agreement": "agree",

@@ -309,5 +309,78 @@ class NeutralBandTests(unittest.TestCase):
         self.assertFalse(_is_signal_win("bear", 0.1, neutral_band=5.0))
 
 
+class LivePriceStampingTests(unittest.TestCase):
+    """Regression: live price must not overwrite persisted historical close."""
+
+    def test_historical_close_wins_over_live_price_at_run_date(self) -> None:
+        # run_date has a persisted historical close; live price lookup for
+        # that same date must NOT overwrite it (prior bug: intraday quote
+        # silently replaced the close).
+        from src.utils.signal_tracker import _build_price_series
+        rows = [
+            {"date": "2026-04-16", "ticker": "AAPL", "price": "200.00 USD"},
+        ]
+        series = _build_price_series(
+            rows,
+            date(2026, 4, 16),
+            {"AAPL": 999.0},  # fabricated intraday quote
+        )
+        # Historical close 200.00 must win over the live 999.0.
+        self.assertEqual(series["AAPL"], [(date(2026, 4, 16), 200.0)])
+
+    def test_live_price_stamped_at_live_price_date_when_no_conflict(self) -> None:
+        from src.utils.signal_tracker import _build_price_series
+        rows = [
+            {"date": "2026-04-16", "ticker": "AAPL", "price": "200.00 USD"},
+        ]
+        series = _build_price_series(
+            rows,
+            date(2026, 4, 16),
+            {"AAPL": 205.0},
+            live_price_date=date(2026, 4, 17),
+        )
+        # Both sessions present — historical preserved, live appended at T+1.
+        self.assertEqual(
+            series["AAPL"],
+            [(date(2026, 4, 16), 200.0), (date(2026, 4, 17), 205.0)],
+        )
+
+
+class LiveQuoteEchoSafetyTests(unittest.TestCase):
+    """When market_date lags today (e.g., pre-open), 5D must wait for the
+    real close rather than being filled with an echo of yesterday's close.
+
+    Regression guard for the rejected fix where stamping the live price
+    at calendar_today caused a 4-day return to be mislabeled as a 5D
+    return whenever yfinance echoed yesterday's close as 'current'.
+    """
+
+    def test_5d_waits_when_market_date_lags_calendar(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "signal_tracker.csv"
+            record_signals([_analysis()], date(2026, 4, 10), {"AAPL": 100.0}, csv_path)
+            # Historical up to 04-16 only; today is "04-17 morning" and
+            # live price echoes the 04-16 close.
+            history_rows = [
+                {"date": "2026-04-10", "ticker": "AAPL", "price": "100.00 USD"},
+                {"date": "2026-04-13", "ticker": "AAPL", "price": "101.00 USD"},
+                {"date": "2026-04-14", "ticker": "AAPL", "price": "102.00 USD"},
+                {"date": "2026-04-15", "ticker": "AAPL", "price": "103.00 USD"},
+                {"date": "2026-04-16", "ticker": "AAPL", "price": "104.00 USD"},
+            ]
+            update_signal_returns(
+                csv_path,
+                date(2026, 4, 16),
+                {"AAPL": 104.0},
+                price_history_rows=history_rows,
+            )
+            stats = load_signal_stats(csv_path)
+            recent = stats["recent_signals"][0]
+            # 1D evaluates (04-13 close available). 5D waits — only 4
+            # trading sessions after 04-10 are available in historical.
+            self.assertEqual(recent["evaluated_1d"], "True")
+            self.assertEqual(recent["evaluated_5d"], "False")
+
+
 if __name__ == "__main__":
     unittest.main()

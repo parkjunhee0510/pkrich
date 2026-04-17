@@ -1688,13 +1688,12 @@
       "date": "2026-04-16",
       "ticker": "PLUG",
       "name": "Plug Power Inc.",
-      "summary": "현재 주가는 50일·200일 이동평균선을 크게 상회하며 30일 기준 +23.28%로 반등했지만, 적자 구조와 높은 공매도 비중이 부담입니다. 다음 촉매는 2026-05-11 실적 발표이며, 실적 개선 지속 여부와 가이던스가 현재 랠리의 연속성을 좌우할 가능성이 큽니다.",
+      "summary": "주가는 2.86달러로 SMA50(2.22)과 SMA200(2.19) 위에 있지만, 30일간 +23.28% 상승 뒤 하루 -2.39% 조정이 나와 변동성 관리가 필요합니다. 다음 촉매는 2026-05-11 실적 발표(D-24)이며, 2.22달러 SMA50 방어와 3.16달러 1차 목표가의 균형을 볼 구간입니다.",
       "key_news": [
-        "EU drops 2035 combustion engine ban as global EV shift faces reset - Reuters",
-        "[기타 공시] PLUG POWER INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-        "[실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
-        "Susquehanna Raises PT on ​Plug Power (PLUG), Maintains Neutral Rating - Yahoo Finance",
-        "Here's Why Plug Power Stock Is a Buy Before April 16 - Yahoo Finance"
+        "배출가스/EV 정책 변화 관련 거시 뉴스는 간접 호재",
+        "목표가 상향·매수 논리 재부각",
+        "실적 D-24, 고숏·고변동성으로 이벤트 민감",
+        "대규모 풋 거래가 랠리 신뢰도를 제한"
       ],
       "news_references": [
         {
@@ -1729,19 +1728,19 @@
         }
       ],
       "financial_highlights": [
-        "주가 2.86달러, 30일 +23.28%",
-        "SMA50 대비 +28.63%, SMA200 대비 +30.74%",
-        "Short float 23.74%, 공매도 커버 3.73일",
-        "Forward EPS -0.21, TTM EPS -1.42",
-        "애널리스트 평균 목표가 2.83달러"
+        "Forward EPS -0.21, TTM EPS -1.42, EPS 성장률 -24.0% YoY",
+        "숏플로트 23.74%, 3.73일 커버",
+        "PCR 2.97, avg IV 88.3%, MaxPain 2달러",
+        "주가 30D +23.28%, RVOL 0.65x",
+        "애널리스트 16명 보유, 목표가 2.83달러"
       ],
       "risks_or_watchpoints": [
-        "종가가 50일 이동평균 2.22달러를 2거래일 연속 하회하면 최근 반등 추세가 약화될 수 있습니다.",
-        "가격이 3.00달러를 3거래일 연속 상회하지 못하면 2.86달러 부근의 박스권이 지속될 가능성이 큽니다.",
-        "2026-05-11 실적 발표에서 주당순이익이 예상치 -0.21보다 0.05달러 이상 악화되면 재차 하방 압력이 커질 수 있습니다.",
-        "단기 급등 후 2.66달러(눌림 시 진입가) 아래로 종가 이탈이 발생하면 변동성 확대와 함께 손절 구간 테스트 위험이 높습니다."
+        "종가가 2.22달러(SMA50) 아래로 밀리면 반등 추세 무효화 가능성",
+        "2026-05-11 실적 발표 전까지 2.83달러(애널리스트 목표) 근처에서 거래량이 감소하면 목표가 저항으로 전환될 수 있음",
+        "PUT $7의 대규모 OI/거래가 이어질 경우(현재 vol 5000, OI 대비 98%) 시장이 고가 대비 과도한 하방 헤지를 반영하는지 감시",
+        "RSI(14) 66.2가 60 아래로 빠지면서 2.66달러(눌림 시 진입가)도 하회하면 단기 조정 신호"
       ],
-      "signal_or_takeaway": "중립 경계 — 반등은 유효하나 적자 구조와 높은 공매도 부담이 상단을 제약 | 진입 트리거 3.00달러 이상 3거래일 연속 상회 또는 실적 가이던스 개선 확인 | 목표 3.16/2.83달러 | 손절 2.22달러",
+      "signal_or_takeaway": "반등매수 | 진입 트리거: 2.86 유지 후 3.16 돌파 확인 | 목표가: 3.16, 2.83 | 손절가: 2.22 이탈 시 손절",
       "data_snapshot": {
         "Price": "2.86 USD",
         "Daily Change": "-2.39%",
@@ -1873,9 +1872,9 @@
         }
       ],
       "news_tone": {
-        "label": "neutral",
+        "label": "혼조",
         "confidence": 3,
-        "reasoning": "정책 변화와 긍정 기사도 있지만, 중립 의견과 공시 중심 뉴스가 많아 방향성이 엇갈립니다."
+        "reasoning": "반등 모멘텀은 있으나 펀더멘털 신뢰와 옵션 수급이 약하다. 뉴스 자체는 우호적이지만 추세 지속성은 불확실."
       },
       "trade_frame": {
         "entry_price": "현재가 2.86 또는 눌림 시 2.66 USD",
@@ -1933,7 +1932,7 @@
           "date": "2026-04-12",
           "direction": "bull",
           "catalyst": "일반 이슈",
-          "return_5d": "N/A",
+          "return_5d": "+4.38%",
           "note": "실적 전까지 2.55달러에서 2.93달러 사이, 즉 현재가 ±1 ATR 구간에서 넓은 박스권이 유력합니다. 고IV와 공매도 비중이 공존해 방향성보다는 변동성 매매가 적합합니다."
         }
       ],
@@ -1964,28 +1963,25 @@
         "assessment": "대체로 적정 가치 범위에 위치합니다."
       },
       "analysis_consensus": {
-        "status": "conflicted",
-        "economy_action": "watch",
-        "economy_conviction": 63,
-        "economy_reason": "섹터 대비 +19.9% / SMA50·SMA200 위 / 실적 D-24 / 하드 촉매 2026-03-02 / 리스크온 환경의 중립 업종",
+        "status": "agreed",
+        "economy_action": "buy",
+        "economy_conviction": 73,
+        "economy_reason": "섹터 대비 +19.9% / SMA50·SMA200 위 / 최근 시그널 승률 100% (3/3) / 실적 D-24 / 하드 촉매 2026-03-02",
         "deep_action": "buy",
-        "deep_conviction": 65,
-        "deep_reason": "섹터 대비 +19.9% / SMA50·SMA200 위 / 실적 D-24 / 하드 촉매 2026-03-02 / 리스크온 환경의 중립 업종",
-        "direction_agreement": false,
-        "conflicted": true,
-        "confidence_delta": 0,
+        "deep_conviction": 73,
+        "deep_reason": "섹터 대비 +19.9% / SMA50·SMA200 위 / 최근 시그널 승률 100% (3/3) / 실적 D-24 / 하드 촉매 2026-03-02",
+        "direction_agreement": true,
+        "conflicted": false,
+        "confidence_delta": 5,
         "selection_reason": "selected",
-        "third_review_completed": true,
-        "final_consensus": "resolved",
+        "third_review_completed": false,
+        "final_consensus": "agree",
         "final_action": "buy",
-        "third_action": "buy",
-        "third_conviction": 65,
-        "third_reason": "섹터 대비 +19.9% / SMA50·SMA200 위 / 실적 D-24 / 하드 촉매 2026-03-02 / 리스크온 환경의 중립 업종",
-        "conviction_mean": 64.33,
-        "conviction_stdev": 0.94,
-        "conviction_adjusted": 65,
-        "conviction_prior": 65,
-        "conviction_sample_size": 3
+        "conviction_mean": 73.0,
+        "conviction_stdev": 0.0,
+        "conviction_adjusted": 81,
+        "conviction_prior": 73,
+        "conviction_sample_size": 2
       },
       "period_changes": {
         "7d": "+4.38%",
@@ -2021,8 +2017,8 @@
       ],
       "decision": {
         "action": "buy",
-        "conviction": 65,
-        "reason": "섹터 대비 +19.9% / SMA50·SMA200 위 / 실적 D-24 / 하드 촉매 2026-03-02 / 리스크온 환경의 중립 업종 / 3차 검토로 최종 합의: buy (섹터 대비 +19.9% / SMA50·SMA200 위 / 실적 D-24 / 하드 촉매 2026-03-02 / 리스크온 환경의 중립 업종)",
+        "conviction": 81,
+        "reason": "섹터 대비 +19.9% / SMA50·SMA200 위 / 최근 시그널 승률 100% (3/3) / 실적 D-24 / 하드 촉매 2026-03-02 / 앙상블 보정: 73→81 (↑8, spread σ=0.0)",
         "valid_until": "2026-05-11",
         "factors": {
           "catalyst_recency": 13.0,
@@ -2033,11 +2029,11 @@
           "peer_rank": 0.0,
           "portfolio_risk": 0.0,
           "regime_adjustment": 10.0,
-          "signal_track_record": 0.0,
+          "signal_track_record": 15.0,
           "valuation": 10.0
         },
-        "ensemble_agreement": "conflict",
-        "final_consensus": "resolved"
+        "ensemble_agreement": "agree",
+        "final_consensus": "agree"
       }
     }
   ]

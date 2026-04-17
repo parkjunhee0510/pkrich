@@ -4,10 +4,10 @@
     {
       "run_date": "2026-04-17",
       "success": true,
-      "total_cost_usd": 0.19382215,
+      "total_cost_usd": 0.17641775,
       "profiles": {
         "deep": {
-          "cost_usd": 0.1304644,
+          "cost_usd": 0.1383635,
           "tokens": 0,
           "calls": 4,
           "models": {
@@ -15,15 +15,7 @@
           }
         },
         "economy": {
-          "cost_usd": 0.03494375,
-          "tokens": 0,
-          "calls": 4,
-          "models": {
-            "gpt-5.4-mini": 4
-          }
-        },
-        "standard": {
-          "cost_usd": 0.028414,
+          "cost_usd": 0.03805425,
           "tokens": 0,
           "calls": 4,
           "models": {
@@ -36,14 +28,14 @@
         "eligible_count": 13,
         "selected_count": 13,
         "skipped_due_to_cap_count": 0,
-        "conflicted_count": 2
+        "conflicted_count": 0
       },
       "deep_pass_value": {
-        "deep_cost_usd": 0.1304644,
+        "deep_cost_usd": 0.1383635,
         "selected_ticker_count": 13,
-        "cost_per_selected_ticker_usd": 0.010036,
-        "share_of_total_cost": 0.6731,
-        "worth_it_hint": "conflict_review_value"
+        "cost_per_selected_ticker_usd": 0.010643,
+        "share_of_total_cost": 0.7843,
+        "worth_it_hint": "efficient"
       }
     },
     {
@@ -242,10 +234,10 @@
   "latest": {
     "run_date": "2026-04-17",
     "success": true,
-    "total_cost_usd": 0.19382215,
+    "total_cost_usd": 0.17641775,
     "profiles": {
       "deep": {
-        "cost_usd": 0.1304644,
+        "cost_usd": 0.1383635,
         "tokens": 0,
         "calls": 4,
         "models": {
@@ -253,15 +245,7 @@
         }
       },
       "economy": {
-        "cost_usd": 0.03494375,
-        "tokens": 0,
-        "calls": 4,
-        "models": {
-          "gpt-5.4-mini": 4
-        }
-      },
-      "standard": {
-        "cost_usd": 0.028414,
+        "cost_usd": 0.03805425,
         "tokens": 0,
         "calls": 4,
         "models": {
@@ -274,14 +258,14 @@
       "eligible_count": 13,
       "selected_count": 13,
       "skipped_due_to_cap_count": 0,
-      "conflicted_count": 2
+      "conflicted_count": 0
     },
     "deep_pass_value": {
-      "deep_cost_usd": 0.1304644,
+      "deep_cost_usd": 0.1383635,
       "selected_ticker_count": 13,
-      "cost_per_selected_ticker_usd": 0.010036,
-      "share_of_total_cost": 0.6731,
-      "worth_it_hint": "conflict_review_value"
+      "cost_per_selected_ticker_usd": 0.010643,
+      "share_of_total_cost": 0.7843,
+      "worth_it_hint": "efficient"
     }
   }
 }
