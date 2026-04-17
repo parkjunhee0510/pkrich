@@ -1,6 +1,28 @@
 {
   "AAPL": [
     {
+      "date": "2026-04-17",
+      "price": "270.23 USD",
+      "daily_change": "+2.59%",
+      "signal_or_takeaway": "매수 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 263.91–276.55 | 손절 SMA50(260.69 USD) (R:R 1.0R)",
+      "top_news_summary": "Apple CEO forecasts holiday quarter iPhone sales that top Wall Street estimates - Reuters",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 2,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "13",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "price": "263.40 USD",
       "daily_change": "-1.14%",
@@ -191,6 +213,35 @@
     }
   ],
   "CAT": [
+    {
+      "date": "2026-04-17",
+      "price": "794.65 USD",
+      "daily_change": "+2.85%",
+      "signal_or_takeaway": "매수 관찰 — [기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 767.78–821.52 | 손절 SMA50(731.55 USD) (R:R 0.6R)",
+      "top_news_summary": "[기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/18230/000110465926042621/tm2611571d2_8k.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 3,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "ex_dividend",
+          "label": "배당락일",
+          "date": "2026-04-20",
+          "days_until": "3",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "13",
+          "timing": "BMO"
+        }
+      ]
+    },
     {
       "date": "2026-04-16",
       "price": "772.66 USD",
@@ -398,6 +449,28 @@
   ],
   "XOM": [
     {
+      "date": "2026-04-17",
+      "price": "146.44 USD",
+      "daily_change": "-3.65%",
+      "signal_or_takeaway": "매도 경계 — [기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 140.20–152.68 | 손절 SMA50(154.73 USD)",
+      "top_news_summary": "Exxon boosts forecast, aims for $25 billion earnings growth by 2030 - Reuters",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 2,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-01",
+          "days_until": "14",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "price": "151.98 USD",
       "daily_change": "+1.99%",
@@ -554,6 +627,28 @@
     }
   ],
   "AMD": [
+    {
+      "date": "2026-04-17",
+      "price": "278.39 USD",
+      "daily_change": "+0.05%",
+      "signal_or_takeaway": "중립 관찰 — [기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 267.91–288.87 | 손절 SMA50(210.57 USD) (R:R 0.2R)",
+      "top_news_summary": "AMD forecasts fourth-quarter revenue above estimates on strong AI chip demand - Reuters",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 2,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "18",
+          "timing": "AMC"
+        }
+      ]
+    },
     {
       "date": "2026-04-16",
       "price": "278.26 USD",
@@ -712,6 +807,28 @@
   ],
   "KO": [
     {
+      "date": "2026-04-17",
+      "price": "75.74 USD",
+      "daily_change": "+0.74%",
+      "signal_or_takeaway": "중립 관찰 — [실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 74.42–77.06 | 손절 SMA50(77.57 USD)",
+      "top_news_summary": "PepsiCo faces pressure to show Elliott-triggered turnaround is working - Reuters",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 2,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-28",
+          "days_until": "11",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "price": "75.18 USD",
       "daily_change": "-0.17%",
@@ -868,6 +985,35 @@
     }
   ],
   "T": [
+    {
+      "date": "2026-04-17",
+      "price": "26.51 USD",
+      "daily_change": "+0.42%",
+      "signal_or_takeaway": "중립 관찰 — [실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 25.83–27.19 | 손절 SMA50(27.87 USD)",
+      "top_news_summary": "AT&T bets on fiber, spectrum deals to forecast annual profit above expectations - Reuters",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 2,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-22",
+          "days_until": "5",
+          "timing": "BMO"
+        },
+        {
+          "type": "dividend",
+          "label": "배당 지급일",
+          "date": "2026-05-01",
+          "days_until": "14",
+          "timing": ""
+        }
+      ]
+    },
     {
       "date": "2026-04-16",
       "price": "26.40 USD",
@@ -1040,6 +1186,28 @@
   ],
   "IONQ": [
     {
+      "date": "2026-04-17",
+      "price": "46.09 USD",
+      "daily_change": "+3.16%",
+      "signal_or_takeaway": "매수 관찰 — [기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 43.10–49.08 | 손절 SMA50(33.20 USD) (R:R 0.3R)",
+      "top_news_summary": "[기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 2,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "19",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "price": "44.68 USD",
       "daily_change": "+3.31%",
@@ -1197,6 +1365,28 @@
   ],
   "OXY": [
     {
+      "date": "2026-04-17",
+      "price": "53.79 USD",
+      "daily_change": "-5.42%",
+      "signal_or_takeaway": "중립 경계 — [기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 50.90–56.68 | 손절 SMA50(55.33 USD)",
+      "top_news_summary": "Berkshire cash sets record as profit rises, signaling caution ahead of Buffett exit - Reuters",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 3,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "18",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "price": "56.87 USD",
       "daily_change": "+1.86%",
@@ -1303,6 +1493,28 @@
   ],
   "ORA": [
     {
+      "date": "2026-04-17",
+      "price": "113.04 USD",
+      "daily_change": "+0.46%",
+      "signal_or_takeaway": "중립 관찰 — [실적] ORMAT TECHNOLOGIES, INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 110.08–116.00 | 손절 SMA50(113.35 USD)",
+      "top_news_summary": "[기타 공시] ORMAT TECHNOLOGIES, INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1296445/000129644526000006/ora-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 2,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "19",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "price": "112.52 USD",
       "daily_change": "-1.13%",
@@ -1395,6 +1607,28 @@
   ],
   "SPIR": [
     {
+      "date": "2026-04-17",
+      "price": "19.54 USD",
+      "daily_change": "-8.31%",
+      "signal_or_takeaway": "중립 관찰 — [실적] Spire Global, Inc., 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 17.09–21.99 | 손절 SMA50(12.27 USD) (R:R 0.5R)",
+      "top_news_summary": "[기타 공시] Spire Global, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1816017/000119312526116169/spir-20251231.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 3,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-13",
+          "days_until": "26",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "price": "21.31 USD",
       "daily_change": "+3.75%",
@@ -1486,6 +1720,28 @@
     }
   ],
   "PLUG": [
+    {
+      "date": "2026-04-17",
+      "price": "2.78 USD",
+      "daily_change": "-2.80%",
+      "signal_or_takeaway": "중립 관찰 — [실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 2.57–2.99 | 손절 SMA50(2.22 USD) (R:R 0.6R)",
+      "top_news_summary": "EU drops 2035 combustion engine ban as global EV shift faces reset - Reuters",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1093691/000110465926022286/plug-20251231x10k.htm",
+      "news_tone": {
+        "label": "bearish",
+        "confidence": 3,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-11",
+          "days_until": "24",
+          "timing": "AMC"
+        }
+      ]
+    },
     {
       "date": "2026-04-16",
       "price": "2.86 USD",
@@ -1644,6 +1900,28 @@
   ],
   "RKLB": [
     {
+      "date": "2026-04-17",
+      "price": "84.80 USD",
+      "daily_change": "+2.25%",
+      "signal_or_takeaway": "매수 관찰 — Rocket Lab Corporation (RKLB) Q3 FY2025 earnings call transcript - Yahoo Finance | 진입 트리거 79.43–90.17 | 손절 SMA50(69.87 USD) (R:R 0.5R)",
+      "top_news_summary": "Better Space Stock: AST SpaceMobile (ASTS) vs. Rocket Lab (RKLB) - Yahoo Finance",
+      "top_news_link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOaktkbXlmcnR2eVpMa1VTVkxsby1QZF9fU1hBWmxma3BoNmlQd2R4cVdsZks0TFFxdFB3VmM2WXVfWHdiMW5yM3R4RkkxUXltLUtiWUo4R1lBclVmZ1c1N2MydHZLbUxtandvVkx4RG9ndnFweUVoUllYXzljWGR2aXdxcGhmOHRUbGdIaDZn?oc=5",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 3,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-07",
+          "days_until": "20",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "price": "82.93 USD",
       "daily_change": "+12.68%",
@@ -1689,6 +1967,28 @@
     }
   ],
   "PL": [
+    {
+      "date": "2026-04-17",
+      "price": "38.48 USD",
+      "daily_change": "-3.53%",
+      "signal_or_takeaway": "중립 관찰 — Planet Labs PBC (PL) Stock Price, News, Quote & History - Yahoo Finance | 진입 트리거 35.03–41.93 | 손절 SMA50(27.81 USD) (R:R 0.5R)",
+      "top_news_summary": "Planet Labs PBC (PL) Unveils Advisory Boards for Strategic Expansion and Partnerships - Yahoo Finance",
+      "top_news_link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE5HM2dhRGlsYkNhZTNjYUFqa3dNd01TYWtOTmJPNEJ5LV9HX05YU09uUGtxS2VwTV9Lbmk2emhGUG8tTDd2LUtfYXRmMA?oc=5",
+      "news_tone": {
+        "label": "bearish",
+        "confidence": 3,
+        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-06-03",
+          "days_until": "47",
+          "timing": "AMC"
+        }
+      ]
+    },
     {
       "date": "2026-04-16",
       "price": "39.89 USD",

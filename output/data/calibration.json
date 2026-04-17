@@ -4,26 +4,149 @@
     "1": {
       "horizon": 1,
       "decile_buckets": {
-        "status": "insufficient_data",
-        "total_evaluated": 0,
+        "status": "ok",
+        "total_evaluated": 13,
         "horizon": 1,
         "metric": "absolute",
-        "deciles": []
+        "deciles": [
+          {
+            "decile": 1,
+            "conviction_min": 62.0,
+            "conviction_max": 62.0,
+            "n": 1,
+            "mean_return": 0.74,
+            "hit_rate": 1.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 2,
+            "conviction_min": 62.0,
+            "conviction_max": 62.0,
+            "n": 1,
+            "mean_return": -3.65,
+            "hit_rate": 0.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 3,
+            "conviction_min": 66.0,
+            "conviction_max": 66.0,
+            "n": 1,
+            "mean_return": -3.53,
+            "hit_rate": 0.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 4,
+            "conviction_min": 68.0,
+            "conviction_max": 68.0,
+            "n": 2,
+            "mean_return": 1.655,
+            "hit_rate": 0.5,
+            "ir": 0.979
+          },
+          {
+            "decile": 5,
+            "conviction_min": 68.0,
+            "conviction_max": 68.0,
+            "n": 1,
+            "mean_return": -8.31,
+            "hit_rate": 0.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 6,
+            "conviction_min": 68.0,
+            "conviction_max": 68.0,
+            "n": 1,
+            "mean_return": 0.42,
+            "hit_rate": 1.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 7,
+            "conviction_min": 69.0,
+            "conviction_max": 70.0,
+            "n": 2,
+            "mean_return": -1.585,
+            "hit_rate": 0.0,
+            "ir": -0.292
+          },
+          {
+            "decile": 8,
+            "conviction_min": 76.0,
+            "conviction_max": 76.0,
+            "n": 1,
+            "mean_return": 0.05,
+            "hit_rate": 1.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 9,
+            "conviction_min": 76.0,
+            "conviction_max": 76.0,
+            "n": 1,
+            "mean_return": 3.16,
+            "hit_rate": 1.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 10,
+            "conviction_min": 80.0,
+            "conviction_max": 81.0,
+            "n": 2,
+            "mean_return": -0.105,
+            "hit_rate": 0.5,
+            "ir": -0.028
+          }
+        ]
       },
       "reliability": {
-        "status": "insufficient_data",
-        "total_evaluated": 0,
+        "status": "ok",
+        "total_evaluated": 13,
         "horizon": 1,
-        "bins": [],
-        "brier_score": null
+        "brier_score": 0.2978,
+        "bins": [
+          {
+            "bin": 7,
+            "predicted_min": 0.6,
+            "predicted_max": 0.7,
+            "predicted": 0.668,
+            "realized": 0.333,
+            "n": 9
+          },
+          {
+            "bin": 8,
+            "predicted_min": 0.7,
+            "predicted_max": 0.8,
+            "predicted": 0.76,
+            "realized": 1.0,
+            "n": 2
+          },
+          {
+            "bin": 9,
+            "predicted_min": 0.8,
+            "predicted_max": 0.9,
+            "predicted": 0.805,
+            "realized": 0.5,
+            "n": 2
+          }
+        ]
       },
       "drift": {
-        "status": "insufficient_data",
+        "status": "ok",
         "horizon": 1,
         "window_days": 30,
-        "series": [],
+        "series": [
+          {
+            "date": "2026-04-16",
+            "brier": 0.2978,
+            "n": 13
+          }
+        ],
         "trend_slope": null,
-        "latest_brier": null
+        "latest_brier": 0.2978,
+        "drift_alert": false
       }
     },
     "5": {
