@@ -39,6 +39,7 @@ jobs:
         run: |
           mkdir -p web/dist/output/data
           for f in \
+            index.json \
             dashboard.json \
             dashboard_history.json \
             price_history.json \
