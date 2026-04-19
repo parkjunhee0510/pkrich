@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "run_count": 1,
+  "run_count": 2,
   "evaluated_signals": 0,
-  "latest_run_date": "2026-04-16",
+  "latest_run_date": "2026-04-17",
   "summary": {
     "deep_selected_count": 0,
     "economy_only_count": 0,
@@ -18,7 +18,7 @@
   },
   "periods": [],
   "latest_run": {
-    "run_date": "2026-04-16",
+    "run_date": "2026-04-17",
     "trigger_range": [
       25,
       75
@@ -32,7 +32,7 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 74,
+        "conviction": 58,
         "action": "buy"
       },
       {
@@ -40,7 +40,7 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 60,
+        "conviction": 53,
         "action": "watch"
       },
       {
@@ -48,7 +48,7 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 56,
+        "conviction": 51,
         "action": "watch"
       },
       {
@@ -56,23 +56,23 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 70,
-        "action": "buy"
+        "conviction": 55,
+        "action": "watch"
       },
       {
         "ticker": "KO",
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 54,
-        "action": "watch"
+        "conviction": 44,
+        "action": "avoid"
       },
       {
         "ticker": "T",
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 60,
+        "conviction": 51,
         "action": "watch"
       },
       {
@@ -80,7 +80,7 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 69,
+        "conviction": 59,
         "action": "buy"
       },
       {
@@ -88,7 +88,7 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 63,
+        "conviction": 50,
         "action": "watch"
       },
       {
@@ -96,7 +96,7 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 61,
+        "conviction": 49,
         "action": "watch"
       },
       {
@@ -104,15 +104,15 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 60,
+        "conviction": 47,
         "action": "watch"
       },
       {
         "ticker": "PLUG",
         "selected_for_deep": true,
         "reason": "in_trigger_range",
-        "in_portfolio": true,
-        "conviction": 73,
+        "in_portfolio": false,
+        "conviction": 56,
         "action": "buy"
       },
       {
@@ -120,7 +120,7 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 64,
+        "conviction": 54,
         "action": "watch"
       },
       {
@@ -128,7 +128,7 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 60,
+        "conviction": 51,
         "action": "watch"
       }
     ]

@@ -60,6 +60,7 @@ class SignalTrackerTests(unittest.TestCase):
 
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["signal_direction"], "bull")
+            self.assertEqual(rows[0]["llm_direction"], "bull")
             self.assertEqual(rows[0]["catalyst_tag"], "실적")
 
     def test_update_signal_returns_uses_trading_day_horizons(self) -> None:
@@ -142,6 +143,7 @@ class SignalTrackerTests(unittest.TestCase):
             # "date" (not "signal_date"), "direction" (not "signal_direction")
             self.assertEqual(history[0]["date"], "2026-04-01")
             self.assertEqual(history[0]["direction"], "bull")
+            self.assertEqual(history[0]["llm_direction"], "bull")
             self.assertEqual(history[0]["return_5d"], "+5.00%")
 
 
@@ -225,6 +227,7 @@ class DirectionClassificationTests(unittest.TestCase):
                 rows = list(csv.DictReader(handle))
             # Despite bullish news_tone and "상승" wording, action=avoid → bear.
             self.assertEqual(rows[0]["signal_direction"], "bear")
+            self.assertEqual(rows[0]["llm_direction"], "bull")
             self.assertEqual(rows[0]["action"], "avoid")
             self.assertEqual(rows[0]["regime"], "risk_off")
 
@@ -241,6 +244,7 @@ class DirectionClassificationTests(unittest.TestCase):
             with csv_path.open("r", encoding="utf-8", newline="") as handle:
                 rows = list(csv.DictReader(handle))
             self.assertEqual(rows[0]["signal_direction"], "neutral")
+            self.assertEqual(rows[0]["llm_direction"], "bull")
 
     def test_factors_json_persisted(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -269,6 +273,7 @@ class DirectionClassificationTests(unittest.TestCase):
             with csv_path.open("r", encoding="utf-8", newline="") as handle:
                 rows = list(csv.DictReader(handle))
             self.assertEqual(rows[0]["signal_direction"], "bull")
+            self.assertEqual(rows[0]["llm_direction"], "bull")
             self.assertEqual(rows[0]["action"], "")
             self.assertEqual(rows[0]["factors_json"], "")
 

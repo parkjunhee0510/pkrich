@@ -25,6 +25,7 @@ def migrate_signal_tracker(
                 ticker TEXT NOT NULL,
                 signal_type TEXT NOT NULL,
                 signal_direction TEXT NOT NULL,
+                llm_direction TEXT NOT NULL DEFAULT '',
                 signal_price TEXT NOT NULL,
                 catalyst_tag TEXT NOT NULL,
                 news_tone TEXT NOT NULL,
@@ -43,11 +44,11 @@ def migrate_signal_tracker(
         connection.executemany(
             '''
             INSERT INTO signal_history (
-                signal_date, ticker, signal_type, signal_direction, signal_price,
+                signal_date, ticker, signal_type, signal_direction, llm_direction, signal_price,
                 catalyst_tag, news_tone, trade_frame_scenario,
                 return_1d, return_5d, return_20d,
                 evaluated_1d, evaluated_5d, evaluated_20d
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''',
             [
                 (
@@ -55,6 +56,7 @@ def migrate_signal_tracker(
                     str(row.get('ticker', '')).strip().upper(),
                     row.get('signal_type', ''),
                     row.get('signal_direction', ''),
+                    row.get('llm_direction', ''),
                     row.get('signal_price', ''),
                     row.get('catalyst_tag', ''),
                     row.get('news_tone', ''),

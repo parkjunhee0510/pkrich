@@ -451,6 +451,9 @@ export interface BacktestSummary {
   status: string
   strategy?: string
   signals?: number
+  pending_signals?: number
+  first_eval_date?: string | null
+  message?: string
   win_rate?: string
   avg_return?: string
   cumulative_return?: string
@@ -591,6 +594,57 @@ export interface AnalyticsCostResponse {
   average_cost_usd: number
   successful_runs: number
   cost_log?: CostLogPayload
+}
+
+export interface AnalysisQualityRun {
+  run_date: string
+  success: boolean
+  daily_api_cost_usd: number
+  batch_count: number
+  validated_ticker_count: number
+  validation_failure_count: number
+  schema_violation_count: number
+  fact_warning_count: number
+  consistency_warning_count: number
+  hallucination_warning_count: number
+  hallucination_ratio: number
+}
+
+export interface AnalysisQualityPayload {
+  schema_version?: number
+  runs: AnalysisQualityRun[]
+  latest?: AnalysisQualityRun
+}
+
+export interface DirectionAlignmentPair {
+  rule_direction: string
+  llm_direction: string
+  count: number
+}
+
+export interface DirectionAlignmentConflictRow {
+  signal_date: string
+  ticker: string
+  signal_direction: string
+  llm_direction: string
+  catalyst_tag: string
+  conviction?: string
+  action?: string
+  regime?: string
+}
+
+export interface DirectionAlignmentPayload {
+  schema_version?: number
+  summary: {
+    total_signals: number
+    comparable_signals: number
+    agreement_count: number
+    conflict_count: number
+    agreement_rate: number | null
+    latest_signal_date: string
+  }
+  by_pair: DirectionAlignmentPair[]
+  recent_conflicts: DirectionAlignmentConflictRow[]
 }
 
 export type ApiProviderState = 'used' | 'failed' | 'throttled' | 'unavailable' | 'not_used'

@@ -4,7 +4,9 @@ from datetime import date
 from typing import Any
 
 from src.analyzer import research_note
+from src.analyzer.peer_rank import build_peer_rank
 from src.types import CollectedTickerData, NewsItem, TickerAnalysis, WatchlistItem
+from src.utils.quarterly_financials import extract_latest_revenue_growth
 
 
 def build_raw_payloads(
@@ -16,9 +18,17 @@ def build_raw_payloads(
     peer_candidates_by_ticker: dict[str, list[dict[str, Any]]] | None = None,
 ) -> dict[str, dict[str, Any]]:
     deduped_news_map = {item.ticker: research_note._dedupe_news_items(news_map.get(item.ticker, [])) for item in watchlist}
+    watchlist_peer_metrics = _build_watchlist_peer_metrics(watchlist, collected)
     payloads: dict[str, dict[str, Any]] = {}
     for item in watchlist:
         market = collected[item.ticker]
+        peer_candidates = list((peer_candidates_by_ticker or {}).get(item.ticker, []))
+        peer_rank = _build_payload_peer_rank(
+            item=item,
+            market=market,
+            peer_candidates=peer_candidates,
+            watchlist_peer_metrics=watchlist_peer_metrics,
+        )
         payloads[item.ticker] = {
             'ticker': item.ticker,
             'name': item.name,
@@ -72,7 +82,8 @@ def build_raw_payloads(
             'quarterly_financials': market.quarterly_financials[:4],
             'signal_history': (signal_history_map or {}).get(item.ticker, [])[:5],
             'sector_peer_context': {},
-            'peer_candidates': list((peer_candidates_by_ticker or {}).get(item.ticker, [])),
+            'peer_candidates': peer_candidates,
+            'peer_rank': peer_rank,
             'upcoming_events': market.upcoming_events[:3],
             'news': [
                 {
@@ -105,6 +116,7 @@ def build_fallback_payloads(
         signal_history_map=signal_history_map,
     )
     for item in watchlist:
+        peer_rank = dict(raw_payloads.get(item.ticker, {}).get("peer_rank", {}) or {})
         analysis = research_note._build_fallback_analysis(
             item,
             collected,
@@ -114,7 +126,7 @@ def build_fallback_payloads(
             sector_comparison=research_note._format_sector_comparison(
                 raw_payloads.get(item.ticker, {}).get("sector_peer_context", {})
             ),
-            peer_rank={},
+            peer_rank=peer_rank,
             account_size_hint=account_size_hint,
         )
         payloads[item.ticker] = research_note._analysis_to_payload(analysis)
@@ -139,3 +151,85 @@ def payloads_from_analyses(
         analysis.ticker: research_note._analysis_to_payload(analysis)
         for analysis in analyses
     }
+
+
+def _build_watchlist_peer_metrics(
+    watchlist: list[WatchlistItem],
+    collected: dict[str, CollectedTickerData],
+) -> dict[str, list[dict[str, str]]]:
+    grouped: dict[str, list[dict[str, str]]] = {}
+    for item in watchlist:
+        market = collected[item.ticker]
+        sector_key = (item.sector or market.sector or "N/A").strip() or "N/A"
+        grouped.setdefault(sector_key, []).append(
+            {
+                "ticker": item.ticker,
+                "pe_ratio": market.pe_ratio,
+                "price_change_30d": market.price_change_30d,
+                "roe": market.fundamental_metrics.get("roe", "N/A") if isinstance(market.fundamental_metrics, dict) else "N/A",
+                "revenue_growth": extract_latest_revenue_growth(market.quarterly_financials),
+                "dividend_yield": market.dividend_yield,
+            }
+        )
+    return grouped
+
+
+def _build_payload_peer_rank(
+    *,
+    item: WatchlistItem,
+    market: CollectedTickerData,
+    peer_candidates: list[dict[str, Any]],
+    watchlist_peer_metrics: dict[str, list[dict[str, str]]],
+) -> dict[str, object]:
+    peer_metrics: list[dict[str, str]] = []
+    used_candidate_metrics = False
+    for peer in peer_candidates:
+        if not isinstance(peer, dict):
+            continue
+        used_candidate_metrics = True
+        peer_metrics.append(
+            {
+                "pe_ratio": str(peer.get("pe_ratio", "N/A")),
+                "price_change_30d": str(peer.get("price_change_30d", "N/A")),
+                "roe": str(peer.get("roe", "N/A")),
+                "revenue_growth": str(peer.get("revenue_growth", peer.get("earnings_growth", "N/A"))),
+                "dividend_yield": str(peer.get("dividend_yield", "N/A")),
+            }
+        )
+
+    if len(peer_metrics) < 2:
+        sector_key = (item.sector or market.sector or "N/A").strip() or "N/A"
+        peer_metrics = [
+            peer
+            for peer in watchlist_peer_metrics.get(sector_key, [])
+            if peer.get("ticker") != item.ticker
+        ]
+    payload = build_peer_rank(
+        company_metrics={
+            "pe_ratio": market.pe_ratio,
+            "price_change_30d": market.price_change_30d,
+            "roe": market.fundamental_metrics.get("roe", "N/A") if isinstance(market.fundamental_metrics, dict) else "N/A",
+            "revenue_growth": extract_latest_revenue_growth(market.quarterly_financials),
+            "dividend_yield": market.dividend_yield,
+        },
+        peer_metrics=peer_metrics,
+    )
+    if payload or not used_candidate_metrics:
+        return payload
+
+    sector_key = (item.sector or market.sector or "N/A").strip() or "N/A"
+    fallback_peer_metrics = [
+        peer
+        for peer in watchlist_peer_metrics.get(sector_key, [])
+        if peer.get("ticker") != item.ticker
+    ]
+    return build_peer_rank(
+        company_metrics={
+            "pe_ratio": market.pe_ratio,
+            "price_change_30d": market.price_change_30d,
+            "roe": market.fundamental_metrics.get("roe", "N/A") if isinstance(market.fundamental_metrics, dict) else "N/A",
+            "revenue_growth": extract_latest_revenue_growth(market.quarterly_financials),
+            "dividend_yield": market.dividend_yield,
+        },
+        peer_metrics=fallback_peer_metrics,
+    )

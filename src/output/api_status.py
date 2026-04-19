@@ -3,39 +3,17 @@ from __future__ import annotations
 import csv
 import json
 import shutil
-import time
 from collections import Counter
 from datetime import date
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from src.output.schema import SCHEMA_VERSION
 from src.types import WatchlistItem
+from src.utils.fs_sync import retry_io as _retry_io
 from src.utils.pipeline_logging import record_pipeline_event
 
 _PROVIDERS = ("yfinance", "alpha_vantage", "polygon", "fmp", "finnhub", "sec_edgar", "ir_rss")
-
-# OneDrive / antivirus occasionally holds a brief sync lock on files in
-# `output/data/`, which surfaces as OSError (Errno 13 / 22 / 32) when the
-# pipeline writes several files back-to-back. Retry with small backoff so a
-# transient lock doesn't kill the run.
-_RETRY_DELAYS = (0.1, 0.3, 0.7)
-
-
-def _retry_io(op: Callable[[], None], *, what: str) -> None:
-    """Retry a filesystem op on transient OSError (OneDrive / AV sync locks)."""
-    last_err: OSError | None = None
-    for delay in (0.0, *_RETRY_DELAYS):
-        if delay:
-            time.sleep(delay)
-        try:
-            op()
-            return
-        except OSError as err:
-            last_err = err
-    # Give up — re-raise with context for the pipeline error log.
-    assert last_err is not None
-    raise OSError(f"{what} failed after {len(_RETRY_DELAYS)} retries: {last_err}") from last_err
 
 
 def write_api_status_outputs(
@@ -343,18 +321,54 @@ def _write_matrix_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 
 
 def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
+    """Copy API status artifacts to the React `public/output/data/` tree.
+
+    Each file is copied independently so a single OneDrive / antivirus lock
+    does not skip the remaining files. Failures are logged but never raised.
+    """
     web_root = project_root / "web"
     if not web_root.exists():
+        record_pipeline_event(
+            "output",
+            "warning",
+            "sync_web_public_skipped",
+            reason="web_dir_missing",
+            path=str(web_root),
+            scope="api_status",
+        )
         return
 
     target_dir = web_root / "public" / "output" / "data"
-    target_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        target_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        record_pipeline_event(
+            "output",
+            "error",
+            "sync_web_public_mkdir_failed",
+            target=str(target_dir),
+            error=str(exc),
+            scope="api_status",
+        )
+        return
 
     for filename in ("api_status.json", "api_ticker_matrix.json", "api_ticker_matrix.csv"):
         source_path = data_dir / filename
-        if source_path.exists():
-            target_path = target_dir / filename
+        if not source_path.exists():
+            continue
+        target_path = target_dir / filename
+        try:
             _retry_io(
                 lambda s=source_path, t=target_path: shutil.copy2(s, t),
                 what=f"sync {target_path}",
+            )
+        except Exception as exc:
+            record_pipeline_event(
+                "output",
+                "error",
+                "sync_web_public_copy_failed",
+                file=filename,
+                target=str(target_path),
+                error=str(exc),
+                scope="api_status",
             )

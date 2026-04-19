@@ -17,9 +17,9 @@ class FundamentalsFactor(DecisionFactor):
         signal_stats: dict,
     ) -> FactorScore:
         del analysis, regime, signal_stats
-        score = 5.0
+        score = 0.0
         if collected is None:
-            return FactorScore(value=5, confidence=0.2, reasoning="기초체력 데이터가 제한적이라 중립 반영")
+            return FactorScore(value=0, confidence=0.2, reasoning="기초체력 데이터가 제한적이라 중립 반영")
 
         forward_eps = parse_float(collected.forward_eps)
         ttm_eps = parse_float(collected.eps)
@@ -36,12 +36,15 @@ class FundamentalsFactor(DecisionFactor):
                 score -= 3
             parts.append(f"선행 EPS 성장 {growth:+.1f}%")
 
-        if inst is not None and inst >= 60:
-            score += 2
+        if inst is not None:
+            if inst >= 60:
+                score += 1
+            elif inst < 30:
+                score -= 1
             parts.append(f"기관 보유 {inst:.1f}%")
 
         return FactorScore(
-            value=int(round(max(0, min(10, score)))),
+            value=int(round(max(-6, min(6, score)))),
             confidence=score_confidence(forward_eps, ttm_eps, inst),
             reasoning=" / ".join(parts) if parts else "기초체력 보조 지표 부족",
         )

@@ -53,6 +53,19 @@ export function Backtest() {
         <SummaryMetricCard label="누적 수익률" value={backtest?.cumulative_return ?? 'N/A'} note={`최고 ${backtest?.best_return ?? 'N/A'} / 최저 ${backtest?.worst_return ?? 'N/A'}`} />
       </div>
 
+      {backtest?.status === 'awaiting_evaluation' ? (
+        <section className="signals-meta-section">
+          <div className="detail-note-card">
+            <p>{backtest.message ?? '아직 20거래일 평가를 기다리는 signal이 있습니다.'}</p>
+            {backtest.first_eval_date ? (
+              <p className="detail-section-summary">
+                {backtest.first_eval_date}부터 백테스트 통계 집계가 시작됩니다. 현재 대기 중인 signal은 {backtest.pending_signals ?? 0}건입니다.
+              </p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
+
       {backtest?.equity_curve && backtest.equity_curve.length > 1 ? (
         <section className="ticker-detail-section-shell">
           <EquityCurveChart points={backtest.equity_curve} title="전략 누적 수익 곡선" />

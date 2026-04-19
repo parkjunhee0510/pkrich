@@ -22,6 +22,7 @@ FIELDNAMES = [
     "ticker",
     "signal_type",
     "signal_direction",
+    "llm_direction",
     "signal_price",
     "catalyst_tag",
     "news_tone",
@@ -94,6 +95,7 @@ def record_signals(
                     analysis,
                     action=decision.action if decision is not None else None,
                 ),
+                "llm_direction": _extract_llm_direction(analysis),
                 "signal_price": f"{signal_price:.2f}",
                 "catalyst_tag": str(primary_filing.get("tag", "") or "일반 이슈"),
                 "news_tone": str(analysis.news_tone.get("label", "neutral")),
@@ -244,6 +246,7 @@ def load_recent_signals(csv_path: Path, ticker: str, limit: int = 5) -> list[dic
             {
                 "date": str(row.get("signal_date", "")).strip(),
                 "direction": str(row.get("signal_direction", "neutral")).strip() or "neutral",
+                "llm_direction": str(row.get("llm_direction", "unknown")).strip() or "unknown",
                 "catalyst": str(row.get("catalyst_tag", "")).strip(),
                 "return_5d": str(row.get("return_5d", "N/A")).strip() or "N/A",
                 "note": str(row.get("trade_frame_scenario", "")).strip(),
@@ -443,6 +446,25 @@ def _classify_signal_direction(
     if tone_label in {"bullish", "bearish"}:
         return "bull" if tone_label == "bullish" else "bear"
     return "neutral"
+
+
+def _extract_llm_direction(analysis: TickerAnalysis) -> str:
+    signal_text = str(analysis.signal_or_takeaway or "").lower()
+    scenario_text = str(analysis.trade_frame.get("base_scenario", "") or "").lower()
+    combined = f"{signal_text} {scenario_text}".strip()
+    if any(term in signal_text for term in _BEARISH_TERMS) or any(term in combined for term in _BEARISH_TERMS):
+        return "bear"
+    if any(term in signal_text for term in _BULLISH_TERMS) or any(term in combined for term in _BULLISH_TERMS):
+        return "bull"
+
+    tone_label = str(analysis.news_tone.get("label", "neutral")).strip().lower()
+    if tone_label in {"bullish", "긍정", "강세"}:
+        return "bull"
+    if tone_label in {"bearish", "부정", "약세"}:
+        return "bear"
+    if tone_label in {"neutral", "중립", "혼조", "mixed"}:
+        return "neutral"
+    return "unknown"
 
 
 DEFAULT_NEUTRAL_BAND_PCT = 1.0

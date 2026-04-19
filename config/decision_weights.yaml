@@ -3,29 +3,32 @@
 
 factors:
   valuation:
-    max: 20
+    min: -12
+    max: 12
   momentum:
-    max: 20
+    min: -12
+    max: 12
   catalyst_recency:
     min: -10
     max: 20
   signal_track_record:
     min: -10
-    max: 15
+    max: 10
   news_tone:
     min: -5
     max: 10
   regime_adjustment:
-    min: -15
-    max: 15
+    min: -6
+    max: 6
   earnings_pattern:
     min: -10
     max: 10
   fundamentals:
-    max: 10
+    min: -6
+    max: 6
   peer_rank:
-    min: -4
-    max: 8
+    min: -6
+    max: 6
   portfolio_risk:
     min: -10
     max: 0
@@ -36,7 +39,7 @@ regime_multipliers:
   # against regime-segmented IR (see src/decision/calibration.py).
   risk_on:
     # Growth regime: trust momentum/catalyst, underweight valuation/defense.
-    momentum: 1.3
+    momentum: 1.1
     catalyst_recency: 1.2
     peer_rank: 1.15
     news_tone: 1.1
@@ -62,9 +65,9 @@ regime_multipliers:
     momentum: 0.95
 
 thresholds:
-  buy: 65
+  buy: 56
   buy_risk_off: 75
-  avoid: 35
+  avoid: 45
 
 valid_until:
   earnings_window_days: 30

@@ -2,12 +2,12 @@
   "schema_version": 1,
   "runs": [
     {
-      "run_date": "2026-04-17",
+      "run_date": "2026-04-20",
       "success": true,
-      "total_cost_usd": 0.17641775,
+      "total_cost_usd": 0.16227685,
       "profiles": {
         "deep": {
-          "cost_usd": 0.1383635,
+          "cost_usd": 0.1269521,
           "tokens": 0,
           "calls": 4,
           "models": {
@@ -15,7 +15,7 @@
           }
         },
         "economy": {
-          "cost_usd": 0.03805425,
+          "cost_usd": 0.03532475,
           "tokens": 0,
           "calls": 4,
           "models": {
@@ -31,20 +31,20 @@
         "conflicted_count": 0
       },
       "deep_pass_value": {
-        "deep_cost_usd": 0.1383635,
+        "deep_cost_usd": 0.1269521,
         "selected_ticker_count": 13,
-        "cost_per_selected_ticker_usd": 0.010643,
-        "share_of_total_cost": 0.7843,
+        "cost_per_selected_ticker_usd": 0.009766,
+        "share_of_total_cost": 0.7823,
         "worth_it_hint": "efficient"
       }
     },
     {
-      "run_date": "2026-04-16",
+      "run_date": "2026-04-19",
       "success": true,
-      "total_cost_usd": 0.171424,
+      "total_cost_usd": 0.2064516,
       "profiles": {
         "deep": {
-          "cost_usd": 0.1221154,
+          "cost_usd": 0.1306866,
           "tokens": 0,
           "calls": 4,
           "models": {
@@ -52,15 +52,72 @@
           }
         },
         "economy": {
-          "cost_usd": 0.03610085,
+          "cost_usd": 0.0413975,
           "tokens": 0,
-          "calls": 4,
+          "calls": 6,
           "models": {
-            "gpt-5.4-mini": 4
+            "gpt-5.4-mini": 6
           }
         },
         "standard": {
-          "cost_usd": 0.01320775,
+          "cost_usd": 0.0343675,
+          "tokens": 0,
+          "calls": 4,
+          "models": {
+            "gpt-5.4-mini": 4
+          }
+        }
+      },
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 13,
+        "selected_count": 13,
+        "skipped_due_to_cap_count": 0,
+        "conflicted_count": 2
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.1306866,
+        "selected_ticker_count": 13,
+        "cost_per_selected_ticker_usd": 0.010053,
+        "share_of_total_cost": 0.633,
+        "worth_it_hint": "conflict_review_value"
+      }
+    },
+    {
+      "run_date": "2026-04-18",
+      "success": true,
+      "total_cost_usd": 0.0,
+      "profiles": {},
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 13,
+        "selected_count": 13,
+        "skipped_due_to_cap_count": 0,
+        "conflicted_count": 0
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.0,
+        "selected_ticker_count": 13,
+        "cost_per_selected_ticker_usd": 0.0,
+        "share_of_total_cost": 0.0,
+        "worth_it_hint": "deep_pass_unused"
+      }
+    },
+    {
+      "run_date": "2026-04-17",
+      "success": true,
+      "total_cost_usd": 0.17599605,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.1397583,
+          "tokens": 0,
+          "calls": 4,
+          "models": {
+            "gpt-5.4-mini": 4
+          }
+        },
+        "economy": {
+          "cost_usd": 0.03623775,
           "tokens": 0,
           "calls": 4,
           "models": {
@@ -76,78 +133,20 @@
         "conflicted_count": 0
       },
       "deep_pass_value": {
-        "deep_cost_usd": 0.1221154,
+        "deep_cost_usd": 0.1397583,
         "selected_ticker_count": 13,
-        "cost_per_selected_ticker_usd": 0.009393,
-        "share_of_total_cost": 0.7124,
+        "cost_per_selected_ticker_usd": 0.010751,
+        "share_of_total_cost": 0.7941,
         "worth_it_hint": "efficient"
       }
     },
     {
-      "run_date": "2026-04-15",
+      "run_date": "2026-04-12",
       "success": true,
-      "total_cost_usd": 0.0642502,
+      "total_cost_usd": 0.0703351,
       "profiles": {
-        "economy": {
-          "cost_usd": 0.09476845,
-          "tokens": 0,
-          "calls": 4,
-          "models": {
-            "gpt-5.4-mini": 4
-          }
-        }
-      },
-      "routing": {
-        "ensemble_enabled": false,
-        "eligible_count": 0,
-        "selected_count": 0,
-        "skipped_due_to_cap_count": 0,
-        "conflicted_count": 0
-      },
-      "deep_pass_value": {
-        "deep_cost_usd": 0.0,
-        "selected_ticker_count": 0,
-        "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
-        "worth_it_hint": "deep_pass_unused"
-      }
-    },
-    {
-      "run_date": "2026-04-14",
-      "success": true,
-      "total_cost_usd": 0.0652843,
-      "profiles": {
-        "economy": {
-          "cost_usd": 0.0652843,
-          "tokens": 0,
-          "calls": 3,
-          "models": {
-            "gpt-5.4-mini": 3
-          }
-        }
-      },
-      "routing": {
-        "ensemble_enabled": false,
-        "eligible_count": 0,
-        "selected_count": 0,
-        "skipped_due_to_cap_count": 0,
-        "conflicted_count": 0
-      },
-      "deep_pass_value": {
-        "deep_cost_usd": 0.0,
-        "selected_ticker_count": 0,
-        "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
-        "worth_it_hint": "deep_pass_unused"
-      }
-    },
-    {
-      "run_date": "2026-04-13",
-      "success": true,
-      "total_cost_usd": 0.03032025,
-      "profiles": {
-        "economy": {
-          "cost_usd": 0.03032025,
+        "deep": {
+          "cost_usd": 0.0703351,
           "tokens": 0,
           "calls": 1,
           "models": {
@@ -163,18 +162,27 @@
         "conflicted_count": 0
       },
       "deep_pass_value": {
-        "deep_cost_usd": 0.0,
+        "deep_cost_usd": 0.0703351,
         "selected_ticker_count": 0,
         "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
+        "share_of_total_cost": 1.0,
         "worth_it_hint": "deep_pass_unused"
       }
     },
     {
-      "run_date": "2026-04-10",
+      "run_date": "2026-04-11",
       "success": true,
-      "total_cost_usd": 0.0,
-      "profiles": {},
+      "total_cost_usd": 0.0333971,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.0333971,
+          "tokens": 0,
+          "calls": 1,
+          "models": {
+            "gpt-5.4-mini": 1
+          }
+        }
+      },
       "routing": {
         "ensemble_enabled": false,
         "eligible_count": 0,
@@ -183,61 +191,21 @@
         "conflicted_count": 0
       },
       "deep_pass_value": {
-        "deep_cost_usd": 0.0,
+        "deep_cost_usd": 0.0333971,
         "selected_ticker_count": 0,
         "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
-        "worth_it_hint": "deep_pass_unused"
-      }
-    },
-    {
-      "run_date": "2026-04-09",
-      "success": true,
-      "total_cost_usd": 0.0,
-      "profiles": {},
-      "routing": {
-        "ensemble_enabled": false,
-        "eligible_count": 0,
-        "selected_count": 0,
-        "skipped_due_to_cap_count": 0,
-        "conflicted_count": 0
-      },
-      "deep_pass_value": {
-        "deep_cost_usd": 0.0,
-        "selected_ticker_count": 0,
-        "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
-        "worth_it_hint": "deep_pass_unused"
-      }
-    },
-    {
-      "run_date": "2026-04-08",
-      "success": true,
-      "total_cost_usd": 0.0,
-      "profiles": {},
-      "routing": {
-        "ensemble_enabled": false,
-        "eligible_count": 0,
-        "selected_count": 0,
-        "skipped_due_to_cap_count": 0,
-        "conflicted_count": 0
-      },
-      "deep_pass_value": {
-        "deep_cost_usd": 0.0,
-        "selected_ticker_count": 0,
-        "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
+        "share_of_total_cost": 1.0,
         "worth_it_hint": "deep_pass_unused"
       }
     }
   ],
   "latest": {
-    "run_date": "2026-04-17",
+    "run_date": "2026-04-20",
     "success": true,
-    "total_cost_usd": 0.17641775,
+    "total_cost_usd": 0.16227685,
     "profiles": {
       "deep": {
-        "cost_usd": 0.1383635,
+        "cost_usd": 0.1269521,
         "tokens": 0,
         "calls": 4,
         "models": {
@@ -245,7 +213,7 @@
         }
       },
       "economy": {
-        "cost_usd": 0.03805425,
+        "cost_usd": 0.03532475,
         "tokens": 0,
         "calls": 4,
         "models": {
@@ -261,10 +229,10 @@
       "conflicted_count": 0
     },
     "deep_pass_value": {
-      "deep_cost_usd": 0.1383635,
+      "deep_cost_usd": 0.1269521,
       "selected_ticker_count": 13,
-      "cost_per_selected_ticker_usd": 0.010643,
-      "share_of_total_cost": 0.7843,
+      "cost_per_selected_ticker_usd": 0.009766,
+      "share_of_total_cost": 0.7823,
       "worth_it_hint": "efficient"
     }
   }

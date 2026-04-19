@@ -48,6 +48,62 @@ class ResponseValidatorTests(unittest.TestCase):
         self.assertEqual(result.sanitized_response["key_news"], ["기본 뉴스 요약"])
         self.assertEqual(result.counts["hallucination_warning"], 1)
 
+    def test_keeps_korean_key_news_summary_when_source_headline_exists(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {"key_news": ["애플, 실적 앞두고 목표주가 상향"]},
+            {"key_news": "list"},
+            {
+                "raw_payload": {"news": [{"title": "Top BofA Analyst Raises Apple Stock Price Target Ahead of Q2 Earnings"}]},
+                "fallback": {"key_news": ["기본 뉴스 요약"]},
+                "intermediate": {},
+            },
+        )
+        self.assertEqual(result.sanitized_response["key_news"], ["애플, 실적 앞두고 목표주가 상향"])
+        self.assertNotIn("hallucination_warning", result.counts)
+
+    def test_accepts_numeric_values_that_match_fallback(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {"risks_or_watchpoints": ["종가가 260.56달러 아래로 마감하면 추세 훼손 신호입니다."]},
+            {"risks_or_watchpoints": "list"},
+            {
+                "raw_payload": {"price": 270.23},
+                "fallback": {"risks_or_watchpoints": ["종가가 260.56달러 아래로 마감하면 추세 훼손 신호입니다."]},
+                "intermediate": {},
+            },
+        )
+        self.assertEqual(
+            result.sanitized_response["risks_or_watchpoints"],
+            ["종가가 260.56달러 아래로 마감하면 추세 훼손 신호입니다."],
+        )
+        self.assertNotIn("fact_warning", result.counts)
+
+    def test_financial_highlights_allow_partial_supported_lines(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {
+                "financial_highlights": [
+                    "Forward EPS 9.35, TTM EPS 7.89",
+                    "AI 수요 강세가 밸류에이션 재평가를 뒷받침",
+                ]
+            },
+            {"financial_highlights": "list"},
+            {
+                "raw_payload": {"forward_eps": "9.35 USD/share", "eps": "7.89 USD/share"},
+                "fallback": {"financial_highlights": ["기본 하이라이트"]},
+                "intermediate": {},
+            },
+        )
+        self.assertEqual(
+            result.sanitized_response["financial_highlights"],
+            [
+                "Forward EPS 9.35, TTM EPS 7.89",
+                "AI 수요 강세가 밸류에이션 재평가를 뒷받침",
+            ],
+        )
+        self.assertNotIn("fact_warning", result.counts)
+
 
 class HallucinationHardeningTests(unittest.TestCase):
     def test_drops_tainted_summary_when_no_fallback(self) -> None:
@@ -191,6 +247,69 @@ class UrlCitationTests(unittest.TestCase):
         )
         # URL wrapped in parens/period — still recognized as known.
         self.assertIn(real_url, result.sanitized_response["summary"])
+
+
+class SignalValidationTests(unittest.TestCase):
+    def test_replaces_trade_signal_when_target_is_far_outside_price_band(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {
+                "signal_or_takeaway": "매수 우선 — 목표가 450 USD",
+                "trade_frame": {
+                    "target_1": "450.00 USD",
+                    "stop_loss": "92.00 USD",
+                },
+            },
+            {
+                "signal_or_takeaway": "string",
+                "trade_frame": "dict",
+            },
+            {
+                "raw_payload": {
+                    "price": 100.0,
+                    "positioning": {"analyst_target_price": "450.00 USD"},
+                },
+                "fallback": {
+                    "signal_or_takeaway": "중립 관찰",
+                    "trade_frame": {"target_1": "120.00 USD", "stop_loss": "95.00 USD"},
+                },
+                "intermediate": {},
+            },
+        )
+        self.assertEqual(result.sanitized_response["signal_or_takeaway"], "중립 관찰")
+        self.assertEqual(result.sanitized_response["trade_frame"]["target_1"], "120.00 USD")
+        self.assertEqual(result.counts["signal_validation_warning"], 1)
+
+    def test_replaces_trade_signal_when_long_stop_is_above_current_price(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {
+                "signal_or_takeaway": "매수 관찰 — 손절 110 USD, 목표가 125 USD",
+                "trade_frame": {
+                    "target_1": "125.00 USD",
+                    "stop_loss": "110.00 USD",
+                },
+            },
+            {
+                "signal_or_takeaway": "string",
+                "trade_frame": "dict",
+            },
+            {
+                "raw_payload": {
+                    "price": 100.0,
+                    "positioning": {"analyst_target_price": "125.00 USD"},
+                    "risk_note": "손절 110.00 USD",
+                },
+                "fallback": {
+                    "signal_or_takeaway": "중립 관찰",
+                    "trade_frame": {"target_1": "118.00 USD", "stop_loss": "95.00 USD"},
+                },
+                "intermediate": {},
+            },
+        )
+        self.assertEqual(result.sanitized_response["signal_or_takeaway"], "중립 관찰")
+        self.assertEqual(result.sanitized_response["trade_frame"]["stop_loss"], "95.00 USD")
+        self.assertEqual(result.counts["signal_validation_warning"], 1)
 
 
 if __name__ == "__main__":

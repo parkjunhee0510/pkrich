@@ -25,23 +25,23 @@ class RegimeFactor(DecisionFactor):
 
         if regime.regime == "risk_on":
             if is_offensive:
-                value = 15
+                value = 4
                 reasoning = "리스크온 환경에서 공격주 선호"
             elif is_defensive:
-                value = 5
-                reasoning = "리스크온 환경에서도 방어주 프리미엄 유지"
+                value = -2
+                reasoning = "리스크온 환경에서 방어주는 상대적으로 둔화"
             else:
-                value = 10
+                value = 1
                 reasoning = "리스크온 환경의 중립 업종"
         elif regime.regime == "risk_off":
             if is_defensive:
-                value = 10
+                value = 4
                 reasoning = "리스크오프 환경에서 방어 업종 우위"
             elif is_offensive:
-                value = -15
+                value = -6
                 reasoning = "리스크오프 환경에서 공격 업종 부담"
             else:
-                value = -5
+                value = -2
                 reasoning = "리스크오프 환경에서 보수적 할인"
         else:
             value = 0

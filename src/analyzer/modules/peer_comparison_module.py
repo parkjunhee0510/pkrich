@@ -28,6 +28,7 @@ class PeerComparisonModule(AnalysisModule):
             ticker = item.ticker
             market = ctx.collected[ticker]
             raw_payload = ctx.raw_payload_by_ticker.get(ticker, {})
+            existing_peer_rank = dict(ctx.intermediate_results.get(ticker, {}).get("peer_rank", {}) or {})
             candidates = list(raw_payload.get("peer_candidates", []))
             candidate_by_ticker = {
                 str(candidate.get("ticker", "")).strip().upper(): candidate
@@ -75,6 +76,8 @@ class PeerComparisonModule(AnalysisModule):
                     for peer in selected
                 ],
             )
+            if not peer_rank:
+                peer_rank = existing_peer_rank
             results[ticker] = {
                 "sector_comparison": research_note._format_sector_comparison(raw_context),
                 "peer_selection": {

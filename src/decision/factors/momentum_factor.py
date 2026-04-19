@@ -17,30 +17,30 @@ class MomentumFactor(DecisionFactor):
         signal_stats: dict,
     ) -> FactorScore:
         del collected, regime, signal_stats
-        score = 10.0
+        score = 0.0
         pa = analysis.price_action
 
         rs = parse_float(pa.get("rs_vs_spy"))
         if rs is not None:
             if rs >= 5:
-                score += 5
+                score += 4
             elif rs >= 2:
-                score += 3
+                score += 2
             elif rs <= -5:
-                score -= 5
+                score -= 4
             elif rs <= -2:
-                score -= 3
+                score -= 2
 
         sector_rs = parse_float(pa.get("rs_vs_sector_etf"))
         if sector_rs is not None:
             if sector_rs >= 5:
-                score += 4
+                score += 3
             elif sector_rs >= 2:
-                score += 2
+                score += 1
             elif sector_rs <= -5:
-                score -= 4
+                score -= 3
             elif sector_rs <= -2:
-                score -= 2
+                score -= 1
 
         vs_sma50 = parse_float(pa.get("price_vs_sma50"))
         vs_sma200 = parse_float(pa.get("price_vs_sma200"))
@@ -51,10 +51,21 @@ class MomentumFactor(DecisionFactor):
                 score -= 3
 
         rvol = parse_float(pa.get("relative_volume"))
-        if rvol is not None and rvol >= 1.3:
-            score += 2
+        if rvol is not None:
+            positive_bias = any(
+                value is not None and value > 0
+                for value in (rs, sector_rs, vs_sma50, vs_sma200)
+            )
+            negative_bias = any(
+                value is not None and value < 0
+                for value in (rs, sector_rs, vs_sma50, vs_sma200)
+            )
+            if rvol >= 1.3 and positive_bias:
+                score += 2
+            elif rvol >= 1.3 and negative_bias:
+                score -= 2
 
-        score = max(0, min(20, score))
+        score = max(-12, min(12, score))
         confidence = score_confidence(rs, sector_rs, vs_sma50, vs_sma200, rvol)
         reasoning_parts: list[str] = []
         if sector_rs is not None:

@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "date": "2026-04-16",
+  "date": "2026-04-17",
   "ticker": "KO",
   "payload": {
     "ticker": "KO",
     "name": "The Coca-Cola Company",
-    "date": "2026-04-16",
-    "summary": "주가는 75.18달러로 SMA50(77.57) 아래, SMA200(71.60) 위에 있어 방어주 성격은 유지되지만 단기 모멘텀은 약합니다. 다음 촉매는 2026-04-28 실적 발표(D-11)이며, 77.57달러 회복과 74달러대 지지 유지가 실적 전 체크포인트입니다.",
+    "date": "2026-04-17",
+    "summary": "주가 75.74달러로 50일선 77.54달러를 약간 밑돌며 최근 30D 수익률은 +1.32%로 방어적 흐름입니다. 다음 촉매는 D-8인 2026-04-28 실적 발표이며, 실적 전까지는 박스권 내 완만한 등락이 우세해 보입니다.",
     "key_news": [
-      "차기 CEO의 혁신 속도전 언급, 저당·체중감량 트렌드 대응",
-      "실적 D-11, 방어주 내 안정적 실적 기대",
-      "옵션은 풋 우세로 단기 보수적 포지셔닝",
-      "최근 비교 기사 외 추가 모멘텀은 제한적"
+      "차기 CEO, 저당·다이어트 트렌드 대응 위한 혁신 가속",
+      "피어인 펩시코 턴어라운드 점검으로 섹터 관심",
+      "4월 28일 실적 앞둔 방어주 수급",
+      "10-K 및 8-K 공시"
     ],
     "news_references": [
       {
@@ -41,55 +41,52 @@
       {
         "title": "Winners And Losers Of Q4: Coca-Cola (NYSE:KO) Vs The Rest Of The Beverages, Alcohol, and Tobacco Stocks - Yahoo Finance",
         "source": "Yahoo Finance",
-        "published_at": "Fri, 10 Apr 2026 10:30:44 GMT",
+        "published_at": "Fri, 10 Apr 2026 07:00:00 GMT",
         "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPTVpzU2xBeVJjMXl1aVVaU21Nd05XalotNUYzX3ZvS2U0bmJkYUk2dnE2dF8yUEc1RmJqSXJFM3UzQm1SQUZXZTNURHN6ek9TM1Q5Mjh3aXVUUFNTRUlKTDJOYXdNUG9MVU9vWmJyaDVWYVBhM0pVcFdfOVhuR3VTZ1Y5OXRUNXROVmRzWXlMbUlReHNudHlN?oc=5"
       }
     ],
     "financial_highlights": [
-      "PER 24.7배, 목표가 대비 +11.3%",
-      "Forward EPS 3.45, TTM EPS 3.04, EPS 성장률 +3.6% YoY",
-      "ATR 1.33달러, RVOL 0.49x",
-      "52주 고점 대비 59%, SMA50 대비 -3.08%",
-      "애널리스트 23명 매수, 숏플로트 1.08%"
+      "PER 24.9x, 목표가 대비 업사이드 +10.5%",
+      "30D +1.32%, SMA50 대비 -2.32%, SMA200 대비 +5.75%",
+      "RSI 46.5, MACD -0.19/-0.09, RVOL 0.86x",
+      "Forward EPS 3.45, TTM EPS 3.04, EPS YoY +3.6%",
+      "PCR 0.42x, 목표가 83.67달러, 23명 Buy"
     ],
     "risks_or_watchpoints": [
-      "종가가 77.57달러(SMA50) 아래에서 2거래일 이상 머물면 방어주 재평가 필요",
-      "2026-04-28 실적 발표 전까지 73.85달러(눌림 시 진입가) 아래 종가가 나오면 단기 상승 시나리오 약화",
-      "RVOL 0.49x가 0.7x 미만으로 지속되면 거래량 부족에 따른 돌파 실패 가능성 점검",
-      "RSI(14) 42.9가 40 아래로 내려가면 약세 전환 경고"
+      "의사결정 전 최근 실적 일정과 주요 헤드라인을 다시 확인하세요."
     ],
-    "signal_or_takeaway": "중립/반등매수 대기 | 진입 트리거: 77.57 회복 후 74대 지지 재확인 | 목표가: 77.18, 83.67 | 손절가: 77.57 이탈 시 손절",
+    "signal_or_takeaway": "중립-매수: 77.54(SMA50) 상향 회복 시 진입, 목표가 77.72/83.67, 손절가 77.54 재이탈 시 방어.",
     "data_snapshot": {
-      "Price": "75.18 USD",
-      "Daily Change": "-0.17%",
-      "Market Cap": "323.59B",
-      "Trailing P/E": "24.73",
+      "Price": "75.74 USD",
+      "Daily Change": "+0.74%",
+      "Market Cap": "326.00B",
+      "Trailing P/E": "24.91",
       "EPS": "3.04",
       "52W High": "82.00",
       "52W Low": "65.35",
-      "50D SMA": "77.57",
-      "200D SMA": "71.60",
-      "Volume": "8.54M",
-      "3M Avg Volume": "17.53M",
-      "Price/Book": "10.05",
-      "Dividend Yield": "2.74%",
+      "50D SMA": "77.54",
+      "200D SMA": "71.62",
+      "Volume": "15.00M",
+      "3M Avg Volume": "17.49M",
+      "Price/Book": "10.13",
+      "Dividend Yield": "2.72%",
       "Sector": "Consumer Defensive",
-      "Open": "75.03",
-      "High": "75.83",
-      "Low": "74.92",
-      "Close": "75.18",
-      "RS vs Sector ETF": "-0.13%"
+      "Open": "74.95",
+      "High": "76.06",
+      "Low": "74.80",
+      "Close": "75.74",
+      "RS vs Sector ETF": "-0.69%"
     },
     "fundamentals": {
-      "market_cap": "323.59B",
-      "trailing_pe": "24.73",
+      "market_cap": "326.00B",
+      "trailing_pe": "24.91",
       "eps": "3.04",
       "forward_eps": "3.45",
       "earnings_growth": "+3.60% YoY",
-      "price_to_book": "10.05",
-      "dividend_yield": "2.74%",
-      "volume": "8.54M",
-      "avg_volume_3m": "17.53M",
+      "price_to_book": "10.13",
+      "dividend_yield": "2.72%",
+      "volume": "15.00M",
+      "avg_volume_3m": "17.49M",
       "52w_high": "82.00",
       "52w_low": "65.35",
       "short_float_pct": "1.08%",
@@ -98,7 +95,7 @@
       "analyst_recommendation": "Buy",
       "analyst_count": "23명",
       "held_by_insiders": "9.89%",
-      "held_by_institutions": "66.62%",
+      "held_by_institutions": "66.70%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
@@ -109,7 +106,7 @@
       "latest_estimated_eps": "0.56 USD/share",
       "latest_surprise_pct": "+0.03%",
       "latest_beat_miss": "in-line",
-      "next_earnings_event": "2026-04-28 실적 발표 (D-11 · BMO)"
+      "next_earnings_event": "2026-04-28 실적 발표 (D-8 · BMO)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 0,
@@ -128,15 +125,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "1.33",
-      "atr_percent": "1.76%",
-      "relative_volume": "0.49x",
-      "gap_percent": "-0.37%",
-      "price_vs_sma50": "-3.08%",
-      "price_vs_sma200": "+5.00%",
-      "week52_position": "59%",
+      "atr_14d": "1.32",
+      "atr_percent": "1.74%",
+      "relative_volume": "0.86x",
+      "gap_percent": "-0.31%",
+      "price_vs_sma50": "-2.32%",
+      "price_vs_sma200": "+5.75%",
+      "week52_position": "62%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-0.13%"
+      "rs_vs_sector_etf": "-0.69%"
     },
     "quarterly_financials": [
       {
@@ -185,42 +182,48 @@
         "type": "earnings",
         "label": "실적 발표",
         "date": "2026-04-28",
-        "days_until": "11",
+        "days_until": "8",
         "timing": "BMO"
       }
     ],
     "news_tone": {
       "label": "중립",
-      "confidence": 2,
-      "reasoning": "펀더멘털은 안정적이나 기사 촉매가 CEO 교체/제품 혁신 기대에 국한. 강한 방향성보다는 방어적 성격이 우세."
+      "confidence": 3,
+      "reasoning": "방어주답게 큰 충격 재료는 없고, 신임 CEO의 제품 혁신 기조가 중기 포인트. 실적 전까지는 안정적 기대가 우세."
     },
     "trade_frame": {
-      "entry_price": "현재가 75.18 또는 눌림 시 73.85 USD",
-      "stop_loss": "SMA50 77.57 USD",
-      "target_1": "77.18 USD (1.5×ATR)",
+      "entry_price": "현재가 75.74 또는 눌림 시 74.42 USD",
+      "stop_loss": "SMA50 77.54 USD",
+      "target_1": "77.72 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 83.67 USD",
       "risk_reward_ratio": "N/A",
-      "position_size_note": "$60,783 계좌 1% 리스크 기준 약 457주 (ATR $1.33 기반)",
+      "position_size_note": "$62,369 계좌 1% 리스크 기준 약 472주 (ATR $1.32 기반)",
       "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-      "base_scenario": "75.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+      "base_scenario": "75.74 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-      "invalidation_price": "50일 이동평균선인 77.57 USD 아래로 밀리면 약세 시나리오 확인",
+      "invalidation_price": "50일 이동평균선인 77.54 USD 아래로 밀리면 약세 시나리오 확인",
       "watch_period": "2026-04-28 실적 발표 전까지"
     },
     "options_summary": {
-      "expiry": "2026-04-17",
-      "atm_call_iv": "25.1%",
-      "atm_put_iv": "21.9%",
-      "put_call_ratio": "0.76x",
-      "iv_percentile_30d": "4th",
-      "tone": "bearish",
-      "unusual_activity": "PUT $72, vol 168, OI 대비 58% ; PUT $68, vol 64, OI 대비 35% ; PUT $48, vol 36, OI 대비 38%",
-      "oi_change": "콜 OI +0.4% / 풋 OI +1.1%"
+      "expiry": "2026-04-24",
+      "atm_call_iv": "19.7%",
+      "atm_put_iv": "18.4%",
+      "put_call_ratio": "0.42x",
+      "iv_percentile_30d": "2th"
     },
     "signal_history": [
       {
+        "date": "2026-04-17",
+        "direction": "bear",
+        "llm_direction": "bull",
+        "catalyst": "실적",
+        "return_5d": "N/A",
+        "note": "75.74 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
+      {
         "date": "2026-04-16",
         "direction": "neutral",
+        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "75.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -228,6 +231,7 @@
       {
         "date": "2026-04-15",
         "direction": "bull",
+        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "75.31 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -235,6 +239,7 @@
       {
         "date": "2026-04-14",
         "direction": "bull",
+        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "현재가 기준 ±1 ATR인 74.53-77.27 USD 범위에서 실적 전까지 좁은 박스 흐름이 예상됩니다. RVOL 0.69x와 5.3% BB 폭을 감안하면 큰 추세보다 범위 매매가 적합합니다."
@@ -242,22 +247,16 @@
       {
         "date": "2026-04-13",
         "direction": "bull",
+        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "현재가 기준 ±1 ATR인 75.03-77.79 USD에서 좁은 박스 흐름이 이어질 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-12",
-        "direction": "bull",
-        "catalyst": "실적",
-        "return_5d": "-2.96%",
-        "note": "실적 전까지 76.14달러에서 78.80달러 사이, 즉 현재가 ±1 ATR 구간에서 좁은 박스권 흐름이 유력합니다. RVOL 0.61x는 급등보다 완만한 수급을 시사합니다."
       }
     ],
     "sector_comparison": {
       "summary": "Consumer Defensive 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "24.73",
+        "company": "24.91",
         "peer_average": "N/A",
         "difference": null
       },
@@ -267,7 +266,7 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "-1.04%",
+        "company": "+1.32%",
         "peer_average": "N/A",
         "difference": null
       }
@@ -276,35 +275,35 @@
     "valuation_score": {
       "score": "5/10",
       "factors": [
-        "PER 24.7x",
-        "목표가 대비 업사이드 +11.3%"
+        "PER 24.9x",
+        "목표가 대비 업사이드 +10.5%"
       ],
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
     "analysis_consensus": {
       "status": "agreed",
-      "economy_action": "watch",
-      "economy_conviction": 54,
-      "economy_reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 최근 시그널 승률 0% (0/3)",
-      "deep_action": "watch",
-      "deep_conviction": 54,
-      "deep_reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 최근 시그널 승률 0% (0/3)",
+      "economy_action": "avoid",
+      "economy_conviction": 44,
+      "economy_reason": "최근 시그널 승률 0% (0/3) / 실적 D-8 / 하드 촉매 2026-02-20 / 리스크온 환경에서 방어주는 상대적으로 둔화",
+      "deep_action": "avoid",
+      "deep_conviction": 44,
+      "deep_reason": "최근 시그널 승률 0% (0/3) / 실적 D-8 / 하드 촉매 2026-02-20 / 리스크온 환경에서 방어주는 상대적으로 둔화",
       "direction_agreement": true,
       "conflicted": false,
       "confidence_delta": 5,
       "selection_reason": "selected",
       "third_review_completed": false,
       "final_consensus": "agree",
-      "final_action": "watch",
-      "conviction_mean": 54.0,
+      "final_action": "avoid",
+      "conviction_mean": 44.0,
       "conviction_stdev": 0.0,
-      "conviction_adjusted": 62,
-      "conviction_prior": 54,
+      "conviction_adjusted": 52,
+      "conviction_prior": 44,
       "conviction_sample_size": 2
     },
     "period_changes": {
-      "7d": "-3.84%",
-      "30d": "-3.09%"
+      "7d": "-2.23%",
+      "30d": "-0.30%"
     },
     "sec_filing_tags": [
       "실적",
@@ -335,21 +334,21 @@
       }
     ],
     "decision": {
-      "action": "watch",
-      "conviction": 62,
-      "reason": "실적 D-11 / 하드 촉매 2026-02-20 / 섹터 대비 -0.1% / 최근 시그널 승률 0% (0/3) / 앙상블 보정: 54→62 (↑8, spread σ=0.0)",
+      "action": "avoid",
+      "conviction": 52,
+      "reason": "최근 시그널 승률 0% (0/3) / 실적 D-8 / 하드 촉매 2026-02-20 / 리스크온 환경에서 방어주는 상대적으로 둔화 / 앙상블 보정: 44→52 (↑8, spread σ=0.0)",
       "valid_until": "2026-04-28",
       "factors": {
-        "catalyst_recency": 18.0,
+        "catalyst_recency": 3.0,
         "earnings_pattern": 0.0,
-        "fundamentals": 8.0,
-        "momentum": 10.0,
+        "fundamentals": 2.0,
+        "momentum": 0.0,
         "news_tone": 0.0,
         "peer_rank": 0.0,
         "portfolio_risk": 0.0,
-        "regime_adjustment": 5.0,
-        "signal_track_record": -10.0,
-        "valuation": 10.0
+        "regime_adjustment": -2.0,
+        "signal_track_record": -9.0,
+        "valuation": 0.0
       },
       "ensemble_agreement": "agree",
       "final_consensus": "agree"

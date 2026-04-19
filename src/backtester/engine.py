@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -10,11 +11,20 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
     signal_stats = load_signal_stats(csv_path)
     rows = load_signal_rows(csv_path)
     evaluated = [row for row in rows if str(row.get("evaluated_20d", "False")).lower() == "true"]
+    pending_rows = [
+        row for row in rows
+        if str(row.get("signal_direction", "")).strip() in {"bull", "bear"}
+        and str(row.get("evaluated_20d", "False")).lower() != "true"
+    ]
     if not evaluated:
+        first_eval_date = _estimate_first_eval_date(pending_rows)
         return {
-            "status": "insufficient_data",
+            "status": "awaiting_evaluation" if pending_rows else "insufficient_data",
             "strategy": "bull/bear 시그널을 20거래일 기준으로 평가",
             "signals": 0,
+            "pending_signals": len(pending_rows),
+            "first_eval_date": first_eval_date,
+            "message": _build_pending_message(first_eval_date, len(pending_rows)),
         }
 
     bull_rows = [row for row in evaluated if str(row.get("signal_direction", "")) == "bull"]
@@ -25,10 +35,14 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
     combined_summary = _summarize_direction(combined_rows, direction="mixed")
 
     if combined_summary["signals"] == 0:
+        first_eval_date = _estimate_first_eval_date(pending_rows)
         return {
-            "status": "insufficient_data",
+            "status": "awaiting_evaluation" if pending_rows else "insufficient_data",
             "strategy": "bull/bear 시그널을 20거래일 기준으로 평가",
             "signals": 0,
+            "pending_signals": len(pending_rows),
+            "first_eval_date": first_eval_date,
+            "message": _build_pending_message(first_eval_date, len(pending_rows)),
         }
 
     return {
@@ -48,6 +62,8 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
             "meta_analysis": signal_stats.get("meta_analysis", {}),
             "summary_by_direction": signal_stats.get("summary_by_direction", {}),
         },
+        "pending_signals": len(pending_rows),
+        "first_eval_date": _estimate_first_eval_date(pending_rows),
     }
 
 
@@ -168,3 +184,39 @@ def _normalize_signal_return(direction: str, raw_return: float) -> float | None:
     if direction == "bear":
         return -raw_return
     return None
+
+
+def _estimate_first_eval_date(rows: list[dict[str, Any]]) -> str | None:
+    signal_dates = sorted(
+        signal_date
+        for row in rows
+        if (signal_date := _parse_date(row.get("signal_date", ""))) is not None
+    )
+    if not signal_dates:
+        return None
+    return _add_business_days(signal_dates[0], 20).isoformat()
+
+
+def _build_pending_message(first_eval_date: str | None, pending_signals: int) -> str:
+    if first_eval_date:
+        return f"{first_eval_date}부터 백테스트 통계 집계 시작 예정 · 대기 signal {pending_signals}건"
+    if pending_signals > 0:
+        return f"20거래일 평가를 기다리는 signal {pending_signals}건이 있습니다."
+    return "백테스트용 평가 완료 signal이 아직 없습니다."
+
+
+def _add_business_days(start: date, business_days: int) -> date:
+    current = start
+    remaining = max(0, business_days)
+    while remaining > 0:
+        current += timedelta(days=1)
+        if current.weekday() < 5:
+            remaining -= 1
+    return current
+
+
+def _parse_date(raw_value: Any) -> date | None:
+    try:
+        return date.fromisoformat(str(raw_value).strip())
+    except ValueError:
+        return None

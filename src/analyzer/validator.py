@@ -9,6 +9,7 @@ _PRICE_TOKEN = re.compile(r"(?:\$|USD\s*)(\d[\d,]*\.?\d*)|(\d[\d,]*\.?\d*)\s*USD
 _PERCENT_TOKEN = re.compile(r"([-+]?\d[\d,]*\.?\d*)%")
 _NUMBER_TOKEN = re.compile(r"[-+]?\d[\d,]*\.?\d*")
 _ASCII_LETTER = re.compile(r"[A-Za-z]")
+_HANGUL = re.compile(r"[가-힣]")
 # URL citation matcher — any http(s)://host/path token. The LLM sometimes
 # inlines URLs in summary/signals text as "evidence"; a URL not present in
 # `raw_payload.news[*].link` is fabricated.
@@ -126,7 +127,7 @@ class ResponseValidator:
         fact_warning_fields = {
             field_name
             for field_name, value in sanitized.items()
-            if _has_fact_mismatch(value, raw_payload, intermediate)
+            if _should_flag_fact_mismatch(field_name, value, raw_payload, intermediate, fallback)
         }
         for field_name in sorted(fact_warning_fields):
             warnings.append(ValidationWarning("fact_warning", field_name, f"{field_name} contains unsupported numeric values"))
@@ -158,7 +159,70 @@ class ResponseValidator:
                 if "signal_or_takeaway" in fallback:
                     sanitized["signal_or_takeaway"] = fallback["signal_or_takeaway"]
 
+        signal_validation_messages = validate_signal_takeaway(
+            sanitized.get("signal_or_takeaway", ""),
+            _coerce_price_value(raw_payload.get("price")),
+            sanitized.get("trade_frame", {}),
+        )
+        if signal_validation_messages:
+            for message in signal_validation_messages:
+                warnings.append(
+                    ValidationWarning(
+                        "signal_validation_warning",
+                        "signal_or_takeaway",
+                        message,
+                    )
+                )
+            if "signal_or_takeaway" in fallback:
+                sanitized["signal_or_takeaway"] = fallback["signal_or_takeaway"]
+            else:
+                sanitized["signal_or_takeaway"] = ""
+            if "trade_frame" in fallback:
+                sanitized["trade_frame"] = fallback["trade_frame"]
+            elif isinstance(sanitized.get("trade_frame"), dict):
+                sanitized["trade_frame"] = _empty_trade_frame_like(sanitized["trade_frame"])
+
         return ValidationResult(sanitized_response=sanitized, warnings=warnings)
+
+
+def validate_signal_takeaway(
+    signal: Any,
+    price: float | None,
+    trade_frame: Any,
+) -> list[str]:
+    if price is None or price <= 0:
+        return []
+
+    signal_text = str(signal or "").strip()
+    if not signal_text:
+        return []
+
+    trade_frame_dict = trade_frame if isinstance(trade_frame, dict) else {}
+    messages: list[str] = []
+    direction = _infer_signal_direction(signal_text)
+
+    target_values = _extract_trade_frame_targets(signal_text, trade_frame_dict)
+    for target in target_values:
+        if target < (price * 0.5) or target > (price * 3.0):
+            messages.append(
+                f"target price {target:.2f} is outside realistic range for current price {price:.2f}"
+            )
+            break
+
+    stop_value = _extract_stop_value(signal_text, trade_frame_dict)
+    if direction == "long" and stop_value is not None and stop_value >= price:
+        messages.append(
+            f"long signal stop loss {stop_value:.2f} must be below current price {price:.2f}"
+        )
+
+    if direction == "long":
+        target_value = target_values[0] if target_values else None
+        if target_value is not None and target_value <= price:
+            messages.append(
+                f"long signal target {target_value:.2f} must be above current price {price:.2f}"
+            )
+
+    return messages
 
 
 def _matches_expected_type(value: Any, expected_type: str) -> bool:
@@ -182,6 +246,12 @@ def _find_hallucinated_key_news(key_news: list[Any], news_items: list[Any]) -> l
     warnings: list[str] = []
     for item in key_news:
         text = str(item).strip()
+        if _contains_hangul(text):
+            # key_news is intentionally written as short Korean summaries, not
+            # verbatim English headlines. Headline-similarity checks create
+            # false positives here, so keep Korean summaries out of the
+            # title-matching path and let URL/numeric validation cover the rest.
+            continue
         if not _looks_like_title(text):
             continue
         normalized = _normalize_text(text)
@@ -193,11 +263,16 @@ def _find_hallucinated_key_news(key_news: list[Any], news_items: list[Any]) -> l
     return warnings
 
 
-def _has_fact_mismatch(value: Any, raw_payload: dict[str, Any], intermediate: dict[str, Any]) -> bool:
+def _has_fact_mismatch(
+    value: Any,
+    raw_payload: dict[str, Any],
+    intermediate: dict[str, Any],
+    fallback: dict[str, Any],
+) -> bool:
     text_values = _collect_text_values(value)
     if not text_values:
         return False
-    known_prices, known_percents = _extract_known_numeric_values(raw_payload, intermediate)
+    known_prices, known_percents = _extract_known_numeric_values(raw_payload, intermediate, fallback)
     for text in text_values:
         for number in _extract_price_numbers(text):
             if not _matches_known_value(number, known_prices, _PRICE_RELATIVE_TOL):
@@ -263,6 +338,10 @@ def _empty_like(value: Any) -> Any:
     return value
 
 
+def _empty_trade_frame_like(value: dict[str, Any]) -> dict[str, str]:
+    return {str(key): "" for key in value.keys()}
+
+
 def _has_tone_signal_conflict(news_tone: Any, signal: str) -> bool:
     label = ""
     if isinstance(news_tone, dict):
@@ -279,6 +358,89 @@ def _has_tone_signal_conflict(news_tone: Any, signal: str) -> bool:
     return False
 
 
+def _should_flag_fact_mismatch(
+    field_name: str,
+    value: Any,
+    raw_payload: dict[str, Any],
+    intermediate: dict[str, Any],
+    fallback: dict[str, Any],
+) -> bool:
+    if field_name == "financial_highlights" and isinstance(value, list):
+        text_values = [str(item) for item in value if isinstance(item, str) and str(item).strip()]
+        if not text_values:
+            return False
+        mismatches = [
+            text
+            for text in text_values
+            if _has_fact_mismatch(text, raw_payload, intermediate, fallback)
+        ]
+        # Highlights frequently mix a few hard numbers with short qualitative
+        # context. Warn only when the whole field looks unsupported, not when a
+        # single line uses a looser summary phrase.
+        return len(mismatches) == len(text_values)
+    return _has_fact_mismatch(value, raw_payload, intermediate, fallback)
+
+
+def _coerce_price_value(value: Any) -> float | None:
+    if isinstance(value, (int, float)):
+        numeric = float(value)
+        return numeric if numeric > 0 else None
+    if isinstance(value, str):
+        return _to_float(value)
+    return None
+
+
+def _infer_signal_direction(signal_text: str) -> str:
+    normalized = signal_text.strip().lower()
+    positive_tokens = ("매수", "bull", "상승", "강세", "롱", "buy")
+    negative_tokens = ("매도", "bear", "하락", "약세", "숏", "sell")
+    if any(token in normalized for token in positive_tokens):
+        return "long"
+    if any(token in normalized for token in negative_tokens):
+        return "short"
+    return "neutral"
+
+
+def _extract_trade_frame_targets(signal_text: str, trade_frame: dict[str, Any]) -> list[float]:
+    values: list[float] = []
+    for key in ("target_1", "target_2"):
+        raw = trade_frame.get(key)
+        numeric = _extract_first_price(raw)
+        if numeric is not None:
+            values.append(numeric)
+
+    for match in re.finditer(r"(?:목표가|목표|target)\s*[:\-]?\s*(?:\$|USD\s*)?(\d[\d,]*\.?\d*)", signal_text, re.IGNORECASE):
+        numeric = _to_float(match.group(1))
+        if numeric is not None:
+            values.append(numeric)
+    return values
+
+
+def _extract_stop_value(signal_text: str, trade_frame: dict[str, Any]) -> float | None:
+    stop_numeric = _extract_first_price(trade_frame.get("stop_loss"))
+    if stop_numeric is not None:
+        return stop_numeric
+
+    match = re.search(r"(?:손절|stop)\s*[:\-]?\s*(?:\$|USD\s*)?(\d[\d,]*\.?\d*)", signal_text, re.IGNORECASE)
+    if not match:
+        return None
+    return _to_float(match.group(1))
+
+
+def _extract_first_price(value: Any) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        numeric = float(value)
+        return numeric if numeric > 0 else None
+
+    text = str(value)
+    for number in _extract_price_numbers(text):
+        if number > 0:
+            return number
+    return None
+
+
 def _collect_text_values(value: Any) -> list[str]:
     if isinstance(value, str):
         return [value]
@@ -289,14 +451,22 @@ def _collect_text_values(value: Any) -> list[str]:
     return []
 
 
-def _extract_known_numeric_values(raw_payload: dict[str, Any], intermediate: dict[str, Any]) -> tuple[list[float], list[float]]:
+def _extract_known_numeric_values(
+    raw_payload: dict[str, Any],
+    intermediate: dict[str, Any],
+    fallback: dict[str, Any],
+) -> tuple[list[float], list[float]]:
     known_prices: list[float] = []
     known_percents: list[float] = []
-    for source in (raw_payload, intermediate):
+    for source in (raw_payload, intermediate, fallback):
         for text in _walk_strings(source):
             known_prices.extend(_extract_price_numbers(text))
             known_percents.extend(_extract_percent_numbers(text))
     return known_prices, known_percents
+
+
+def _contains_hangul(text: str) -> bool:
+    return bool(_HANGUL.search(text))
 
 
 def _walk_strings(value: Any) -> list[str]:

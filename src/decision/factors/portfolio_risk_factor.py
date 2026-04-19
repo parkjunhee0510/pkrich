@@ -34,10 +34,10 @@ class PortfolioRiskFactor(DecisionFactor):
         score = 0
         reasons: list[str] = []
         if sector_weight >= 45:
-            score -= 6
+            score -= 4
             reasons.append(f"{sector} 섹터 비중 {sector_weight:.1f}%로 과집중 상태")
         elif sector_weight >= 30:
-            score -= 3
+            score -= 2
             reasons.append(f"{sector} 섹터 비중 {sector_weight:.1f}%로 다소 높은 편")
 
         correlations = portfolio_risk.get("correlation_pairs", [])
@@ -48,7 +48,7 @@ class PortfolioRiskFactor(DecisionFactor):
                 for pair in correlations
             )
             if has_high_corr:
-                score -= 3
+                score -= 2
                 reasons.append("같은 포트폴리오 내 고상관 종목과 함께 움직일 가능성이 큼")
 
         if score == 0:

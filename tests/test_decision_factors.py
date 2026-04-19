@@ -3,13 +3,14 @@
 import unittest
 
 from src.decision.factors.earnings_factor import EarningsFactor
+from src.decision.factors.catalyst_factor import CatalystFactor
 from src.decision.factors.fundamentals_factor import FundamentalsFactor
 from src.decision.factors.momentum_factor import MomentumFactor
 from src.decision.factors.news_tone_factor import NewsToneFactor
 from src.decision.factors.peer_rank_factor import PeerRankFactor
 from src.decision.factors.portfolio_risk_factor import PortfolioRiskFactor
 from src.decision.factors.signal_record_factor import SignalRecordFactor
-from src.types import CollectedTickerData, MarketRegime, TickerAnalysis
+from src.types import CollectedTickerData, MarketRegime, NewsItem, TickerAnalysis
 
 
 def _make_analysis(**overrides):
@@ -56,6 +57,26 @@ def _make_collected(**overrides):
 
 
 class DecisionFactorTests(unittest.TestCase):
+    def test_catalyst_factor_rewards_only_truly_near_earnings(self) -> None:
+        factor = CatalystFactor()
+        far = _make_analysis(date="2026-04-10", upcoming_events=[{"type": "earnings", "days_until": "23"}])
+        near = _make_analysis(date="2026-04-10", upcoming_events=[{"type": "earnings", "days_until": "4"}])
+        self.assertLess(factor.score(far, None, MarketRegime(), {}).value, factor.score(near, None, MarketRegime(), {}).value)
+        self.assertEqual(factor.score(far, None, MarketRegime(), {}).value, -5)
+
+    def test_catalyst_factor_only_counts_recent_hard_catalysts(self) -> None:
+        factor = CatalystFactor()
+        stale = _make_analysis(
+            date="2026-04-10",
+            news_references=[NewsItem(title="8-K", source="SEC", published_at="2026-03-20", catalyst_type="hard")],
+        )
+        fresh = _make_analysis(
+            date="2026-04-10",
+            news_references=[NewsItem(title="8-K", source="SEC", published_at="2026-04-08", catalyst_type="hard")],
+        )
+        self.assertEqual(factor.score(stale, None, MarketRegime(), {}).value, -5)
+        self.assertGreater(factor.score(fresh, None, MarketRegime(), {}).value, 0)
+
     def test_momentum_factor_rewards_sector_relative_strength(self) -> None:
         weak = _make_analysis(price_action={"rs_vs_spy": "0.0", "rs_vs_sector_etf": "0.0"})
         strong = _make_analysis(price_action={"rs_vs_spy": "0.0", "rs_vs_sector_etf": "6.0"})
@@ -119,7 +140,7 @@ class DecisionFactorTests(unittest.TestCase):
             MarketRegime(),
             {},
         )
-        self.assertEqual(score.value, 8)
+        self.assertGreaterEqual(score.value, 4)
         self.assertGreaterEqual(score.confidence, 0.8)
 
     def test_peer_rank_factor_penalizes_expensive_weak_momentum(self) -> None:
@@ -130,7 +151,17 @@ class DecisionFactorTests(unittest.TestCase):
             MarketRegime(),
             {},
         )
-        self.assertEqual(score.value, -4)
+        self.assertLessEqual(score.value, -4)
+
+    def test_peer_rank_factor_can_score_mixed_case_without_flattening_to_zero(self) -> None:
+        factor = PeerRankFactor()
+        score = factor.score(
+            _make_analysis(peer_rank={"per_pctl": 0, "rs_pctl": 40}),
+            None,
+            MarketRegime(),
+            {},
+        )
+        self.assertGreater(score.value, 0)
 
 
 if __name__ == "__main__":

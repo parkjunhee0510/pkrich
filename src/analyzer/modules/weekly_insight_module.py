@@ -54,11 +54,19 @@ class WeeklyInsightModule(AnalysisModule):
                         "content": [{"type": "input_text", "text": prompt_template.render_user(weekly_inputs, prompt_ctx)}],
                     },
                 ],
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": f"{prompt_template.version}_{prompt_template.name}",
+                        "schema": prompt_template.output_schema,
+                        "strict": True,
+                    }
+                },
             )
             content = getattr(response, "output_text", "").strip()
             payload = json.loads(content)
-            prompt_template.validate_response(payload)
             report = _normalize_weekly_report(payload, fallback_report)
+            prompt_template.validate_response(report)
             return ModuleResult(
                 portfolio_result={"weekly_report": report},
                 diagnostics={"fallback_used": False, "model": model_profile.model},
@@ -183,7 +191,8 @@ def _normalize_weekly_report(payload: dict[str, Any], fallback: dict[str, object
     result = dict(fallback)
     for key in ("headline", "summary"):
         value = str(payload.get(key, "")).strip()
-        if value:
+        min_length = 10 if key == "headline" else 20
+        if value and len(value) >= min_length:
             result[key] = value
 
     section_defaults = {
@@ -201,9 +210,17 @@ def _normalize_weekly_report(payload: dict[str, Any], fallback: dict[str, object
         merged = dict(default_value)
         merged.update(raw)
         if "summary" in merged:
-            merged["summary"] = str(merged.get("summary", "")).strip()
+            raw_summary = str(merged.get("summary", "")).strip()
+            fallback_summary = str((fallback.get(section, {}) or {}).get("summary", "")).strip() if isinstance(fallback.get(section), dict) else ""
+            merged["summary"] = raw_summary if len(raw_summary) >= 10 else fallback_summary
         if "details" in merged:
-            merged["details"] = _coerce_lines(merged.get("details"))
+            details = _coerce_lines(merged.get("details"))
+            fallback_details = (
+                _coerce_lines((fallback.get(section, {}) or {}).get("details"))
+                if isinstance(fallback.get(section), dict)
+                else []
+            )
+            merged["details"] = details or fallback_details
         if "items" in merged:
             if section == "top_movers":
                 merged["items"] = [
@@ -217,8 +234,16 @@ def _normalize_weekly_report(payload: dict[str, Any], fallback: dict[str, object
                     for item in merged.get("items", [])
                     if isinstance(item, dict)
                 ]
+                if not merged["items"] and isinstance(fallback.get(section), dict):
+                    merged["items"] = list((fallback.get(section, {}) or {}).get("items", []))
             else:
-                merged["items"] = _coerce_lines(merged.get("items"))
+                items = _coerce_lines(merged.get("items"))
+                fallback_items = (
+                    _coerce_lines((fallback.get(section, {}) or {}).get("items"))
+                    if isinstance(fallback.get(section), dict)
+                    else []
+                )
+                merged["items"] = items or fallback_items
         result[section] = merged
     return result
 

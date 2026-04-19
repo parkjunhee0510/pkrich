@@ -19,7 +19,7 @@ class CatalystFactor(DecisionFactor):
         signal_stats: dict,
     ) -> FactorScore:
         del collected, regime, signal_stats
-        run_date = None
+        run_date = _parse_date(analysis.date)
         score = 0.0
         earnings_detail = ""
 
@@ -29,13 +29,11 @@ class CatalystFactor(DecisionFactor):
                 if days_until is not None:
                     earnings_detail = f"실적 D-{days_until}"
                     if days_until <= 3:
-                        score += 20
+                        score += 12
                     elif days_until <= 7:
-                        score += 15
+                        score += 8
                     elif days_until <= 14:
-                        score += 10
-                    elif days_until <= 30:
-                        score += 5
+                        score += 3
                     break
 
         sec_detail = ""
@@ -45,9 +43,19 @@ class CatalystFactor(DecisionFactor):
                     pub_date = date.fromisoformat(ref.published_at[:10])
                 except ValueError:
                     continue
-                run_date = pub_date if run_date is None else run_date
+                if run_date is None:
+                    age_days = 0
+                else:
+                    age_days = (run_date - pub_date).days
+                if age_days < 0:
+                    continue
                 sec_detail = f"하드 촉매 {ref.published_at[:10]}"
-                score += 8
+                if age_days <= 3:
+                    score += 6
+                elif age_days <= 7:
+                    score += 4
+                elif age_days <= 14:
+                    score += 2
                 break
 
         if score == 0:
@@ -56,3 +64,12 @@ class CatalystFactor(DecisionFactor):
         confidence = score_confidence(analysis.upcoming_events, analysis.news_references)
         reasoning = " / ".join(part for part in [earnings_detail, sec_detail] if part) or "가까운 촉매가 없어 감점"
         return FactorScore(value=int(round(max(-10, min(20, score)))), confidence=confidence, reasoning=reasoning)
+
+
+def _parse_date(raw_value: str | None) -> date | None:
+    if not raw_value:
+        return None
+    try:
+        return date.fromisoformat(str(raw_value)[:10])
+    except ValueError:
+        return None

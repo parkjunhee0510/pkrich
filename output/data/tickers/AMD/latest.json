@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "date": "2026-04-16",
+  "date": "2026-04-17",
   "ticker": "AMD",
   "payload": {
     "ticker": "AMD",
     "name": "Advanced Micro Devices, Inc.",
-    "date": "2026-04-16",
-    "summary": "주가는 278.26달러로 30일간 +39.51%, 52주 고점(279.34) 바로 아래까지 올라 과열 부담이 큰 구간입니다. 다음 촉매는 2026-05-05 실적 발표(D-18)이며, 실적 전까지는 279달러 돌파 여부보다 269.57달러 상단 밴드와 210.57달러 SMA50 괴리를 소화하는지 보는 편이 맞습니다.",
+    "date": "2026-04-17",
+    "summary": "주가 278.39달러로 30D +38.28% 급등했고 52주 고점 281.05달러 바로 아래라 단기 과열 신호가 강합니다. 다음 촉매는 D-15인 2026-05-05 실적 발표로, 현재 구간에서는 실적 전 추가 상승보다 변동성 확대로 인한 흔들림 가능성을 먼저 봐야 합니다.",
     "key_news": [
-      "강한 AI 칩 수요로 매출 전망 상향 기대",
-      "직전 분기 약한 1Q 가이던스는 부담 요인",
-      "실적 D-18, 52주 고점권·과매수 상태",
-      "옵션은 풋 우위로 고평가/변동성 조정 경계"
+      "AI 칩 수요 호조에 매출 가이던스 상향 이력",
+      "1Q 매출 부진 우려 재점화",
+      "엔비디아 AI 인퍼런스 모멘텀 확산",
+      "주총/8-K 공시"
     ],
     "news_references": [
       {
@@ -39,77 +39,77 @@
         "link": "https://www.sec.gov/Archives/edgar/data/2488/000119312526129057/d85856ddef14a.htm"
       },
       {
-        "title": "The worst day for Nvidia’s stock since last spring drags Wall Street lower - AP News",
+        "title": "Nvidia CEO heralds ‘inference inflection’ as next phase of AI boom, backed by $1 trillion in orders - AP News",
         "source": "AP News",
-        "published_at": "Thu, 26 Feb 2026 08:00:00 GMT",
-        "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPUVZsN01LZkkzVm4tV09kUzRmSWN5MWVoSGJjWkVnX2p4NTBpTzhIMV9nRTQ5cmpoeW9tUXJpbF9Bc2h0ZjNJZDA3REtsSGhlN19xZC1OVi1RUWh0ajQxbERMNVpyT3hEb2xZcUpQWld0c0IwT2xPdXFIR1hzUmdtd1lWX21RNk5qVHE4ejhQZlRiNl9VMmc?oc=5"
+        "published_at": "Mon, 16 Mar 2026 07:00:00 GMT",
+        "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNbGU0WF9ackV3WUlncXQ2Y2RNZjA4ak51V3B0Y3V5NmtsSDdNNEZRVTRkUGNxaGJJMVV4OFo1NnhfR29sYmlsVDRtVXI1NGNYSUlibFJVUDZKNUlMdDdKWm93QThhNlI5VWxIOXMzSUpFZE0ySC02dk9Ib1E0cU1uQ1dMYmM5bjhyZXJnTGZLUTJydzRiNEVoR3hpX0RTV1NqUlR0bHlHZkJEeVROdUFBU0VWSVBSUnBpRmc?oc=5"
       }
     ],
     "financial_highlights": [
-      "PER 99.0배, FCF Yield 1.9%, ND/EBITDA -0.1배",
-      "RSI 80.2, 52주 고점 대비 99%",
-      "주가 30D +39.51%, 섹터 대비 +29.18%",
-      "Forward EPS 10.93, TTM EPS 2.81, EPS 성장률 +2.17% YoY",
-      "애널리스트 46명 매수, 목표주가 289.35달러"
+      "PER 106.3x, FCF Yield 1.9%, ROE 6.9%, ND/EBITDA -0.1x",
+      "30D +38.28%, SMA50 대비 +31.23%, SMA200 대비 +37.51%",
+      "RSI 80.2, MACD 16.65/10.05, RVOL 0.94x",
+      "Forward EPS 10.96, TTM EPS 2.62, EPS YoY +2.17%",
+      "52주 위치 99%, 목표가 291.52달러, 46명 Buy"
     ],
     "risks_or_watchpoints": [
-      "RSI(14) 80.2가 75 아래로 하락하면서 동시에 267.77달러(눌림 시 진입가) 이탈 시 과열 랠리 조정 신호",
-      "2026-05-05 실적 발표 전까지 279.34달러(52W High) 재돌파 실패가 3거래일 이상 지속되면 추격매수 위험 확대",
-      "MACD는 bullish이나 가격이 210.57달러(SMA50) 아래로 밀리면 추세 붕괴로 간주",
-      "ATR 10.49달러 기준 일간 변동폭이 12달러 이상으로 커지면 고변동성 추세 추종 실패 가능성 감시"
+      "종가가 212.13달러(SMA50) 아래로 내려가면 상승 추세가 무너질 수 있으니 즉시 감시하세요.",
+      "RSI(14)가 80 이상인 상태가 3거래일 이상 지속되면 과열 리스크로 보고 추격매수 자제를 검토하세요.",
+      "52주 고점 281.05달러를 돌파하지 못하고 278달러 부근에서 2거래일 이상 윗꼬리만 길게 형성되면 단기 피로 누적 신호로 보세요.",
+      "2026-05-05 실적 전까지 옵션 변동성(IV Pctl 3th)이 낮아도 주가가 하루 3% 이상 흔들리면 이벤트 리스크가 급증한 것으로 보세요."
     ],
-    "signal_or_takeaway": "추세추종 매수 | 진입 트리거: 279.34 돌파·안착 또는 267.77 지지 확인 | 목표가: 294.00, 289.35 | 손절가: 210.57 이탈 시 손절",
+    "signal_or_takeaway": "관망/과열 경계: 281.05 돌파 후 거래량 동반 시 추격매수, 목표가 294.22/291.52, 손절가 212.13(SMA50) 이탈 시 무효.",
     "data_snapshot": {
-      "Price": "278.26 USD",
-      "Daily Change": "+7.80%",
-      "Market Cap": "453.68B",
-      "Trailing P/E": "99.02",
-      "EPS": "2.81",
-      "52W High": "279.34",
+      "Price": "278.39 USD",
+      "Daily Change": "+0.05%",
+      "Market Cap": "453.89B",
+      "Trailing P/E": "106.26",
+      "EPS": "2.62",
+      "52W High": "281.05",
       "52W Low": "83.75",
-      "50D SMA": "210.57",
-      "200D SMA": "201.74",
-      "Volume": "62.78M",
-      "3M Avg Volume": "37.59M",
+      "50D SMA": "212.13",
+      "200D SMA": "202.45",
+      "Volume": "35.41M",
+      "3M Avg Volume": "37.56M",
       "Price/Book": "7.20",
       "Dividend Yield": "N/A",
       "Sector": "Technology",
-      "Open": "265.00",
-      "High": "279.34",
-      "Low": "261.51",
-      "Close": "278.26",
-      "RS vs Sector ETF": "+29.18%"
+      "Open": "281.00",
+      "High": "281.05",
+      "Low": "274.14",
+      "Close": "278.39",
+      "RS vs Sector ETF": "+24.05%"
     },
     "fundamentals": {
-      "market_cap": "453.68B",
-      "trailing_pe": "99.02",
-      "eps": "2.81",
-      "forward_eps": "10.93",
+      "market_cap": "453.89B",
+      "trailing_pe": "106.26",
+      "eps": "2.62",
+      "forward_eps": "10.96",
       "earnings_growth": "+2.17% YoY",
       "price_to_book": "7.20",
       "dividend_yield": "N/A",
-      "volume": "62.78M",
-      "avg_volume_3m": "37.59M",
-      "52w_high": "279.34",
+      "volume": "35.41M",
+      "avg_volume_3m": "37.56M",
+      "52w_high": "281.05",
       "52w_low": "83.75",
-      "short_float_pct": "1.99%",
-      "short_ratio": "0.97일",
-      "analyst_target_price": "289.35 USD",
+      "short_float_pct": "2.24%",
+      "short_ratio": "1.13일",
+      "analyst_target_price": "291.52 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "46명",
       "held_by_insiders": "0.44%",
-      "held_by_institutions": "72.19%",
+      "held_by_institutions": "72.25%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
-      "forward_eps": "10.93 USD/share",
-      "ttm_eps": "2.81 USD/share",
-      "forward_vs_ttm": "+288.97%",
+      "forward_eps": "10.96 USD/share",
+      "ttm_eps": "2.62 USD/share",
+      "forward_vs_ttm": "+318.32%",
       "earnings_growth": "+2.17% YoY",
       "latest_estimated_eps": "1.32 USD/share",
       "latest_surprise_pct": "+0.16%",
       "latest_beat_miss": "beat",
-      "next_earnings_event": "2026-05-05 실적 발표 (D-18 · AMC)"
+      "next_earnings_event": "2026-05-05 실적 발표 (D-15 · AMC)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 0,
@@ -128,15 +128,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "10.49",
-      "atr_percent": "3.77%",
-      "relative_volume": "1.67x",
-      "gap_percent": "+2.67%",
-      "price_vs_sma50": "+32.15%",
-      "price_vs_sma200": "+37.93%",
+      "atr_14d": "10.55",
+      "atr_percent": "3.79%",
+      "relative_volume": "0.94x",
+      "gap_percent": "+0.14%",
+      "price_vs_sma50": "+31.23%",
+      "price_vs_sma200": "+37.51%",
       "week52_position": "99%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+29.18%"
+      "rs_vs_sector_etf": "+24.05%"
     },
     "quarterly_financials": [
       {
@@ -185,42 +185,48 @@
         "type": "earnings",
         "label": "실적 발표",
         "date": "2026-05-05",
-        "days_until": "18",
+        "days_until": "15",
         "timing": "AMC"
       }
     ],
     "news_tone": {
-      "label": "긍정",
-      "confidence": 3,
-      "reasoning": "AI 수요 서사가 핵심 상승 동력이나, 가이던스 변동과 과매수/풋 수요가 상단을 제약. 모멘텀은 강하나 추격 매수는 경계."
+      "label": "혼조",
+      "confidence": 4,
+      "reasoning": "AI 수요 서사는 긍정적이지만 직전 실적에서 가이던스 약화가 부각돼 상·하방 재료가 공존. 단기적으로는 변동성 확대 구간."
     },
     "trade_frame": {
-      "entry_price": "현재가 278.26 또는 눌림 시 267.77 USD",
-      "stop_loss": "SMA50 210.57 USD",
-      "target_1": "294.00 USD (1.5×ATR)",
-      "target_2": "애널리스트 목표 289.35 USD",
+      "entry_price": "현재가 278.39 또는 눌림 시 267.84 USD",
+      "stop_loss": "SMA50 212.13 USD",
+      "target_1": "294.22 USD (1.5×ATR)",
+      "target_2": "애널리스트 목표 291.52 USD",
       "risk_reward_ratio": "0.2R",
-      "position_size_note": "$60,783 계좌 1% 리스크 기준 약 57주 (ATR $10.49 기반)",
-      "bull_scenario": "강한 모멘텀이 유지되면 최근 고점 영역 재돌파 시도가 나올 수 있습니다.",
-      "base_scenario": "278.26 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.",
+      "position_size_note": "$62,369 계좌 1% 리스크 기준 약 59주 (ATR $10.55 기반)",
+      "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
+      "base_scenario": "278.39 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-      "invalidation_price": "50일 이동평균선인 210.57 USD 아래로 밀리면 약세 시나리오 확인",
+      "invalidation_price": "50일 이동평균선인 212.13 USD 아래로 밀리면 약세 시나리오 확인",
       "watch_period": "2026-05-05 실적 발표 전까지"
     },
     "options_summary": {
-      "expiry": "2026-04-17",
-      "atm_call_iv": "59.6%",
-      "atm_put_iv": "58.9%",
-      "put_call_ratio": "1.28x",
-      "iv_percentile_30d": "4th",
-      "tone": "neutral",
-      "unusual_activity": "PUT $500, vol 80, OI 대비 80% ; PUT $370, vol 80, OI 대비 154% ; PUT $290, vol 121, OI 대비 295%",
-      "oi_change": "콜 OI N/A / 풋 OI +0.3%"
+      "expiry": "2026-04-24",
+      "atm_call_iv": "54.7%",
+      "atm_put_iv": "54.2%",
+      "put_call_ratio": "1.07x",
+      "iv_percentile_30d": "3th"
     },
     "signal_history": [
       {
+        "date": "2026-04-17",
+        "direction": "neutral",
+        "llm_direction": "bear",
+        "catalyst": "기타 공시",
+        "return_5d": "N/A",
+        "note": "278.39 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
+      {
         "date": "2026-04-16",
-        "direction": "bull",
+        "direction": "neutral",
+        "llm_direction": "unknown",
         "catalyst": "기타 공시",
         "return_5d": "N/A",
         "note": "278.26 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
@@ -228,6 +234,7 @@
       {
         "date": "2026-04-15",
         "direction": "bear",
+        "llm_direction": "unknown",
         "catalyst": "기타 공시",
         "return_5d": "N/A",
         "note": "258.12 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -235,6 +242,7 @@
       {
         "date": "2026-04-14",
         "direction": "bull",
+        "llm_direction": "unknown",
         "catalyst": "기타 공시",
         "return_5d": "N/A",
         "note": "현재가 기준 ±1 ATR인 244.15-265.99 USD 범위에서 고점 소화가 우세할 가능성이 큽니다. RVOL 0.66x라 급격한 돌파보다 횡보 후 재시도 시나리오가 더 유력합니다."
@@ -242,22 +250,16 @@
       {
         "date": "2026-04-13",
         "direction": "bull",
+        "llm_direction": "unknown",
         "catalyst": "기타 공시",
         "return_5d": "N/A",
         "note": "현재가 기준 ±1 ATR인 236.16-257.50 USD에서 고점권 소화가 이어질 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-12",
-        "direction": "bull",
-        "catalyst": "기타 공시",
-        "return_5d": "+13.56%",
-        "note": "실적 전까지 233.34달러에서 256.74달러 사이, 즉 현재가 ±1 ATR 구간에서 고점 소화가 유력합니다. RS는 강하지만 RVOL 0.93x로 폭발적 추세보다는 완만한 눌림이 예상됩니다."
       }
     ],
     "sector_comparison": {
       "summary": "Technology 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "99.02",
+        "company": "106.26",
         "peer_average": "N/A",
         "difference": null
       },
@@ -267,17 +269,22 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "+39.51%",
+        "company": "+38.28%",
         "peer_average": "N/A",
         "difference": null
       }
     },
-    "peer_rank": {},
+    "peer_rank": {
+      "per_pctl": 0,
+      "rs_pctl": 40,
+      "revenue_growth_pctl": 40,
+      "summary": "PER 하위 0% (저평가)"
+    },
     "valuation_score": {
       "score": "4/10",
       "factors": [
-        "PER 99.0x",
-        "목표가 대비 업사이드 +4.0%",
+        "PER 106.3x",
+        "목표가 대비 업사이드 +4.7%",
         "ROE 6.9%",
         "FCF Yield 1.9%"
       ],
@@ -285,28 +292,28 @@
     },
     "analysis_consensus": {
       "status": "agreed",
-      "economy_action": "buy",
-      "economy_conviction": 70,
-      "economy_reason": "섹터 대비 +29.2% / SMA50·SMA200 위 / 상대 거래량 1.67배 / 최근 시그널 승률 100% (3/3) / 리스크온 환경에서 공격주 선호",
-      "deep_action": "buy",
-      "deep_conviction": 68,
-      "deep_reason": "섹터 대비 +29.2% / SMA50·SMA200 위 / 상대 거래량 1.67배 / 최근 시그널 승률 100% (3/3) / 리스크온 환경에서 공격주 선호",
+      "economy_action": "watch",
+      "economy_conviction": 55,
+      "economy_reason": "최근 시그널 승률 100% (3/3) / 섹터 대비 +24.1% / SMA50·SMA200 위 / 실적 D-15",
+      "deep_action": "watch",
+      "deep_conviction": 55,
+      "deep_reason": "최근 시그널 승률 100% (3/3) / 섹터 대비 +24.1% / SMA50·SMA200 위 / 실적 D-15",
       "direction_agreement": true,
       "conflicted": false,
       "confidence_delta": 5,
       "selection_reason": "selected",
       "third_review_completed": false,
       "final_consensus": "agree",
-      "final_action": "buy",
-      "conviction_mean": 69.0,
-      "conviction_stdev": 1.0,
-      "conviction_adjusted": 76,
-      "conviction_prior": 68,
+      "final_action": "watch",
+      "conviction_mean": 55.0,
+      "conviction_stdev": 0.0,
+      "conviction_adjusted": 63,
+      "conviction_prior": 55,
       "conviction_sample_size": 2
     },
     "period_changes": {
-      "7d": "+17.59%",
-      "30d": "+41.75%"
+      "7d": "+13.61%",
+      "30d": "+39.57%"
     },
     "sec_filing_tags": [
       "기타 공시",
@@ -337,21 +344,21 @@
       }
     ],
     "decision": {
-      "action": "buy",
-      "conviction": 76,
-      "reason": "섹터 대비 +29.2% / SMA50·SMA200 위 / 상대 거래량 1.67배 / 최근 시그널 승률 100% (3/3) / 리스크온 환경에서 공격주 선호 / 앙상블 보정: 68→76 (↑8, spread σ=1.0)",
+      "action": "watch",
+      "conviction": 63,
+      "reason": "최근 시그널 승률 100% (3/3) / 섹터 대비 +24.1% / SMA50·SMA200 위 / 실적 D-15 / 앙상블 보정: 55→63 (↑8, spread σ=0.0)",
       "valid_until": "2026-05-05",
       "factors": {
-        "catalyst_recency": 5.0,
+        "catalyst_recency": -5.0,
         "earnings_pattern": 0.0,
-        "fundamentals": 10.0,
-        "momentum": 19.0,
+        "fundamentals": 4.0,
+        "momentum": 6.0,
         "news_tone": 0.0,
-        "peer_rank": 0.0,
-        "portfolio_risk": -6.0,
-        "regime_adjustment": 15.0,
-        "signal_track_record": 15.0,
-        "valuation": 8.0
+        "peer_rank": 3.0,
+        "portfolio_risk": -4.0,
+        "regime_adjustment": 4.0,
+        "signal_track_record": 9.0,
+        "valuation": -4.0
       },
       "ensemble_agreement": "agree",
       "final_consensus": "agree"

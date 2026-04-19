@@ -21,8 +21,11 @@ from src.analyzer.derive import (
 )
 from src.output.schema import SCHEMA_VERSION
 from src.output.sharded_export import write_sharded_outputs
+from src.output.direction_alignment import write_direction_alignment_output
 from src.types import MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
 from src.utils.env import is_env_flag_enabled
+from src.utils.fs_sync import retry_io
+from src.utils.pipeline_logging import record_pipeline_event
 from src.utils.weekly_summary import WeeklySummaryData
 
 _MAX_DAYS = 90
@@ -100,6 +103,7 @@ def write_json_outputs(
     _write_factor_audit_json(data_dir)
     _write_tuning_report_json(data_dir)
     _write_validation_warnings_json(data_dir)
+    write_direction_alignment_output(output_root=root)
     monthly_payload = (
         monthly_summary
         if monthly_summary is not None
@@ -598,8 +602,22 @@ def _write_validation_warnings_json(data_dir: Path, *, window_days: int = 14) ->
 
 
 def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
+    """Copy `output/data/*` into the React `public/` and `dist/` trees.
+
+    One failed file (typically an OneDrive / antivirus lock) must NOT prevent
+    the remaining files from syncing — a silent early-exit here left the UI
+    several days stale in the past. Each copy is retried on transient
+    OSError and logged via `record_pipeline_event` on final failure.
+    """
     web_root = project_root / "web"
     if not web_root.exists():
+        record_pipeline_event(
+            "output",
+            "warning",
+            "sync_web_public_skipped",
+            reason="web_dir_missing",
+            path=str(web_root),
+        )
         return
 
     target_dirs = [
@@ -610,7 +628,16 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
         target_dirs.append(dist_root)
 
     for target_dir in target_dirs:
-        target_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            target_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as exc:
+            record_pipeline_event(
+                "output",
+                "error",
+                "sync_web_public_mkdir_failed",
+                target=str(target_dir),
+                error=str(exc),
+            )
 
     filenames = [
         "dashboard_history.json",
@@ -620,6 +647,7 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
         "analysis_quality.json",
         "cost_log.json",
         "routing_outcome.json",
+        "direction_alignment.json",
         "ab_test_results.json",
         "price_history.json",
         "ticker_timelines.json",
@@ -631,23 +659,78 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
     if dashboard_json.exists():
         filenames.insert(0, "dashboard.json")
 
+    copied = 0
+    failed = 0
     for filename in filenames:
         source_path = data_dir / filename
-        if source_path.exists():
-            for target_dir in target_dirs:
-                shutil.copy2(source_path, target_dir / filename)
+        if not source_path.exists():
+            continue
+        for target_dir in target_dirs:
+            target_path = target_dir / filename
+            try:
+                retry_io(
+                    lambda s=source_path, t=target_path: shutil.copy2(s, t),
+                    what=f"sync {target_path}",
+                )
+                copied += 1
+            except Exception as exc:
+                failed += 1
+                record_pipeline_event(
+                    "output",
+                    "error",
+                    "sync_web_public_copy_failed",
+                    file=filename,
+                    target=str(target_path),
+                    error=str(exc),
+                )
 
     stale_candidates = {"dashboard.json"} - set(filenames)
     for filename in stale_candidates:
         for target_dir in target_dirs:
             target_path = target_dir / filename
             if target_path.exists():
-                target_path.unlink()
+                try:
+                    retry_io(
+                        lambda p=target_path: p.unlink(),
+                        what=f"unlink stale {target_path}",
+                    )
+                except Exception as exc:
+                    record_pipeline_event(
+                        "output",
+                        "error",
+                        "sync_web_public_unlink_failed",
+                        file=filename,
+                        target=str(target_path),
+                        error=str(exc),
+                    )
 
     source_tickers = data_dir / "tickers"
     if source_tickers.is_dir():
         for target_dir in target_dirs:
             target_tickers = target_dir / "tickers"
-            if target_tickers.exists():
-                shutil.rmtree(target_tickers, ignore_errors=True)
-            shutil.copytree(source_tickers, target_tickers)
+            try:
+                if target_tickers.exists():
+                    shutil.rmtree(target_tickers, ignore_errors=True)
+                retry_io(
+                    lambda s=source_tickers, t=target_tickers: shutil.copytree(s, t),
+                    what=f"sync {target_tickers}",
+                )
+            except Exception as exc:
+                failed += 1
+                record_pipeline_event(
+                    "output",
+                    "error",
+                    "sync_web_public_copytree_failed",
+                    source=str(source_tickers),
+                    target=str(target_tickers),
+                    error=str(exc),
+                )
+
+    record_pipeline_event(
+        "output",
+        "info",
+        "sync_web_public_completed",
+        copied=copied,
+        failed=failed,
+        targets=[str(d) for d in target_dirs],
+    )

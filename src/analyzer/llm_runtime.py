@@ -49,6 +49,16 @@ def run_structured_llm_module(
     )
     for batch_tickers in _split_batches(module, ctx, tickers):
         diagnostics["batch_count"] += 1
+        record_pipeline_event(
+            "analyzer",
+            "info",
+            "analysis_batch_planned",
+            module=module.name,
+            batch_number=diagnostics["batch_count"],
+            ticker_count=len(batch_tickers),
+            tickers=",".join(batch_tickers),
+            model_profile=ctx.model_profile.name,
+        )
         batch_payload = module.build_batch_payload(ctx, batch_tickers)
         try:
             response = client.responses.create(
@@ -122,6 +132,7 @@ def run_structured_llm_module(
                         fact_warning_count=counts.get("fact_warning", 0),
                         consistency_warning_count=counts.get("consistency_warning", 0),
                         hallucination_warning_count=counts.get("hallucination_warning", 0),
+                        signal_validation_warning_count=counts.get("signal_validation_warning", 0),
                         dropped_unsupported_count=counts.get("dropped_unsupported", 0),
                     )
                 if capture_validation_details:
@@ -223,9 +234,6 @@ def parse_ticker_batch(content: str, expected_tickers: list[str]) -> list[dict[s
             raise ValueError(f"Duplicate ticker in response: {ticker}")
         seen.add(ticker)
         validated.append(entry)
-    missing = expected - seen
-    if missing:
-        raise ValueError(f"Missing tickers in response: {', '.join(sorted(missing))}")
     return validated
 
 

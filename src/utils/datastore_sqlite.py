@@ -129,6 +129,7 @@ class SqliteDatastore(Datastore):
                     ticker,
                     signal_type,
                     signal_direction,
+                    llm_direction,
                     signal_price,
                     catalyst_tag,
                     news_tone,
@@ -139,7 +140,7 @@ class SqliteDatastore(Datastore):
                     evaluated_1d,
                     evaluated_5d,
                     evaluated_20d
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''',
                 [
                     (
@@ -147,6 +148,7 @@ class SqliteDatastore(Datastore):
                         str(row.get('ticker', '')).strip().upper(),
                         row.get('signal_type', ''),
                         row.get('signal_direction', ''),
+                        row.get('llm_direction', ''),
                         row.get('signal_price', ''),
                         row.get('catalyst_tag', ''),
                         row.get('news_tone', ''),
@@ -343,6 +345,7 @@ class SqliteDatastore(Datastore):
                     ticker,
                     signal_type,
                     signal_direction,
+                    llm_direction,
                     signal_price,
                     catalyst_tag,
                     news_tone,
@@ -363,16 +366,17 @@ class SqliteDatastore(Datastore):
                     'ticker': row[1],
                     'signal_type': row[2],
                     'signal_direction': row[3],
-                    'signal_price': row[4],
-                    'catalyst_tag': row[5],
-                    'news_tone': row[6],
-                    'trade_frame_scenario': row[7],
-                    'return_1d': row[8],
-                    'return_5d': row[9],
-                    'return_20d': row[10],
-                    'evaluated_1d': row[11],
-                    'evaluated_5d': row[12],
-                    'evaluated_20d': row[13],
+                    'llm_direction': row[4],
+                    'signal_price': row[5],
+                    'catalyst_tag': row[6],
+                    'news_tone': row[7],
+                    'trade_frame_scenario': row[8],
+                    'return_1d': row[9],
+                    'return_5d': row[10],
+                    'return_20d': row[11],
+                    'evaluated_1d': row[12],
+                    'evaluated_5d': row[13],
+                    'evaluated_20d': row[14],
                 }
                 for row in cursor.fetchall()
             ]
@@ -392,6 +396,7 @@ class SqliteDatastore(Datastore):
                     ticker,
                     signal_type,
                     signal_direction,
+                    llm_direction,
                     signal_price,
                     catalyst_tag,
                     news_tone,
@@ -412,16 +417,17 @@ class SqliteDatastore(Datastore):
                     'ticker': row[1],
                     'signal_type': row[2],
                     'signal_direction': row[3],
-                    'signal_price': row[4],
-                    'catalyst_tag': row[5],
-                    'news_tone': row[6],
-                    'trade_frame_scenario': row[7],
-                    'return_1d': row[8],
-                    'return_5d': row[9],
-                    'return_20d': row[10],
-                    'evaluated_1d': row[11],
-                    'evaluated_5d': row[12],
-                    'evaluated_20d': row[13],
+                    'llm_direction': row[4],
+                    'signal_price': row[5],
+                    'catalyst_tag': row[6],
+                    'news_tone': row[7],
+                    'trade_frame_scenario': row[8],
+                    'return_1d': row[9],
+                    'return_5d': row[10],
+                    'return_20d': row[11],
+                    'evaluated_1d': row[12],
+                    'evaluated_5d': row[13],
+                    'evaluated_20d': row[14],
                 }
                 for row in cursor.fetchall()
             ]
@@ -544,6 +550,7 @@ class SqliteDatastore(Datastore):
                     ticker TEXT NOT NULL,
                     signal_type TEXT NOT NULL,
                     signal_direction TEXT NOT NULL,
+                    llm_direction TEXT NOT NULL DEFAULT '',
                     signal_price TEXT NOT NULL,
                     catalyst_tag TEXT NOT NULL,
                     news_tone TEXT NOT NULL,
@@ -558,6 +565,7 @@ class SqliteDatastore(Datastore):
                 )
                 '''
             )
+            self._ensure_signal_history_columns(connection)
             connection.execute(
                 '''
                 CREATE TABLE IF NOT EXISTS analysis_runs (
@@ -613,6 +621,14 @@ class SqliteDatastore(Datastore):
             if column_name in existing_columns:
                 continue
             connection.execute(f'ALTER TABLE prices ADD COLUMN "{column_name}" {column_spec}')
+
+    def _ensure_signal_history_columns(self, connection: sqlite3.Connection) -> None:
+        existing_columns = {
+            str(row[1]).strip().lower()
+            for row in connection.execute("PRAGMA table_info(signal_history)").fetchall()
+        }
+        if "llm_direction" not in existing_columns:
+            connection.execute('ALTER TABLE signal_history ADD COLUMN "llm_direction" TEXT NOT NULL DEFAULT \'\'')
 
     def _upsert_price_rows(self, rows: list[dict[str, str]]) -> None:
         if not rows:

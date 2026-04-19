@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "summary": {
+    "total_signals": 85,
+    "comparable_signals": 13,
+    "agreement_count": 1,
+    "conflict_count": 12,
+    "agreement_rate": 7.7,
+    "latest_signal_date": "2026-04-17"
+  },
+  "by_pair": [
+    {
+      "rule_direction": "neutral",
+      "llm_direction": "bear",
+      "count": 7
+    },
+    {
+      "rule_direction": "bull",
+      "llm_direction": "bear",
+      "count": 3
+    },
+    {
+      "rule_direction": "neutral",
+      "llm_direction": "bull",
+      "count": 2
+    },
+    {
+      "rule_direction": "bear",
+      "llm_direction": "bear",
+      "count": 1
+    }
+  ],
+  "recent_conflicts": [
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "XOM",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "기타 공시",
+      "conviction": "59",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "T",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "59",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "SPIR",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "55",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "RKLB",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "일반 이슈",
+      "conviction": "62",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "64",
+      "action": "buy",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "PL",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "일반 이슈",
+      "conviction": "59",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "OXY",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "기타 공시",
+      "conviction": "58",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "ORA",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "57",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "IONQ",
+      "signal_direction": "bull",
+      "llm_direction": "bear",
+      "catalyst_tag": "기타 공시",
+      "conviction": "67",
+      "action": "buy",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "CAT",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "기타 공시",
+      "conviction": "61",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "AMD",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "기타 공시",
+      "conviction": "63",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-04-17",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "66",
+      "action": "buy",
+      "regime": "risk_on"
+    }
+  ]
+}

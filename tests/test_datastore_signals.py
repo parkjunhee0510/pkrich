@@ -50,9 +50,11 @@ class CsvDatastoreSignalApiTests(unittest.TestCase):
 
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]['ticker'], 'AAPL')
+            self.assertEqual(rows[0]['llm_direction'], 'bull')
             self.assertEqual(stats['summary_by_direction']['bull']['count'], 1)
             self.assertEqual(len(recent), 1)
             self.assertEqual(recent[0]['direction'], 'bull')
+            self.assertEqual(recent[0]['llm_direction'], 'bull')
 
 
 class SqliteDatastoreSignalApiTests(unittest.TestCase):

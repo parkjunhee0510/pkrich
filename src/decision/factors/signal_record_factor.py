@@ -42,15 +42,13 @@ class SignalRecordFactor(DecisionFactor):
 
         wins = sum(1 for item in evaluated if (parse_float(item.get("return_5d", "0")) or 0) > 0)
         win_rate = wins / len(evaluated)
-        if win_rate >= 0.7:
-            value = 15
-        elif win_rate >= 0.6:
-            value = 10
-        elif win_rate >= 0.5:
-            value = 5
-        elif win_rate < 0.3:
-            value = -10
-        else:
-            value = 0
+        sample_size = len(evaluated)
+
+        # Center around 50% win rate so neutral history maps to 0.
+        # Sample-size scaling keeps a small handful of wins/losses from
+        # overpowering fresher factors before enough evidence accumulates.
+        centered = (win_rate - 0.5) * 30.0
+        sample_scale = min(1.0, sample_size / 5.0)
+        value = int(round(max(-10.0, min(10.0, centered * sample_scale))))
         reasoning = f"최근 시그널 승률 {win_rate:.0%} ({wins}/{len(evaluated)})"
         return FactorScore(value=value, confidence=score_confidence(evaluated), reasoning=reasoning)

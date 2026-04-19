@@ -3,6 +3,7 @@
 from src.decision.base import DecisionFactor, FactorScore
 from src.decision.factors._shared import parse_float, score_confidence
 from src.types import CollectedTickerData, MarketRegime, TickerAnalysis
+from src.utils.news_tone import normalize_news_tone_label
 
 
 class NewsToneFactor(DecisionFactor):
@@ -21,7 +22,7 @@ class NewsToneFactor(DecisionFactor):
         if not tone:
             return FactorScore(value=0, confidence=0.2, reasoning="뉴스 톤 데이터가 부족")
 
-        tone_label = str(tone.get("label", "neutral")).lower()
+        tone_label = normalize_news_tone_label(tone.get("label", "neutral")) or "neutral"
         momentum_dir = parse_float(analysis.price_action.get("rs_vs_spy"))
 
         if tone_label == "bullish":

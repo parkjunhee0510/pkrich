@@ -1,10 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ErrorState } from '../components/ErrorState'
 import { TablePageSkeleton } from '../components/Skeleton'
-import type { AnalyticsCostResponse, CostLogPayload, CostLogRun } from '../types'
+import type {
+  AnalysisQualityPayload,
+  AnalyticsCostResponse,
+  CostLogPayload,
+  CostLogRun,
+  DirectionAlignmentPayload,
+} from '../types'
 
 const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, '') ?? ''
 const STATIC_COST_LOG_URL = `${import.meta.env.BASE_URL}output/data/cost_log.json`
+const STATIC_ANALYSIS_QUALITY_URL = `${import.meta.env.BASE_URL}output/data/analysis_quality.json`
+const DIRECTION_ALIGNMENT_URL = `${import.meta.env.BASE_URL}output/data/direction_alignment.json`
 const CALIBRATION_URL = `${import.meta.env.BASE_URL}output/data/calibration.json`
 const FACTOR_AUDIT_URL = `${import.meta.env.BASE_URL}output/data/factor_audit.json`
 const TUNING_REPORT_URL = `${import.meta.env.BASE_URL}output/data/tuning_report.json`
@@ -223,12 +231,50 @@ export function Admin() {
   const [error, setError] = useState<string | null>(null)
   const [dataSource, setDataSource] = useState<'api' | 'static' | null>(null)
   const [calibration, setCalibration] = useState<CalibrationPayload | null>(null)
+  const [analysisQuality, setAnalysisQuality] = useState<AnalysisQualityPayload | null>(null)
+  const [directionAlignment, setDirectionAlignment] = useState<DirectionAlignmentPayload | null>(null)
   const [factorAudit, setFactorAudit] = useState<FactorAuditPayload | null>(null)
   const [tuningReport, setTuningReport] = useState<TuningReportPayload | null>(null)
   const [validationWarnings, setValidationWarnings] = useState<ValidationWarningsPayload | null>(null)
 
   useEffect(() => {
     document.title = 'Admin · Stock Research'
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadAnalysisQuality() {
+      try {
+        const response = await fetch(STATIC_ANALYSIS_QUALITY_URL, { cache: 'no-store' })
+        if (!response.ok) return
+        const json: AnalysisQualityPayload = await response.json()
+        if (!cancelled) setAnalysisQuality(json)
+      } catch {
+        // Optional — silent fail.
+      }
+    }
+    void loadAnalysisQuality()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadDirectionAlignment() {
+      try {
+        const response = await fetch(DIRECTION_ALIGNMENT_URL, { cache: 'no-store' })
+        if (!response.ok) return
+        const json: DirectionAlignmentPayload = await response.json()
+        if (!cancelled) setDirectionAlignment(json)
+      } catch {
+        // Optional — silent fail.
+      }
+    }
+    void loadDirectionAlignment()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {
@@ -347,6 +393,8 @@ export function Admin() {
   }, [])
 
   const costRuns = data?.cost_log?.runs ?? []
+  const executionRuns = analysisQuality?.runs ?? data?.runs ?? []
+  const latestExecutionRun = executionRuns[0]
   const latestCostRun = costRuns[0]
   const chartMax = useMemo(
     () => Math.max(...costRuns.map((run) => Number(run.total_cost_usd ?? 0)), 0.01),
@@ -462,6 +510,7 @@ export function Admin() {
       </section>
 
       <ValidationWarningsSection payload={validationWarnings} />
+      <DirectionAlignmentSection payload={directionAlignment} />
       <CalibrationSection payload={calibration} />
       <FactorAuditSection payload={factorAudit} />
       <TuningReportSection payload={tuningReport} />
@@ -488,24 +537,31 @@ export function Admin() {
               </tr>
             </thead>
             <tbody>
-              {data.runs.map((run) => (
+              {executionRuns.map((run) => (
                 <tr key={run.run_date}>
                   <td>{run.run_date}</td>
                   <td>{run.success ? 'yes' : 'no'}</td>
                   <td>${Number(run.daily_api_cost_usd ?? 0).toFixed(3)}</td>
                   <td>{run.batch_count}</td>
-                  <td>{run.fallback_count}</td>
+                  <td>{'fallback_count' in run ? run.fallback_count : 0}</td>
                   <td>{run.validation_failure_count}</td>
                   <td>
-                    {Object.keys(run.models_used ?? {}).length > 0
+                    {'models_used' in run && Object.keys(run.models_used ?? {}).length > 0
                       ? Object.entries(run.models_used).map(([model, count]) => `${model}×${count}`).join(', ')
-                      : 'N/A'}
+                      : Number(run.daily_api_cost_usd ?? 0) === 0 && (run.validation_failure_count ?? 0) > 0
+                        ? 'LLM quota/호출 실패'
+                        : 'N/A'}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        {latestExecutionRun && Number(latestExecutionRun.daily_api_cost_usd ?? 0) === 0 && latestExecutionRun.validation_failure_count > 0 ? (
+          <p className="section-kicker" style={{ marginTop: 8 }}>
+            최신 실행은 LLM 비용이 0으로 기록됐습니다. 보통 OpenAI 쿼터 부족이나 호출 실패로 실제 모델 응답이 생성되지 않았을 때 이렇게 보입니다.
+          </p>
+        ) : null}
       </section>
     </div>
   )
@@ -554,6 +610,105 @@ function SummaryMetricCard({ label, value, note }: { label: string; value: strin
         <span>{note}</span>
       </div>
     </div>
+  )
+}
+
+function DirectionAlignmentSection({ payload }: { payload: DirectionAlignmentPayload | null }) {
+  if (!payload) return null
+
+  const summary = payload.summary
+  const agreementRate =
+    summary.agreement_rate === null || summary.agreement_rate === undefined
+      ? 'N/A'
+      : `${summary.agreement_rate.toFixed(1)}%`
+
+  return (
+    <section className="ticker-detail-section-shell">
+      <div className="section-header-with-kicker">
+        <div>
+          <h3>Rule vs LLM 방향 비교</h3>
+          <p className="section-kicker">
+            signal_direction(룰 기반)과 llm_direction(텍스트 해석)의 누적 일치율입니다.
+          </p>
+        </div>
+      </div>
+
+      <div className="signal-summary-grid" style={{ marginTop: 12 }}>
+        <SummaryMetricCard
+          label="비교 가능 signal"
+          value={`${summary.comparable_signals}`}
+          note={`전체 ${summary.total_signals}건 중 방향 비교 가능한 row`}
+        />
+        <SummaryMetricCard
+          label="일치"
+          value={`${summary.agreement_count}`}
+          note={`일치율 ${agreementRate}`}
+        />
+        <SummaryMetricCard
+          label="충돌"
+          value={`${summary.conflict_count}`}
+          note={summary.latest_signal_date ? `최신 signal ${summary.latest_signal_date}` : '아직 집계 없음'}
+        />
+      </div>
+
+      {payload.by_pair.length > 0 ? (
+        <div className="watchlist-table-shell" style={{ marginTop: 16 }}>
+          <table className="watchlist-table">
+            <thead>
+              <tr>
+                <th>Rule</th>
+                <th>LLM</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payload.by_pair.map((row) => (
+                <tr key={`${row.rule_direction}|${row.llm_direction}`}>
+                  <td>{row.rule_direction}</td>
+                  <td>{row.llm_direction}</td>
+                  <td>{row.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="empty" style={{ marginTop: 12 }}>
+          아직 llm_direction 비교 데이터가 충분하지 않습니다.
+        </p>
+      )}
+
+      {payload.recent_conflicts.length > 0 ? (
+        <div className="watchlist-table-shell" style={{ marginTop: 16 }}>
+          <table className="watchlist-table">
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>티커</th>
+                <th>Rule</th>
+                <th>LLM</th>
+                <th>촉매</th>
+                <th>확신도</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payload.recent_conflicts.map((row) => (
+                <tr key={`${row.signal_date}-${row.ticker}-${row.signal_direction}-${row.llm_direction}`}>
+                  <td>{row.signal_date}</td>
+                  <td>{row.ticker}</td>
+                  <td>{row.signal_direction}</td>
+                  <td>{row.llm_direction}</td>
+                  <td>{row.catalyst_tag || 'N/A'}</td>
+                  <td>{row.conviction || 'N/A'}</td>
+                  <td>{row.action || 'N/A'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </section>
   )
 }
 
