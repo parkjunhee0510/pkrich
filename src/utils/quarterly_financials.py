@@ -53,6 +53,14 @@ def build_quarterly_financial_display_rows(
     return display_rows
 
 
+def extract_latest_revenue_growth(rows: list[dict[str, str]]) -> str:
+    display_rows = build_quarterly_financial_display_rows(rows, limit=1)
+    if not display_rows:
+        return "N/A"
+    revenue_yoy = str(display_rows[0].get("revenue_yoy", "")).strip()
+    return revenue_yoy or "N/A"
+
+
 def _previous_year_quarter(quarter: str) -> str | None:
     match = _QUARTER_PATTERN.match(quarter)
     if not match:

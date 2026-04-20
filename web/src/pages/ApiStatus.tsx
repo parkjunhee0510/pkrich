@@ -221,6 +221,11 @@ function ProviderCard({
 function OpenAiUsageCard({ summary }: { summary: ApiStatusSummary }) {
   const llm = summary.llm
   const modelEntries = Object.entries(llm.models_used ?? {})
+  const quality = llm.quality
+  const hallucinationPct =
+    typeof quality?.hallucination_ratio === 'number'
+      ? `${(quality.hallucination_ratio * 100).toFixed(1)}%`
+      : 'N/A'
 
   return (
     <div className={`api-provider-card provider-${llm.used ? 'active' : 'idle'}`}>
@@ -240,6 +245,10 @@ function OpenAiUsageCard({ summary }: { summary: ApiStatusSummary }) {
         <ProviderMetric label="completed batches" value={llm.completed_batches} />
         <ProviderMetric label="failed batches" value={llm.failed_batches} />
         <ProviderMetric label="validation fails" value={llm.validation_failures} />
+        <ProviderMetric label="validated tickers" value={quality?.validated_ticker_count ?? 0} />
+        <ProviderMetric label="schema violations" value={quality?.schema_violation_count ?? 0} />
+        <ProviderMetric label="fact warnings" value={quality?.fact_warning_count ?? 0} />
+        <ProviderMetric label="hallucination ratio" valueText={hallucinationPct} />
       </div>
       <div className="api-provider-fields">
         {modelEntries.length > 0 ? (
@@ -251,6 +260,21 @@ function OpenAiUsageCard({ summary }: { summary: ApiStatusSummary }) {
         ) : (
           <span className="api-provider-field-chip">이번 실행에서는 fallback 없이 정적 분석만 사용됨</span>
         )}
+        {quality?.run_date ? (
+          <span className="api-provider-field-chip">
+            품질 기준일 {quality.run_date}
+          </span>
+        ) : null}
+        {typeof quality?.consistency_warning_count === 'number' ? (
+          <span className="api-provider-field-chip">
+            일관성 경고 {quality.consistency_warning_count}
+          </span>
+        ) : null}
+        {typeof quality?.hallucination_warning_count === 'number' ? (
+          <span className="api-provider-field-chip">
+            환각 의심 {quality.hallucination_warning_count}
+          </span>
+        ) : null}
       </div>
     </div>
   )

@@ -51,6 +51,7 @@ export interface PriceAction {
   price_vs_sma200: string
   week52_position: string
   rs_vs_spy: string
+  rs_vs_sector_etf: string
 }
 
 export interface EarningsSetup {
@@ -62,6 +63,14 @@ export interface EarningsSetup {
   latest_surprise_pct: string
   latest_beat_miss: 'beat' | 'miss' | 'in-line' | 'N/A'
   next_earnings_event: string
+}
+
+export interface EarningsPattern {
+  beat_streak: number
+  surprise_trend: 'improving' | 'deteriorating' | 'stable' | 'insufficient_data'
+  avg_surprise_pct: string
+  quarters_analyzed: number
+  pattern_note: string
 }
 
 export interface NewsTone {
@@ -99,6 +108,9 @@ export interface OptionsSummary {
   atm_put_iv?: string
   put_call_ratio?: string
   iv_percentile_30d?: string
+  tone?: 'bullish' | 'neutral' | 'bearish' | string
+  unusual_activity?: string
+  oi_change?: string
 }
 
 export interface TradeFrame {
@@ -129,6 +141,17 @@ export interface TickerDecisionData {
   reason: string
   valid_until: string
   factors: Record<string, number>
+  ensemble_agreement?: 'agree' | 'conflict' | 'single'
+}
+
+export interface AnalysisConsensusData {
+  status?: 'agreed' | 'conflicted' | 'not_applicable' | string
+  economy_action?: string
+  economy_reason?: string
+  deep_action?: string
+  deep_reason?: string
+  direction_agreement?: boolean | null
+  selection_reason?: string
 }
 
 export interface TickerAnalysisData {
@@ -144,6 +167,7 @@ export interface TickerAnalysisData {
   data_snapshot: Record<string, string>
   fundamentals: Record<string, string>
   earnings_setup: EarningsSetup
+  earnings_pattern?: EarningsPattern
   price_action: PriceAction
   quarterly_financials: QuarterlyFinancialRow[]
   upcoming_events: UpcomingEvent[]
@@ -157,6 +181,7 @@ export interface TickerAnalysisData {
   options_summary?: OptionsSummary
   valuation_score?: ValuationScore
   decision?: TickerDecisionData
+  analysis_consensus?: AnalysisConsensusData
 }
 
 export interface ValuationScore {
@@ -209,10 +234,21 @@ export interface MacroContextVix {
 
 export interface MacroEvent {
   type: string
+  event_code?: string
+  category?: string
   date: string
   days_until: string
   label: string
   impact?: 'high' | 'medium' | 'low'
+  source?: string
+  actual?: string
+  consensus?: string
+  previous?: string
+  surprise_direction?: string
+  market_bias?: string
+  description?: string
+  sensitivity_tags?: string | string[]
+  sensitive_holdings?: SensitiveHolding[]
 }
 
 export interface MacroContext {
@@ -233,6 +269,21 @@ export interface MacroContext {
     change?: string
   }
   upcoming_macro_events?: MacroEvent[]
+  portfolio_event_sensitivity?: PortfolioMacroSensitivity[]
+  ticker_macro_sensitivity?: Record<string, Array<{ event_code: string; label: string; date: string; sensitivity: string; reason: string }>>
+  portfolio_sensitivity_summary?: string
+}
+
+export interface SensitiveHolding {
+  ticker: string
+  name: string
+  sector: string
+  sensitivity: 'high' | 'medium' | 'low'
+  reason: string
+}
+
+export interface PortfolioMacroSensitivity extends MacroEvent {
+  sensitive_holdings?: SensitiveHolding[]
 }
 
 export interface PortfolioRiskPosition {
@@ -256,11 +307,19 @@ export interface PortfolioRisk {
   concentration_warning?: string
   sector_concentration_alerts?: string[]
   correlation_pairs?: CorrelationPair[]
+  correlation_matrix?: Record<string, Record<string, number | null>>
   position_sizing?: Array<{ ticker: string; recommended_shares: string; max_risk_usd: string; stop_distance: string }>
   total_atr_risk_usd?: number
   max_drawdown_2atr_usd?: number
   max_drawdown_2atr_pct?: string
   total_market_value?: number
+  hhi?: number
+  portfolio_beta?: number | null
+  mdd_20d?: number | null
+  mdd_20d_series?: Array<{ date: string; drawdown_pct: number }>
+  var_95?: number | null
+  risk_grade?: 'A' | 'B' | 'C' | 'D' | string
+  recommendations?: string[]
 }
 
 export interface DailyEntry {
@@ -439,6 +498,16 @@ export interface ApiStatusSummary {
     estimated_cost_usd: number
     latest_model: string
     models_used: Record<string, number>
+    quality?: {
+      run_date?: string
+      validated_ticker_count?: number
+      validation_failure_count?: number
+      schema_violation_count?: number
+      fact_warning_count?: number
+      consistency_warning_count?: number
+      hallucination_warning_count?: number
+      hallucination_ratio?: number
+    }
   }
 }
 

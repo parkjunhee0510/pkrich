@@ -17,6 +17,19 @@ import { parseNumericChange, changeColor, extractSignalDirection } from '../util
 import { EpsSurpriseChart } from '../components/EpsSurpriseChart'
 import { buildPositionSizingSummary, buildPriceActionTags, extractActionPlan, getLatestCatalystItem } from '../utils/trader'
 
+const HEADER_ENSEMBLE_BADGES: Record<string, { symbol: string; label: string; className: string }> = {
+  agree: { symbol: '✓✓', label: 'Consensus', className: 'ticker-ensemble-badge-agree' },
+  conflict: { symbol: '✓✗', label: 'Conflict', className: 'ticker-ensemble-badge-conflict' },
+  single: { symbol: '•', label: 'Single', className: 'ticker-ensemble-badge-single' },
+}
+
+const HEADER_SELECTION_REASON_LABELS: Record<string, string> = {
+  selected: 'Selected for second-pass review',
+  cap_exceeded: 'Skipped due to daily ensemble cap',
+  out_of_range: 'Outside ensemble trigger range',
+  disabled: 'Ensemble disabled',
+}
+
 const FILING_TABS = ['실적', '배당', '주주총회', '기타 공시'] as const
 
 type FilingTab = (typeof FILING_TABS)[number]
@@ -159,6 +172,11 @@ export function TickerDetail() {
   if (!data || !ticker) return <p className="status">No data available.</p>
   if (!analysis) return <p className="status">Ticker {ticker} not found.</p>
 
+  const headerEnsemble = HEADER_ENSEMBLE_BADGES[analysis.decision?.ensemble_agreement ?? 'single'] ?? HEADER_ENSEMBLE_BADGES.single
+  const headerSelectionReason = analysis.analysis_consensus?.selection_reason
+    ? HEADER_SELECTION_REASON_LABELS[analysis.analysis_consensus.selection_reason] ?? analysis.analysis_consensus.selection_reason
+    : null
+
   return (
     <div className="ticker-detail">
       <Link to="/" className="back-link">&larr; Dashboard</Link>
@@ -174,6 +192,38 @@ export function TickerDetail() {
             {typeof analysis.news_tone?.confidence === 'number' ? (
               <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
             ) : null}
+            <span className={`period-badge ticker-ensemble-badge ${headerEnsemble.className}`}>
+              {headerEnsemble.symbol} {headerEnsemble.label}
+              <InfoTooltip
+                content={
+                  <span className="metric-tooltip-copy">
+                    {headerSelectionReason ? (
+                      <>
+                        <strong>Selection</strong>
+                        <span>{headerSelectionReason}</span>
+                      </>
+                    ) : null}
+                    {analysis.decision?.ensemble_agreement === 'conflict' ? (
+                      <>
+                        <strong>Economy</strong>
+                        <span>
+                          {analysis.analysis_consensus?.economy_action ?? 'watch'} - {analysis.analysis_consensus?.economy_reason ?? 'No reason'}
+                        </span>
+                        <strong>Deep</strong>
+                        <span>
+                          {analysis.analysis_consensus?.deep_action ?? analysis.decision?.action ?? 'watch'} - {analysis.analysis_consensus?.deep_reason ?? analysis.decision?.reason ?? 'No reason'}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <strong>Status</strong>
+                        <span>{headerEnsemble.label}</span>
+                      </>
+                    )}
+                  </span>
+                }
+              />
+            </span>
             <span className="period-badge">7D {analysis.period_changes?.['7d'] ?? 'N/A'}</span>
             <span className="period-badge">30D {analysis.period_changes?.['30d'] ?? 'N/A'}</span>
           </div>
@@ -199,7 +249,7 @@ export function TickerDetail() {
       </div>
 
       {analysis.decision && (
-        <DecisionCard decision={analysis.decision} />
+        <DecisionCard decision={analysis.decision} analysisConsensus={analysis.analysis_consensus} />
       )}
 
       {actionPlan && (

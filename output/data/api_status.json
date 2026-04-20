@@ -1,6 +1,6 @@
 {
-  "run_date": "2026-04-13",
-  "log_path": "logs/pipeline/2026-04-13.jsonl",
+  "run_date": "2026-04-15",
+  "log_path": "logs\\pipeline\\2026-04-15.jsonl",
   "pipeline_completed": true,
   "providers": {
     "yfinance": {
@@ -12,36 +12,36 @@
       "not_used_tickers": 0
     },
     "alpha_vantage": {
-      "overall_status": "idle",
-      "used_tickers": 0,
+      "overall_status": "active",
+      "used_tickers": 4,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 11
+      "not_used_tickers": 7
     },
     "polygon": {
-      "overall_status": "idle",
-      "used_tickers": 0,
+      "overall_status": "active",
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 11
+      "not_used_tickers": 0
     },
     "fmp": {
-      "overall_status": "idle",
+      "overall_status": "limited",
       "used_tickers": 0,
-      "throttled_tickers": 0,
+      "throttled_tickers": 2,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 11
+      "not_used_tickers": 9
     },
     "finnhub": {
-      "overall_status": "idle",
-      "used_tickers": 0,
+      "overall_status": "active",
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 11
+      "not_used_tickers": 0
     },
     "sec_edgar": {
       "overall_status": "active",
@@ -61,13 +61,15 @@
     }
   },
   "llm": {
-    "used": false,
-    "planned_batches": 0,
-    "completed_batches": 0,
+    "used": true,
+    "planned_batches": 4,
+    "completed_batches": 4,
     "failed_batches": 0,
-    "validation_failures": 0,
-    "estimated_cost_usd": 0.0,
-    "latest_model": "N/A",
-    "models_used": {}
+    "validation_failures": 1,
+    "estimated_cost_usd": 0.09476845,
+    "latest_model": "gpt-5.4-mini",
+    "models_used": {
+      "gpt-5.4-mini": 4
+    }
   }
 }

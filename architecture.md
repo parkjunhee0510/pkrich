@@ -1,7 +1,7 @@
 # 주식 리서치 자동화 시스템 — 설계 문서
 
-> **상태**: v3  
-> **작성일**: 2026-04-10  
+> **상태**: v4  
+> **작성일**: 2026-04-15  
 > **작성자**: 박준희  
 
 ---
@@ -44,12 +44,17 @@
 │  ┌─────────────────────────────────────────────┐    │
 │  │             수집 (Collector)                 │    │
 │  │  ┌──────────────────────────────────────┐   │    │
-│  │  │  price.py                            │   │    │
-│  │  │  1순위: yfinance (+ ATR/RVOL/SMA/RS) │   │    │
-│  │  │  2순위: Stooq (가격 fallback)         │   │    │
-│  │  │  3순위: Alpha Vantage (재무 fallback) │   │    │
-│  │  │  시장 개요: ^GSPC, ^NDX              │   │    │
-│  │  │  포지셔닝: 공매도/애널리스트/기관/IV   │   │    │
+│  │  │  Provider Architecture (Phase 1-0e) │   │    │
+│  │  │  orchestrator.py + registry.py      │   │    │
+│  │  │  ┌─ P1: YFinanceProvider            │   │    │
+│  │  │  │      (시세/재무/기술/포지셔닝)    │   │    │
+│  │  │  ├─ P2: FMPProvider / FinnhubProvider│   │    │
+│  │  │  │      PolygonProvider             │   │    │
+│  │  │  ├─ P2: StooqProvider (가격 fallback)│   │    │
+│  │  │  └─ P3: AlphaVantageProvider        │   │    │
+│  │  │         (재무/이벤트 fallback)       │   │    │
+│  │  │  시장 개요: ^GSPC, ^NDX             │   │    │
+│  │  │  (레거시: price.py — fallback=false) │   │    │
 │  │  └──────────────────────────────────────┘   │    │
 │  │  ┌──────────────────────────────────────┐   │    │
 │  │  │  news_rss.py  — Google News RSS      │   │    │
@@ -194,9 +199,24 @@ jobs:
 
 ### 3.2 데이터 수집 모듈
 
-#### 3.2.1 시세/재무 — 3단계 fallback 체인
+#### 3.2.0 Provider 아키텍처 (Phase 1-0e, 기본 경로)
 
-**1순위: yfinance (무료)**
+`pipeline.py`는 `ENABLE_ORCHESTRATOR_PRIMARY`(기본 `true`)에 따라 `CollectionOrchestrator`를 통해 수집합니다. 각 `DataProvider`는 우선순위(priority)와 레이트 리미트를 선언하고, 오케스트레이터가 순서대로 실행 후 필드 단위로 병합합니다.
+
+| Priority | Provider | 담당 영역 |
+|---|---|---|
+| 1 | `YFinanceProvider` | 시세 / 재무 / 기술지표 / 포지셔닝 / 이벤트 |
+| 2 | `FMPProvider` | 재무비율 / 기업 개요 / 애널리스트 추정치 |
+| 2 | `FinnhubProvider` | 애널리스트 추천 트렌드 / 동종업체 |
+| 2 | `PolygonProvider` | 옵션 플로우 (Max Pain / GEX / IV Skew) |
+| 2 | `StooqProvider` | 가격 fallback (yfinance 실패 시) |
+| 3 | `AlphaVantageProvider` | 재무 / 이벤트 gap-fill (KEY 설정 시) |
+
+레거시 `collect_market_data()` 경로는 `ENABLE_ORCHESTRATOR_PRIMARY=false` 환경변수로 복원 가능.
+
+#### 3.2.1 시세/재무 — 수집 항목 상세
+
+**YFinanceProvider (P1)**
 
 ```
 수집 항목:
@@ -224,13 +244,13 @@ jobs:
 └─ 시장 개요: ^GSPC (S&P 500), ^NDX (NASDAQ 100) 직접 지수
 ```
 
-**2순위: Stooq (가격 fallback)**  
+**StooqProvider (P2, 가격 fallback)**  
 yfinance에서 종가/변동률 수집 실패 시 Stooq CSV API로 대체 수집.
 
-**3순위: Alpha Vantage (재무/이벤트 fallback)**  
-`ALPHAVANTAGE_API_KEY` 설정 시 yfinance 재무/이벤트 누락 보완. 무료 티어 일 25회 제한.
+**AlphaVantageProvider (P3, 재무/이벤트 fallback)**  
+`ALPHAVANTAGE_API_KEY` 설정 시 yfinance 재무/이벤트 누락 보완. 무료 티어 분당 5회, 일 500회 제한.
 
-**제약**: yfinance는 비공식 API이므로 과도한 호출 시 차단 가능. 종목당 1회 호출, 요청 간 1초 딜레이 적용.
+**제약**: yfinance는 비공식 API이므로 과도한 호출 시 차단 가능. 종목당 1회 호출, `RateLimit(calls_per_minute=60, burst=20)` 적용.
 
 #### 3.2.2 뉴스 수집 — RSS + DuckDuckGo (무료)
 
@@ -535,17 +555,44 @@ pkrich/
 │   ├── types.py                    # 데이터 클래스 (frozen dataclass)
 │   ├── pipeline.py                 # 메인 오케스트레이션
 │   ├── collector/
-│   │   ├── price.py                # yfinance → Stooq → Alpha Vantage fallback + FMP/Finnhub/Polygon 연동
+│   │   ├── base.py                 # DataProvider ABC, ProviderResult, RateLimit 타입
+│   │   ├── orchestrator.py         # CollectionOrchestrator — 우선순위별 provider 실행
+│   │   ├── orchestrated_collection.py  # pipeline.py용 drop-in 어댑터
+│   │   ├── registry.py             # ProviderRegistry — 등록/조회
+│   │   ├── rate_limiter.py         # 토큰 버킷 레이트 리미터
+│   │   ├── bootstrap.py            # 기본 provider 인스턴스 초기화
+│   │   ├── cache.py                # 수집 결과 캐시 (메모리)
+│   │   ├── shadow_compare.py       # 레거시 vs 오케스트레이터 결과 비교 (shadow mode)
+│   │   ├── providers/              # 구체적 DataProvider 구현체
+│   │   │   ├── yfinance_provider.py    # P1: 시세/재무/기술지표/포지셔닝
+│   │   │   ├── fmp_provider.py         # P2: Financial Modeling Prep 재무
+│   │   │   ├── finnhub_provider.py     # P2: Finnhub 애널리스트/동종업체
+│   │   │   ├── polygon_provider.py     # P2: Polygon.io 옵션 플로우
+│   │   │   ├── stooq_provider.py       # P2: Stooq 가격 fallback
+│   │   │   ├── alphavantage_provider.py # P3: Alpha Vantage 재무/이벤트 fallback
+│   │   │   └── news/                   # 뉴스 전용 providers
+│   │   │       ├── google_news_news_provider.py
+│   │   │       ├── duckduckgo_news_provider.py
+│   │   │       ├── ir_rss_news_provider.py
+│   │   │       └── sec_edgar_news_provider.py
+│   │   ├── helpers/                # 순수 함수 헬퍼 (부작용 없음)
+│   │   │   ├── formatters.py       # 모든 포매터 (format_ratio, format_large_number 등)
+│   │   │   ├── earnings.py         # EPS/성장률 추출 헬퍼
+│   │   │   └── yfinance_helpers.py # yfinance 전용 추출 함수 (select_price_snapshot 등)
+│   │   ├── price.py                # 레거시 수집 경로 (ENABLE_ORCHESTRATOR_PRIMARY=false 시)
 │   │   ├── news_rss.py             # Google News RSS 수집
 │   │   ├── news_search.py          # DuckDuckGo / Yahoo / Reuters 검색 보강
+│   │   ├── news_base.py            # 뉴스 provider 공통 베이스
+│   │   ├── news_orchestrator.py    # 뉴스 수집 오케스트레이터
+│   │   ├── news_shadow_compare.py  # 뉴스 shadow 비교
 │   │   ├── ir_rss.py               # 회사 공식 IR/보도자료 RSS
 │   │   ├── sec_edgar.py            # SEC EDGAR 공시 수집
 │   │   ├── sec_form4.py            # SEC Form 4 내부자 거래 파싱 (무료 fallback)
-│   │   ├── fmp.py                  # Financial Modeling Prep 재무 데이터
-│   │   ├── finnhub.py              # Finnhub 애널리스트 추천/동종업체
+│   │   ├── fmp.py                  # FMP 저수준 API 클라이언트
+│   │   ├── finnhub.py              # Finnhub 저수준 API 클라이언트
 │   │   ├── polygon_options.py      # Polygon.io 옵션 플로우 (Max Pain/GEX/IV Skew)
 │   │   ├── options.py              # yfinance 옵션 요약
-│   │   ├── technicals.py           # RSI/MACD/Bollinger Bands 기술 지표 계산
+│   │   ├── technicals.py           # RSI/MACD/Bollinger + ATR/RVOL/Gap/SMA 계산
 │   │   └── macro.py                # 매크로 캘린더 + 수익률/DXY/구리
 │   ├── analyzer/
 │   │   ├── research_note.py        # OpenAI 배치 분석 + deterministic fallback
@@ -691,6 +738,7 @@ watchlist:
 | **Phase 15** | 포트폴리오 리스크 분석 (섹터 집중도, 상관관계, ATR 포지션 사이징), 알림 규칙 | ✅ 완료 |
 | **Phase 16** | 시그널 트래커 (1D/5D/20D 수익률 검증), 백테스트 엔진, 월간 요약 | ✅ 완료 |
 | **Phase 17** | FastAPI REST API, Chat Q&A 엔진, 웹 대시보드 확장 (8 페이지) | ✅ 완료 |
+| **Phase 1-0e** | Provider 아키텍처 도입 (DataProvider ABC, CollectionOrchestrator, ProviderRegistry, RateLimit) — yfinance/FMP/Finnhub/Polygon/Stooq/AlphaVantage를 우선순위 provider로 등록, shadow mode 검증 후 orchestrator 기본 경로 전환, 순수 포매터·기술지표·yfinance 헬퍼·EPS 헬퍼를 독립 모듈로 분리, price.py 1946줄 → 1491줄 축소 | ✅ 완료 |
 
 ---
 

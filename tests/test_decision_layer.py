@@ -107,6 +107,7 @@ class TestDecideTicker(unittest.TestCase):
             valuation_score={"score": "9"},
             price_action={
                 "rs_vs_spy": "6.0",
+                "rs_vs_sector_etf": "4.0",
                 "price_vs_sma50": "5.0",
                 "price_vs_sma200": "10.0",
                 "relative_volume": "1.5",
@@ -134,6 +135,7 @@ class TestDecideTicker(unittest.TestCase):
             valuation_score={"score": "2"},
             price_action={
                 "rs_vs_spy": "-6.0",
+                "rs_vs_sector_etf": "-4.0",
                 "price_vs_sma50": "-5.0",
                 "price_vs_sma200": "-8.0",
             },
@@ -171,12 +173,12 @@ class TestDecideTicker(unittest.TestCase):
         self.assertEqual(decision.valid_until, "2026-04-20")
 
     def test_factors_dict_has_all_keys(self) -> None:
-        """Decision factors should contain all 8 scoring dimensions."""
+        """Decision factors should contain all scoring dimensions."""
         analysis = _make_analysis()
         decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
         expected_keys = {
             "valuation", "momentum", "catalyst_recency", "signal_track_record",
-            "news_tone", "regime_adjustment", "earnings_pattern", "fundamentals",
+            "news_tone", "regime_adjustment", "earnings_pattern", "fundamentals", "peer_rank", "portfolio_risk",
         }
         self.assertEqual(set(decision.factors.keys()), expected_keys)
 
@@ -201,6 +203,83 @@ class TestDecideTicker(unittest.TestCase):
                 self.config.get("thresholds", {}).get("buy_risk_off", 75),
                 self.config.get("thresholds", {}).get("buy", 65),
             )
+
+    def test_sector_relative_strength_lifts_momentum(self) -> None:
+        weak = _make_analysis(price_action={"rs_vs_spy": "0.0", "rs_vs_sector_etf": "0.0"})
+        strong = _make_analysis(price_action={"rs_vs_spy": "0.0", "rs_vs_sector_etf": "6.0"})
+        weak_decision = _decide_ticker(weak, None, self.regime, {}, date(2026, 4, 10), self.config)
+        strong_decision = _decide_ticker(strong, None, self.regime, {}, date(2026, 4, 10), self.config)
+        self.assertGreater(strong_decision.factors["momentum"], weak_decision.factors["momentum"])
+
+    def test_regime_multipliers_change_conviction_even_with_same_raw_factors(self) -> None:
+        analysis = _make_analysis(
+            valuation_score={"score": "7"},
+            price_action={
+                "rs_vs_spy": "5.0",
+                "rs_vs_sector_etf": "4.0",
+                "price_vs_sma50": "3.0",
+                "price_vs_sma200": "7.0",
+            },
+            data_snapshot={"Price": "100", "Sector": "Technology"},
+        )
+        risk_on = MarketRegime(regime="risk_on", confidence=50)
+        risk_off = MarketRegime(regime="risk_off", confidence=50)
+        decision_on = _decide_ticker(analysis, None, risk_on, {}, date(2026, 4, 10), self.config)
+        decision_off = _decide_ticker(analysis, None, risk_off, {}, date(2026, 4, 10), self.config)
+        self.assertNotEqual(decision_on.conviction, decision_off.conviction)
+
+    def test_earnings_pattern_rewards_streak_and_improving_surprise(self) -> None:
+        weak = _make_analysis(
+            quarterly_financials=[
+                {"beat_miss": "in-line", "surprise_pct": "+1.0%"},
+                {"beat_miss": "in-line", "surprise_pct": "+1.1%"},
+                {"beat_miss": "in-line", "surprise_pct": "+0.9%"},
+                {"beat_miss": "in-line", "surprise_pct": "+1.0%"},
+            ]
+        )
+        strong = _make_analysis(
+            quarterly_financials=[
+                {"beat_miss": "beat", "surprise_pct": "+8.0%"},
+                {"beat_miss": "beat", "surprise_pct": "+6.0%"},
+                {"beat_miss": "beat", "surprise_pct": "+4.0%"},
+                {"beat_miss": "in-line", "surprise_pct": "+2.0%"},
+            ]
+        )
+        weak_decision = _decide_ticker(weak, None, self.regime, {}, date(2026, 4, 10), self.config)
+        strong_decision = _decide_ticker(strong, None, self.regime, {}, date(2026, 4, 10), self.config)
+        self.assertGreater(strong_decision.factors["earnings_pattern"], weak_decision.factors["earnings_pattern"])
+
+    def test_earnings_pattern_penalizes_consecutive_misses(self) -> None:
+        analysis = _make_analysis(
+            quarterly_financials=[
+                {"beat_miss": "miss", "surprise_pct": "-9.0%"},
+                {"beat_miss": "miss", "surprise_pct": "-7.0%"},
+                {"beat_miss": "miss", "surprise_pct": "-5.0%"},
+                {"beat_miss": "in-line", "surprise_pct": "-1.0%"},
+            ]
+        )
+        decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+        self.assertLess(decision.factors["earnings_pattern"], 0)
+
+    def test_portfolio_risk_factor_penalizes_sector_concentration(self) -> None:
+        analysis = _make_analysis(ticker="AAPL", data_snapshot={"Price": "100", "Sector": "Technology"})
+        signal_stats = {
+            "_portfolio_risk": {
+                "sector_exposure": {"Technology": 48.0},
+                "correlation_pairs": [
+                    {"ticker_1": "AAPL", "ticker_2": "MSFT", "correlation": "0.82", "warning": "동행성이 높음"}
+                ],
+            }
+        }
+        decision = _decide_ticker(analysis, None, self.regime, signal_stats, date(2026, 4, 10), self.config)
+        self.assertLess(decision.factors["portfolio_risk"], 0)
+
+    def test_peer_rank_factor_lifts_conviction_for_value_momentum_sweet_spot(self) -> None:
+        weak = _make_analysis(peer_rank={"per_pctl": 55, "rs_pctl": 45})
+        strong = _make_analysis(peer_rank={"per_pctl": 25, "rs_pctl": 78})
+        weak_decision = _decide_ticker(weak, None, self.regime, {}, date(2026, 4, 10), self.config)
+        strong_decision = _decide_ticker(strong, None, self.regime, {}, date(2026, 4, 10), self.config)
+        self.assertGreater(strong_decision.factors["peer_rank"], weak_decision.factors["peer_rank"])
 
 
 class TestLoadWeights(unittest.TestCase):

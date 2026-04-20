@@ -23,14 +23,36 @@ signal_date,ticker,signal_type,signal_direction,signal_price,catalyst_tag,news_t
 2026-04-12,PLUG,takeaway,bull,2.74,일반 이슈,bearish,"실적 전까지 2.55달러에서 2.93달러 사이, 즉 현재가 ±1 ATR 구간에서 넓은 박스권이 유력합니다. 고IV와 공매도 비중이 공존해 방향성보다는 변동성 매매가 적합합니다.",+0.00%,N/A,N/A,True,False,False
 2026-04-12,T,10-K,bull,26.46,실적,neutral,"실적 전까지 25.82달러에서 27.74달러 사이, 즉 현재가 ±1 ATR 구간에서 횡보 가능성이 큽니다. 25달러 MaxPain 자석이 하단을 지지할 수 있습니다.",-0.00%,N/A,N/A,True,False,False
 2026-04-12,XOM,8-K,bull,152.51,기타 공시,neutral,"실적 전까지 147.07달러에서 160.57달러 사이, 즉 현재가 ±1 ATR 구간에서 횡보 가능성이 큽니다. 최근 7일 약세를 감안하면 반등은 점진적일 가능성이 높습니다.",-0.00%,N/A,N/A,True,False,False
-2026-04-13,AAPL,10-Q,neutral,259.20,실적,neutral,259.20 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,AMD,8-K,neutral,246.83,기타 공시,neutral,246.83 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,CAT,8-K,neutral,791.73,기타 공시,neutral,791.73 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,IONQ,8-K,bull,29.76,기타 공시,neutral,29.76 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,KO,10-K,neutral,76.41,실적,neutral,76.41 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,ORA,10-K,neutral,112.28,실적,neutral,112.28 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,OXY,8-K,neutral,58.06,기타 공시,neutral,58.06 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,PLUG,10-K,neutral,2.77,실적,neutral,2.77 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,SPIR,10-K,bull,23.14,실적,neutral,23.14 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,T,10-K,bull,25.61,실적,neutral,25.61 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
-2026-04-13,XOM,8-K,neutral,152.64,기타 공시,neutral,152.64 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-13,AAPL,10-Q,bull,259.20,실적,neutral,현재가 기준 ±1 ATR인 253.30-265.10 USD에서 실적 전까지 횡보할 가능성이 큽니다.,-0.14%,N/A,N/A,True,False,False
+2026-04-13,AMD,8-K,bull,246.83,기타 공시,neutral,현재가 기준 ±1 ATR인 236.16-257.50 USD에서 고점권 소화가 이어질 가능성이 큽니다.,+3.34%,N/A,N/A,True,False,False
+2026-04-13,CAT,8-K,bull,791.73,기타 공시,neutral,현재가 기준 ±1 ATR인 766.40-817.06 USD에서 고점권 박스 흐름이 이어질 가능성이 높습니다.,+0.32%,N/A,N/A,True,False,False
+2026-04-13,IONQ,8-K,bull,29.76,기타 공시,bullish,실적 전까지 28.00 USD~31.87 USD 범위의 고변동 박스권이 유력합니다.,+20.16%,N/A,N/A,True,False,False
+2026-04-13,KO,10-K,bull,76.41,실적,neutral,현재가 기준 ±1 ATR인 75.03-77.79 USD에서 좁은 박스 흐름이 이어질 가능성이 큽니다.,-0.67%,N/A,N/A,True,False,False
+2026-04-13,ORA,10-K,bull,112.28,실적,neutral,실적 전까지 111.01 USD~115.25 USD 범위의 박스권 흐름이 가장 유력합니다.,+2.19%,N/A,N/A,True,False,False
+2026-04-13,OXY,8-K,neutral,58.06,기타 공시,neutral,실적 전까지 55.62 USD~60.77 USD 구간에서 박스권 흐름이 우세할 수 있습니다.,-4.62%,N/A,N/A,True,False,False
+2026-04-13,PLUG,10-K,bull,2.77,실적,neutral,실적 전까지 2.60 USD~2.93 USD 범위에서 고변동 박스권이 이어질 수 있습니다.,+6.14%,N/A,N/A,True,False,False
+2026-04-13,SPIR,10-K,bear,23.14,실적,bearish,실적 전까지 21.79 USD~25.31 USD의 높은 변동성 박스권이 유력합니다.,-10.37%,N/A,N/A,True,False,False
+2026-04-13,T,10-K,bull,25.61,실적,neutral,실적 전까지 25.00 USD~26.25 USD 범위에서 과매도 반등 시도가 이어질 수 있습니다.,+0.04%,N/A,N/A,True,False,False
+2026-04-13,XOM,8-K,bull,152.64,기타 공시,bearish,현재가 기준 ±1 ATR인 146.70-158.58 USD에서 실적 전까지 횡보할 가능성이 큽니다.,-2.23%,N/A,N/A,True,False,False
+2026-04-14,AAPL,10-Q,bull,258.83,실적,neutral,현재가 기준 ±1 ATR인 252.97-264.69 USD 구간에서 실적 전까지 박스권 소화 가능성이 높습니다. RVOL 0.83x라 급격한 추세 확장보다는 제한적 등락이 우세합니다.,+2.94%,N/A,N/A,True,False,False
+2026-04-14,AMD,8-K,bull,255.07,기타 공시,neutral,현재가 기준 ±1 ATR인 244.15-265.99 USD 범위에서 고점 소화가 우세할 가능성이 큽니다. RVOL 0.66x라 급격한 돌파보다 횡보 후 재시도 시나리오가 더 유력합니다.,+1.20%,N/A,N/A,True,False,False
+2026-04-14,CAT,8-K,bull,794.25,기타 공시,neutral,현재가 기준 ±1 ATR인 769.78-818.72 USD 범위에서 고점권 박스 흐름이 예상됩니다. RVOL 0.64x라 추세 추종보다 제한적 등락 가능성이 높습니다.,-3.03%,N/A,N/A,True,False,False
+2026-04-14,IONQ,8-K,bull,35.76,기타 공시,bullish,실적 전까지 32.98-38.20 USD 범위에서 고변동 박스권이 이어질 가능성이 큽니다.,+20.95%,N/A,N/A,True,False,False
+2026-04-14,KO,10-K,bull,75.90,실적,neutral,현재가 기준 ±1 ATR인 74.53-77.27 USD 범위에서 실적 전까지 좁은 박스 흐름이 예상됩니다. RVOL 0.69x와 5.3% BB 폭을 감안하면 큰 추세보다 범위 매매가 적합합니다.,-0.78%,N/A,N/A,True,False,False
+2026-04-14,ORA,10-K,bull,114.74,실적,neutral,실적 전까지 113.93-116.07 USD 범위의 좁은 박스권이 유력합니다.,-0.81%,N/A,N/A,True,False,False
+2026-04-14,OXY,8-K,bull,55.38,기타 공시,neutral,실적 전까지 54.86-57.20 USD 범위의 제한적 횡보 가능성이 높습니다.,+0.81%,N/A,N/A,True,False,False
+2026-04-14,PLUG,10-K,bull,2.94,실적,neutral,실적 전까지 2.71-3.14 USD 범위의 박스권 소화가 유력합니다.,-0.34%,N/A,N/A,True,False,False
+2026-04-14,SPIR,10-K,bull,20.74,실적,neutral,실적 전까지 18.42-22.57 USD의 고변동 박스권 등락이 예상됩니다.,-0.96%,N/A,N/A,True,False,False
+2026-04-14,T,10-K,bull,25.62,실적,neutral,실적 전까지 24.99-27.90 USD 범위에서 박스권 등락이 유력합니다.,-0.62%,N/A,N/A,True,False,False
+2026-04-14,XOM,8-K,bull,149.24,기타 공시,neutral,현재가 기준 ±1 ATR인 143.33-155.15 USD 범위에서 실적 전 박스권 흐름이 유력합니다. RVOL 0.80x와 RSI 37.8로 급격한 추세 전환보다는 제한적 반등/조정이 예상됩니다.,-0.15%,N/A,N/A,True,False,False
+2026-04-15,AAPL,10-Q,bear,266.43,실적,중립~강세,266.43 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,AMD,8-K,bull,258.12,기타 공시,neutral,258.12 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,CAT,8-K,bear,770.17,기타 공시,중립,770.17 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,IONQ,8-K,bear,43.25,기타 공시,강세,43.25 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,KO,10-K,bear,75.31,실적,중립~약강세,75.31 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,ORA,10-K,bull,113.81,실적,neutral,113.81 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,OXY,8-K,bear,55.83,기타 공시,중립,55.83 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,PLUG,10-K,bear,2.93,실적,bullish,2.93 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,SPIR,10-K,bull,20.54,실적,bearish,20.54 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,T,10-K,bear,25.46,실적,bearish,25.46 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False
+2026-04-15,XOM,8-K,bear,149.01,기타 공시,bullish,149.01 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False

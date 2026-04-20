@@ -61,6 +61,19 @@ def is_polygon_ready() -> bool:
     return can_open_tcp_connection("api.polygon.io", 443)
 
 
+def fetch_options_snapshot(ticker: str) -> dict[str, Any] | None:
+    """Fetch a raw Polygon options snapshot for one ticker."""
+    data = _fetch_json(
+        f"/v3/snapshot/options/{ticker}",
+        {
+            "limit": "50",
+            "order": "desc",
+            "sort": "ticker",
+        },
+    )
+    return data if isinstance(data, dict) else None
+
+
 # ── Contract parsing ────────────────────────────────────────────────
 
 def _parse_contracts(results_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -333,7 +346,7 @@ def _compute_unusual_activity_v2(contracts: list[dict[str, Any]]) -> list[dict[s
     for c in contracts:
         vol = c["volume"]
         oi = c["oi"]
-        if vol <= 0 or oi <= 0 or vol <= oi * 5:
+        if vol <= 0 or oi <= 0 or vol <= oi * 0.3:
             continue
 
         mid = c.get("mid_price") or 0
@@ -354,101 +367,130 @@ def _compute_unusual_activity_v2(contracts: list[dict[str, Any]]) -> list[dict[s
     return unusual[:5]
 
 
+def extract_snapshot_metrics(data: dict[str, Any]) -> dict[str, Any]:
+    """Extract comparison-friendly metrics from a raw snapshot."""
+    results_list = data.get("results")
+    if not isinstance(results_list, list) or not results_list:
+        return {}
+
+    contracts = _parse_contracts(results_list)
+    if not contracts:
+        return {}
+
+    total_call_oi = sum(c["oi"] for c in contracts if c["type"] == "call")
+    total_put_oi = sum(c["oi"] for c in contracts if c["type"] == "put")
+    total_call_volume = sum(c["volume"] for c in contracts if c["type"] == "call")
+    total_put_volume = sum(c["volume"] for c in contracts if c["type"] == "put")
+
+    volume_ratio = total_put_volume / total_call_volume if total_call_volume > 0 else None
+    oi_ratio = total_put_oi / total_call_oi if total_call_oi > 0 else None
+    unusual = _compute_unusual_activity_v2(contracts)
+
+    return {
+        "total_call_oi": round(total_call_oi, 2),
+        "total_put_oi": round(total_put_oi, 2),
+        "total_call_volume": round(total_call_volume, 2),
+        "total_put_volume": round(total_put_volume, 2),
+        "put_call_volume_ratio": f"{volume_ratio:.2f}" if volume_ratio is not None else "N/A",
+        "put_call_oi_ratio": f"{oi_ratio:.2f}" if oi_ratio is not None else "N/A",
+        "unusual_contracts": [
+            {
+                "side": item["side"],
+                "strike": f"{item['strike']:.0f}",
+                "volume": int(item["volume"]),
+                "oi": int(item["oi"]),
+                "vol_oi_ratio": round(item["vol_oi_ratio"], 4),
+                "premium_usd": round(item["premium_usd"], 2),
+                "expiry": item["expiry"].isoformat() if item.get("expiry") else "",
+            }
+            for item in unusual
+        ],
+    }
+
+
+def build_options_flow_from_snapshot(data: dict[str, Any]) -> dict[str, str]:
+    """Build the legacy flat options-flow payload from one snapshot."""
+    if not data or not isinstance(data, dict):
+        return {}
+
+    results_list = data.get("results", [])
+    if not results_list:
+        return {}
+
+    contracts = _parse_contracts(results_list)
+    if not contracts:
+        return {}
+
+    spot = _extract_spot_price(data)
+    result: dict[str, str] = {}
+
+    total_call_volume = sum(c["volume"] for c in contracts if c["type"] == "call")
+    total_put_volume = sum(c["volume"] for c in contracts if c["type"] == "put")
+
+    if total_call_volume > 0 or total_put_volume > 0:
+        result["net_call_volume"] = f"{int(total_call_volume):,}"
+        result["net_put_volume"] = f"{int(total_put_volume):,}"
+
+        if total_call_volume > 0:
+            pc_ratio = total_put_volume / total_call_volume
+            result["put_call_volume_ratio"] = f"{pc_ratio:.2f}"
+            if pc_ratio > 1.5:
+                result["flow_sentiment"] = "bearish"
+            elif pc_ratio < 0.5:
+                result["flow_sentiment"] = "bullish"
+            else:
+                result["flow_sentiment"] = "neutral"
+
+    iv_values = [c["iv"] for c in contracts if c.get("iv") is not None]
+    if iv_values:
+        result["avg_iv"] = f"{sum(iv_values) / len(iv_values) * 100:.1f}%"
+
+    if spot:
+        result["spot_price"] = f"${spot:.2f}"
+
+    for extra in (
+        _compute_max_pain(contracts, spot),
+        _compute_implied_move(contracts, spot),
+        _compute_gex(contracts, spot),
+        _compute_iv_skew(contracts, spot),
+        _compute_oi_ratio(contracts),
+    ):
+        if extra:
+            result.update(extra)
+
+    greeks = _compute_greeks_aggregates(contracts)
+    if greeks:
+        result.update(greeks)
+
+    oi_conc = _compute_oi_concentration(contracts)
+    if oi_conc:
+        result.update(oi_conc)
+
+    unusual_v2 = _compute_unusual_activity_v2(contracts)
+    if unusual_v2:
+        parts: list[str] = []
+        for u in unusual_v2:
+            prem_label = f"prem=${u['premium_usd'] / 1000:.0f}K" if u["premium_usd"] >= 1000 else f"prem=${u['premium_usd']:.0f}"
+            parts.append(f"{u['side']} ${u['strike']:.0f} vol={int(u['volume'])} {prem_label}")
+        result["unusual_activity"] = "; ".join(parts)
+
+    return result
+
+
 # ── Main collector ──────────────────────────────────────────────────
 
 def collect_options_flow(ticker: str, run_date: date) -> dict[str, str]:
     """Collect aggregated options flow data from Polygon.io.
 
     Returns a flat ``dict[str, str]`` with volume/OI basics plus
-    Tier A metrics: max_pain, implied_move, gex_regime, greeks,
-    iv_skew, oi_concentration, unusual_activity_v2.
+    Tier A metrics derived from a single snapshot.
     """
     try:
-        data = _fetch_json(f"/v3/snapshot/options/{ticker}", {
-            "limit": "50",
-            "order": "desc",
-            "sort": "ticker",
-        })
-
-        if not data or not isinstance(data, dict):
+        data = fetch_options_snapshot(ticker)
+        if not data:
             return {}
 
-        results_list = data.get("results", [])
-        if not results_list:
-            return {}
-
-        # ── Phase 1: Parse ──
-        contracts = _parse_contracts(results_list)
-        if not contracts:
-            return {}
-
-        spot = _extract_spot_price(data)
-
-        # ── Phase 2: Basic aggregates (preserve existing keys) ──
-        result: dict[str, str] = {}
-
-        total_call_volume = sum(c["volume"] for c in contracts if c["type"] == "call")
-        total_put_volume = sum(c["volume"] for c in contracts if c["type"] == "put")
-
-        if total_call_volume > 0 or total_put_volume > 0:
-            result["net_call_volume"] = f"{int(total_call_volume):,}"
-            result["net_put_volume"] = f"{int(total_put_volume):,}"
-
-            if total_call_volume > 0:
-                pc_ratio = total_put_volume / total_call_volume
-                result["put_call_volume_ratio"] = f"{pc_ratio:.2f}"
-                if pc_ratio > 1.5:
-                    result["flow_sentiment"] = "bearish"
-                elif pc_ratio < 0.5:
-                    result["flow_sentiment"] = "bullish"
-                else:
-                    result["flow_sentiment"] = "neutral"
-
-        iv_values = [c["iv"] for c in contracts if c.get("iv") is not None]
-        if iv_values:
-            result["avg_iv"] = f"{sum(iv_values) / len(iv_values) * 100:.1f}%"
-
-        # ── Phase 3: Tier A metrics ──
-        if spot:
-            result["spot_price"] = f"${spot:.2f}"
-
-        mp = _compute_max_pain(contracts, spot)
-        if mp:
-            result.update(mp)
-
-        im = _compute_implied_move(contracts, spot)
-        if im:
-            result.update(im)
-
-        gex = _compute_gex(contracts, spot)
-        if gex:
-            result.update(gex)
-
-        greeks = _compute_greeks_aggregates(contracts)
-        if greeks:
-            result.update(greeks)
-
-        skew = _compute_iv_skew(contracts, spot)
-        if skew:
-            result.update(skew)
-
-        oi_conc = _compute_oi_concentration(contracts)
-        if oi_conc:
-            result.update(oi_conc)
-
-        oi_r = _compute_oi_ratio(contracts)
-        if oi_r:
-            result.update(oi_r)
-
-        # Enhanced unusual activity (replaces basic version)
-        unusual_v2 = _compute_unusual_activity_v2(contracts)
-        if unusual_v2:
-            parts: list[str] = []
-            for u in unusual_v2:
-                prem_label = f"prem=${u['premium_usd'] / 1000:.0f}K" if u["premium_usd"] >= 1000 else f"prem=${u['premium_usd']:.0f}"
-                parts.append(f"{u['side']} ${u['strike']:.0f} vol={int(u['volume'])} {prem_label}")
-            result["unusual_activity"] = "; ".join(parts)
-
+        result = build_options_flow_from_snapshot(data)
         if result:
             record_pipeline_event(
                 "collector", "info", "polygon_options_flow",
@@ -463,8 +505,6 @@ def collect_options_flow(ticker: str, run_date: date) -> dict[str, str]:
         )
         return {}
 
-
-# ── Shared helper ───────────────────────────────────────────────────
 
 def _safe_float(value: Any) -> float | None:
     if value is None:

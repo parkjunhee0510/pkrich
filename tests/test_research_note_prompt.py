@@ -133,6 +133,40 @@ class ResearchNotePromptTests(unittest.TestCase):
         self.assertIn('Reflect earnings surprise patterns', prompt)
         self.assertIn('Reference example JSON structure', prompt)
 
+    def test_build_user_prompt_includes_macro_sensitivity_summary(self) -> None:
+        prompt = _build_user_prompt(
+            [
+                {
+                    'ticker': 'AMD',
+                    'name': 'Advanced Micro Devices, Inc.',
+                    'sector': 'Technology',
+                    'price_action': {},
+                    'positioning': {},
+                    'upcoming_events': [],
+                    'news': [],
+                }
+            ],
+            date(2026, 4, 14),
+            macro_context={
+                'vix': {'level': '22.10', 'change': '+4.20%', 'regime': '경계'},
+                'upcoming_macro_events': [
+                    {
+                        'event_code': 'CPI',
+                        'type': 'CPI',
+                        'date': '2026-04-14',
+                        'days_until': '0',
+                        'impact': 'high',
+                        'market_bias': '뜨거운 CPI는 금리 부담으로 성장주에 불리할 수 있음',
+                    }
+                ],
+                'portfolio_sensitivity_summary': 'CPI → high AMD',
+            },
+        )
+
+        self.assertIn('[Macro Context]', prompt)
+        self.assertIn('CPI: 2026-04-14 (D-0, high)', prompt)
+        self.assertIn('Portfolio sensitivity: CPI → high AMD', prompt)
+
     def test_build_payload_includes_signal_history_peer_context_and_deduped_news(self) -> None:
         watchlist = [
             WatchlistItem(ticker='AAPL', name='Apple Inc.', sector='Technology'),

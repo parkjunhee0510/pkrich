@@ -1,22 +1,69 @@
 {
   "AAPL": [
     {
-      "date": "2026-04-13",
-      "price": "259.20 USD",
-      "daily_change": "-0.49%",
-      "signal_or_takeaway": "중립 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 253.30–265.10 | 손절 SMA50(260.88 USD)",
-      "top_news_summary": "[실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "266.43 USD",
+      "daily_change": "+2.94%",
+      "signal_or_takeaway": "관망→돌파매수: 266.43 상향 안착 후 진입, 목표가 275.79/296.33, 손절가 260.88(SMA50 이탈 시 무효)",
+      "top_news_summary": "휴일분기 아이폰 판매, 월가 예상 상회 전망",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
       "news_tone": {
-        "label": "bullish",
-        "score": 4.0
+        "label": "중립-강세",
+        "confidence": 4,
+        "reasoning": "가이던스와 수요 회복이 긍정적이지만, 옵션 수급은 풋 우위로 실적 전까지는 경계심이 남음."
       },
       "upcoming_events": [
         {
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-04-30",
-          "days_until": "17",
+          "days_until": "14",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "258.83 USD",
+      "daily_change": "-0.14%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-30 실적과 아이폰 수요 회복 확인 | 진입 트리거 260.88 USD 회복 또는 251.21-254.00 USD 눌림 지지 | 목표 264.69 USD/296.33 USD | 손절 248.37 USD (R:R 1.08)",
+      "top_news_summary": "아이폰 수요 회복, 아시아 매출 강세 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 4,
+        "reasoning": "아이폰 수요 회복 기대와 실적 확인 필요성이 공존하고, 최근 실적은 beat와 in-line이 섞여 있어 강한 방향성은 아직 제한적입니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "15",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "259.20 USD",
+      "daily_change": "-0.49%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-30 실적과 262.20 USD 돌파 여부 | 진입 트리거 260.90 USD 회복 후 262.20 USD 상향 돌파 | 목표 266.80 USD/296.33 USD | 손절 248.00 USD (R:R 0.60R)",
+      "top_news_summary": "Holiday iPhone 판매, 월가 예상 상회 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "실적 성장 기대와 강한 애널리스트 매수 의견이 있으나, 현재가는 SMA50 아래이고 옵션 순델타가 음수여서 방향성이 엇갈립니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "16",
           "timing": "AMC"
         }
       ]
@@ -123,29 +170,90 @@
   ],
   "CAT": [
     {
-      "date": "2026-04-13",
-      "price": "791.73 USD",
-      "daily_change": "+0.14%",
-      "signal_or_takeaway": "매수 관찰 — [기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 766.40–817.06 | 손절 SMA50(723.31 USD) (R:R 0.6R)",
-      "top_news_summary": "[기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "770.17 USD",
+      "daily_change": "-3.03%",
+      "signal_or_takeaway": "매수보단 눌림목 확인: 743.93 지지 반등 확인 후 진입, 목표가 809.53, 손절가 728.57(SMA50 이탈 시 무효)",
+      "top_news_summary": "8-K 공시로 단기 모멘텀 발생",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/18230/000110465926042621/tm2611571d2_8k.htm",
       "news_tone": {
-        "label": "neutral",
-        "score": 1.0
+        "label": "중립-강세",
+        "confidence": 3,
+        "reasoning": "이익추정 상향과 견조한 주가 흐름은 우호적이나, 풋 수요와 고점권 위치로 업사이드가 제한될 수 있음."
       },
       "upcoming_events": [
         {
           "type": "ex_dividend",
           "label": "배당락일",
           "date": "2026-04-20",
-          "days_until": "7",
+          "days_until": "4",
           "timing": ""
         },
         {
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-04-30",
-          "days_until": "17",
+          "days_until": "14",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "794.25 USD",
+      "daily_change": "+0.32%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-30 실적과 고점권 돌파 여부 | 진입 트리거 798.54 USD 돌파 또는 770.00-780.00 USD 눌림 지지 | 목표 804.82 USD/817.00 USD | 손절 744.03 USD (R:R 0.79)",
+      "top_news_summary": "SEC 8-K 중요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/18230/000110465926042621/tm2611571d2_8k.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 4,
+        "reasoning": "목표가 상향과 고점권 근접은 긍정적이지만, 52주 고점 부근에서 가격 부담이 크고 실적 성장률 둔화(-11.40% YoY)가 혼재합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "ex_dividend",
+          "label": "배당락일",
+          "date": "2026-04-20",
+          "days_until": "5",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "15",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "791.73 USD",
+      "daily_change": "+0.14%",
+      "signal_or_takeaway": "매수 관찰 — 2026-04-30 실적과 798.54 USD 돌파 여부 | 진입 트리거 791.73 USD 유지 및 798.54 USD 상향 돌파 | 목표 817.06 USD/746.06 USD | 손절 741.51 USD (R:R 0.42R)",
+      "top_news_summary": "SEC 8-K 중요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/18230/000110465926042621/tm2611571d2_8k.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "주가 모멘텀과 긍정적 공시가 강하지만, 52주 고점권과 높은 PER, 그리고 실적 성장률 -11.40% YoY가 상승 여력을 제한합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "ex_dividend",
+          "label": "배당락일",
+          "date": "2026-04-20",
+          "days_until": "6",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "16",
           "timing": "BMO"
         }
       ]
@@ -239,22 +347,69 @@
   ],
   "XOM": [
     {
-      "date": "2026-04-13",
-      "price": "152.64 USD",
-      "daily_change": "+0.09%",
-      "signal_or_takeaway": "중립 관찰 — [기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 146.70–158.58 | 손절 SMA50(153.95 USD)",
-      "top_news_summary": "[기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "149.01 USD",
+      "daily_change": "-0.15%",
+      "signal_or_takeaway": "매수 관찰 — 유가 환경과 LNG·가동률 모멘텀이 방어적 지지 요인 | 진입 트리거 149.01달러 회복 및 154.35달러 상향 돌파 시 | 목표 157.98/162.71 | 손절 154.35",
+      "top_news_summary": "Exxon boosts forecast, aims for $25 billion earnings growth by 2030 - Reuters",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
       "news_tone": {
-        "label": "neutral",
-        "score": 1.0
+        "label": "bullish",
+        "confidence": 4,
+        "reasoning": "이익 성장 목표 상향과 LNG 가동 기대가 겹치며 유가 환경도 우호적이라 긍정적입니다."
       },
       "upcoming_events": [
         {
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-05-01",
-          "days_until": "18",
+          "days_until": "15",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "149.24 USD",
+      "daily_change": "-2.23%",
+      "signal_or_takeaway": "매수 관찰 — 2026-05-01 실적과 유가 반등 여부 | 진입 트리거 148.60 USD 지지 또는 154.35 USD 회복 | 목표 155.15 USD/162.71 USD | 손절 137.42 USD (R:R 0.28)",
+      "top_news_summary": "2030년까지 이익 250억달러 성장 목표 상향",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 4,
+        "reasoning": "장기 성장 목표와 저렴한 밸류에이션은 긍정적이지만, 최근 주가는 7일 -4.47%로 약세이고 생산 손실 이슈가 있어 방향성은 아직 중립적입니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-01",
+          "days_until": "16",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "152.64 USD",
+      "daily_change": "+0.09%",
+      "signal_or_takeaway": "중립 경계 — 2026-05-01 실적과 160.00 USD 옵션 핀 | 진입 트리거 150.12 USD 방어 및 154.20 USD 회복 | 목표 160.06 USD/162.71 USD | 손절 142.24 USD (R:R 1.03R)",
+      "top_news_summary": "2030년까지 이익 250억 USD 확대 목표",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
+      "news_tone": {
+        "label": "bearish",
+        "confidence": 4,
+        "reasoning": "장기 성장 목표와 저평가 매력이 있지만, 최근 생산 감소와 주가의 SMA50 하회, 그리고 PCR 1.83의 풋 우위가 단기 부담입니다.",
+        "score": -4.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-01",
+          "days_until": "17",
           "timing": "BMO"
         }
       ]
@@ -327,22 +482,69 @@
   ],
   "AMD": [
     {
-      "date": "2026-04-13",
-      "price": "246.83 USD",
-      "daily_change": "+0.73%",
-      "signal_or_takeaway": "매수 관찰 — [기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 236.16–257.50 | 손절 SMA50(209.35 USD) (R:R 0.4R)",
-      "top_news_summary": "[기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "258.12 USD",
+      "daily_change": "+1.20%",
+      "signal_or_takeaway": "중립 경계 — 급등 이후 과열 부담과 AI 수요 기대가 맞서는 구간 | 진입 트리거 258.12달러 안착 후 추가 거래량이 붙을 때 | 목표 273.46/289.35 | 손절 209.61",
+      "top_news_summary": "AI 칩 수요 강세로 4분기 매출 전망 상회",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
       "news_tone": {
         "label": "neutral",
-        "score": 1.0
+        "confidence": 3,
+        "reasoning": "AI 수요 호재와 단기 매출 우려가 동시에 있어 상반된 신호가 혼재합니다."
       },
       "upcoming_events": [
         {
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-05-05",
-          "days_until": "22",
+          "days_until": "19",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "255.07 USD",
+      "daily_change": "+3.34%",
+      "signal_or_takeaway": "중립 경계 — 2026-05-05 실적과 AI 수요 지속 확인 | 진입 트리거 245.00-252.41 USD 눌림 지지 | 목표 267.08 USD/289.35 USD | 손절 233.23 USD (R:R 0.81)",
+      "top_news_summary": "4분기 매출이 AI 칩 수요로 예상치 상회",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 4,
+        "reasoning": "AI 수요에 대한 기대는 강하지만, 1분기 약세 전망과 최근 컨센서스 하향 조정이 있어 단기적으로는 과열 경계가 필요합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "20",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "246.83 USD",
+      "daily_change": "+0.73%",
+      "signal_or_takeaway": "중립 경계 — 2026-05-05 실적과 267.08 USD 고점 돌파 | 진입 트리거 245.45 USD 지지 확인 후 267.08 USD 상향 돌파 | 목표 256.74 USD/289.35 USD | 손절 225.99 USD (R:R 0.47R)",
+      "top_news_summary": "1분기 매출 약세 전망으로 주가 급락",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "AI 수요와 강한 주가 모멘텀이 긍정적이지만, 1분기 약세 전망과 PER 94.21x, RSI 70.8 과열이 동시에 존재합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "21",
           "timing": "AMC"
         }
       ]
@@ -415,22 +617,69 @@
   ],
   "KO": [
     {
-      "date": "2026-04-13",
-      "price": "76.41 USD",
-      "daily_change": "-1.37%",
-      "signal_or_takeaway": "중립 경계 — [실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 75.02–77.80 | 손절 SMA50(77.53 USD)",
-      "top_news_summary": "[실적] COCA COLA CO, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "75.31 USD",
+      "daily_change": "-0.78%",
+      "signal_or_takeaway": "방어주 반등매수: 77.61 재돌파·안착 시 진입, 목표가 77.32/83.67, 손절가 77.61 이탈 시 즉시 정리",
+      "top_news_summary": "차세대 CEO, 저당·체중감량 트렌드 대응 위해 혁신 가속",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
       "news_tone": {
-        "label": "bullish",
-        "score": 2.0
+        "label": "중립-강세",
+        "confidence": 4,
+        "reasoning": "신임 CEO 전략과 수요 방어 뉴스가 긍정적이며, 실적 전까지는 방어주 선호가 유지될 가능성."
       },
       "upcoming_events": [
         {
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-04-28",
-          "days_until": "15",
+          "days_until": "12",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "75.90 USD",
+      "daily_change": "-0.67%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-28 실적과 77.61 USD 회복 여부 | 진입 트리거 74.10 USD 지지 또는 77.61 USD 돌파 | 목표 77.79 USD/83.67 USD | 손절 72.16 USD (R:R 0.23)",
+      "top_news_summary": "병입업체, 탄산음료 수요로 이익 성장 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 4,
+        "reasoning": "배당과 안정성은 긍정적이지만, 성장 둔화와 실적 확인 필요성이 함께 있어 보수적 관찰이 적절합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-28",
+          "days_until": "13",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "76.41 USD",
+      "daily_change": "-1.37%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-28 실적과 77.59 USD 회복 여부 | 진입 트리거 77.59 USD 회복 및 74.07 USD 방어 | 목표 78.80 USD/83.67 USD | 손절 72.69 USD (R:R 0.57R)",
+      "top_news_summary": "탄산음료 수요로 Bottler 실적 개선 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "배당과 방어적 수익성이 지지하지만, 단기 주가는 SMA50 아래이고 실적 직전 변동성이 남아 있어 방향성은 중립입니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-28",
+          "days_until": "14",
           "timing": "BMO"
         }
       ]
@@ -503,14 +752,38 @@
   ],
   "T": [
     {
-      "date": "2026-04-13",
-      "price": "25.61 USD",
-      "daily_change": "-3.21%",
-      "signal_or_takeaway": "매도 경계 — [실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 24.97–26.25 | 손절 SMA50(27.90 USD)",
-      "top_news_summary": "[실적] AT&T INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "25.46 USD",
+      "daily_change": "-0.62%",
+      "signal_or_takeaway": "매도 경계 — 배당 안정성 우려와 통신 인프라 수익성 악화가 부담 | 진입 트리거 25.46달러 하회 후 27.90달러 회복 실패가 지속될 때 | 목표 26.40/30.39 | 손절 27.90",
+      "top_news_summary": "크라운 캐슬, 인력 20% 감축 및 임대수익 전망 악화",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm",
+      "news_tone": {
+        "label": "bearish",
+        "confidence": 4,
+        "reasoning": "배당 안정성 우려와 통신 인프라 수익성 악화가 부정적으로 작용합니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-22",
+          "days_until": "6",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "25.62 USD",
+      "daily_change": "+0.04%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-22 실적과 25 USD MaxPain 지지 여부 | 진입 트리거 25.00 USD 이상 회복 또는 25.70 USD 지지 확인 | 목표 27.90 USD/30.39 USD | 손절 24.35 USD (R:R 1.09)",
+      "top_news_summary": "Crown Castle, 인력 20% 감축·임대수익 전망 하향",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm",
       "news_tone": {
         "label": "neutral",
+        "confidence": 3,
+        "reasoning": "배당 가치와 저평가 매력은 있으나 실적 둔화, SMA50·SMA200 하회, 옵션 흐름의 중립성이 함께 존재합니다.",
         "score": 0.0
       },
       "upcoming_events": [
@@ -518,7 +791,30 @@
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-04-22",
-          "days_until": "9",
+          "days_until": "7",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "25.61 USD",
+      "daily_change": "-3.21%",
+      "signal_or_takeaway": "중립 관찰 — 2026-04-22 실적과 25.00 USD 지지 확인 | 진입 트리거 25.00-25.61 USD 지지 및 RSI 30 회복 | 목표 26.04 USD/27.91 USD | 손절 24.33 USD (R:R 0.64R)",
+      "top_news_summary": "Crown Castle 감원과 임대수익 둔화 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/t-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 4,
+        "reasoning": "과매도 반등 가능성과 배당 매력은 있으나, SMA50·SMA200 아래와 실적 전 불확실성이 공존합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-22",
+          "days_until": "8",
           "timing": "BMO"
         }
       ]
@@ -598,22 +894,69 @@
   ],
   "IONQ": [
     {
-      "date": "2026-04-13",
-      "price": "29.76 USD",
-      "daily_change": "+3.37%",
-      "signal_or_takeaway": "중립 관찰 — [기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 27.65–31.87 | 손절 SMA50(33.33 USD)",
-      "top_news_summary": "[기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "43.25 USD",
+      "daily_change": "+20.95%",
+      "signal_or_takeaway": "중립 경계 — 단기 급등 모멘텀은 강하지만 과열과 변동성 리스크가 큼 | 진입 트리거 43.25달러 상단 안착과 46.43달러 회복 확인 시 | 목표 47.45/65.29 | 손절 32.98",
+      "top_news_summary": "중요 공시 8-K 제출",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
       "news_tone": {
         "label": "neutral",
-        "score": 1.0
+        "confidence": 3,
+        "reasoning": "주가 급등 소식은 긍정적이지만 실적 회고와 하향 경고가 섞여 방향성이 불분명합니다."
       },
       "upcoming_events": [
         {
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-05-06",
-          "days_until": "23",
+          "days_until": "20",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "35.76 USD",
+      "daily_change": "+20.16%",
+      "signal_or_takeaway": "매수 관찰 — 0.09 PCR 콜 우위와 2026-05-06 실적 기대 | 진입 트리거 35.04 USD 돌파 또는 32.98 USD 눌림 지지 | 목표 38.20 USD/65.29 USD | 손절 31.88 USD (R:R 0.84)",
+      "top_news_summary": "IonQ, 8-K 중요사항 공시",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 4,
+        "reasoning": "콜 우위 PCR 0.09, NetΔ +910,967, 강한 RVOL과 최근 실적 대형 beat가 단기 수급을 지지합니다. 다만 손익 변동성이 높아 실적 전까지는 확인 후 대응이 적절합니다.",
+        "score": 4.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "21",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "29.76 USD",
+      "daily_change": "+3.37%",
+      "signal_or_takeaway": "중립 관찰 — 2026-05-06 실적과 고변동성 자석 효과 | 진입 트리거 29.76 USD~33.06 USD 회복 및 MACD 우상향 유지 | 목표 34.42 USD/45.00 USD | 손절 25.54 USD (R:R 0.56R)",
+      "top_news_summary": "SEC에 8-K 중요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 4,
+        "reasoning": "최근 공시는 중립적이지만, 직전 실적 비트와 가이던스 상향 언급, 강한 콜 우위 흐름이 단기 우호적입니다.",
+        "score": 4.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "22",
           "timing": "AMC"
         }
       ]
@@ -686,29 +1029,83 @@
   ],
   "OXY": [
     {
-      "date": "2026-04-13",
-      "price": "58.06 USD",
-      "daily_change": "+0.16%",
-      "signal_or_takeaway": "중립 관찰 — [기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 55.35–60.77 | 손절 SMA50(54.40 USD) (R:R 1.1R)",
-      "top_news_summary": "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "55.83 USD",
+      "daily_change": "+0.81%",
+      "signal_or_takeaway": "눌림목 매수: 54.86 위 유지 후 55.83 회복 시 진입, 목표가 59.94/61.72, 손절가 54.86 이탈 시 무효",
+      "top_news_summary": "8-K 공시로 이벤트성 재료 발생",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm",
       "news_tone": {
-        "label": "bullish",
-        "score": 4.0
+        "label": "중립",
+        "confidence": 3,
+        "reasoning": "유가와 업그레이드가 하방을 방어하지만, 모멘텀이 강하게 재가속되는 뉴스는 제한적."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "19",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "55.38 USD",
+      "daily_change": "-4.62%",
+      "signal_or_takeaway": "중립 경계 — 연속 beat와 유가 순풍 vs 41.02x 프리미엄 | 진입 트리거 55.20 USD 지지 또는 60.00 USD 돌파 확인 | 목표 57.20 USD/61.72 USD | 손절 52.58 USD (R:R 0.43)",
+      "top_news_summary": "Occidental Petroleum, 8-K 중요사항 공시",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "연속 실적 호조와 업그레이드가 긍정적이지만, 높은 PE와 풋 우위 옵션 포지셔닝이 상단을 제한합니다.",
+        "score": 0.0
       },
       "upcoming_events": [
         {
           "type": "dividend",
           "label": "배당 지급일",
           "date": "2026-04-15",
-          "days_until": "2",
+          "days_until": "0",
           "timing": ""
         },
         {
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-05-05",
-          "days_until": "22",
+          "days_until": "20",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "58.06 USD",
+      "daily_change": "+0.16%",
+      "signal_or_takeaway": "매수 유지 — 2026-05-05 실적과 배당 수급, 연속 beat 유지 | 진입 트리거 55.62-58.06 USD 지지 확인 | 목표 60.77 USD/61.72 USD | 손절 53.35 USD (R:R 1.19R)",
+      "top_news_summary": "8-K 중요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 4,
+        "reasoning": "실적 연속성, 배당 이벤트, 상향 리포트가 우호적이지만, 높은 PER과 최근 7일 -7.75% 조정이 혼재합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "dividend",
+          "label": "배당 지급일",
+          "date": "2026-04-15",
+          "days_until": "1",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "21",
           "timing": "AMC"
         }
       ]
@@ -716,14 +1113,38 @@
   ],
   "ORA": [
     {
-      "date": "2026-04-13",
-      "price": "112.28 USD",
-      "daily_change": "-2.55%",
-      "signal_or_takeaway": "중립 경계 — [실적] ORMAT TECHNOLOGIES, INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 109.32–115.24 | 손절 SMA50(114.45 USD)",
-      "top_news_summary": "[실적] ORMAT TECHNOLOGIES, INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "113.81 USD",
+      "daily_change": "-0.81%",
+      "signal_or_takeaway": "박스 상단 돌파매수: 113.93 상향 돌파·안착 시 진입, 목표가 118.22/127.27, 손절가 113.93 이탈 시 무효",
+      "top_news_summary": "지열·스토리지 확장 계획이 밸류에이션 재평가 포인트",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1296445/000129644526000006/ora-20251231.htm",
+      "news_tone": {
+        "label": "중립-강세",
+        "confidence": 3,
+        "reasoning": "성장축인 지열/저장 사업 확장과 장기계약이 긍정적이며, 단기 옵션은 풋 우위지만 뉴스 자체는 우호적."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "20",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "114.74 USD",
+      "daily_change": "+2.19%",
+      "signal_or_takeaway": "중립 관찰 — 지열 확장 기대와 115 USD MaxPain 자석 | 진입 트리거 113.93 USD 지지 또는 116.07 USD 돌파 | 목표 116.07 USD/127.27 USD | 손절 111.06 USD (R:R 0.52)",
+      "top_news_summary": "Ormat Technologies, 8-K 중요사항 공시",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/1296445/000129644526000006/ora-20251231.htm",
       "news_tone": {
         "label": "neutral",
+        "confidence": 3,
+        "reasoning": "실적 안정성과 사업 확장은 긍정적이지만, 높은 PCR과 성장 둔화가 단기 상단을 제한합니다.",
         "score": 0.0
       },
       "upcoming_events": [
@@ -731,7 +1152,30 @@
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-05-06",
-          "days_until": "23",
+          "days_until": "21",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "112.28 USD",
+      "daily_change": "-2.55%",
+      "signal_or_takeaway": "중립 경계 — 2026-05-06 실적과 115.00 USD MaxPain 저항 | 진입 트리거 114.14 USD 회복 및 115.57 USD 돌파 확인 | 목표 117.54 USD/127.27 USD | 손절 105.25 USD (R:R 0.66R)",
+      "top_news_summary": "8-K 중요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1296445/000129644526000006/ora-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 4,
+        "reasoning": "실적 안정성과 장기 성장 내러티브는 긍정적이지만, 높은 PER과 최근 옵션 포지셔닝의 방어적 성격이 상승을 제약합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "22",
           "timing": "AMC"
         }
       ]
@@ -739,22 +1183,69 @@
   ],
   "SPIR": [
     {
-      "date": "2026-04-13",
-      "price": "23.14 USD",
-      "daily_change": "+7.33%",
-      "signal_or_takeaway": "매수 관찰 — [실적] Spire Global, Inc., 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 20.97–25.31 | 손절 SMA50(11.48 USD) (R:R 0.3R)",
-      "top_news_summary": "[실적] Spire Global, Inc., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "20.54 USD",
+      "daily_change": "-0.96%",
+      "signal_or_takeaway": "매도 경계 — 급등 과열과 공매도 비중 부담이 단기 변동성 리스크 | 진입 트리거 20.54달러 지지 붕괴 또는 11.89달러 하회 시 | 목표 23.96/17.00 | 손절 11.89",
+      "top_news_summary": "중요 공시 8-K 제출",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/1816017/000119312526116169/spir-20251231.htm",
       "news_tone": {
-        "label": "bullish",
-        "score": 2.0
+        "label": "bearish",
+        "confidence": 4,
+        "reasoning": "적자 지속 우려와 가이던스 업데이트가 부각되어 단기적으로 부정적입니다."
       },
       "upcoming_events": [
         {
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-05-13",
-          "days_until": "30",
+          "days_until": "27",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "20.74 USD",
+      "daily_change": "-10.37%",
+      "signal_or_takeaway": "매도 경계 — 94.56% 랠리 후 변동성 과열과 손실 가이던스 | 진입 트리거 22.57 USD 돌파 실패 또는 17.00 USD 지지 확인 | 목표 23.59 USD/17.00 USD | 손절 18.42 USD (R:R 0.55)",
+      "top_news_summary": "Spire Global, 8-K 중요사항 공시",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1816017/000119312526116169/spir-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "단기 모멘텀은 강하지만 적자 지속과 고변동성, 실적 전후 가이던스 불확실성이 커서 균형적입니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-13",
+          "days_until": "28",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "23.14 USD",
+      "daily_change": "+7.33%",
+      "signal_or_takeaway": "매도 경계 — 2026-05-13 실적과 RSI 76.7 과열 | 진입 트리거 21.79 USD 이상 지지 후 거래량 둔화 확인 | 목표 25.31 USD/17.00 USD | 손절 18.81 USD (R:R 0.72R)",
+      "top_news_summary": "SEC에 8-K 중요 공시 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1816017/000119312526116169/spir-20251231.htm",
+      "news_tone": {
+        "label": "bearish",
+        "confidence": 4,
+        "reasoning": "최근 급등에도 불구하고 실적 가이던스의 손실 지속, 과매수 RSI, 높은 옵션 변동성이 조정 쪽 위험을 키웁니다.",
+        "score": -4.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-13",
+          "days_until": "29",
           "timing": "BMO"
         }
       ]
@@ -762,14 +1253,38 @@
   ],
   "PLUG": [
     {
-      "date": "2026-04-13",
-      "price": "2.77 USD",
-      "daily_change": "+1.09%",
-      "signal_or_takeaway": "매수 관찰 — [실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 2.58–2.96 | 손절 SMA50(2.17 USD) (R:R 0.5R)",
-      "top_news_summary": "[실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "date": "2026-04-15",
+      "price": "2.93 USD",
+      "daily_change": "-0.34%",
+      "signal_or_takeaway": "매수 관찰 — 사업 정상화 기대와 단기 추세 회복이 긍정적 | 진입 트리거 2.93달러 안착 및 2.19달러 지지 유지 시 | 목표 3.23/2.83 | 손절 2.19",
+      "top_news_summary": "중요 공시 8-K 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1093691/000110465926022286/plug-20251231x10k.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 4,
+        "reasoning": "사업 업데이트 기대와 단기 주가 강세가 확인되어 모멘텀이 긍정적입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-11",
+          "days_until": "25",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "price": "2.94 USD",
+      "daily_change": "+6.14%",
+      "signal_or_takeaway": "중립 관찰 — 3개 분기 중 2개 beat와 2.91 USD 상단 돌파 여부 | 진입 트리거 2.91 USD 상향 돌파 또는 2.19 USD 지지 확인 | 목표 3.14 USD/2.83 USD | 손절 2.71 USD (R:R 0.69)",
+      "top_news_summary": "EU, 2035 내연기관 판매 금지 완화로 EV 전환 재조정",
       "top_news_link": "https://www.sec.gov/Archives/edgar/data/1093691/000110465926022286/plug-20251231x10k.htm",
       "news_tone": {
         "label": "neutral",
+        "confidence": 3,
+        "reasoning": "개선된 실적 패턴과 강한 30D 수익률은 긍정적이지만, EPS 적자와 RSI 과매수로 추격 매수는 부담입니다.",
         "score": 0.0
       },
       "upcoming_events": [
@@ -777,7 +1292,30 @@
           "type": "earnings",
           "label": "실적 발표",
           "date": "2026-05-11",
-          "days_until": "28",
+          "days_until": "26",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-13",
+      "price": "2.77 USD",
+      "daily_change": "+1.09%",
+      "signal_or_takeaway": "중립 관찰 — 2026-05-11 실적과 2.00 USD MaxPain 공방 | 진입 트리거 2.18 USD 이상 유지 및 2.81 USD 돌파 | 목표 2.93 USD/2.83 USD | 손절 2.41 USD (R:R 0.32R)",
+      "top_news_summary": "Reuters 기사 목록 노출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1093691/000110465926022286/plug-20251231x10k.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "실적 개선과 상승 모멘텀은 긍정적이지만, 높은 공매도·옵션 변동성·적자 지속이 상쇄합니다.",
+        "score": 0.0
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-11",
+          "days_until": "27",
           "timing": "AMC"
         }
       ]

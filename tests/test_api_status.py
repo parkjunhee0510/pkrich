@@ -88,6 +88,57 @@ class ApiStatusTests(unittest.TestCase):
         self.assertFalse(summary["llm"]["used"])
         self.assertEqual(matrix["fmp"], "throttled")
 
+    def test_build_api_status_payload_includes_analysis_quality_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            logs_root = root / "logs" / "pipeline"
+            output_root = root / "output"
+            logs_root.mkdir(parents=True, exist_ok=True)
+            (output_root / "data").mkdir(parents=True, exist_ok=True)
+
+            (logs_root / "2026-04-13.jsonl").write_text(
+                "\n".join(
+                    [
+                        json.dumps({"event": "pipeline_started", "component": "pipeline", "level": "info"}),
+                        json.dumps({"event": "openai_usage_recorded", "component": "analyzer", "level": "info", "model": "gpt-5.4-mini", "estimated_cost_usd": 0.01}),
+                        json.dumps({"event": "pipeline_completed", "component": "pipeline", "level": "info"}),
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (output_root / "data" / "analysis_quality.json").write_text(
+                json.dumps(
+                    {
+                        "runs": [],
+                        "latest": {
+                            "run_date": "2026-04-13",
+                            "validated_ticker_count": 11,
+                            "validation_failure_count": 2,
+                            "schema_violation_count": 1,
+                            "fact_warning_count": 3,
+                            "consistency_warning_count": 1,
+                            "hallucination_warning_count": 1,
+                            "hallucination_ratio": 0.0909,
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            payload = build_api_status_payload(
+                date(2026, 4, 13),
+                [WatchlistItem(ticker="AAPL", name="Apple Inc.")],
+                logs_root=logs_root,
+                output_root=output_root,
+            )
+
+        quality = payload["summary"]["llm"]["quality"]
+        self.assertEqual(quality["run_date"], "2026-04-13")
+        self.assertEqual(quality["validated_ticker_count"], 11)
+        self.assertEqual(quality["schema_violation_count"], 1)
+        self.assertAlmostEqual(quality["hallucination_ratio"], 0.0909)
+
     def test_write_api_status_outputs_writes_json_and_csv(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

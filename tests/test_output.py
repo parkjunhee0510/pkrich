@@ -7,8 +7,9 @@ import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from types import SimpleNamespace
 
-from src.output.json_export import write_json_outputs
+from src.output.json_export import _serialize_analysis, write_json_outputs
 from src.output.markdown import append_price_history, render_daily_markdown, render_ticker_markdown
 from src.types import NewsItem, PortfolioPosition, PortfolioSummary, TickerAnalysis
 
@@ -126,6 +127,16 @@ def _sample_analysis() -> TickerAnalysis:
             'invalidation_price': '50일 이동평균선인 98.50 USD 하향 이탈 시',
             'watch_period': '2026-04-14 실적 발표 전까지',
         },
+        options_summary={
+            'expiry': '2026-05-15',
+            'atm_call_iv': '28.5%',
+            'atm_put_iv': '30.1%',
+            'put_call_ratio': '0.72',
+            'iv_percentile_30d': '68%',
+            'tone': 'bullish',
+            'unusual_activity': 'CALL $270, vol 8200, OI ?? 42%',
+            'oi_change': '? OI +25.0% / ? OI +16.7%',
+        },
     )
 
 
@@ -165,6 +176,33 @@ class OutputTests(unittest.TestCase):
         self.assertNotIn('## 주요 움직임', content)
         self.assertIn('**AAPL** 실적 발표: 2026-04-14 (D-6 · AMC)', content)
         self.assertIn('**AAPL** [실적] [Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출](https://example.com/apple-sec-10q) (2026-04-06)', content)
+
+    def test_serialize_analysis_includes_earnings_pattern(self) -> None:
+        serialized = _serialize_analysis(_sample_analysis(), {})
+        self.assertIn('earnings_pattern', serialized)
+        self.assertIn('peer_rank', serialized)
+        self.assertIn('analysis_consensus', serialized)
+        self.assertEqual(serialized['earnings_pattern']['beat_streak'], 1)
+        self.assertEqual(serialized['earnings_pattern']['surprise_trend'], 'improving')
+        self.assertEqual(serialized['earnings_pattern']['avg_surprise_pct'], '-1.7%')
+        self.assertEqual(serialized['options_summary']['tone'], 'bullish')
+        self.assertIn('CALL $270', serialized['options_summary']['unusual_activity'])
+
+    def test_serialize_analysis_maps_decision_ensemble_agreement(self) -> None:
+        analysis = _sample_analysis()
+        analysis = TickerAnalysis(**{**analysis.__dict__, 'analysis_consensus': {'status': 'conflicted'}})
+        serialized = _serialize_analysis(
+            analysis,
+            {},
+            decision=SimpleNamespace(
+                action='watch',
+                conviction=55,
+                reason='테스트',
+                valid_until='2026-04-15',
+                factors={},
+            ),
+        )
+        self.assertEqual(serialized['decision']['ensemble_agreement'], 'conflict')
 
     def test_render_ticker_markdown_includes_period_quarterly_events_and_timeline(self) -> None:
         content = render_ticker_markdown(
@@ -254,6 +292,16 @@ class OutputTests(unittest.TestCase):
                 market_overview=[{'label': 'S&P 500', 'symbol': '^GSPC', 'price': '5,234.18', 'change': '+0.45%'}],
                 output_root=output_root,
                 period_changes_by_ticker={'AAPL': {'7d': '+3.25%', '30d': 'N/A'}},
+                portfolio_risk={
+                    'hhi': 2550.0,
+                    'portfolio_beta': 1.18,
+                    'correlation_matrix': {'AAPL': {'AAPL': 1.0}},
+                    'mdd_20d': 6.2,
+                    'var_95': 2.4,
+                    'risk_grade': 'C',
+                    'recommendations': ['기술 섹터 비중을 점검하세요.'],
+                    'positions_by_weight': [],
+                },
                 portfolio_summary=PortfolioSummary(
                     positions=[
                         PortfolioPosition(
@@ -273,6 +321,24 @@ class OutputTests(unittest.TestCase):
                     total_unrealized_pnl=100.0,
                     total_unrealized_return_pct=11.11,
                 ),
+                weekly_summary=SimpleNamespace(
+                    iso_year=2026,
+                    iso_week=15,
+                    start_date='2026-04-06',
+                    end_date='2026-04-08',
+                    trading_days=3,
+                    weekly_insight='주간 요약',
+                    weekly_report={
+                        'headline': '2026-W15 주간 리포트',
+                        'summary': '구조화된 주간 리포트입니다.',
+                        'market_environment': {'summary': '중립', 'details': ['VIX 안정']},
+                        'top_movers': {'summary': '핵심 이동 종목', 'items': []},
+                        'signal_review': {'summary': '시그널 리뷰', 'details': []},
+                        'risk_points': {'summary': '리스크', 'items': []},
+                        'next_week_action_plan': {'summary': '액션 플랜', 'items': []},
+                        'portfolio_suggestions': {'summary': '포트폴리오 제안', 'items': []},
+                    },
+                ),
             )
 
             dashboard = json.loads((web_data_dir / 'dashboard.json').read_text(encoding='utf-8'))
@@ -284,6 +350,8 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(len(dashboard['days']), 1)
             self.assertEqual(len(dashboard_history['days']), 1)
             self.assertEqual(dashboard['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
+            self.assertEqual(dashboard['days'][0]['portfolio_risk']['risk_grade'], 'C')
+            self.assertEqual(dashboard['days'][0]['portfolio_risk']['hhi'], 2550.0)
             self.assertEqual(dashboard_history['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['period_changes']['7d'], '+3.25%')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['news_tone']['label'], 'bullish')
@@ -294,6 +362,7 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(dashboard['days'][0]['tickers'][0]['fundamentals']['analyst_target_price'], '130.00 USD')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['trade_frame']['watch_period'], '2026-04-14 실적 발표 전까지')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['upcoming_events'][0]['label'], '실적 발표')
+            self.assertEqual(dashboard['weekly_summary']['weekly_report']['headline'], '2026-W15 주간 리포트')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['sec_filing_tags'], ['실적'])
             self.assertEqual(dashboard['days'][0]['tickers'][0]['sec_filings'][0]['tag'], '실적')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['sec_filings'][0]['form_type'], '10-Q')

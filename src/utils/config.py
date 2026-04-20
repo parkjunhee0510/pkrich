@@ -6,6 +6,16 @@ from typing import Any
 from src.types import PortfolioHolding, WatchlistItem
 
 
+_DEFAULT_SECTOR_ETF_MAP: dict[str, str] = {
+    'Technology': 'XLK',
+    'Energy': 'XLE',
+    'Industrials': 'XLI',
+    'Consumer Staples': 'XLP',
+    'Communication Services': 'XLC',
+    'Utilities': 'XLU',
+}
+
+
 def load_watchlist(path: str = 'config/watchlist.yaml') -> list[WatchlistItem]:
     payload = load_yaml_mapping(path)
     watchlist_entries = payload.get('watchlist', [])
@@ -17,6 +27,21 @@ def load_watchlist(path: str = 'config/watchlist.yaml') -> list[WatchlistItem]:
 def load_simple_mapping(path: str) -> dict[str, object]:
     loaded = load_yaml_mapping(path)
     return loaded if isinstance(loaded, dict) else {}
+
+
+def load_sector_etf_map(path: str = 'config/watchlist.yaml') -> dict[str, str]:
+    payload = load_yaml_mapping(path, optional=True)
+    raw_mapping = payload.get('sector_etf_map', {})
+    normalized: dict[str, str] = {}
+    if isinstance(raw_mapping, dict):
+        for sector, etf in raw_mapping.items():
+            sector_name = str(sector).strip()
+            etf_symbol = str(etf).strip().upper()
+            if sector_name and etf_symbol:
+                normalized[sector_name] = etf_symbol
+    if normalized:
+        return normalized
+    return dict(_DEFAULT_SECTOR_ETF_MAP)
 
 
 def load_yaml_mapping(path: str, *, optional: bool = False) -> dict[str, Any]:

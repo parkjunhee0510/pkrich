@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
-from src.types import CollectedTickerData, NewsItem, TickerAnalysis, WatchlistItem
+from src.types import CollectedTickerData, NewsItem, PortfolioSummary, TickerAnalysis, WatchlistItem
 from src.utils.cost_tracker import calculate_response_cost
 from src.utils.env import load_dotenv
 from src.utils.model_config import ModelProfile, build_model_profile, load_model_profile, safe_input_token_budget
@@ -70,16 +70,69 @@ def analyze_tickers(
     signal_history_map: dict[str, list[dict[str, str]]] | None = None,
     model_profile_name: str | None = None,
     portfolio_account_size: float | None = None,
+    portfolio_summary: PortfolioSummary | None = None,
 ) -> list[TickerAnalysis]:
     load_dotenv()
     model_profile = load_model_profile(profile_name=model_profile_name)
+    from src.analyzer.modules import (
+        NewsAnalysisModule,
+        PeerComparisonModule,
+        PortfolioRiskModule,
+        ResearchNarrativeModule,
+        RiskAssessmentModule,
+        SignalTakeawayModule,
+        TradeFrameModule,
+        ValuationModule,
+    )
+    from src.analyzer.orchestrator import AnalysisOrchestrator
+    from src.analyzer.registry import ModuleRegistry
+
+    registry = ModuleRegistry()
+    registry.register_many(
+        [
+            PeerComparisonModule(),
+            ValuationModule(),
+            TradeFrameModule(),
+            PortfolioRiskModule(),
+            NewsAnalysisModule(),
+            ResearchNarrativeModule(),
+            RiskAssessmentModule(),
+            SignalTakeawayModule(),
+        ]
+    )
+    orchestrator = AnalysisOrchestrator(registry, model_profile=model_profile, logger=logger)
+    return orchestrator.analyze_all(
+        watchlist,
+        collected,
+        news_map,
+        run_date,
+        macro_context=macro_context,
+        signal_history_map=signal_history_map,
+        portfolio_account_size=portfolio_account_size,
+        portfolio_summary=portfolio_summary,
+    )
+
+
+def _run_legacy_analysis_pipeline(
+    watchlist: list[WatchlistItem],
+    collected: dict[str, CollectedTickerData],
+    news_map: dict[str, list[NewsItem]],
+    run_date: date,
+    *,
+    macro_context: dict[str, Any] | None = None,
+    signal_history_map: dict[str, list[dict[str, str]]] | None = None,
+    model_profile_name: str | None = None,
+    portfolio_account_size: float | None = None,
+    model_profile: ModelProfile | None = None,
+) -> list[TickerAnalysis]:
+    active_model_profile = model_profile or load_model_profile(profile_name=model_profile_name)
     if os.getenv('OPENAI_API_KEY'):
         llm_results = _analyze_with_openai(
             watchlist,
             collected,
             news_map,
             run_date,
-            model_profile=model_profile,
+            model_profile=active_model_profile,
             macro_context=macro_context,
             signal_history_map=signal_history_map,
             portfolio_account_size=portfolio_account_size,
@@ -347,6 +400,7 @@ def _process_batch(
                 run_date,
                 signal_history=prepared_item.payload.get('signal_history', []),
                 sector_comparison=_format_sector_comparison(prepared_item.payload.get('sector_peer_context', {})),
+                peer_rank=prepared_item.payload.get('peer_rank', {}),
                 account_size_hint=account_size_hint,
             )
             record_pipeline_event(
@@ -400,6 +454,7 @@ def _process_batch(
                 run_date,
                 signal_history=payload_entry.get('signal_history', []),
                 sector_comparison=_format_sector_comparison(payload_entry.get('sector_peer_context', {})),
+                peer_rank=payload_entry.get('peer_rank', {}),
                 account_size_hint=account_size_hint,
             )
             continue
@@ -413,6 +468,7 @@ def _process_batch(
             run_date,
             signal_history=payload_entry.get('signal_history', []),
             sector_comparison=_format_sector_comparison(payload_entry.get('sector_peer_context', {})),
+            peer_rank=payload_entry.get('peer_rank', {}),
         )
 
 
@@ -509,6 +565,7 @@ def _build_payload(
                     'price_vs_sma200': market.price_vs_sma200,
                     'week52_position': market.week52_position,
                     'rs_vs_spy': market.rs_vs_spy,
+                    'rs_vs_sector_etf': market.rs_vs_sector_etf,
                 },
                 'positioning': {
                     'short_float_pct': market.short_float_pct,
@@ -943,13 +1000,20 @@ def _build_user_prompt(
     if macro_context:
         vix = macro_context.get("vix", {})
         events = macro_context.get("upcoming_macro_events", [])
+        portfolio_sensitivity = str(macro_context.get("portfolio_sensitivity_summary", "N/A"))
         macro_lines = []
         if vix.get("level") not in (None, "N/A"):
             macro_lines.append(f"VIX: {vix['level']} ({vix.get('change', 'N/A')}) — {vix.get('regime', 'N/A')}")
             regime = str(vix.get('regime', 'N/A'))
             macro_lines.append(f"Volatility guidance: {_volatility_guidance(regime, vix.get('level', 'N/A'))}")
-        for evt in events[:3]:
-            macro_lines.append(f"{evt.get('type', '')}: {evt.get('date', '')} (D-{evt.get('days_until', '?')})")
+        for evt in events[:5]:
+            macro_lines.append(
+                f"{evt.get('event_code', evt.get('type', ''))}: "
+                f"{evt.get('date', '')} (D-{evt.get('days_until', '?')}, "
+                f"{evt.get('impact', 'N/A')}) — {evt.get('market_bias', evt.get('label', ''))}"
+            )
+        if portfolio_sensitivity not in {"", "N/A"}:
+            macro_lines.append(f"Portfolio sensitivity: {portfolio_sensitivity}")
         if macro_lines:
             macro_section = "\n\n[Macro Context]\n" + "\n".join(macro_lines)
 
@@ -1002,7 +1066,8 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
         f"[Price Action] ATR(14): {price_action.get('atr_14d', 'N/A')} ({price_action.get('atr_percent', 'N/A')}), "
         f"RVOL: {price_action.get('relative_volume', 'N/A')}, Gap: {price_action.get('gap_percent', 'N/A')}, "
         f"vs SMA50: {price_action.get('price_vs_sma50', 'N/A')}, vs SMA200: {price_action.get('price_vs_sma200', 'N/A')}, "
-        f"52W Position: {price_action.get('week52_position', 'N/A')}, RS vs SPY(30D): {price_action.get('rs_vs_spy', 'N/A')}\n"
+        f"52W Position: {price_action.get('week52_position', 'N/A')}, RS vs SPY(30D): {price_action.get('rs_vs_spy', 'N/A')}, "
+        f"RS vs Sector ETF: {price_action.get('rs_vs_sector_etf', 'N/A')}\n"
         f"[Positioning] Short Float: {positioning.get('short_float_pct', 'N/A')} / {positioning.get('short_ratio', 'N/A')}, "
         f"Analyst: {positioning.get('analyst_recommendation', 'N/A')} "
         f"({positioning.get('analyst_count', 'N/A')}, target {positioning.get('analyst_target_price', 'N/A')}), "
@@ -1105,10 +1170,13 @@ def _render_options_summary(summary: Any) -> str:
         return 'N/A'
     parts: list[str] = []
     for label, key in (
+        ('Tone', 'tone'),
+        ('Unusual', 'unusual_activity'),
+        ('PCR', 'put_call_ratio'),
+        ('OI Change', 'oi_change'),
         ('Expiry', 'expiry'),
         ('Call IV', 'atm_call_iv'),
         ('Put IV', 'atm_put_iv'),
-        ('PCR', 'put_call_ratio'),
         ('IV Pctl', 'iv_percentile_30d'),
     ):
         value = str(summary.get(key, '')).strip()
@@ -1261,6 +1329,41 @@ def _build_fallback_analyses(
     ]
 
 
+def _estimate_watchlist_tokens(
+    watchlist: list[WatchlistItem],
+    collected: dict[str, CollectedTickerData],
+    news_map: dict[str, list[NewsItem]],
+    run_date: date,
+    *,
+    model_profile: ModelProfile,
+    macro_context: dict[str, Any] | None = None,
+    signal_history_map: dict[str, list[dict[str, str]]] | None = None,
+    account_size_hint: float | None = None,
+) -> int:
+    del run_date, macro_context, account_size_hint
+    prepared = _prepare_payload_items(watchlist, collected, news_map, signal_history_map=signal_history_map)
+    if not prepared:
+        return 0
+    token_counts = [item.estimated_tokens for item in prepared]
+    batch_size = _calculate_batch_size([item.payload for item in prepared], model_profile)
+    return sum(token_counts[:batch_size])
+
+
+def _analysis_to_payload(analysis: TickerAnalysis) -> dict[str, Any]:
+    return {
+        field_name: getattr(analysis, field_name)
+        for field_name in TickerAnalysis.__dataclass_fields__
+    }
+
+
+def _analysis_from_payload(payload: dict[str, Any]) -> TickerAnalysis:
+    kwargs = {
+        field_name: payload.get(field_name)
+        for field_name in TickerAnalysis.__dataclass_fields__
+    }
+    return TickerAnalysis(**kwargs)
+
+
 def _build_openai_analysis(
     item: WatchlistItem,
     match: dict[str, Any],
@@ -1270,6 +1373,7 @@ def _build_openai_analysis(
     *,
     signal_history: list[dict[str, str]] | None = None,
     sector_comparison: dict[str, Any] | None = None,
+    peer_rank: dict[str, Any] | None = None,
 ) -> TickerAnalysis:
     market = collected[item.ticker]
     return TickerAnalysis(
@@ -1292,6 +1396,7 @@ def _build_openai_analysis(
         options_summary=market.options_summary,
         signal_history=signal_history or [],
         sector_comparison=sector_comparison or {},
+        peer_rank=peer_rank or {},
         valuation_score=match.get('valuation_score', {}),
         historical_prices=market.historical_prices,
     )
@@ -1305,6 +1410,7 @@ def _build_fallback_analysis(
     *,
     signal_history: list[dict[str, str]] | None = None,
     sector_comparison: dict[str, Any] | None = None,
+    peer_rank: dict[str, Any] | None = None,
     account_size_hint: float | None = None,
 ) -> TickerAnalysis:
     market = collected[item.ticker]
@@ -1356,6 +1462,7 @@ def _build_fallback_analysis(
         options_summary=market.options_summary,
         signal_history=signal_history or [],
         sector_comparison=sector_comparison or {},
+        peer_rank=peer_rank or {},
         historical_prices=market.historical_prices,
     )
 
@@ -1708,6 +1815,7 @@ def _build_snapshot(market: CollectedTickerData) -> dict[str, str]:
         'High': market.high_price,
         'Low': market.low_price,
         'Close': market.close_price,
+        'RS vs Sector ETF': market.rs_vs_sector_etf,
     }
 
 
@@ -1745,6 +1853,7 @@ def _build_price_action(market: CollectedTickerData) -> dict[str, str]:
         'price_vs_sma200': market.price_vs_sma200,
         'week52_position': market.week52_position,
         'rs_vs_spy': market.rs_vs_spy,
+        'rs_vs_sector_etf': market.rs_vs_sector_etf,
     }
 
 

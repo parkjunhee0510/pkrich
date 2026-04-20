@@ -21,6 +21,7 @@ class BatchStrategyTests(unittest.TestCase):
             input_cost_per_1m_tokens=0.0,
             cached_input_cost_per_1m_tokens=0.0,
             output_cost_per_1m_tokens=0.0,
+            prompt_version='research_v1',
         )
 
     def _prepared_items(self, count: int) -> list[_PreparedPayloadItem]:

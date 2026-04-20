@@ -236,6 +236,23 @@ class DatastoreTests(unittest.TestCase):
             self.assertIn('close', columns)
             self.assertIn('volume', columns)
 
+    def test_sqlite_datastore_persists_monthly_peer_selection_cache(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / 'output'
+            datastore = get_datastore(output_root=output_root, backend='sqlite')
+            payload = {
+                'selected_peers': [
+                    {'ticker': 'MSFT', 'market_cap': '1000', 'data_coverage_score': 4.0},
+                    {'ticker': 'GOOG', 'market_cap': '900', 'data_coverage_score': 3.0},
+                ],
+                'source': 'finnhub',
+            }
+
+            datastore.set_peer_selection_cache('AAPL', '2026-04', payload)
+            loaded = datastore.get_peer_selection_cache('AAPL', '2026-04')
+
+            self.assertEqual(loaded, payload)
+
 
 if __name__ == '__main__':
     unittest.main()

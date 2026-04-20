@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import tempfile
@@ -11,6 +11,7 @@ from src.output.markdown import render_weekly_markdown
 from src.utils.weekly_summary import load_weekly_summary
 
 
+
 def _write_positive_week(output_root: Path) -> None:
     data_dir = output_root / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -19,17 +20,17 @@ def _write_positive_week(output_root: Path) -> None:
         {
             "date": "2026-04-06",
             "market_overview": [{"label": "S&P 500", "symbol": "^GSPC", "price": "100.00", "change": "+0.10%"}],
-            "tickers": [{"ticker": "AAPL", "name": "Apple Inc.", "signal_or_takeaway": "AAPL 유지"}],
+            "tickers": [{"ticker": "AAPL", "name": "Apple Inc.", "signal_or_takeaway": "AAPL observe"}],
         },
         {
             "date": "2026-04-07",
             "market_overview": [{"label": "S&P 500", "symbol": "^GSPC", "price": "101.00", "change": "+0.10%"}],
-            "tickers": [{"ticker": "AAPL", "name": "Apple Inc.", "signal_or_takeaway": "AAPL 유지"}],
+            "tickers": [{"ticker": "AAPL", "name": "Apple Inc.", "signal_or_takeaway": "AAPL observe"}],
         },
         {
             "date": "2026-04-08",
             "market_overview": [{"label": "S&P 500", "symbol": "^GSPC", "price": "102.00", "change": "+0.10%"}],
-            "tickers": [{"ticker": "AAPL", "name": "Apple Inc.", "signal_or_takeaway": "AAPL 유지"}],
+            "tickers": [{"ticker": "AAPL", "name": "Apple Inc.", "signal_or_takeaway": "AAPL observe"}],
         },
     ]
 
@@ -57,7 +58,8 @@ class WeeklyMarkdownTests(unittest.TestCase):
             content = render_weekly_markdown(summary)
 
             self.assertEqual(summary.top_losers, [])
-            self.assertIn("- 이번 주 하락 종목이 없습니다.", content)
+            self.assertIn("## 주간 시장 개요", content)
+            self.assertIn("이번 주 하락 종목이 없습니다", content)
 
     def test_render_weekly_markdown_includes_optional_weekly_insight(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -65,6 +67,9 @@ class WeeklyMarkdownTests(unittest.TestCase):
             _write_positive_week(output_root)
 
             with patch(
+                "src.utils.weekly_summary._load_weekly_report",
+                return_value={},
+            ), patch(
                 "src.utils.weekly_summary._load_weekly_insight",
                 return_value="기술주는 강세를 보였고 다음 주에는 실적 이벤트를 점검해야 합니다.",
             ):
@@ -73,6 +78,43 @@ class WeeklyMarkdownTests(unittest.TestCase):
 
             self.assertEqual(summary.weekly_insight, "기술주는 강세를 보였고 다음 주에는 실적 이벤트를 점검해야 합니다.")
             self.assertIn("## 주간 인사이트", content)
+
+    def test_render_weekly_markdown_includes_structured_weekly_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "output"
+            _write_positive_week(output_root)
+
+            with patch(
+                "src.utils.weekly_summary._load_weekly_report",
+                return_value={
+                    "headline": "2026-W15 주간 리포트",
+                    "summary": "시장 환경과 다음 주 액션 플랜을 구조화해 보여줍니다.",
+                    "market_environment": {"summary": "중립 환경입니다.", "details": ["VIX 안정"]},
+                    "top_movers": {
+                        "summary": "핵심 이동 종목입니다.",
+                        "items": [
+                            {
+                                "ticker": "AAPL",
+                                "name": "Apple Inc.",
+                                "weekly_change": "+2.00%",
+                                "catalyst": "제품 기대",
+                                "decision_change": "watch (55)",
+                            }
+                        ],
+                    },
+                    "signal_review": {"summary": "시그널 요약", "details": ["bull 5D +4.0%"]},
+                    "risk_points": {"summary": "리스크 요약", "items": ["다음 주 CPI"]},
+                    "next_week_action_plan": {"summary": "액션 플랜", "items": ["AAPL 일정 확인"]},
+                    "portfolio_suggestions": {"summary": "포트폴리오 제안", "items": ["비중 유지"]},
+                },
+            ):
+                summary = load_weekly_summary(date(2026, 4, 8), output_root=output_root)
+                content = render_weekly_markdown(summary)
+
+            self.assertIn("## 구조화 주간 보고서", content)
+            self.assertIn("### 1. 시장 환경 요약", content)
+            self.assertIn("### 6. 포트폴리오 제안", content)
+            self.assertIn("AAPL (Apple Inc.)", content)
 
 
 if __name__ == "__main__":

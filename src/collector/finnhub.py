@@ -316,29 +316,8 @@ def _normalize_macro_event(entry: Any, run_date: date) -> dict[str, str] | None:
         return None
 
     normalized_title = title.lower()
-    event_type: str | None = None
-    label = ""
-    impact = "medium"
-    if "fomc" in normalized_title or "federal reserve" in normalized_title or "interest rate" in normalized_title:
-        event_type = "FOMC"
-        label = "FOMC 금리 결정"
-        impact = "high"
-    elif "cpi" in normalized_title or "consumer price index" in normalized_title:
-        event_type = "CPI"
-        label = "CPI 물가지표 발표"
-        impact = "high"
-    elif (
-        "nonfarm payroll" in normalized_title
-        or "non-farm payroll" in normalized_title
-        or "employment" in normalized_title
-        or "jobless" in normalized_title
-        or "unemployment" in normalized_title
-    ):
-        event_type = "Employment"
-        label = "고용지표 (Non-Farm Payrolls)"
-        impact = "high"
-
-    if event_type is None:
+    event_meta = _match_macro_event_metadata(normalized_title)
+    if event_meta is None:
         return None
 
     date_value = (
@@ -356,13 +335,136 @@ def _normalize_macro_event(entry: Any, run_date: date) -> dict[str, str] | None:
     if days_until < 0:
         return None
 
+    event_code = str(event_meta["event_code"])
+    actual = _extract_macro_numeric(entry, "actual", "actualValue", "actualRelease")
+    consensus = _extract_macro_numeric(entry, "consensus", "estimate", "forecast")
+    previous = _extract_macro_numeric(entry, "previous", "prior", "previousValue")
+
     return {
-        "type": event_type,
+        "type": event_code,
+        "event_code": event_code,
+        "category": str(event_meta["category"]),
         "date": event_date.isoformat(),
         "days_until": str(days_until),
-        "label": label,
-        "impact": impact,
+        "label": str(event_meta["label"]),
+        "impact": str(event_meta["impact"]),
+        "source": "finnhub",
+        "actual": actual,
+        "consensus": consensus,
+        "previous": previous,
+        "surprise_direction": _infer_surprise_direction(event_code, actual, consensus),
+        "market_bias": str(event_meta["market_bias"]),
+        "description": str(event_meta["description"]),
+        "sensitivity_tags": ",".join(event_meta.get("sensitivity_tags", [])),
     }
+
+
+def _match_macro_event_metadata(normalized_title: str) -> dict[str, object] | None:
+    if "fomc" in normalized_title or "federal reserve" in normalized_title or "interest rate" in normalized_title:
+        return {
+            "event_code": "FOMC",
+            "category": "rates",
+            "label": "FOMC Rate Decision",
+            "impact": "high",
+            "market_bias": "A hawkish decision can pressure long-duration growth assets.",
+            "description": "The Fed rate path and dot plot directly affect rate-sensitive assets.",
+            "sensitivity_tags": ["long_duration_growth", "financials", "dividend"],
+        }
+    if "cpi" in normalized_title or "consumer price index" in normalized_title:
+        return {
+            "event_code": "CPI",
+            "category": "inflation",
+            "label": "CPI Consumer Inflation",
+            "impact": "high",
+            "market_bias": "A hotter CPI can lift rate expectations and weigh on growth multiples.",
+            "description": "Consumer inflation shapes rate expectations and equity valuation.",
+            "sensitivity_tags": ["long_duration_growth", "consumer", "energy", "industrials"],
+        }
+    if "ppi" in normalized_title or "producer price index" in normalized_title:
+        return {
+            "event_code": "PPI",
+            "category": "inflation",
+            "label": "PPI Producer Inflation",
+            "impact": "high",
+            "market_bias": "Higher producer inflation can pressure margins and foreshadow CPI risk.",
+            "description": "Producer prices give an early read on cost pressure and margin risk.",
+            "sensitivity_tags": ["industrials", "energy", "materials", "consumer"],
+        }
+    if "unemployment rate" in normalized_title:
+        return {
+            "event_code": "UNRATE",
+            "category": "labor",
+            "label": "Unemployment Rate",
+            "impact": "high",
+            "market_bias": "A rising or falling unemployment rate quickly shifts growth expectations.",
+            "description": "The unemployment rate signals labor cooling or overheating.",
+            "sensitivity_tags": ["industrials", "energy", "consumer", "financials"],
+        }
+    if "nonfarm payroll" in normalized_title or "non-farm payroll" in normalized_title or "payroll" in normalized_title:
+        return {
+            "event_code": "NFP",
+            "category": "labor",
+            "label": "NFP Payrolls",
+            "impact": "high",
+            "market_bias": "A strong payroll print can boost growth expectations but revive rate fears.",
+            "description": "Payroll growth is a key read on labor strength, growth, and rate sensitivity.",
+            "sensitivity_tags": ["industrials", "energy", "consumer", "long_duration_growth"],
+        }
+    if "retail sales" in normalized_title or "advance retail sales" in normalized_title:
+        return {
+            "event_code": "RETAIL_SALES",
+            "category": "consumer",
+            "label": "Retail Sales",
+            "impact": "high",
+            "market_bias": "Strong consumer spending can help cyclicals while reviving rate repricing.",
+            "description": "Retail sales measure the strength of US consumer demand.",
+            "sensitivity_tags": ["consumer", "communication", "industrials"],
+        }
+    if (
+        "employment" in normalized_title
+        or "jobless" in normalized_title
+        or "unemployment" in normalized_title
+    ):
+        return {
+            "event_code": "NFP",
+            "category": "labor",
+            "label": "NFP Payrolls",
+            "impact": "high",
+            "market_bias": "A strong payroll print can boost growth expectations but revive rate fears.",
+            "description": "Hotter or cooler-than-expected data can quickly reprice macro-sensitive assets.",
+            "sensitivity_tags": ["industrials", "energy", "consumer", "long_duration_growth"],
+        }
+    return None
+
+
+def _extract_macro_numeric(entry: dict[str, Any], *keys: str) -> str:
+    for key in keys:
+        value = entry.get(key)
+        if value in (None, ""):
+            continue
+        text = str(value).strip()
+        if text:
+            return text
+    return "N/A"
+
+
+def _infer_surprise_direction(event_code: str, actual: str, consensus: str) -> str:
+    try:
+        actual_value = float(actual.replace("%", "").replace(",", ""))
+        consensus_value = float(consensus.replace("%", "").replace(",", ""))
+    except (AttributeError, TypeError, ValueError):
+        return "N/A"
+
+    if actual_value == consensus_value:
+        return "N/A"
+    stronger = actual_value > consensus_value
+    if event_code in {"CPI", "PPI"}:
+        return "hotter" if stronger else "cooler"
+    if event_code in {"NFP", "RETAIL_SALES"}:
+        return "stronger" if stronger else "weaker"
+    if event_code == "UNRATE":
+        return "weaker" if stronger else "stronger"
+    return "N/A"
 
 
 def _parse_event_date(raw_value: str) -> date | None:

@@ -104,7 +104,9 @@ class PipelineTests(unittest.TestCase):
             )
 
     def test_run_pipeline_supports_sqlite_backend(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
+        # ignore_cleanup_errors=True prevents Windows PermissionError when
+        # SQLite WAL files are still locked at TemporaryDirectory cleanup.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
             temp_path = Path(temp_dir)
             config_dir = temp_path / 'config'
             config_dir.mkdir(parents=True, exist_ok=True)

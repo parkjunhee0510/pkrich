@@ -12,6 +12,7 @@ from typing import Any
 from src.backtester.engine import build_backtest_summary
 from src.types import MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
 from src.utils.earnings_history import build_earnings_surprise_summary
+from src.utils.earnings_pattern import build_earnings_pattern
 from src.utils.earnings_setup import build_earnings_setup
 from src.utils.monthly_summary import load_monthly_summary
 from src.utils.sec_filings import collect_sec_filing_tags, collect_sec_filings, sort_sec_filings
@@ -127,6 +128,7 @@ def _write_dashboard_jsons(
         "start_date": weekly_summary.start_date if weekly_summary else "",
         "end_date": weekly_summary.end_date if weekly_summary else "",
         "trading_days": weekly_summary.trading_days if weekly_summary else 0,
+        "weekly_report": weekly_summary.weekly_report if weekly_summary else {},
         "weekly_insight": weekly_summary.weekly_insight if weekly_summary else "",
     }
     latest_payload = {
@@ -259,6 +261,7 @@ def _serialize_analysis(
             currency=currency,
         ),
         "earnings_surprise_history": build_earnings_surprise_summary(analysis.quarterly_financials),
+        "earnings_pattern": build_earnings_pattern(analysis.quarterly_financials),
         "price_action": analysis.price_action,
         "quarterly_financials": analysis.quarterly_financials[:4],
         "upcoming_events": analysis.upcoming_events,
@@ -267,13 +270,15 @@ def _serialize_analysis(
         "options_summary": analysis.options_summary,
         "signal_history": getattr(analysis, "signal_history", []),
         "sector_comparison": getattr(analysis, "sector_comparison", {}),
+        "peer_rank": getattr(analysis, "peer_rank", {}),
         "valuation_score": getattr(analysis, "valuation_score", {}),
+        "analysis_consensus": getattr(analysis, "analysis_consensus", {}),
         "period_changes": period_changes,
         "sec_filing_tags": collect_sec_filing_tags(analysis.news_references),
         "sec_filings": sort_sec_filings(collect_sec_filings(analysis.news_references)),
     }
     if decision is not None:
-        result["decision"] = _serialize_decision(decision)
+        result["decision"] = _serialize_decision(decision, analysis_consensus=getattr(analysis, "analysis_consensus", {}))
     return result
 
 
@@ -289,13 +294,25 @@ def _serialize_market_regime(regime: MarketRegime | None) -> dict[str, Any]:
     }
 
 
-def _serialize_decision(decision: TickerDecision) -> dict[str, Any]:
+def _serialize_decision(
+    decision: TickerDecision,
+    *,
+    analysis_consensus: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    consensus = analysis_consensus or {}
+    status = str(consensus.get("status", "not_applicable"))
+    ensemble_agreement = "single"
+    if status == "agreed":
+        ensemble_agreement = "agree"
+    elif status == "conflicted":
+        ensemble_agreement = "conflict"
     return {
         "action": decision.action,
         "conviction": decision.conviction,
         "reason": decision.reason,
         "valid_until": decision.valid_until,
         "factors": decision.factors,
+        "ensemble_agreement": ensemble_agreement,
     }
 
 
@@ -454,6 +471,8 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
         "api_status.json",
         "api_ticker_matrix.json",
         "api_ticker_matrix.csv",
+        "analysis_quality.json",
+        "ab_test_results.json",
         "price_history.json",
         "ticker_timelines.json",
         "backtest_summary.json",

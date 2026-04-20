@@ -72,6 +72,7 @@ class CollectedTickerData:
     price_vs_sma200: str = 'N/A'
     week52_position: str = 'N/A'
     rs_vs_spy: str = 'N/A'
+    rs_vs_sector_etf: str = 'N/A'
     options_summary: dict[str, str] = field(default_factory=dict)
     open_price: str = 'N/A'
     high_price: str = 'N/A'
@@ -110,7 +111,9 @@ class TickerAnalysis:
     options_summary: dict[str, str] = field(default_factory=dict)
     signal_history: list[dict[str, str]] = field(default_factory=list)
     sector_comparison: dict[str, object] = field(default_factory=dict)
+    peer_rank: dict[str, object] = field(default_factory=dict)
     valuation_score: dict[str, object] = field(default_factory=dict)
+    analysis_consensus: dict[str, object] = field(default_factory=dict)
     historical_prices: list[dict[str, str]] = field(default_factory=list)
 
 
@@ -142,6 +145,33 @@ class PortfolioSummary:
     total_cost_basis: float = 0.0
     total_unrealized_pnl: float | None = None
     total_unrealized_return_pct: float | None = None
+
+
+@dataclass(frozen=True)
+class PortfolioRiskMetrics:
+    hhi: float
+    portfolio_beta: float | None
+    correlation_matrix: dict[str, dict[str, float | None]] = field(default_factory=dict)
+    mdd_20d: float | None = None
+    var_95: float | None = None
+    risk_grade: str = "B"
+    recommendations: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class PeerInfo:
+    ticker: str
+    sector: str = 'N/A'
+    market_cap: str = 'N/A'
+    avg_volume: str = 'N/A'
+    data_coverage_score: float = 0.0
+    pe_ratio: str = 'N/A'
+    roe: str = 'N/A'
+    gross_margin: str = 'N/A'
+    price_change_30d: str = 'N/A'
+    rs_vs_spy: str = 'N/A'
+    revenue_growth: str = 'N/A'
+    dividend_yield: str = 'N/A'
 
 
 @dataclass(frozen=True)
