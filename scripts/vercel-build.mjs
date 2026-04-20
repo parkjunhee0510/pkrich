@@ -12,12 +12,9 @@ const sourceDataRoot = path.join(repoRoot, 'output', 'data')
 
 const npmEnv = {
   ...process.env,
-  npm_config_install_strategy: 'hoisted',
-  NPM_CONFIG_INSTALL_STRATEGY: 'hoisted',
-  NPM_FLAGS: '',
 }
 
-execSync('npm ci --install-strategy=hoisted', {
+execSync('npm install --no-audit --no-fund', {
   cwd: webRoot,
   stdio: 'inherit',
   env: npmEnv,
