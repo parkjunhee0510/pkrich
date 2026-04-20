@@ -191,3 +191,4 @@ class TickerDecision:
     reason: str = ''
     valid_until: str = ''
     factors: dict[str, float] = field(default_factory=dict)
+    final_consensus: Literal['single', 'agree', 'resolved', 'conflict'] = 'single'

@@ -16,7 +16,7 @@ import time
 from datetime import date, timedelta
 from typing import Any
 from urllib import request
-from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError
 
 from src.utils.env import is_env_flag_enabled
 from src.utils.network import can_open_tcp_connection

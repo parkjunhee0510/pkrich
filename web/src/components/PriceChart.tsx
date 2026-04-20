@@ -16,6 +16,7 @@ import { parsePrice } from '../utils/format'
 
 interface Props {
   rows: PriceHistoryRow[]
+  height?: number
 }
 
 type ChartMode = 'candle' | 'line'
@@ -26,9 +27,21 @@ function hasOHLC(row: PriceHistoryRow): boolean {
 
 function parseNum(v?: string): number {
   if (!v) return 0
-  const cleaned = v.replace(/[^0-9.-]/g, '')
+  const trimmed = v.trim().toUpperCase()
+  const suffix = trimmed.match(/[KMBT]$/)?.[0]
+  const multiplier = suffix === 'K'
+    ? 1_000
+    : suffix === 'M'
+      ? 1_000_000
+      : suffix === 'B'
+        ? 1_000_000_000
+        : suffix === 'T'
+          ? 1_000_000_000_000
+          : 1
+  const cleaned = trimmed.replace(/[^0-9.-]/g, '')
   const n = parseFloat(cleaned)
   return isNaN(n) ? 0 : n
+    * multiplier
 }
 
 function formatVolume(v: number): string {
@@ -37,7 +50,7 @@ function formatVolume(v: number): string {
   return v.toFixed(0)
 }
 
-export function PriceChart({ rows }: Props) {
+export function PriceChart({ rows, height = 360 }: Props) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
   const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
@@ -55,7 +68,7 @@ export function PriceChart({ rows }: Props) {
 
     const chart = createChart(container, {
       width: container.clientWidth,
-      height: 360,
+      height,
       layout: {
         background: { type: ColorType.Solid, color: 'transparent' },
         textColor: isDark ? '#a0a0b0' : '#555',
@@ -146,7 +159,7 @@ export function PriceChart({ rows }: Props) {
       lineSeriesRef.current = null
       volumeSeriesRef.current = null
     }
-  }, [rows, mode, ohlcAvailable])
+  }, [rows, mode, ohlcAvailable, height])
 
   if (rows.length === 0) {
     return <p className="empty">Price history not available.</p>
@@ -181,7 +194,7 @@ export function PriceChart({ rows }: Props) {
           <span className="price-chart-volume-label">Vol {formatVolume(latestVolume)}</span>
         )}
       </div>
-      <div ref={chartContainerRef} className="chart-container" style={{ height: 360 }} />
+      <div ref={chartContainerRef} className="chart-container" style={{ height }} />
     </div>
   )
 }

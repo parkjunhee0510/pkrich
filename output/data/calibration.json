@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "horizons": {
+    "1": {
+      "horizon": 1,
+      "decile_buckets": {
+        "status": "ok",
+        "total_evaluated": 13,
+        "horizon": 1,
+        "metric": "absolute",
+        "deciles": [
+          {
+            "decile": 1,
+            "conviction_min": 60.0,
+            "conviction_max": 60.0,
+            "n": 1,
+            "mean_return": 0.98,
+            "hit_rate": 1.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 2,
+            "conviction_min": 61.0,
+            "conviction_max": 61.0,
+            "n": 1,
+            "mean_return": -5.78,
+            "hit_rate": 0.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 3,
+            "conviction_min": 62.0,
+            "conviction_max": 62.0,
+            "n": 1,
+            "mean_return": -2.46,
+            "hit_rate": 0.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 4,
+            "conviction_min": 64.0,
+            "conviction_max": 64.0,
+            "n": 2,
+            "mean_return": -1.05,
+            "hit_rate": 0.0,
+            "ir": -0.215
+          },
+          {
+            "decile": 5,
+            "conviction_min": 65.0,
+            "conviction_max": 65.0,
+            "n": 1,
+            "mean_return": 0.34,
+            "hit_rate": 1.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 6,
+            "conviction_min": 66.0,
+            "conviction_max": 66.0,
+            "n": 1,
+            "mean_return": -8.14,
+            "hit_rate": 0.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 7,
+            "conviction_min": 67.0,
+            "conviction_max": 68.0,
+            "n": 2,
+            "mean_return": -0.4,
+            "hit_rate": 1.0,
+            "ir": -1.23
+          },
+          {
+            "decile": 8,
+            "conviction_min": 68.0,
+            "conviction_max": 68.0,
+            "n": 1,
+            "mean_return": 3.38,
+            "hit_rate": 0.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 9,
+            "conviction_min": 71.0,
+            "conviction_max": 71.0,
+            "n": 1,
+            "mean_return": 0.81,
+            "hit_rate": 1.0,
+            "ir": 0.0
+          },
+          {
+            "decile": 10,
+            "conviction_min": 74.0,
+            "conviction_max": 77.0,
+            "n": 2,
+            "mean_return": 1.22,
+            "hit_rate": 0.5,
+            "ir": 0.496
+          }
+        ]
+      },
+      "reliability": {
+        "status": "ok",
+        "total_evaluated": 13,
+        "horizon": 1,
+        "brier_score": 0.2809,
+        "bins": [
+          {
+            "bin": 6,
+            "predicted_min": 0.5,
+            "predicted_max": 0.6,
+            "predicted": 0.6,
+            "realized": 1.0,
+            "n": 1
+          },
+          {
+            "bin": 7,
+            "predicted_min": 0.6,
+            "predicted_max": 0.7,
+            "predicted": 0.65,
+            "realized": 0.333,
+            "n": 9
+          },
+          {
+            "bin": 8,
+            "predicted_min": 0.7,
+            "predicted_max": 0.8,
+            "predicted": 0.74,
+            "realized": 0.667,
+            "n": 3
+          }
+        ]
+      },
+      "drift": {
+        "status": "ok",
+        "horizon": 1,
+        "window_days": 30,
+        "series": [
+          {
+            "date": "2026-04-16",
+            "brier": 0.2809,
+            "n": 13
+          }
+        ],
+        "trend_slope": null,
+        "latest_brier": 0.2809,
+        "drift_alert": false
+      }
+    },
+    "5": {
+      "horizon": 5,
+      "decile_buckets": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 5,
+        "metric": "absolute",
+        "deciles": []
+      },
+      "reliability": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 5,
+        "bins": [],
+        "brier_score": null
+      },
+      "alpha_buckets": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 5,
+        "metric": "alpha",
+        "deciles": []
+      },
+      "drift": {
+        "status": "insufficient_data",
+        "horizon": 5,
+        "window_days": 30,
+        "series": [],
+        "trend_slope": null,
+        "latest_brier": null
+      }
+    },
+    "20": {
+      "horizon": 20,
+      "decile_buckets": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 20,
+        "metric": "absolute",
+        "deciles": []
+      },
+      "reliability": {
+        "status": "insufficient_data",
+        "total_evaluated": 0,
+        "horizon": 20,
+        "bins": [],
+        "brier_score": null
+      },
+      "drift": {
+        "status": "insufficient_data",
+        "horizon": 20,
+        "window_days": 30,
+        "series": [],
+        "trend_slope": null,
+        "latest_brier": null
+      }
+    }
+  }
+}

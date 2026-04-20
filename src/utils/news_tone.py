@@ -40,9 +40,22 @@ _NEGATIVE_TERMS = {
     "지연": -1,
 }
 
+_LABEL_ALIASES = {
+    "bullish": "bullish",
+    "bearish": "bearish",
+    "neutral": "neutral",
+    "mixed": "neutral",
+    "긍정": "bullish",
+    "강세": "bullish",
+    "부정": "bearish",
+    "약세": "bearish",
+    "중립": "neutral",
+    "혼조": "neutral",
+}
+
 
 def build_news_tone(analysis: TickerAnalysis) -> dict[str, str | float | int]:
-    existing_label = str(analysis.news_tone.get("label", "")).strip().lower()
+    existing_label = normalize_news_tone_label(analysis.news_tone.get("label", ""))
     if existing_label in {"bullish", "neutral", "bearish"}:
         score = analysis.news_tone.get("score")
         confidence = analysis.news_tone.get("confidence")
@@ -81,6 +94,13 @@ def build_news_tone(analysis: TickerAnalysis) -> dict[str, str | float | int]:
         label = "neutral"
 
     return {"label": label, "score": float(score)}
+
+
+def normalize_news_tone_label(label: object) -> str:
+    text = str(label or "").strip()
+    if not text:
+        return ""
+    return _LABEL_ALIASES.get(text, _LABEL_ALIASES.get(text.lower(), ""))
 
 
 def _only_fallback_news(items: list[NewsItem]) -> bool:

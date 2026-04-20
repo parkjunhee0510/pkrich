@@ -1,0 +1,217 @@
+{
+  "__type__": "object",
+  "keys": {
+    "llm": {
+      "__type__": "object",
+      "keys": {
+        "completed_batches": {
+          "__type__": "int"
+        },
+        "estimated_cost_usd": {
+          "__type__": "float"
+        },
+        "failed_batches": {
+          "__type__": "int"
+        },
+        "latest_model": {
+          "__type__": "str"
+        },
+        "models_used": {
+          "__type__": "object",
+          "keys": {}
+        },
+        "planned_batches": {
+          "__type__": "int"
+        },
+        "quality": {
+          "__type__": "object",
+          "keys": {}
+        },
+        "used": {
+          "__type__": "bool"
+        },
+        "validation_failures": {
+          "__type__": "int"
+        }
+      }
+    },
+    "log_path": {
+      "__type__": "str"
+    },
+    "pipeline_completed": {
+      "__type__": "bool"
+    },
+    "providers": {
+      "__type__": "object",
+      "keys": {
+        "alpha_vantage": {
+          "__type__": "object",
+          "keys": {
+            "failed_tickers": {
+              "__type__": "int"
+            },
+            "not_used_tickers": {
+              "__type__": "int"
+            },
+            "overall_status": {
+              "__type__": "str"
+            },
+            "throttled_tickers": {
+              "__type__": "int"
+            },
+            "unavailable_tickers": {
+              "__type__": "int"
+            },
+            "used_tickers": {
+              "__type__": "int"
+            }
+          }
+        },
+        "finnhub": {
+          "__type__": "object",
+          "keys": {
+            "failed_tickers": {
+              "__type__": "int"
+            },
+            "not_used_tickers": {
+              "__type__": "int"
+            },
+            "overall_status": {
+              "__type__": "str"
+            },
+            "throttled_tickers": {
+              "__type__": "int"
+            },
+            "unavailable_tickers": {
+              "__type__": "int"
+            },
+            "used_tickers": {
+              "__type__": "int"
+            }
+          }
+        },
+        "fmp": {
+          "__type__": "object",
+          "keys": {
+            "failed_tickers": {
+              "__type__": "int"
+            },
+            "not_used_tickers": {
+              "__type__": "int"
+            },
+            "overall_status": {
+              "__type__": "str"
+            },
+            "throttled_tickers": {
+              "__type__": "int"
+            },
+            "unavailable_tickers": {
+              "__type__": "int"
+            },
+            "used_tickers": {
+              "__type__": "int"
+            }
+          }
+        },
+        "ir_rss": {
+          "__type__": "object",
+          "keys": {
+            "failed_tickers": {
+              "__type__": "int"
+            },
+            "not_used_tickers": {
+              "__type__": "int"
+            },
+            "overall_status": {
+              "__type__": "str"
+            },
+            "throttled_tickers": {
+              "__type__": "int"
+            },
+            "unavailable_tickers": {
+              "__type__": "int"
+            },
+            "used_tickers": {
+              "__type__": "int"
+            }
+          }
+        },
+        "polygon": {
+          "__type__": "object",
+          "keys": {
+            "failed_tickers": {
+              "__type__": "int"
+            },
+            "not_used_tickers": {
+              "__type__": "int"
+            },
+            "overall_status": {
+              "__type__": "str"
+            },
+            "throttled_tickers": {
+              "__type__": "int"
+            },
+            "unavailable_tickers": {
+              "__type__": "int"
+            },
+            "used_tickers": {
+              "__type__": "int"
+            }
+          }
+        },
+        "sec_edgar": {
+          "__type__": "object",
+          "keys": {
+            "failed_tickers": {
+              "__type__": "int"
+            },
+            "not_used_tickers": {
+              "__type__": "int"
+            },
+            "overall_status": {
+              "__type__": "str"
+            },
+            "throttled_tickers": {
+              "__type__": "int"
+            },
+            "unavailable_tickers": {
+              "__type__": "int"
+            },
+            "used_tickers": {
+              "__type__": "int"
+            }
+          }
+        },
+        "yfinance": {
+          "__type__": "object",
+          "keys": {
+            "failed_tickers": {
+              "__type__": "int"
+            },
+            "not_used_tickers": {
+              "__type__": "int"
+            },
+            "overall_status": {
+              "__type__": "str"
+            },
+            "throttled_tickers": {
+              "__type__": "int"
+            },
+            "unavailable_tickers": {
+              "__type__": "int"
+            },
+            "used_tickers": {
+              "__type__": "int"
+            }
+          }
+        }
+      }
+    },
+    "run_date": {
+      "__type__": "str"
+    },
+    "schema_version": {
+      "__type__": "int"
+    }
+  }
+}

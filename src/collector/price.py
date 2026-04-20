@@ -226,7 +226,16 @@ def _collect_single_ticker(
 
             _configure_yfinance_cache(yf)
             ticker = yf.Ticker(item.ticker)
-            history = ticker.history(period="6mo", interval="1d")
+            # auto_adjust pinned to True: downstream `update_signal_returns`
+            # uses a single snapshot of this history (adjusted for splits and
+            # dividends) on BOTH sides of the forward-return calculation, so
+            # the adjusted basis is internally consistent. The lookahead
+            # vulnerability here is that `signal_price` captured at T may be
+            # raw-as-of-T while history-at-T read later is adjusted-as-of-T+5
+            # after an intervening corporate action. That is mitigated by
+            # always preferring same-snapshot prices where possible; see
+            # `src/utils/signal_tracker.update_signal_returns`.
+            history = ticker.history(period="6mo", interval="1d", auto_adjust=True)
             info = getattr(ticker, "info", {}) or {}
             price, change_percent = _select_price_snapshot(history, info)
             open_price = _coerce_finite_float(info.get("regularMarketOpen"))

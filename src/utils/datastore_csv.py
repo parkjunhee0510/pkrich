@@ -5,7 +5,8 @@ from datetime import date
 from pathlib import Path
 
 from src.types import TickerAnalysis
-from src.utils.datastore import Datastore, FIELDNAMES, build_price_history_rows
+from src.types import CollectedTickerData
+from src.utils.datastore import Datastore, FIELDNAMES, build_price_history_rows, build_price_rows_from_collected
 from src.utils.period_changes import load_period_changes_from_rows
 
 
@@ -59,12 +60,30 @@ class CsvDatastore(Datastore):
             }
         return result
 
+    def upsert_collected_prices(
+        self,
+        collected: dict[str, CollectedTickerData],
+        run_date: date,
+    ) -> None:
+        rows = build_price_rows_from_collected(collected, run_date)
+        _write_price_rows(self.csv_path, rows)
+
 
 def append_price_history_csv(path: Path, analyses: list[TickerAnalysis]) -> None:
     existing_rows = _read_csv_rows(path)
     new_rows = build_price_history_rows(analyses)
+    _write_price_rows(path, new_rows, existing_rows=existing_rows)
+
+
+def _write_price_rows(
+    path: Path,
+    new_rows: list[dict[str, str]],
+    *,
+    existing_rows: list[dict[str, str]] | None = None,
+) -> None:
+    existing = existing_rows if existing_rows is not None else _read_csv_rows(path)
     replacement_keys = {(row.get('date'), row.get('ticker')) for row in new_rows}
-    updated_rows = [row for row in existing_rows if (row.get('date'), row.get('ticker')) not in replacement_keys]
+    updated_rows = [row for row in existing if (row.get('date'), row.get('ticker')) not in replacement_keys]
     updated_rows.extend(new_rows)
     updated_rows.sort(key=lambda row: (row['date'], row['ticker']))
 

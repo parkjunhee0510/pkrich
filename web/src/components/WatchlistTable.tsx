@@ -518,5 +518,5 @@ function formatNewsToneConfidence(confidence: number): string {
     4: '매우 높음',
     5: '매우 높음',
   }
-  return `톤 확신도 ${levelMap[normalized]} (${percentage}%)`
+  return `신뢰도 ${levelMap[normalized]} (${percentage}%)`
 }

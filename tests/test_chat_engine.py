@@ -33,7 +33,23 @@ class ChatEngineTests(unittest.TestCase):
             output_root = Path(tmp_dir) / "output"
             data_dir = output_root / "data"
             data_dir.mkdir(parents=True, exist_ok=True)
-            (data_dir / "dashboard.json").write_text(json.dumps(payload), encoding="utf-8")
+            (data_dir / "index.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "date": "2026-04-10",
+                        "market_overview": [],
+                        "macro_context": {},
+                        "market_regime": {},
+                        "portfolio_summary": None,
+                        "portfolio_risk": {},
+                        "signal_stats": {},
+                        "weekly_summary": {},
+                        "tickers": payload["days"][0]["tickers"],
+                    }
+                ),
+                encoding="utf-8",
+            )
 
             response = answer_question("AAPL 어때?", output_root=output_root)
 
@@ -65,7 +81,23 @@ class ChatEngineTests(unittest.TestCase):
             output_root = Path(tmp_dir) / "output"
             data_dir = output_root / "data"
             data_dir.mkdir(parents=True, exist_ok=True)
-            (data_dir / "dashboard.json").write_text(json.dumps(payload), encoding="utf-8")
+            (data_dir / "index.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "date": "2026-04-10",
+                        "market_overview": [],
+                        "macro_context": {},
+                        "market_regime": {},
+                        "portfolio_summary": None,
+                        "portfolio_risk": {},
+                        "signal_stats": {},
+                        "weekly_summary": {},
+                        "tickers": payload["days"][0]["tickers"],
+                    }
+                ),
+                encoding="utf-8",
+            )
 
             response = answer_question(
                 "그럼 리스크는?",

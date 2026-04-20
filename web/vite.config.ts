@@ -13,6 +13,7 @@ const REPO_ROOT = path.resolve(WEB_ROOT, '..')
 const WATCHLIST_PATH = path.join(REPO_ROOT, 'config', 'watchlist.yaml')
 const PORTFOLIO_PATH = path.join(REPO_ROOT, 'config', 'portfolio.yaml')
 const LOGS_ROOT = path.join(REPO_ROOT, 'logs', 'pipeline')
+const OUTPUT_DATA_ROOT = path.join(REPO_ROOT, 'output', 'data')
 
 type LocalResearchStage =
   | 'idle'
@@ -82,6 +83,13 @@ function localResearchBridge(): Plugin {
     name: 'local-research-bridge',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
+        if (req.url?.startsWith('/output/data/')) {
+          const served = await handleOutputDataRequest(req, res)
+          if (served) {
+            return
+          }
+        }
+
         if (req.url?.startsWith('/api/local-research')) {
           await handleLocalResearchRequest(req, res)
           return
@@ -96,6 +104,36 @@ function localResearchBridge(): Plugin {
       })
     },
   }
+}
+
+async function handleOutputDataRequest(req: IncomingMessage, res: ServerResponse): Promise<boolean> {
+  const requestUrl = req.url ?? ''
+  const pathname = requestUrl.split('?')[0] ?? ''
+  const relativePath = pathname.replace(/^\/output\/data\//, '')
+  if (!relativePath || relativePath.includes('..')) {
+    return false
+  }
+
+  const targetPath = path.join(OUTPUT_DATA_ROOT, ...relativePath.split('/'))
+  if (!existsSync(targetPath)) {
+    return false
+  }
+
+  const body = await readFile(targetPath)
+  res.statusCode = 200
+  res.setHeader('Content-Type', inferContentType(targetPath))
+  res.end(body)
+  return true
+}
+
+function inferContentType(filePath: string): string {
+  if (filePath.endsWith('.json')) {
+    return 'application/json; charset=utf-8'
+  }
+  if (filePath.endsWith('.csv')) {
+    return 'text/csv; charset=utf-8'
+  }
+  return 'application/octet-stream'
 }
 
 async function handleLocalResearchRequest(req: IncomingMessage, res: ServerResponse) {

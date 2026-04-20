@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "run_date": "2026-04-17",
+  "trigger_range": [
+    25,
+    75
+  ],
+  "max_daily_ensemble": 0,
+  "portfolio_priority": false,
+  "deep_pass_count": 13,
+  "tickers": [
+    {
+      "ticker": "AAPL",
+      "conviction": 58,
+      "action": "buy",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "CAT",
+      "conviction": 53,
+      "action": "watch",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "XOM",
+      "conviction": 51,
+      "action": "watch",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "AMD",
+      "conviction": 55,
+      "action": "watch",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "KO",
+      "conviction": 44,
+      "action": "avoid",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "T",
+      "conviction": 51,
+      "action": "watch",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "IONQ",
+      "conviction": 59,
+      "action": "buy",
+      "in_portfolio": true,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "OXY",
+      "conviction": 50,
+      "action": "watch",
+      "in_portfolio": false,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "ORA",
+      "conviction": 49,
+      "action": "watch",
+      "in_portfolio": false,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "SPIR",
+      "conviction": 47,
+      "action": "watch",
+      "in_portfolio": false,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "PLUG",
+      "conviction": 56,
+      "action": "buy",
+      "in_portfolio": false,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "RKLB",
+      "conviction": 54,
+      "action": "watch",
+      "in_portfolio": false,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    },
+    {
+      "ticker": "PL",
+      "conviction": 51,
+      "action": "watch",
+      "in_portfolio": false,
+      "selected_for_deep": true,
+      "reason": "in_trigger_range"
+    }
+  ]
+}

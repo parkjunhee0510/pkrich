@@ -1,0 +1,40 @@
+name: Intraday Price Refresh
+
+on:
+  schedule:
+    - cron: "0 14-20 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  intraday-refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run intraday refresh tests
+        run: python -m unittest tests.test_intraday_refresh_output -v
+
+      - name: Run collect-only pipeline
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: python main.py --collect-only
+
+      - name: Commit refreshed outputs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "intraday: refresh price snapshots"
+          file_pattern: output/**
