@@ -371,10 +371,11 @@ def _serialize_decision(
 ) -> dict[str, Any]:
     consensus = analysis_consensus or {}
     status = str(consensus.get("status", "not_applicable"))
+    final_consensus = getattr(decision, "final_consensus", "single")
     ensemble_agreement = "single"
-    if status == "agreed":
+    if status in {"agreed", "resolved"} or final_consensus in {"agree", "resolved"}:
         ensemble_agreement = "agree"
-    elif status == "conflicted":
+    elif status == "conflicted" or final_consensus == "conflict":
         ensemble_agreement = "conflict"
     return {
         "action": decision.action,
@@ -383,7 +384,7 @@ def _serialize_decision(
         "valid_until": decision.valid_until,
         "factors": decision.factors,
         "ensemble_agreement": ensemble_agreement,
-        "final_consensus": getattr(decision, "final_consensus", "single"),
+        "final_consensus": final_consensus,
     }
 
 
@@ -709,25 +710,13 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
                     error=str(exc),
                 )
 
-    stale_candidates = {"dashboard.json"} - set(filenames)
-    for filename in stale_candidates:
-        for target_dir in target_dirs:
-            target_path = target_dir / filename
-            if target_path.exists():
-                try:
-                    retry_io(
-                        lambda p=target_path: p.unlink(),
-                        what=f"unlink stale {target_path}",
-                    )
-                except Exception as exc:
-                    record_pipeline_event(
-                        "output",
-                        "error",
-                        "sync_web_public_unlink_failed",
-                        file=filename,
-                        target=str(target_path),
-                        error=str(exc),
-                    )
+    # NOTE: previously this block unlinked web/public/dashboard.json whenever
+    # the source copy wasn't present at sync time. That caused the frontend to
+    # lose dashboard.json whenever sync raced a transient rewrite (e.g. when
+    # intraday_refresh or sector_scan ran between source writes). dashboard.json
+    # is always a desired artifact, so we no longer delete the mirror if it
+    # happens to be missing at source — a later sync will recopy it once
+    # source is in place.
 
     source_tickers = data_dir / "tickers"
     if source_tickers.is_dir():

@@ -6,11 +6,12 @@
     "ticker": "ORA",
     "name": "Ormat Technologies, Inc.",
     "date": "2026-04-17",
-    "summary": "주가 113.04달러로 50일선 113.07달러와 거의 같아 방향성 확인이 필요한 박스권입니다. 다음 촉매는 D-16인 2026-05-06 실적 발표이며, 현재는 실적 전까지 113달러 부근 지지 여부를 확인하는 구간입니다.",
+    "summary": "주가는 113.04달러로 50일선 113.07달러와 거의 일치하며, 30일간 +6.22%로 완만한 상승 흐름을 유지하고 있습니다. 다음 촉매는 2026-05-06 실적(D-16)이며, 그 전까지는 113달러 지지와 116달러대 상단 돌파가 단기 방향을 결정할 가능성이 큽니다.",
     "key_news": [
       "RBC가 매수 의견 제시",
-      "지열·데이터센터 성장 스토리 지속",
-      "8-K 공시"
+      "8-K 공시와 연간 보고서 제출",
+      "지열·데이터센터 연계 성장 스토리 지속",
+      "실적 D-16, 저유동성 속 소형주 모멘텀 유지"
     ],
     "news_references": [
       {
@@ -45,19 +46,19 @@
       }
     ],
     "financial_highlights": [
-      "PER 56.0x, 목표가 대비 업사이드 +12.4%",
-      "30D +6.22%, SMA50 대비 -0.03%, SMA200 대비 +7.02%",
-      "RSI 51.5, MACD 0.46/0.21, RVOL 0.71x",
-      "Forward EPS 2.58, TTM EPS 2.02, EPS YoY -24.4%",
-      "PCR 0.12x, 목표가 127.09달러, 11명 Buy"
+      "PER 56.0x, Forward EPS 2.58, TTM EPS 2.02",
+      "EPS 성장률 -24.40% YoY",
+      "SMA50 113.07달러 대비 -0.03%, SMA200 105.63달러 대비 +7.02%",
+      "ATR 2.96달러(2.62%), RVOL 0.71x, RSI 51.5",
+      "분석가 11명 Buy, 목표가 127.09달러"
     ],
     "risks_or_watchpoints": [
-      "종가가 113.07달러(SMA50) 아래로 마감하면 단기 추세 무효화 가능성을 감시하세요.",
-      "RVOL 0.71x가 0.8x 미만으로 계속 유지되면 돌파 시도 신뢰도가 낮아집니다.",
-      "2026-05-06 실적 발표 전까지 110.08달러(눌림 시 진입가) 아래로 2회 이상 내려가면 지지 약화 신호로 보세요.",
-      "RSI가 50 아래로 내려가고 MACD 상승폭이 축소되면 방어적 상승 모멘텀 둔화를 경계하세요."
+      "현재가 113.04달러가 SMA50 113.07달러와 사실상 동일해, 113.00달러 아래 종가가 나오면 단기 추세 이탈 신호로 볼 수 있습니다.",
+      "RSI(14) 51.5와 BB 중단 107.65달러 사이에서 방향성이 약해 110.08달러 하회 시 박스권 하단 재시험 가능성이 있습니다.",
+      "2026-05-06 실적 발표 전까지 117.48달러를 못 넘고 거래량이 0.71x 수준에 머물면 상승 탄력이 부족한 것으로 해석해야 합니다.",
+      "전고점 132.58달러 대비 여력이 있으나, 105.63달러(SMA200) 이탈 시 중기 강세 시나리오를 무효로 보고 감시해야 합니다."
     ],
-    "signal_or_takeaway": "매수 후보: 113.07(SMA50) 상향 돌파 시 진입, 목표가 117.48/127.09, 손절가 113.07 이탈 시 무효.",
+    "signal_or_takeaway": "매수 대기: 진입트리거 116.00달러 돌파 또는 110.08달러 눌림, 목표가 117.48달러/127.09달러, 손절가 113.07달러 이탈 시 무효.",
     "data_snapshot": {
       "Price": "113.04 USD",
       "Daily Change": "+0.46%",
@@ -189,9 +190,9 @@
       }
     ],
     "news_tone": {
-      "label": "긍정",
-      "confidence": 4,
-      "reasoning": "애널리스트 매수 의견이 직접 촉매이고, 지열/데이터센터 스토리가 견조. 다만 단기 뉴스 밀도는 높지 않음."
+      "label": "중립-강세",
+      "confidence": 2,
+      "reasoning": "업그레이드와 성장 내러티브가 긍정적이고 추세도 무난. 다만 과열은 아니지만 실적까지는 추가 확인 필요."
     },
     "trade_frame": {
       "entry_price": "현재가 113.04 또는 눌림 시 110.08 USD",
@@ -199,7 +200,7 @@
       "target_1": "117.48 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 127.09 USD",
       "risk_reward_ratio": "N/A",
-      "position_size_note": "$62,369 계좌 1% 리스크 기준 약 210주 (ATR $2.96 기반)",
+      "position_size_note": "$57,940 계좌 1% 리스크 기준 약 195주 (ATR $2.96 기반)",
       "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
       "base_scenario": "113.04 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
@@ -208,32 +209,25 @@
     },
     "options_summary": {
       "expiry": "2026-05-15",
-      "atm_call_iv": "45.5%",
-      "atm_put_iv": "40.9%",
+      "atm_call_iv": "46.4%",
+      "atm_put_iv": "41.7%",
       "put_call_ratio": "0.12x",
-      "iv_percentile_30d": "40th"
+      "iv_percentile_30d": "40th",
+      "tone": "neutral",
+      "unusual_activity": "N/A",
+      "oi_change": "N/A"
     },
     "signal_history": [
       {
         "date": "2026-04-17",
-        "direction": "neutral",
-        "llm_direction": "bear",
+        "direction": "bear",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "113.04 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
       },
       {
-        "date": "2026-04-16",
-        "direction": "neutral",
-        "llm_direction": "unknown",
-        "catalyst": "실적",
-        "return_5d": "N/A",
-        "note": "112.52 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
         "date": "2026-04-15",
         "direction": "bull",
-        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "113.81 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -241,7 +235,6 @@
       {
         "date": "2026-04-14",
         "direction": "bull",
-        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "실적 전까지 113.93-116.07 USD 범위의 좁은 박스권이 유력합니다."
@@ -249,7 +242,6 @@
       {
         "date": "2026-04-13",
         "direction": "bull",
-        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "실적 전까지 111.01 USD~115.25 USD 범위의 박스권 흐름이 가장 유력합니다."
@@ -285,23 +277,21 @@
     "analysis_consensus": {
       "status": "agreed",
       "economy_action": "watch",
-      "economy_conviction": 49,
-      "economy_reason": "실적 D-16 / 하드 촉매 2026-02-26 / 강세 뉴스지만 가격 확인은 제한적 / 선행 EPS 성장 +27.7% / 기관 보유 97.4%",
+      "economy_conviction": 62,
+      "economy_reason": "섹터 대비 +2.1% / 실적 D-16 / 하드 촉매 2026-02-26 / 선행 EPS 성장 +27.7% / 기관 보유 97.4%",
       "deep_action": "watch",
-      "deep_conviction": 49,
-      "deep_reason": "실적 D-16 / 하드 촉매 2026-02-26 / 강세 뉴스지만 가격 확인은 제한적 / 선행 EPS 성장 +27.7% / 기관 보유 97.4%",
+      "deep_conviction": 60,
+      "deep_reason": "섹터 대비 +2.1% / 실적 D-16 / 하드 촉매 2026-02-26 / 선행 EPS 성장 +27.7% / 기관 보유 97.4%",
+      "tie_break_action": null,
+      "tie_break_conviction": null,
+      "tie_break_reason": "",
       "direction_agreement": true,
       "conflicted": false,
       "confidence_delta": 5,
       "selection_reason": "selected",
       "third_review_completed": false,
       "final_consensus": "agree",
-      "final_action": "watch",
-      "conviction_mean": 49.0,
-      "conviction_stdev": 0.0,
-      "conviction_adjusted": 57,
-      "conviction_prior": 49,
-      "conviction_sample_size": 2
+      "final_action": "watch"
     },
     "period_changes": {
       "7d": "-1.89%",
@@ -337,20 +327,20 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 57,
-      "reason": "실적 D-16 / 하드 촉매 2026-02-26 / 강세 뉴스지만 가격 확인은 제한적 / 선행 EPS 성장 +27.7% / 기관 보유 97.4% / 앙상블 보정: 49→57 (↑8, spread σ=0.0)",
+      "conviction": 60,
+      "reason": "섹터 대비 +2.1% / 실적 D-16 / 하드 촉매 2026-02-26 / 선행 EPS 성장 +27.7% / 기관 보유 97.4%",
       "valid_until": "2026-05-06",
       "factors": {
-        "catalyst_recency": -5.0,
+        "catalyst_recency": 13.0,
         "earnings_pattern": 0.0,
-        "fundamentals": 4.0,
-        "momentum": 1.0,
-        "news_tone": 5.0,
+        "fundamentals": 10.0,
+        "momentum": 12.0,
+        "news_tone": 0.0,
         "peer_rank": 0.0,
         "portfolio_risk": 0.0,
-        "regime_adjustment": -2.0,
+        "regime_adjustment": 5.0,
         "signal_track_record": 0.0,
-        "valuation": 0.0
+        "valuation": 10.0
       },
       "ensemble_agreement": "agree",
       "final_consensus": "agree"

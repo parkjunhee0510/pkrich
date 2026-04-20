@@ -6,7 +6,7 @@ from datetime import date
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from src.types import TickerAnalysis
+from src.types import CollectedTickerData, TickerAnalysis
 
 if TYPE_CHECKING:
     from src.utils.datastore_csv import CsvDatastore
@@ -21,6 +21,7 @@ class Datastore(ABC):
         self.data_dir = self.output_root / 'data'
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.csv_path = self.data_dir / 'price_history.csv'
+        self.signal_csv_path = self.data_dir / 'signal_tracker.csv'
 
     @abstractmethod
     def append_prices(self, analyses: list[TickerAnalysis]) -> None:
@@ -50,6 +51,35 @@ class Datastore(ABC):
     def append_analysis_snapshots(self, analyses: list[TickerAnalysis]) -> None:
         return None
 
+    def record_signals(
+        self,
+        analyses: list[TickerAnalysis],
+        run_date: date,
+        price_lookup: dict[str, float],
+        *,
+        decisions: list[Any] | None = None,
+        market_regime: Any | None = None,
+    ) -> None:
+        from src.utils.signal_tracker import record_signals
+
+        record_signals(analyses, run_date, price_lookup, self.signal_csv_path)
+
+    def update_signal_returns(
+        self,
+        run_date: date,
+        price_lookup: dict[str, float],
+        *,
+        price_history_rows: list[dict[str, str]] | None = None,
+    ) -> int:
+        from src.utils.signal_tracker import update_signal_returns
+
+        return update_signal_returns(
+            self.signal_csv_path,
+            run_date,
+            price_lookup,
+            price_history_rows=price_history_rows,
+        )
+
     def record_analysis_run(self, *, run_date: date, success: bool, logger: Any | None = None) -> None:
         return None
 
@@ -61,6 +91,16 @@ class Datastore(ABC):
 
     def get_analysis_quality(self, *, limit: int = 30) -> list[dict[str, Any]]:
         return []
+
+    def load_recent_signals_data(self, ticker: str, *, limit: int = 5) -> list[dict[str, str]]:
+        from src.utils.signal_tracker import load_recent_signals
+
+        return load_recent_signals(self.signal_csv_path, ticker, limit=limit)
+
+    def load_signal_stats_data(self) -> dict[str, Any]:
+        from src.utils.signal_tracker import load_signal_stats
+
+        return load_signal_stats(self.signal_csv_path)
 
     def get_peer_selection_cache(self, ticker: str, month_key: str) -> dict[str, Any] | None:
         return None
@@ -124,3 +164,46 @@ def build_price_history_rows(analyses: list[TickerAnalysis]) -> list[dict[str, s
         }
 
     return [rows_by_key[key] for key in sorted(rows_by_key)]
+
+
+def build_price_rows_from_collected(
+    collected: dict[str, CollectedTickerData],
+    run_date: date,
+) -> list[dict[str, str]]:
+    """Derive a minimal set of price_history rows directly from collected
+    market data. Used by `upsert_collected_prices()` in the collect-only
+    entrypoint where no TickerAnalysis is produced."""
+    rows: list[dict[str, str]] = []
+    row_date = run_date.isoformat()
+    for ticker, data in collected.items():
+        rows.append(
+            {
+                'date': row_date,
+                'ticker': ticker,
+                'price': _format_price_text(data.price, data.currency),
+                'daily_change': _format_signed_percent(data.change_percent),
+                'market_cap': getattr(data, 'market_cap', 'N/A') or 'N/A',
+                'trailing_pe': getattr(data, 'pe_ratio', 'N/A') or 'N/A',
+                'eps': getattr(data, 'eps', 'N/A') or 'N/A',
+                '52w_high': getattr(data, 'week52_high', 'N/A') or 'N/A',
+                '52w_low': getattr(data, 'week52_low', 'N/A') or 'N/A',
+                'open': getattr(data, 'open_price', 'N/A') or 'N/A',
+                'high': getattr(data, 'high_price', 'N/A') or 'N/A',
+                'low': getattr(data, 'low_price', 'N/A') or 'N/A',
+                'close': getattr(data, 'close_price', 'N/A') or 'N/A',
+                'volume': getattr(data, 'day_volume', 'N/A') or 'N/A',
+            }
+        )
+    return sorted(rows, key=lambda row: (row['date'], row['ticker']))
+
+
+def _format_price_text(value: float | None, currency: str | None) -> str:
+    if value is None:
+        return 'N/A'
+    return f"{value:,.2f} {(currency or 'USD')}"
+
+
+def _format_signed_percent(value: float | None) -> str:
+    if value is None:
+        return 'N/A'
+    return f"{value:+.2f}%"

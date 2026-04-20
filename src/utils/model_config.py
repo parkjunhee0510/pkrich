@@ -14,6 +14,8 @@ _DEFAULT_CONFIG: dict[str, Any] = {
         'trigger_range': [25, 75],
         'second_model': 'deep',
         'second_prompt': 'research_v2',
+        'third_model': 'deep',
+        'third_prompt': 'research_v2',
         'max_daily_ensemble': 5,
     },
     'profiles': {
@@ -70,6 +72,8 @@ class EnsembleConfig:
     trigger_range: tuple[int, int]
     second_model: str
     second_prompt: str
+    third_model: str
+    third_prompt: str
     max_daily_ensemble: int
 
 
@@ -125,6 +129,12 @@ def load_ensemble_config(path: str = 'config/models.yaml') -> EnsembleConfig:
     second_prompt = str(
         ensemble.get('second_prompt', profiles.get(second_model, {}).get('prompt_version', 'research_v2'))
     ).strip() or str(profiles.get(second_model, {}).get('prompt_version', 'research_v2'))
+    third_model = str(ensemble.get('third_model', second_model)).strip() or second_model
+    if third_model not in profiles:
+        raise ValueError(f'ensemble.third_model must reference a configured profile: {third_model}')
+    third_prompt = str(
+        ensemble.get('third_prompt', profiles.get(third_model, {}).get('prompt_version', second_prompt))
+    ).strip() or str(profiles.get(third_model, {}).get('prompt_version', second_prompt))
     max_daily_ensemble = int(ensemble.get('max_daily_ensemble', 5))
     if max_daily_ensemble < 0:
         raise ValueError('ensemble.max_daily_ensemble must be >= 0')
@@ -134,6 +144,8 @@ def load_ensemble_config(path: str = 'config/models.yaml') -> EnsembleConfig:
         trigger_range=(low, high),
         second_model=second_model,
         second_prompt=second_prompt,
+        third_model=third_model,
+        third_prompt=third_prompt,
         max_daily_ensemble=max_daily_ensemble,
     )
 

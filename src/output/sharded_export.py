@@ -15,6 +15,7 @@ of truth during rollout; this module is additive.
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -138,3 +139,15 @@ def _write_per_ticker_files(
             json.dumps(history_file, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+
+    active_tickers = {
+        str(payload.get("ticker", "")).strip().upper()
+        for payload in latest_day.get("tickers", [])
+        if str(payload.get("ticker", "")).strip()
+    }
+    for ticker_dir in tickers_dir.iterdir():
+        if not ticker_dir.is_dir():
+            continue
+        if ticker_dir.name.upper() in active_tickers:
+            continue
+        shutil.rmtree(ticker_dir, ignore_errors=True)

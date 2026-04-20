@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { useTickerAnalysis } from '../hooks/useTickerAnalysis'
 import { usePriceHistory } from '../hooks/usePriceHistory'
 import { useTickerTimeline } from '../hooks/useTickerTimeline'
 import { DataSnapshot } from '../components/DataSnapshot'
@@ -68,6 +69,7 @@ const PriceChart = lazy(() =>
 export function TickerDetail() {
   const { ticker } = useParams<{ ticker: string }>()
   const { data, loading, error } = useDashboardData()
+  const { analysis: shardAnalysis, missing: shardMissing } = useTickerAnalysis(ticker)
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
   const [timelineWindow, setTimelineWindow] = useState<'30' | '90'>('30')
@@ -77,7 +79,8 @@ export function TickerDetail() {
   const [selectedFormType, setSelectedFormType] = useState('ALL')
 
   const latestDay = data?.days[data.days.length - 1]
-  const analysis = latestDay?.tickers.find((t) => t.ticker === ticker)
+  const summaryAnalysis = latestDay?.tickers.find((t) => t.ticker === ticker)
+  const analysis = shardAnalysis ?? summaryAnalysis
   const fallbackSignalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
   const pct = parseNumericChange(analysis?.data_snapshot['Daily Change'] ?? '0')
   const signalDirection = extractSignalDirection(analysis?.signal_or_takeaway)
@@ -170,7 +173,8 @@ export function TickerDetail() {
   if (loading) return <TickerDetailSkeleton />
   if (error) return <ErrorState message={error} />
   if (!data || !ticker) return <p className="status">No data available.</p>
-  if (!analysis) return <p className="status">Ticker {ticker} not found.</p>
+  if (!analysis && shardMissing) return <p className="status">Ticker {ticker} not found.</p>
+  if (!analysis) return <TickerDetailSkeleton />
 
   const headerEnsemble = HEADER_ENSEMBLE_BADGES[analysis.decision?.ensemble_agreement ?? 'single'] ?? HEADER_ENSEMBLE_BADGES.single
   const headerSelectionReason = analysis.analysis_consensus?.selection_reason

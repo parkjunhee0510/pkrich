@@ -10,15 +10,48 @@
     "dropped_unsupported_count"
   ],
   "totals": {
-    "schema_violation_count": 143,
-    "fact_warning_count": 17,
+    "schema_violation_count": 0,
+    "fact_warning_count": 22,
     "consistency_warning_count": 0,
-    "hallucination_warning_count": 0,
+    "hallucination_warning_count": 5,
     "dropped_unsupported_count": 0
   },
   "series": [
     {
-      "date": "2026-04-11",
+      "date": "2026-04-08",
+      "batch_count": 0,
+      "validated_ticker_count": 0,
+      "validation_failure_count": 0,
+      "schema_violation_count": 0,
+      "fact_warning_count": 0,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 0,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-04-09",
+      "batch_count": 0,
+      "validated_ticker_count": 0,
+      "validation_failure_count": 0,
+      "schema_violation_count": 0,
+      "fact_warning_count": 0,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 0,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-04-10",
+      "batch_count": 0,
+      "validated_ticker_count": 0,
+      "validation_failure_count": 0,
+      "schema_violation_count": 0,
+      "fact_warning_count": 0,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 0,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-04-13",
       "batch_count": 1,
       "validated_ticker_count": 0,
       "validation_failure_count": 0,
@@ -29,56 +62,56 @@
       "dropped_unsupported_count": 0
     },
     {
-      "date": "2026-04-12",
-      "batch_count": 1,
+      "date": "2026-04-14",
+      "batch_count": 3,
       "validated_ticker_count": 0,
-      "validation_failure_count": 0,
+      "validation_failure_count": 1,
       "schema_violation_count": 0,
       "fact_warning_count": 0,
       "consistency_warning_count": 0,
       "hallucination_warning_count": 0,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-04-15",
+      "batch_count": 3,
+      "validated_ticker_count": 0,
+      "validation_failure_count": 1,
+      "schema_violation_count": 0,
+      "fact_warning_count": 0,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 0,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-04-16",
+      "batch_count": 0,
+      "validated_ticker_count": 108,
+      "validation_failure_count": 12,
+      "schema_violation_count": 0,
+      "fact_warning_count": 10,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 2,
       "dropped_unsupported_count": 0
     },
     {
       "date": "2026-04-17",
       "batch_count": 0,
-      "validated_ticker_count": 91,
+      "validated_ticker_count": 104,
       "validation_failure_count": 10,
-      "schema_violation_count": 13,
-      "fact_warning_count": 9,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "dropped_unsupported_count": 0
-    },
-    {
-      "date": "2026-04-18",
-      "batch_count": 8,
-      "validated_ticker_count": 0,
-      "validation_failure_count": 8,
-      "schema_violation_count": 104,
-      "fact_warning_count": 0,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "dropped_unsupported_count": 0
-    },
-    {
-      "date": "2026-04-19",
-      "batch_count": 14,
-      "validated_ticker_count": 109,
-      "validation_failure_count": 9,
-      "schema_violation_count": 13,
+      "schema_violation_count": 0,
       "fact_warning_count": 7,
       "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
+      "hallucination_warning_count": 3,
       "dropped_unsupported_count": 0
     },
     {
       "date": "2026-04-20",
-      "batch_count": 8,
-      "validated_ticker_count": 91,
-      "validation_failure_count": 3,
-      "schema_violation_count": 13,
-      "fact_warning_count": 1,
+      "batch_count": 0,
+      "validated_ticker_count": 64,
+      "validation_failure_count": 5,
+      "schema_violation_count": 0,
+      "fact_warning_count": 5,
       "consistency_warning_count": 0,
       "hallucination_warning_count": 0,
       "dropped_unsupported_count": 0

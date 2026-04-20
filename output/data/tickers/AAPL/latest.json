@@ -6,12 +6,13 @@
     "ticker": "AAPL",
     "name": "Apple Inc.",
     "date": "2026-04-17",
-    "summary": "주가 270.23달러로 52주 고점 288.62달러의 81% 수준이며 50일선 260.56달러와 200일선 252.14달러 위에 있어 단기 추세는 우상향입니다. 다음 촉매는 D-10인 2026-04-30 실적 발표로, 현재가와 목표가 297.46달러 사이 갭과 거래량 반응이 핵심입니다.",
+    "summary": "주가는 52주 고점의 81% 수준에서 50일·200일선을 모두 상회하며, RSI 64와 MACD 상승으로 추세는 견조하지만 섹터 대비 상대강도는 -5.26%로 다소 뒤집니다. 다음 촉매는 2026-04-30 실적 발표로, 기대치 상회와 아이폰·AI 관련 모멘텀 지속 여부가 주가 재평가의 핵심입니다.",
     "key_news": [
-      "AI 칩 수요 호조로 ASML 가이던스 상향",
-      "애플, 아시아 iPhone 수요 회복에 매출 성장 가이던스",
-      "BofA, 실적 앞두고 목표주가 상향",
-      "8-K 공시"
+      "ASML, AI 칩 수요 급증으로 2026년 전망 상향",
+      "아이폰 수요 회복으로 애플, 강한 매출 성장 전망",
+      "애플, SEC에 8-K 중요 공시 제출",
+      "애플, SEC에 10-Q 분기 실적 보고서 제출",
+      "BofA 애널리스트, 실적 앞두고 애플 목표가 상향"
     ],
     "news_references": [
       {
@@ -46,16 +47,16 @@
       }
     ],
     "financial_highlights": [
-      "PER 34.2x, FCF Yield 2.6%, ROE 151.9%, ND/EBITDA 0.5x",
-      "30D +8.97%, SMA50 대비 +3.71%, SMA200 대비 +7.17%",
-      "RSI 64.2, MACD 2.06/0.24, RVOL 1.17x",
-      "Forward EPS 9.35, TTM EPS 7.89, EPS YoY +18.3%",
-      "컨센서스 40명 Buy, 목표가 297.46달러, 업사이드 +10.1%"
+      "PER 34.25배 (EPS 7.89)",
+      "Forward EPS 9.35, 성장률 +18.30% YoY",
+      "시가총액 3.97T / 배당 0.38%",
+      "52주 범위 81% 위치, SMA50 260.56 USD",
+      "애널리스트 Buy (목표 297.46 USD) / 기관 65.30%"
     ],
     "risks_or_watchpoints": [
       "의사결정 전 최근 실적 일정과 주요 헤드라인을 다시 확인하세요."
     ],
-    "signal_or_takeaway": "매수 대기: 270.23 상향 돌파 시 진입, 목표가 279.71/297.46, 손절가 260.56(SMA50) 이탈 시 무효.",
+    "signal_or_takeaway": "매수 관찰 — 아이폰 수요 회복과 AI 모멘텀 기대가 실적 재평가를 지지함 | 진입 트리거 270.23달러 부근 안착 후 거래량 동반 돌파 시 | 목표 279.71달러/297.46달러 | 손절 260.56달러",
     "data_snapshot": {
       "Price": "270.23 USD",
       "Daily Change": "+2.59%",
@@ -187,9 +188,9 @@
       }
     ],
     "news_tone": {
-      "label": "긍정",
-      "confidence": 4,
-      "reasoning": "AI·iPhone 수요 관련 호재와 목표가 상향이 겹치며 실적 전 대기심리 우호적. 다만 이벤트 자체는 분산돼 있어 강한 단일 촉매는 아님."
+      "label": "bullish",
+      "confidence": 3,
+      "reasoning": "아이폰 수요 회복과 목표가 상향, 그리고 AI 반도체 호황이 애플 실적 기대를 높이고 있습니다."
     },
     "trade_frame": {
       "entry_price": "현재가 270.23 또는 눌림 시 263.91 USD",
@@ -197,7 +198,7 @@
       "target_1": "279.71 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 297.46 USD",
       "risk_reward_ratio": "1.0R",
-      "position_size_note": "$62,369 계좌 1% 리스크 기준 약 98주 (ATR $6.32 기반)",
+      "position_size_note": "$57,940 계좌 1% 리스크 기준 약 91주 (ATR $6.32 기반)",
       "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
       "base_scenario": "270.23 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
@@ -206,32 +207,25 @@
     },
     "options_summary": {
       "expiry": "2026-04-20",
-      "atm_call_iv": "22.2%",
-      "atm_put_iv": "22.1%",
-      "put_call_ratio": "0.45x",
-      "iv_percentile_30d": "4th"
+      "atm_call_iv": "31.4%",
+      "atm_put_iv": "31.3%",
+      "put_call_ratio": "0.41x",
+      "iv_percentile_30d": "3th",
+      "tone": "neutral",
+      "unusual_activity": "PUT $390, vol 5, OI 대비 100%",
+      "oi_change": "N/A"
     },
     "signal_history": [
       {
         "date": "2026-04-17",
         "direction": "bull",
-        "llm_direction": "bear",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "270.23 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
       },
       {
-        "date": "2026-04-16",
-        "direction": "bull",
-        "llm_direction": "unknown",
-        "catalyst": "실적",
-        "return_5d": "N/A",
-        "note": "263.40 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
         "date": "2026-04-15",
-        "direction": "bull",
-        "llm_direction": "unknown",
+        "direction": "bear",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "266.43 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -239,7 +233,6 @@
       {
         "date": "2026-04-14",
         "direction": "bull",
-        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "현재가 기준 ±1 ATR인 252.97-264.69 USD 구간에서 실적 전까지 박스권 소화 가능성이 높습니다. RVOL 0.83x라 급격한 추세 확장보다는 제한적 등락이 우세합니다."
@@ -247,10 +240,16 @@
       {
         "date": "2026-04-13",
         "direction": "bull",
-        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "현재가 기준 ±1 ATR인 253.30-265.10 USD에서 실적 전까지 횡보할 가능성이 큽니다."
+      },
+      {
+        "date": "2026-04-12",
+        "direction": "bull",
+        "catalyst": "실적",
+        "return_5d": "+3.74%",
+        "note": "실적 전까지 254.38달러에서 266.58달러 사이, 즉 현재가 ±1 ATR 구간에서 박스권 움직임이 유력합니다. RVOL 0.59x는 추세 확장보다 소강 가능성을 시사합니다."
       }
     ],
     "sector_comparison": {
@@ -271,12 +270,7 @@
         "difference": null
       }
     },
-    "peer_rank": {
-      "per_pctl": 33,
-      "rs_pctl": 0,
-      "revenue_growth_pctl": 20,
-      "summary": "모멘텀 하위 0%"
-    },
+    "peer_rank": {},
     "valuation_score": {
       "score": "6/10",
       "factors": [
@@ -288,25 +282,11 @@
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
     "analysis_consensus": {
-      "status": "agreed",
-      "economy_action": "buy",
-      "economy_conviction": 58,
-      "economy_reason": "최근 시그널 승률 100% (3/3) / 강세 뉴스지만 가격 확인은 제한적 / Technology 섹터 비중 55.0%로 과집중 상태",
-      "deep_action": "buy",
-      "deep_conviction": 58,
-      "deep_reason": "최근 시그널 승률 100% (3/3) / 강세 뉴스지만 가격 확인은 제한적 / Technology 섹터 비중 55.0%로 과집중 상태",
-      "direction_agreement": true,
-      "conflicted": false,
-      "confidence_delta": 5,
-      "selection_reason": "selected",
+      "status": "not_applicable",
+      "direction_agreement": null,
+      "selection_reason": "cap_exceeded",
       "third_review_completed": false,
-      "final_consensus": "agree",
-      "final_action": "buy",
-      "conviction_mean": 58.0,
-      "conviction_stdev": 0.0,
-      "conviction_adjusted": 66,
-      "conviction_prior": 58,
-      "conviction_sample_size": 2
+      "final_consensus": "single"
     },
     "period_changes": {
       "7d": "+3.74%",
@@ -342,23 +322,23 @@
     ],
     "decision": {
       "action": "buy",
-      "conviction": 66,
-      "reason": "최근 시그널 승률 100% (3/3) / 강세 뉴스지만 가격 확인은 제한적 / Technology 섹터 비중 55.0%로 과집중 상태 / 앙상블 보정: 58→66 (↑8, spread σ=0.0)",
+      "conviction": 72,
+      "reason": "실적 D-10 / 하드 촉매 2026-01-30 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (3/3)",
       "valid_until": "2026-04-30",
       "factors": {
-        "catalyst_recency": 3.0,
+        "catalyst_recency": 18.0,
         "earnings_pattern": 0.0,
-        "fundamentals": 2.0,
-        "momentum": 0.0,
+        "fundamentals": 8.0,
+        "momentum": 9.0,
         "news_tone": 5.0,
-        "peer_rank": -3.0,
-        "portfolio_risk": -4.0,
-        "regime_adjustment": 4.0,
-        "signal_track_record": 9.0,
-        "valuation": 4.0
+        "peer_rank": 0.0,
+        "portfolio_risk": -6.0,
+        "regime_adjustment": 15.0,
+        "signal_track_record": 15.0,
+        "valuation": 12.0
       },
-      "ensemble_agreement": "agree",
-      "final_consensus": "agree"
+      "ensemble_agreement": "single",
+      "final_consensus": "single"
     }
   }
 }

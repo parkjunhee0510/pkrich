@@ -35,10 +35,12 @@ class AnalysisEnsemble:
         self,
         economy_orchestrator: AnalysisOrchestrator,
         deep_orchestrator: AnalysisOrchestrator,
+        tie_break_orchestrator: AnalysisOrchestrator | None,
         config: EnsembleConfig,
     ) -> None:
         self.economy_orchestrator = economy_orchestrator
         self.deep_orchestrator = deep_orchestrator
+        self.tie_break_orchestrator = tie_break_orchestrator
         self.config = config
 
     def analyze_with_consensus(
@@ -92,6 +94,8 @@ class AnalysisEnsemble:
 
         deep_map: dict[str, TickerAnalysis] = {}
         deep_decision_map: dict[str, TickerDecision] = {}
+        tie_break_map: dict[str, TickerAnalysis] = {}
+        tie_break_decision_map: dict[str, TickerDecision] = {}
         diagnostics: dict[str, Any] = {
             "ensemble_enabled": self.config.enabled,
             "eligible_tickers": eligible_tickers,
@@ -101,9 +105,13 @@ class AnalysisEnsemble:
             "max_daily_ensemble": self.config.max_daily_ensemble,
             "second_model": self.config.second_model,
             "second_prompt": self.config.second_prompt,
+            "third_model": self.config.third_model,
+            "third_prompt": self.config.third_prompt,
             "ensemble_target_tickers": target_tickers,
             "economy_executed_modules": self.economy_orchestrator.diagnostics.get("executed_modules", []),
             "deep_executed_modules": [],
+            "tie_break_executed_modules": [],
+            "third_review_tickers": [],
         }
         portfolio_result = dict(self.economy_orchestrator.portfolio_result)
 
@@ -151,24 +159,76 @@ class AnalysisEnsemble:
             )
             deep_decision_map = {decision.ticker: decision for decision in deep_decisions}
 
+            conflicted_tickers = [
+                ticker
+                for ticker in target_tickers
+                if _is_conflicted_pair(economy_decision_map.get(ticker), deep_decision_map.get(ticker))
+            ]
+            diagnostics["third_review_tickers"] = conflicted_tickers
+
+            if conflicted_tickers and self.tie_break_orchestrator is not None:
+                tie_break_watchlist = [item for item in watchlist if item.ticker in conflicted_tickers]
+                tie_break_collected = {ticker: collected[ticker] for ticker in conflicted_tickers if ticker in collected}
+                tie_break_news = {ticker: news_map.get(ticker, []) for ticker in conflicted_tickers}
+                tie_break_signal_history = {
+                    ticker: (signal_history_map or {}).get(ticker, [])
+                    for ticker in conflicted_tickers
+                }
+                tie_break_peer_candidates = {
+                    ticker: (peer_candidates_by_ticker or {}).get(ticker, [])
+                    for ticker in conflicted_tickers
+                }
+                tie_break_initial_payloads = {
+                    ticker: payload
+                    for ticker, payload in initial_payloads.items()
+                    if ticker in conflicted_tickers
+                }
+                tie_break_analyses = self.tie_break_orchestrator.analyze_all(
+                    tie_break_watchlist,
+                    tie_break_collected,
+                    tie_break_news,
+                    run_date,
+                    macro_context=macro_context,
+                    signal_history_map=tie_break_signal_history,
+                    portfolio_account_size=portfolio_account_size,
+                    portfolio_summary=portfolio_summary,
+                    peer_candidates_by_ticker=tie_break_peer_candidates,
+                    execution_mode="llm_only",
+                    initial_intermediate_results=tie_break_initial_payloads,
+                )
+                tie_break_map = {analysis.ticker: analysis for analysis in tie_break_analyses}
+                diagnostics["tie_break_executed_modules"] = self.tie_break_orchestrator.diagnostics.get("executed_modules", [])
+                tie_break_decisions = generate_decisions(
+                    tie_break_analyses,
+                    tie_break_collected,
+                    market_regime,
+                    signal_stats,
+                    run_date,
+                    portfolio_risk=effective_portfolio_risk,
+                )
+                tie_break_decision_map = {decision.ticker: decision for decision in tie_break_decisions}
+
         consensus_by_ticker: dict[str, dict[str, Any]] = {}
         final_analyses: list[TickerAnalysis] = []
         for item in watchlist:
             ticker = item.ticker
             economy_analysis = economy_map.get(ticker)
             deep_analysis = deep_map.get(ticker)
+            tie_break_analysis = tie_break_map.get(ticker)
             economy_decision = economy_decision_map.get(ticker)
             deep_decision = deep_decision_map.get(ticker)
+            tie_break_decision = tie_break_decision_map.get(ticker)
             selected = ticker in target_tickers
             consensus = _build_consensus_payload(
                 economy_decision,
                 deep_decision,
+                tie_break_decision=tie_break_decision,
                 selected=selected,
                 enabled=self.config.enabled,
                 skipped_due_to_cap=ticker in skipped_due_to_cap,
             )
             consensus_by_ticker[ticker] = consensus
-            source_analysis = deep_analysis or economy_analysis
+            source_analysis = tie_break_analysis or deep_analysis or economy_analysis
             if source_analysis is None:
                 continue
             final_analyses.append(replace(source_analysis, analysis_consensus=consensus))
@@ -201,16 +261,17 @@ def apply_consensus_to_decisions(
     updated: list[TickerDecision] = []
     for decision in decisions:
         consensus = consensus_by_ticker.get(decision.ticker, {})
+        final_consensus = str(consensus.get("final_consensus", "single"))
         if consensus.get("status") != "conflicted":
-            updated.append(decision)
+            updated.append(replace(decision, final_consensus=final_consensus))
             continue
         economy_action = consensus.get("economy_action", "watch")
         economy_reason = str(consensus.get("economy_reason", "")).strip()
-        conflict_note = f"합의 불일치: economy는 {economy_action} 관점"
+        conflict_note = f"Consensus conflict: economy={economy_action}"
         if economy_reason:
             conflict_note = f"{conflict_note} ({economy_reason})"
         reason = f"{decision.reason} / {conflict_note}" if decision.reason else conflict_note
-        updated.append(replace(decision, reason=reason))
+        updated.append(replace(decision, reason=reason, final_consensus=final_consensus))
     return updated
 
 
@@ -249,10 +310,20 @@ def _direction_bucket(action: str | None) -> str:
     return "neutral"
 
 
+def _is_conflicted_pair(
+    economy_decision: TickerDecision | None,
+    deep_decision: TickerDecision | None,
+) -> bool:
+    if economy_decision is None or deep_decision is None:
+        return False
+    return _direction_bucket(economy_decision.action) != _direction_bucket(deep_decision.action)
+
+
 def _build_consensus_payload(
     economy_decision: TickerDecision | None,
     deep_decision: TickerDecision | None,
     *,
+    tie_break_decision: TickerDecision | None = None,
     selected: bool,
     enabled: bool,
     skipped_due_to_cap: bool,
@@ -262,22 +333,35 @@ def _build_consensus_payload(
             "status": "not_applicable",
             "direction_agreement": None,
             "selection_reason": _selection_reason(enabled, selected, skipped_due_to_cap),
+            "third_review_completed": False,
+            "final_consensus": "single",
         }
     economy_action = economy_decision.action if economy_decision else "watch"
     deep_action = deep_decision.action
     direction_agreement = _direction_bucket(economy_action) == _direction_bucket(deep_action)
+    final_consensus = "agree" if direction_agreement else "conflict"
+    status = "agreed" if direction_agreement else "conflicted"
+    if tie_break_decision is not None and not direction_agreement:
+        final_consensus = "resolved"
+        status = "resolved"
     return {
-        "status": "agreed" if direction_agreement else "conflicted",
+        "status": status,
         "economy_action": economy_action,
         "economy_conviction": economy_decision.conviction if economy_decision else None,
         "economy_reason": economy_decision.reason if economy_decision else "",
         "deep_action": deep_action,
         "deep_conviction": deep_decision.conviction,
         "deep_reason": deep_decision.reason,
+        "tie_break_action": tie_break_decision.action if tie_break_decision else None,
+        "tie_break_conviction": tie_break_decision.conviction if tie_break_decision else None,
+        "tie_break_reason": tie_break_decision.reason if tie_break_decision else "",
         "direction_agreement": direction_agreement,
         "conflicted": not direction_agreement,
         "confidence_delta": 5 if direction_agreement else 0,
         "selection_reason": "selected",
+        "third_review_completed": tie_break_decision is not None,
+        "final_consensus": final_consensus,
+        "final_action": tie_break_decision.action if tie_break_decision else deep_action,
     }
 
 

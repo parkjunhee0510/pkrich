@@ -84,6 +84,42 @@
             "selected_multipliers": null
           }
         }
+      },
+      "purged_walk_forward": {
+        "status": "ok",
+        "horizon": 5,
+        "n_folds_requested": 5,
+        "embargo_days": 5,
+        "purge_horizon_days": 5,
+        "regimes": {
+          "risk_on": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "selected_multipliers": null
+          },
+          "risk_off": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "selected_multipliers": null
+          },
+          "neutral": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "selected_multipliers": null
+          }
+        }
       }
     },
     "20": {
@@ -166,6 +202,42 @@
             "oos_spearman_mean": null,
             "oos_spearman_std": null,
             "in_sample_spearman": null,
+            "selected_multipliers": null
+          }
+        }
+      },
+      "purged_walk_forward": {
+        "status": "ok",
+        "horizon": 20,
+        "n_folds_requested": 5,
+        "embargo_days": 5,
+        "purge_horizon_days": 20,
+        "regimes": {
+          "risk_on": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "selected_multipliers": null
+          },
+          "risk_off": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
+            "selected_multipliers": null
+          },
+          "neutral": {
+            "status": "insufficient_data",
+            "sample_size": 0,
+            "min_required": 40,
+            "folds": [],
+            "oos_spearman_mean": null,
+            "oos_spearman_std": null,
             "selected_multipliers": null
           }
         }

@@ -631,11 +631,12 @@
       "date": "2026-04-15",
       "ticker": "OXY",
       "name": "Occidental Petroleum Corporation",
-      "summary": "주가는 55.83달러로 50일선 54.86달러를 근소하게 상회하지만 30일간 -3.29%로 방향성이 뚜렷하지 않습니다. 다음 촉매는 2026-05-05 실적 발표(D-19)이며, 그 전까지는 54.86달러 지지 확인과 59.94달러 1차 목표 사이의 박스 트레이딩이 적절합니다.",
+      "summary": "주가는 55.83달러로 50일선(54.86달러) 위에 있으나 30일 기준 -3.29%로 에너지 섹터 내 재가속이 아직 강하지 않습니다. 다음 촉매는 2026-05-05 실적 발표(D-19)이며, 54.86달러 지지 유지와 유가/실적 코멘트가 단기 트레이딩의 분기점입니다.",
       "key_news": [
-        "8-K 공시",
-        "애널리스트 업그레이드와 유가 강세 기대",
-        "탄소포집·자산가치 재평가 이슈"
+        "8-K 공시로 이벤트성 재료 발생",
+        "애널리스트 업그레이드와 유가 강세가 밸류에이션 지지",
+        "탄소포집/사업 확장 기대가 중장기 옵션",
+        "3주 내 실적 발표 대기"
       ],
       "news_references": [
         {
@@ -670,19 +671,16 @@
         }
       ],
       "financial_highlights": [
-        "PER 41.4x, 목표가 대비 +10.5%",
-        "EPS 성장률 +78.12% YoY",
-        "FCF Yield 4.5%, ND/EBITDA 0.5x",
-        "ATR 2.74달러(4.91%), RVOL 0.57x",
-        "PCR 1.35, NetΔ +209,289"
+        "PER 41.4x, Forward EPS 3.50, TTM EPS 1.35, EPS 성장률 +78.1% YoY",
+        "현재가 55.83달러, 50일선 대비 +1.8%, 200일선 대비 +20.6%",
+        "ATR 2.74달러(4.91%), RVOL 0.57x, RSI 40.8, MACD 0.49/1.81",
+        "기관보유 51.59%, 내부자 27.01%, Short Float 0.02%",
+        "애널리스트 25명 Hold, 목표주가 61.72달러로 현재가 대비 +10.5%"
       ],
       "risks_or_watchpoints": [
-        "종가가 54.86달러(SMA50) 아래로 내려가면 상승 모멘텀 붕괴 신호로 해석",
-        "55.83달러에서 2거래일 연속 음봉이면 54.82~54.86달러 구간 재시험 가능성 점검",
-        "2026-05-05 실적 전까지 PUT $85와 CALL $65의 합산 OI가 현재보다 10% 이상 증가하면 변동성 확대 경고",
-        "RSI(14) 40.8이 40 아래로 하향 이탈하면 52.74달러 수준(1.5×ATR 하단) 테스트 가능성"
+        "PER 41.4배로 밸류에이션 부담. 실적 miss 시 급락 리스크."
       ],
-      "signal_or_takeaway": "진입트리거: 54.86 지지 확인 후 55.83 상향 유지; 목표가: 59.94 / 61.72; 손절가: 54.86 이탈 시 청산",
+      "signal_or_takeaway": "눌림목 매수: 54.86 위 유지 후 55.83 회복 시 진입, 목표가 59.94/61.72, 손절가 54.86 이탈 시 무효",
       "data_snapshot": {
         "Price": "55.83 USD",
         "Daily Change": "+0.81%",
@@ -693,14 +691,14 @@
         "52W Low": "37.98",
         "50D SMA": "54.86",
         "200D SMA": "46.28",
-        "Volume": "12.24M",
+        "Volume": "9.54M",
         "3M Avg Volume": "16.82M",
         "Price/Book": "1.98",
         "Dividend Yield": "1.88%",
         "Sector": "Energy",
         "Open": "55.45",
         "High": "56.40",
-        "Low": "55.12",
+        "Low": "55.13",
         "Close": "55.83",
         "RS vs Sector ETF": "+0.79%"
       },
@@ -712,7 +710,7 @@
         "earnings_growth": "+78.12% YoY",
         "price_to_book": "1.98",
         "dividend_yield": "1.88%",
-        "volume": "12.24M",
+        "volume": "9.54M",
         "avg_volume_3m": "16.82M",
         "52w_high": "67.45",
         "52w_low": "37.98",
@@ -815,8 +813,8 @@
       ],
       "news_tone": {
         "label": "중립",
-        "confidence": 2,
-        "reasoning": "업그레이드와 유가 모멘텀은 우호적이지만 주가 흐름은 약하다. 명확한 방향성보다는 이벤트 대기 상태에 가깝다."
+        "confidence": 3,
+        "reasoning": "유가와 업그레이드가 하방을 방어하지만, 모멘텀이 강하게 재가속되는 뉴스는 제한적."
       },
       "trade_frame": {
         "entry_price": "현재가 55.83 또는 눌림 시 53.09 USD",
@@ -902,10 +900,7 @@
         "direction_agreement": true,
         "conflicted": false,
         "confidence_delta": 5,
-        "selection_reason": "selected",
-        "third_review_completed": false,
-        "final_consensus": "agree",
-        "final_action": "watch"
+        "selection_reason": "selected"
       },
       "period_changes": {
         "7d": "-6.59%",
@@ -956,366 +951,20 @@
           "signal_track_record": 0.0,
           "valuation": 10.0
         },
-        "ensemble_agreement": "agree",
-        "final_consensus": "agree"
-      }
-    },
-    {
-      "date": "2026-04-16",
-      "ticker": "OXY",
-      "name": "Occidental Petroleum Corporation",
-      "summary": "주가는 56.87달러로 50일선 55.33달러 위에 있지만, 30일 수익률 -2.59%로 에너지 업종 내 탄력은 다소 둔합니다. 다음 촉매는 5월 5일 실적(D-18)이며, 그 전까지는 55달러대 지지와 PCR 2.88의 방어적 수급을 확인하는 구간입니다.",
-      "key_news": [
-        "유가 강세와 업종 훈풍이 밸류에이션 지지",
-        "8-K 및 위임장 공시로 이벤트 확인",
-        "실적 전 풋 헤지 수요 우세",
-        "애널리스트는 홀드, 단기 방향성은 제한적"
-      ],
-      "news_references": [
-        {
-          "title": "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-          "source": "SEC EDGAR",
-          "published_at": "2026-04-10",
-          "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm"
-        },
-        {
-          "title": "[주주총회] OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
-          "source": "SEC EDGAR",
-          "published_at": "2026-03-19",
-          "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026019816/oxy-20260319.htm"
-        },
-        {
-          "title": "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance",
-          "source": "Yahoo Finance",
-          "published_at": "Tue, 17 Mar 2026 07:00:00 GMT",
-          "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPeFVBMmNBRWNMb2NINkY4X0JkbnREamV1Tjg5N3VjcVo5akRKVk9xaV82cmJkY211SkoxQVVndTZZczIzV2xBdURqcjJKUnpsSVA0LUJRTkRUT1Q2bC1UY3hMV1NheHJ3U2tlRUh3YXNpUUJ4NFA3UWYwb3VGTVB1SUp2Zm1aT0F6QlZPd1lB?oc=5"
-        },
-        {
-          "title": "Assessing Occidental Petroleum (OXY) Valuation After Recent Share Price Momentum And Carbon Capture Developments - Yahoo Finance",
-          "source": "Yahoo Finance",
-          "published_at": "Fri, 30 Jan 2026 08:00:00 GMT",
-          "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxONjJzY051UmJwSTJLVHl4VVByVWVGMWRVWjM1c05HQjh1aGRrYzFRS3g0U3d1TTUyMDNJbnFHQlRMTGZ1YkE5UnViNWpyN3Q4Qm93X1NEdlgzd1pmSmd6WjEwYUJJamZxSzdpQmxYTUVOZG92VW96RmQtY0NFblJjWHdtaGEzNU1ydWxET2V0bE1PYVlj?oc=5"
-        },
-        {
-          "title": "Occidental Petroleum (OXY) Stock Update: Price, Berkshire’s OxyChem Deal, 2026 Outlook, Analyst Forecasts, and What Investors Should Watch Next - TechStock²",
-          "source": "TechStock²",
-          "published_at": "Sat, 27 Dec 2025 08:00:00 GMT",
-          "link": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxQN0s0ZEpWcEw1bHJ1N01KV0VYcGhaU3ZJdVNibVdTNUVSWVE2QkNhSHVhNzZ3SFZRenN3a0t0VDFjdUtRd0N0aVREaWtVTGhNT0lhQTJBNG00Rmx5LVVCeTh5TFRrZEwyMGljMkJUNlBuRlV3Q01rdDhRd3QxNGo3OENTeDdVZkNYZ0lIRHROWTIwNkwzb2NXYmZoaXlOaG12Z3FYRFBoX3hCc2dYalpFdm9yWDh0bW1RWnJGNGRVU3JJSUh0TDFJLVZjbDRpYkNWdzRlclV4ODVtZzdsMng0UHhmczRSdVhaSTJpYw?oc=5"
-        }
-      ],
-      "financial_highlights": [
-        "PER 42.13배 (EPS 1.35)",
-        "Forward EPS 3.59, 성장률 +78.12% YoY",
-        "시가총액 56.40B / 배당 1.83%",
-        "52주 범위 64% 위치, SMA50 55.33 USD",
-        "애널리스트 Hold (목표 62.32 USD) / 기관 51.71%"
-      ],
-      "risks_or_watchpoints": [
-        "56.87달러가 55.33달러(SMA50) 아래로 종가 기준 하락하면 단기 반등 실패 경고",
-        "PCR 2.88이 3.5 이상으로 확대되거나 85달러 PUT 거래가 추가 증가하면 하방 헤지 강화 신호",
-        "MACD가 현재 bearish인 상태에서 54.58달러(BB 하단) 이탈 시 추세 약화 가속 가능성",
-        "2026-05-05 실적 전까지 60.86달러(1.5×ATR) 돌파가 실패하면 박스권 하단 재시험 위험"
-      ],
-      "signal_or_takeaway": "매수: 56.87 지지 후 55.33 위 유지 시 진입, 목표가 60.86/62.32, 손절가 55.33(SMA50) 종가 이탈 시 무효.",
-      "data_snapshot": {
-        "Price": "56.87 USD",
-        "Daily Change": "+1.86%",
-        "Market Cap": "56.40B",
-        "Trailing P/E": "42.13",
-        "EPS": "1.35",
-        "52W High": "67.45",
-        "52W Low": "38.36",
-        "50D SMA": "55.33",
-        "200D SMA": "46.42",
-        "Volume": "10.02M",
-        "3M Avg Volume": "16.73M",
-        "Price/Book": "2.02",
-        "Dividend Yield": "1.83%",
-        "Sector": "Energy",
-        "Open": "56.18",
-        "High": "57.06",
-        "Low": "55.61",
-        "Close": "56.87",
-        "RS vs Sector ETF": "-0.06%"
-      },
-      "fundamentals": {
-        "market_cap": "56.40B",
-        "trailing_pe": "42.13",
-        "eps": "1.35",
-        "forward_eps": "3.59",
-        "earnings_growth": "+78.12% YoY",
-        "price_to_book": "2.02",
-        "dividend_yield": "1.83%",
-        "volume": "10.02M",
-        "avg_volume_3m": "16.73M",
-        "52w_high": "67.45",
-        "52w_low": "38.36",
-        "short_float_pct": "0.02%",
-        "short_ratio": "0.01일",
-        "analyst_target_price": "62.32 USD",
-        "analyst_recommendation": "Hold",
-        "analyst_count": "25명",
-        "held_by_insiders": "27.01%",
-        "held_by_institutions": "51.71%",
-        "implied_volatility": "N/A"
-      },
-      "earnings_setup": {
-        "forward_eps": "3.59 USD/share",
-        "ttm_eps": "1.35 USD/share",
-        "forward_vs_ttm": "+165.93%",
-        "earnings_growth": "+78.12% YoY",
-        "latest_estimated_eps": "0.18 USD/share",
-        "latest_surprise_pct": "+0.77%",
-        "latest_beat_miss": "beat",
-        "next_earnings_event": "2026-05-05 실적 발표 (D-18 · AMC)"
-      },
-      "earnings_surprise_history": {
-        "consecutive_beats": 4,
-        "consecutive_misses": 0,
-        "beat_rate": "100%",
-        "avg_surprise_pct": "+0.3%",
-        "pattern": "consistent_beat",
-        "post_earnings_hint": "최근 4분기 연속 실적 beat — 시장 기대치가 이미 높을 수 있음, beat 폭이 중요",
-        "quarters_analyzed": 4
-      },
-      "earnings_pattern": {
-        "beat_streak": 4,
-        "surprise_trend": "stable",
-        "avg_surprise_pct": "+0.3%",
-        "quarters_analyzed": 4,
-        "pattern_note": "최근 4개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.3%"
-      },
-      "price_action": {
-        "atr_14d": "2.66",
-        "atr_percent": "4.68%",
-        "relative_volume": "0.58x",
-        "gap_percent": "+0.63%",
-        "price_vs_sma50": "+2.78%",
-        "price_vs_sma200": "+22.51%",
-        "week52_position": "64%",
-        "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-0.06%"
-      },
-      "quarterly_financials": [
-        {
-          "fiscal_date": "2025-12-31",
-          "quarter": "2025-Q4",
-          "revenue": "1.75B",
-          "operating_income": "117.00M",
-          "eps": "-0.07",
-          "estimated_eps": "0.18",
-          "surprise_pct": "+0.77%",
-          "beat_miss": "beat"
-        },
-        {
-          "fiscal_date": "2025-09-30",
-          "quarter": "2025-Q3",
-          "revenue": "6.62B",
-          "operating_income": "1.17B",
-          "eps": "0.65",
-          "estimated_eps": "0.52",
-          "surprise_pct": "+0.23%",
-          "beat_miss": "beat"
-        },
-        {
-          "fiscal_date": "2025-06-30",
-          "quarter": "2025-Q2",
-          "revenue": "6.41B",
-          "operating_income": "954.00M",
-          "eps": "0.26",
-          "estimated_eps": "0.31",
-          "surprise_pct": "+0.25%",
-          "beat_miss": "beat"
-        },
-        {
-          "fiscal_date": "2025-03-31",
-          "quarter": "2025-Q1",
-          "revenue": "6.80B",
-          "operating_income": "1.48B",
-          "eps": "0.77",
-          "estimated_eps": "0.76",
-          "surprise_pct": "+0.14%",
-          "beat_miss": "beat"
-        }
-      ],
-      "upcoming_events": [
-        {
-          "type": "earnings",
-          "label": "실적 발표",
-          "date": "2026-05-05",
-          "days_until": "18",
-          "timing": "AMC"
-        }
-      ],
-      "news_tone": {
-        "label": "중립",
-        "confidence": 3,
-        "reasoning": "펀더멘털과 유가 환경은 우호적이나, 옵션은 방어적이고 애널리스트 톤도 보수적. 촉매는 실적 대기."
-      },
-      "trade_frame": {
-        "entry_price": "현재가 56.87 또는 눌림 시 54.21 USD",
-        "stop_loss": "SMA50 55.33 USD",
-        "target_1": "60.86 USD (1.5×ATR)",
-        "target_2": "애널리스트 목표 62.32 USD",
-        "risk_reward_ratio": "2.6R",
-        "position_size_note": "$61,612 계좌 1% 리스크 기준 약 231주 (ATR $2.66 기반)",
-        "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-        "base_scenario": "56.87 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
-        "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-        "invalidation_price": "50일 이동평균선인 55.33 USD 아래로 밀리면 약세 시나리오 확인",
-        "watch_period": "2026-05-05 실적 발표 전까지"
-      },
-      "options_summary": {
-        "expiry": "2026-04-17",
-        "atm_call_iv": "1.6%",
-        "atm_put_iv": "0.0%",
-        "iv_percentile_30d": "48th",
-        "put_call_ratio": "2.88",
-        "tone": "neutral",
-        "unusual_activity": "PUT $85, vol 83, OI 대비 66% ; CALL $40, vol 58, OI 대비 54% ; PUT $72, vol 64, OI 대비 188%",
-        "oi_change": "N/A"
-      },
-      "signal_history": [
-        {
-          "date": "2026-04-16",
-          "direction": "neutral",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "56.87 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-        },
-        {
-          "date": "2026-04-15",
-          "direction": "bear",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "55.83 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-        },
-        {
-          "date": "2026-04-14",
-          "direction": "bull",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "실적 전까지 54.86-57.20 USD 범위의 제한적 횡보 가능성이 높습니다."
-        },
-        {
-          "date": "2026-04-13",
-          "direction": "neutral",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "실적 전까지 55.61 USD~60.77 USD 구간에서 박스권 흐름이 우세할 수 있습니다."
-        }
-      ],
-      "sector_comparison": {
-        "summary": "Energy 피어 3개 평균 대비 밸류에이션/모멘텀 비교",
-        "pe_ratio": {
-          "company": "42.13",
-          "peer_average": "N/A",
-          "difference": null
-        },
-        "rs_vs_spy": {
-          "company": "N/A",
-          "peer_average": "N/A",
-          "difference": null
-        },
-        "price_change_30d": {
-          "company": "-2.59%",
-          "peer_average": "N/A",
-          "difference": null
-        }
-      },
-      "peer_rank": {},
-      "valuation_score": {
-        "score": "5/10",
-        "factors": [
-          "PER 42.1x",
-          "목표가 대비 업사이드 +9.6%"
-        ],
-        "assessment": "대체로 적정 가치 범위에 위치합니다."
-      },
-      "analysis_consensus": {
-        "status": "agreed",
-        "economy_action": "watch",
-        "economy_conviction": 60,
-        "economy_reason": "연속 상회 4분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.3% / 실적 D-18 / 강세 뉴스지만 가격 확인은 제한적",
-        "deep_action": "watch",
-        "deep_conviction": 58,
-        "deep_reason": "연속 상회 4분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.3% / 실적 D-18 / 섹터 대비 -0.1% / SMA50·SMA200 위",
-        "direction_agreement": true,
-        "conflicted": false,
-        "confidence_delta": 5,
-        "selection_reason": "selected",
-        "third_review_completed": false,
-        "final_consensus": "agree",
-        "final_action": "watch",
-        "conviction_mean": 59.0,
-        "conviction_stdev": 1.0,
-        "conviction_adjusted": 66,
-        "conviction_prior": 58,
-        "conviction_sample_size": 2
-      },
-      "period_changes": {
-        "7d": "-2.84%",
-        "30d": "-1.49%"
-      },
-      "sec_filing_tags": [
-        "기타 공시",
-        "주주총회"
-      ],
-      "sec_filings": [
-        {
-          "tag": "기타 공시",
-          "title": "OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-          "form_type": "8-K",
-          "item_number": "",
-          "catalyst_type": "medium",
-          "importance_score": 120,
-          "published_at": "2026-04-10",
-          "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm",
-          "source": "SEC EDGAR"
-        },
-        {
-          "tag": "주주총회",
-          "title": "OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
-          "form_type": "DEF 14A",
-          "item_number": "",
-          "catalyst_type": "medium",
-          "importance_score": 100,
-          "published_at": "2026-03-19",
-          "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026019816/oxy-20260319.htm",
-          "source": "SEC EDGAR"
-        }
-      ],
-      "decision": {
-        "action": "watch",
-        "conviction": 66,
-        "reason": "연속 상회 4분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.3% / 실적 D-18 / 섹터 대비 -0.1% / SMA50·SMA200 위 / 앙상블 보정: 58→66 (↑8, spread σ=1.0)",
-        "valid_until": "2026-05-05",
-        "factors": {
-          "catalyst_recency": 5.0,
-          "earnings_pattern": 8.0,
-          "fundamentals": 3.0,
-          "momentum": 3.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 1.0,
-          "signal_track_record": 0.0,
-          "valuation": 0.0
-        },
-        "ensemble_agreement": "agree",
-        "final_consensus": "agree"
+        "ensemble_agreement": "agree"
       }
     },
     {
       "date": "2026-04-17",
       "ticker": "OXY",
       "name": "Occidental Petroleum Corporation",
-      "summary": "주가 53.79달러로 30D -11.40% 하락해 50일선 55.47달러 아래에 있으며 단기 약세가 우세합니다. 다음 촉매는 D-15인 2026-05-05 실적 발표로, 실적과 유가가 동반 반등해야 55달러대 회복 시도가 가능해집니다.",
+      "summary": "주가는 53.79달러로 30일간 -11.40% 조정받았고, 50일선 55.47달러 아래에서 단기 모멘텀이 둔화된 상태입니다. 다음 촉매는 2026-05-05 실적(D-15)이며, 그 전까지는 55달러대 회복과 50달러대 초반 지지 여부가 반등/추세 지속을 좌우할 가능성이 큽니다.",
       "key_news": [
-        "유가 반등과 업종 실적 호조 기대",
-        "애널리스트 업그레이드 및 밸류에이션 재평가",
-        "탄소포집·Berkshire 딜 기대 잔존",
-        "8-K 및 주총 공시"
+        "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+        "[주주총회] OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+        "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance",
+        "Assessing Occidental Petroleum (OXY) Valuation After Recent Share Price Momentum And Carbon Capture Developments - Yahoo Finance",
+        "Occidental Petroleum (OXY) Stock Outlook December 6, 2025: Q3 Beat, Berkshire Deal and Wall Street Forecasts - TechStock²"
       ],
       "news_references": [
         {
@@ -1350,19 +999,19 @@
         }
       ],
       "financial_highlights": [
-        "PER 39.8x, 목표가 대비 업사이드 +15.9%",
-        "30D -11.40%, SMA50 대비 -3.03%, SMA200 대비 +15.74%",
-        "RSI 36.9, MACD -0.14/1.18, RVOL 1.28x",
-        "Forward EPS 3.60, TTM EPS 1.35, EPS YoY +78.12%",
-        "PCR 0.22x, 목표가 62.32달러, Hold 25명"
+        "PER 39.8x, Forward EPS 3.60, TTM EPS 1.35",
+        "EPS 성장률 +78.12% YoY",
+        "SMA50 55.47달러 대비 -3.03%, SMA200 46.48달러 대비 +15.74%",
+        "ATR 2.89달러(5.36%), RVOL 1.28x, RSI 36.9",
+        "분석가 25명 Hold, 목표가 63.08달러"
       ],
       "risks_or_watchpoints": [
-        "종가가 55.47달러(SMA50)를 넘지 못한 채 2거래일 연속 53달러 아래로 마감하면 추가 하락 가능성을 경계하세요.",
-        "MACD가 현재 음(-) 상태를 유지하고 RSI가 35 아래로 내려가면 약세 모멘텀이 강화된 것으로 보세요.",
-        "2026-05-05 실적 발표 전까지 50.90달러(눌림 시 진입가) 이탈 시 손절 우선으로 관리하세요.",
-        "일간 -5% 이상 급락과 RVOL 1.2x 이상이 함께 나타나면 원유 가격/섹터 동반 약세 리스크로 간주하세요."
+        "일간 -5.42% 급락 후 현재가 53.79달러가 SMA50 55.47달러 아래라 단기 추세 훼손 여부를 확인해야 합니다.",
+        "MACD가 -0.14/1.18로 약세라 53.54달러 하단 밴드가 깨지면 50.90달러(진입 시나리오)까지 추가 하락 가능성을 감시해야 합니다.",
+        "RVOL 1.28x의 급변동이었으므로 55.47달러 회복 없이 53.00달러 아래에서 마감이 이어지면 매수 반등 실패로 판단할 수 있습니다.",
+        "2026-05-05 실적 전까지 55.47달러를 회복하지 못하면 실적 기대와 무관하게 58.13달러 목표 도달 확률이 낮아집니다."
       ],
-      "signal_or_takeaway": "관망 후 반등매수: 55.47(SMA50) 회복·안착 시 진입, 목표가 58.13/62.32, 손절가 55.47 하회 시 철수.",
+      "signal_or_takeaway": "관망 후 매수: 진입트리거 55.47달러 회복 확인 또는 50.90달러 눌림, 목표가 58.13달러/63.08달러, 손절가 55.47달러 이탈 시 무효.",
       "data_snapshot": {
         "Price": "53.79 USD",
         "Daily Change": "-5.42%",
@@ -1398,7 +1047,7 @@
         "52w_low": "38.36",
         "short_float_pct": "0.02%",
         "short_ratio": "0.01일",
-        "analyst_target_price": "62.32 USD",
+        "analyst_target_price": "63.08 USD",
         "analyst_recommendation": "Hold",
         "analyst_count": "25명",
         "held_by_insiders": "27.01%",
@@ -1494,17 +1143,17 @@
         }
       ],
       "news_tone": {
-        "label": "중립",
-        "confidence": 3,
-        "reasoning": "중장기 호재는 있으나 최근 유가 약세와 주가 조정이 상쇄. 실적 전까지는 재료 소화 국면."
+        "label": "중립-약세",
+        "confidence": 2,
+        "reasoning": "실적은 강하지만 최근 주가 모멘텀이 둔화. 유가/밸류에이션 기대는 있으나 단기 가격 흐름과 MACD 약세가 부담."
       },
       "trade_frame": {
         "entry_price": "현재가 53.79 또는 눌림 시 50.90 USD",
         "stop_loss": "SMA50 55.47 USD",
         "target_1": "58.13 USD (1.5×ATR)",
-        "target_2": "애널리스트 목표 62.32 USD",
+        "target_2": "애널리스트 목표 63.08 USD",
         "risk_reward_ratio": "N/A",
-        "position_size_note": "$62,369 계좌 1% 리스크 기준 약 215주 (ATR $2.89 기반)",
+        "position_size_note": "$57,940 계좌 1% 리스크 기준 약 200주 (ATR $2.89 기반)",
         "bull_scenario": "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다.",
         "base_scenario": "53.79 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
         "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
@@ -1513,32 +1162,25 @@
       },
       "options_summary": {
         "expiry": "2026-04-24",
-        "atm_call_iv": "45.4%",
-        "atm_put_iv": "43.6%",
+        "atm_call_iv": "49.8%",
+        "atm_put_iv": "47.8%",
         "put_call_ratio": "0.22x",
-        "iv_percentile_30d": "3th"
+        "iv_percentile_30d": "3th",
+        "tone": "neutral",
+        "unusual_activity": "PUT $85, vol 83, OI 대비 66% ; CALL $55, vol 128, OI 대비 42% ; CALL $40, vol 70, OI 대비 65%",
+        "oi_change": "N/A"
       },
       "signal_history": [
         {
           "date": "2026-04-17",
-          "direction": "neutral",
-          "llm_direction": "bear",
+          "direction": "bear",
           "catalyst": "기타 공시",
           "return_5d": "N/A",
           "note": "53.79 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다."
         },
         {
-          "date": "2026-04-16",
-          "direction": "neutral",
-          "llm_direction": "unknown",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "56.87 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-        },
-        {
           "date": "2026-04-15",
           "direction": "bear",
-          "llm_direction": "unknown",
           "catalyst": "기타 공시",
           "return_5d": "N/A",
           "note": "55.83 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -1546,7 +1188,6 @@
         {
           "date": "2026-04-14",
           "direction": "bull",
-          "llm_direction": "unknown",
           "catalyst": "기타 공시",
           "return_5d": "N/A",
           "note": "실적 전까지 54.86-57.20 USD 범위의 제한적 횡보 가능성이 높습니다."
@@ -1554,7 +1195,6 @@
         {
           "date": "2026-04-13",
           "direction": "neutral",
-          "llm_direction": "unknown",
           "catalyst": "기타 공시",
           "return_5d": "N/A",
           "note": "실적 전까지 55.62 USD~60.77 USD 구간에서 박스권 흐름이 우세할 수 있습니다."
@@ -1583,30 +1223,28 @@
         "score": "6/10",
         "factors": [
           "PER 39.8x",
-          "목표가 대비 업사이드 +15.9%"
+          "목표가 대비 업사이드 +17.3%"
         ],
         "assessment": "대체로 적정 가치 범위에 위치합니다."
       },
       "analysis_consensus": {
         "status": "agreed",
         "economy_action": "watch",
-        "economy_conviction": 50,
-        "economy_reason": "연속 상회 4분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.3% / 실적 D-15 / 약세 뉴스가 확인돼 보수적으로 반영",
+        "economy_conviction": 61,
+        "economy_reason": "섹터 대비 -4.8% / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다.",
         "deep_action": "watch",
-        "deep_conviction": 52,
-        "deep_reason": "연속 상회 4분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.3% / 실적 D-15 / 대체로 적정 가치 범위에 위치합니다.",
+        "deep_conviction": 59,
+        "deep_reason": "섹터 대비 -4.8% / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다.",
+        "tie_break_action": null,
+        "tie_break_conviction": null,
+        "tie_break_reason": "",
         "direction_agreement": true,
         "conflicted": false,
         "confidence_delta": 5,
         "selection_reason": "selected",
         "third_review_completed": false,
         "final_consensus": "agree",
-        "final_action": "watch",
-        "conviction_mean": 51.0,
-        "conviction_stdev": 1.0,
-        "conviction_adjusted": 58,
-        "conviction_prior": 52,
-        "conviction_sample_size": 2
+        "final_action": "watch"
       },
       "period_changes": {
         "7d": "-7.21%",
@@ -1642,356 +1280,15 @@
       ],
       "decision": {
         "action": "watch",
-        "conviction": 58,
-        "reason": "연속 상회 4분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.3% / 실적 D-15 / 대체로 적정 가치 범위에 위치합니다. / 앙상블 보정: 52→58 (↑6, spread σ=1.0)",
-        "valid_until": "2026-05-05",
-        "factors": {
-          "catalyst_recency": -5.0,
-          "earnings_pattern": 8.0,
-          "fundamentals": 3.0,
-          "momentum": -1.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 1.0,
-          "signal_track_record": 0.0,
-          "valuation": 4.0
-        },
-        "ensemble_agreement": "agree",
-        "final_consensus": "agree"
-      }
-    },
-    {
-      "date": "2026-04-17",
-      "ticker": "OXY",
-      "name": "Occidental Petroleum Corporation",
-      "summary": "Occidental Petroleum Corporation(OXY)는 53.79 USD (-5.42%)에 거래 중이며, 52주 범위 53% 위치, SMA50 55.33 USD 수준입니다. 주요 헤드라인: [기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-      "key_news": [
-        "Berkshire cash sets record as profit rises, signaling caution ahead of Buffett exit - Reuters",
-        "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-        "[주주총회] OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
-        "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance",
-        "Assessing Occidental Petroleum (OXY) Valuation After Recent Share Price Momentum And Carbon Capture Developments - Yahoo Finance"
-      ],
-      "news_references": [
-        {
-          "title": "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-          "source": "SEC EDGAR",
-          "published_at": "2026-04-10",
-          "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm"
-        },
-        {
-          "title": "[주주총회] OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
-          "source": "SEC EDGAR",
-          "published_at": "2026-03-19",
-          "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026019816/oxy-20260319.htm"
-        },
-        {
-          "title": "Berkshire cash sets record as profit rises, signaling caution ahead of Buffett exit - Reuters",
-          "source": "Reuters",
-          "published_at": "Sat, 01 Nov 2025 07:00:00 GMT",
-          "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNSEdRTDhoZzBtNnBWLXNDSl9WUjVQall3d09kcTVGNndwdjAtT2kySzNoTEROMVJZR0Uta2EzWXFzRVJWZ01YQUlkU1NPSXZQWmxtT0hGMUtNcmZTVlM1NW1mWGVsckJJTGhYemtqYmMybXBMcm5WRkZGLTdSM2JFTW5pSWxJZW5xaE9XOVNZV2cwc0c0OFlyVkJ2Rm9nUWhFMXYxR3ZmYXBiOUZWU0cxcHBNM1RxQjA?oc=5"
-        },
-        {
-          "title": "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance",
-          "source": "Yahoo Finance",
-          "published_at": "Tue, 17 Mar 2026 07:00:00 GMT",
-          "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPeFVBMmNBRWNMb2NINkY4X0JkbnREamV1Tjg5N3VjcVo5akRKVk9xaV82cmJkY211SkoxQVVndTZZczIzV2xBdURqcjJKUnpsSVA0LUJRTkRUT1Q2bC1UY3hMV1NheHJ3U2tlRUh3YXNpUUJ4NFA3UWYwb3VGTVB1SUp2Zm1aT0F6QlZPd1lB?oc=5"
-        },
-        {
-          "title": "Assessing Occidental Petroleum (OXY) Valuation After Recent Share Price Momentum And Carbon Capture Developments - Yahoo Finance",
-          "source": "Yahoo Finance",
-          "published_at": "Fri, 30 Jan 2026 08:00:00 GMT",
-          "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxONjJzY051UmJwSTJLVHl4VVByVWVGMWRVWjM1c05HQjh1aGRrYzFRS3g0U3d1TTUyMDNJbnFHQlRMTGZ1YkE5UnViNWpyN3Q4Qm93X1NEdlgzd1pmSmd6WjEwYUJJamZxSzdpQmxYTUVOZG92VW96RmQtY0NFblJjWHdtaGEzNU1ydWxET2V0bE1PYVlj?oc=5"
-        }
-      ],
-      "financial_highlights": [
-        "PER 39.84배 (EPS 1.35)",
-        "Forward EPS 3.60, 성장률 +78.12% YoY",
-        "시가총액 53.34B / 배당 1.83%",
-        "52주 범위 53% 위치, SMA50 55.33 USD",
-        "애널리스트 Hold (목표 62.32 USD) / 기관 51.71%"
-      ],
-      "risks_or_watchpoints": [
-        "일간 -5.4% 하락 — 추가 하락 또는 데드캣 바운스 주의."
-      ],
-      "signal_or_takeaway": "중립 경계 — [기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 50.90–56.68 | 손절 SMA50(55.33 USD)",
-      "data_snapshot": {
-        "Price": "53.79 USD",
-        "Daily Change": "-5.42%",
-        "Market Cap": "53.34B",
-        "Trailing P/E": "39.84",
-        "EPS": "1.35",
-        "52W High": "67.45",
-        "52W Low": "38.36",
-        "50D SMA": "55.33",
-        "200D SMA": "46.42",
-        "Volume": "21.60M",
-        "3M Avg Volume": "16.73M",
-        "Price/Book": "1.91",
-        "Dividend Yield": "1.83%",
-        "Sector": "Energy",
-        "Open": "53.66",
-        "High": "54.03",
-        "Low": "51.96",
-        "Close": "53.79",
-        "RS vs Sector ETF": "-2.64%"
-      },
-      "fundamentals": {
-        "market_cap": "53.34B",
-        "trailing_pe": "39.84",
-        "eps": "1.35",
-        "forward_eps": "3.60",
-        "earnings_growth": "+78.12% YoY",
-        "price_to_book": "1.91",
-        "dividend_yield": "1.83%",
-        "volume": "21.60M",
-        "avg_volume_3m": "16.73M",
-        "52w_high": "67.45",
-        "52w_low": "38.36",
-        "short_float_pct": "0.02%",
-        "short_ratio": "0.01일",
-        "analyst_target_price": "62.32 USD",
-        "analyst_recommendation": "Hold",
-        "analyst_count": "25명",
-        "held_by_insiders": "27.01%",
-        "held_by_institutions": "51.71%",
-        "implied_volatility": "N/A"
-      },
-      "earnings_setup": {
-        "forward_eps": "3.60 USD/share",
-        "ttm_eps": "1.35 USD/share",
-        "forward_vs_ttm": "+166.67%",
-        "earnings_growth": "+78.12% YoY",
-        "latest_estimated_eps": "0.18 USD/share",
-        "latest_surprise_pct": "+0.77%",
-        "latest_beat_miss": "beat",
-        "next_earnings_event": "2026-05-05 실적 발표 (D-18 · AMC)"
-      },
-      "earnings_surprise_history": {
-        "consecutive_beats": 4,
-        "consecutive_misses": 0,
-        "beat_rate": "100%",
-        "avg_surprise_pct": "+0.3%",
-        "pattern": "consistent_beat",
-        "post_earnings_hint": "최근 4분기 연속 실적 beat — 시장 기대치가 이미 높을 수 있음, beat 폭이 중요",
-        "quarters_analyzed": 4
-      },
-      "earnings_pattern": {
-        "beat_streak": 4,
-        "surprise_trend": "stable",
-        "avg_surprise_pct": "+0.3%",
-        "quarters_analyzed": 4,
-        "pattern_note": "최근 4개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.3%"
-      },
-      "price_action": {
-        "atr_14d": "2.89",
-        "atr_percent": "5.36%",
-        "relative_volume": "1.29x",
-        "gap_percent": "-5.64%",
-        "price_vs_sma50": "-2.78%",
-        "price_vs_sma200": "+15.88%",
-        "week52_position": "53%",
-        "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-2.64%"
-      },
-      "quarterly_financials": [
-        {
-          "fiscal_date": "2025-12-31",
-          "quarter": "2025-Q4",
-          "revenue": "1.75B",
-          "operating_income": "117.00M",
-          "eps": "-0.07",
-          "estimated_eps": "0.18",
-          "surprise_pct": "+0.77%",
-          "beat_miss": "beat"
-        },
-        {
-          "fiscal_date": "2025-09-30",
-          "quarter": "2025-Q3",
-          "revenue": "6.62B",
-          "operating_income": "1.17B",
-          "eps": "0.65",
-          "estimated_eps": "0.52",
-          "surprise_pct": "+0.23%",
-          "beat_miss": "beat"
-        },
-        {
-          "fiscal_date": "2025-06-30",
-          "quarter": "2025-Q2",
-          "revenue": "6.41B",
-          "operating_income": "954.00M",
-          "eps": "0.26",
-          "estimated_eps": "0.31",
-          "surprise_pct": "+0.25%",
-          "beat_miss": "beat"
-        },
-        {
-          "fiscal_date": "2025-03-31",
-          "quarter": "2025-Q1",
-          "revenue": "6.80B",
-          "operating_income": "1.48B",
-          "eps": "0.77",
-          "estimated_eps": "0.76",
-          "surprise_pct": "+0.14%",
-          "beat_miss": "beat"
-        }
-      ],
-      "upcoming_events": [
-        {
-          "type": "earnings",
-          "label": "실적 발표",
-          "date": "2026-05-05",
-          "days_until": "18",
-          "timing": "AMC"
-        }
-      ],
-      "news_tone": {
-        "label": "bullish",
-        "confidence": 3,
-        "reasoning": "헤드라인 기반의 보수적 톤 분류입니다."
-      },
-      "trade_frame": {
-        "entry_price": "현재가 53.79 또는 눌림 시 50.90 USD",
-        "stop_loss": "SMA50 55.33 USD",
-        "target_1": "58.13 USD (1.5×ATR)",
-        "target_2": "애널리스트 목표 62.32 USD",
-        "risk_reward_ratio": "N/A",
-        "position_size_note": "$10,000 계좌 1% 리스크 기준 약 34주 (ATR $2.89 기반)",
-        "bull_scenario": "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다.",
-        "base_scenario": "53.79 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
-        "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-        "invalidation_price": "50일 이동평균선인 55.33 USD 아래로 밀리면 약세 시나리오 확인",
-        "watch_period": "2026-05-05 실적 발표 전까지"
-      },
-      "options_summary": {
-        "expiry": "2026-04-17",
-        "atm_call_iv": "6.3%",
-        "atm_put_iv": "24.2%",
-        "put_call_ratio": "0.39x",
-        "iv_percentile_30d": "1th"
-      },
-      "signal_history": [
-        {
-          "date": "2026-04-16",
-          "direction": "neutral",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "56.87 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-        },
-        {
-          "date": "2026-04-15",
-          "direction": "bear",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "55.83 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-        },
-        {
-          "date": "2026-04-14",
-          "direction": "bull",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "실적 전까지 54.86-57.20 USD 범위의 제한적 횡보 가능성이 높습니다."
-        },
-        {
-          "date": "2026-04-13",
-          "direction": "neutral",
-          "catalyst": "기타 공시",
-          "return_5d": "N/A",
-          "note": "실적 전까지 55.62 USD~60.77 USD 구간에서 박스권 흐름이 우세할 수 있습니다."
-        }
-      ],
-      "sector_comparison": {
-        "summary": "Energy 피어 1개 평균 대비 밸류에이션/모멘텀 비교",
-        "pe_ratio": {
-          "company": "39.84",
-          "peer_average": "21.86x",
-          "difference": null
-        },
-        "rs_vs_spy": {
-          "company": "N/A",
-          "peer_average": "N/A",
-          "difference": null
-        },
-        "price_change_30d": {
-          "company": "-7.86%",
-          "peer_average": "-7.08%",
-          "difference": "-0.78"
-        }
-      },
-      "peer_rank": {},
-      "valuation_score": {
-        "score": "6/10",
-        "factors": [
-          "PER 39.8x",
-          "목표가 대비 업사이드 +15.9%"
-        ],
-        "assessment": "대체로 적정 가치 범위에 위치합니다."
-      },
-      "analysis_consensus": {
-        "status": "agreed",
-        "economy_action": "watch",
-        "economy_conviction": 60,
-        "economy_reason": "섹터 대비 -2.6% / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다.",
-        "deep_action": "watch",
-        "deep_conviction": 60,
-        "deep_reason": "섹터 대비 -2.6% / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다.",
-        "direction_agreement": true,
-        "conflicted": false,
-        "confidence_delta": 5,
-        "selection_reason": "selected",
-        "third_review_completed": false,
-        "final_consensus": "agree",
-        "final_action": "watch",
-        "conviction_mean": 60.0,
-        "conviction_stdev": 0.0,
-        "conviction_adjusted": 68,
-        "conviction_prior": 60,
-        "conviction_sample_size": 2
-      },
-      "period_changes": {
-        "7d": "-7.21%",
-        "30d": "-7.86%"
-      },
-      "sec_filing_tags": [
-        "기타 공시",
-        "주주총회"
-      ],
-      "sec_filings": [
-        {
-          "tag": "기타 공시",
-          "title": "OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-          "form_type": "8-K",
-          "item_number": "",
-          "catalyst_type": "medium",
-          "importance_score": 120,
-          "published_at": "2026-04-10",
-          "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm",
-          "source": "SEC EDGAR"
-        },
-        {
-          "tag": "주주총회",
-          "title": "OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
-          "form_type": "DEF 14A",
-          "item_number": "",
-          "catalyst_type": "medium",
-          "importance_score": 100,
-          "published_at": "2026-03-19",
-          "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026019816/oxy-20260319.htm",
-          "source": "SEC EDGAR"
-        }
-      ],
-      "decision": {
-        "action": "watch",
-        "conviction": 68,
-        "reason": "섹터 대비 -2.6% / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다. / 앙상블 보정: 60→68 (↑8, spread σ=0.0)",
+        "conviction": 59,
+        "reason": "섹터 대비 -4.8% / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다.",
         "valid_until": "2026-05-05",
         "factors": {
           "catalyst_recency": 5.0,
           "earnings_pattern": 8.0,
           "fundamentals": 8.0,
           "momentum": 8.0,
-          "news_tone": 5.0,
+          "news_tone": 0.0,
           "peer_rank": 0.0,
           "portfolio_risk": 0.0,
           "regime_adjustment": 10.0,

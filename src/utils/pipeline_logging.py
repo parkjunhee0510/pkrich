@@ -19,6 +19,20 @@ _SENSITIVE_FIELD_NAMES = {
     'response_body',
     'content',
 }
+# Keys that contain the substring "token" but are telemetry, not credentials.
+# The substring-based sensitive filter would otherwise strip them from logs,
+# which silently zeroed token counts in cost_log.json.
+_TOKEN_TELEMETRY_KEYS = {
+    'input_tokens',
+    'output_tokens',
+    'cached_input_tokens',
+    'uncached_input_tokens',
+    'total_tokens',
+    'prompt_tokens',
+    'completion_tokens',
+    'max_output_tokens',
+    'reasoning_tokens',
+}
 _ACTIVE_LOGGER: 'PipelineRunLogger | None' = None
 
 
@@ -171,7 +185,10 @@ def _sanitize_fields(fields: dict[str, Any]) -> dict[str, Any]:
         normalized_key = key.strip().lower()
         if normalized_key in _SENSITIVE_FIELD_NAMES:
             continue
-        if any(token in normalized_key for token in ('secret', 'token', 'password', 'webhook')):
+        if normalized_key in _TOKEN_TELEMETRY_KEYS:
+            safe_fields[key] = value
+            continue
+        if any(marker in normalized_key for marker in ('secret', 'token', 'password', 'webhook')):
             continue
         safe_fields[key] = value
     return safe_fields

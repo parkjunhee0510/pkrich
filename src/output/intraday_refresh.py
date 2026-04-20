@@ -79,11 +79,13 @@ def write_intraday_refresh_outputs(
     price_history_json = data_dir / "price_history.json"
     price_history_json.write_text(json.dumps(price_rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    dashboard_json = data_dir / "dashboard.json"
     _sync_intraday_outputs(
         root.parent,
         [
             index_path,
             price_history_json,
+            dashboard_json,
         ],
         tickers_dir,
     )

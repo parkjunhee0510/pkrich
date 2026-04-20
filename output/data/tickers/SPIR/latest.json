@@ -6,11 +6,12 @@
     "ticker": "SPIR",
     "name": "Spire Global, Inc.",
     "date": "2026-04-17",
-    "summary": "주가 19.54달러로 30D +59.90% 급등했고 50일선 12.45달러 대비 +56.94%라 추세는 매우 강하지만 단기 과열도 큽니다. 다음 촉매는 D-23인 2026-05-13 실적 발표로, 실적 전까지는 고점권 변동성과 50일선 되돌림 가능성을 함께 봐야 합니다.",
+    "summary": "주가는 19.54달러로 30일간 +59.90% 급등해 52주 고점 23.59달러에 근접했고, 단기 과열과 높은 변동성이 동시에 나타납니다. 다음 촉매는 2026-05-13 실적(D-23)이며, 그 전까지는 20달러 안착 여부와 15달러대 옵션 MaxPain, 23달러 저항 돌파가 주요 관전 포인트입니다.",
     "key_news": [
-      "8-K 공시",
-      "ERCOT AI 확장과 손실 지속 가이던스 재부각",
-      "실적 전 가이던스 수정 흐름"
+      "실적 D-23, 최근 가이던스/수익성 논점 지속",
+      "Q1 2026 가이던스 업데이트",
+      "주가 30일 +59.9%, 고변동성 랠리 지속",
+      "콜 옵션 급증과 강한 숏 관심"
     ],
     "news_references": [
       {
@@ -45,19 +46,19 @@
       }
     ],
     "financial_highlights": [
-      "PER 13.1x, 목표가 대비 업사이드 -13.0%",
-      "30D +59.90%, SMA50 대비 +56.94%, SMA200 대비 +81.50%",
-      "RSI 60.7, MACD 2.62/2.26, RVOL 1.91x",
-      "Short Float 11.66%, 목표가 17.00달러, 5명 Strong Buy",
-      "52주 위치 76%, BB 폭 94.3%, RS vs 섹터 +45.67%"
+      "PER 13.1x, Forward EPS -0.57, TTM EPS 1.49",
+      "EPS 성장률 -22.00% YoY",
+      "SMA50 12.45달러 대비 +56.94%, SMA200 10.77달러 대비 +81.50%",
+      "ATR 2.45달러(12.55%), RVOL 1.91x, RSI 60.7",
+      "분석가 5명 Strong Buy, 목표가 17.00달러"
     ],
     "risks_or_watchpoints": [
-      "종가가 12.45달러(SMA50) 아래로 내려가면 급등분 되돌림이 시작됐다고 보고 경계하세요.",
-      "RSI가 70 이상에서 3거래일 이상 유지되거나 60 아래로 급락하면 과열/모멘텀 붕괴 신호로 보세요.",
-      "2026-05-13 실적 발표 전까지 23.59달러(52주 고점) 부근 돌파 실패가 2회 이상 나오면 단기 상단 저항이 강하다고 해석하세요.",
-      "하루 변동폭이 ATR 2.45달러의 2배를 넘는 급락과 RVOL 1.5x 이상이 동시에 나오면 차익실현 리스크를 높게 보세요."
+      "일간 -8.31% 급락으로 변동성이 매우 커졌으므로 19.54달러 근처에서의 급등 추격은 되돌림 리스크가 큽니다.",
+      "현재가 19.54달러가 52주 고점 23.59달러의 83% 수준이라 23.22달러 목표 근처에서 차익실현이 강해질 수 있습니다.",
+      "RSI(14) 60.7과 ATR 2.45달러(12.55%) 조합은 하루 2.45달러 이상 변동이 흔하므로 17.09달러 손절 시나리오가 빠르게 도달할 수 있습니다.",
+      "2026-05-13 실적 전까지 17.00달러(애널리스트 목표) 아래로 밀리면 모멘텀 약화로 보고 12.45달러(SMA50)까지 하방 확대를 경계해야 합니다."
     ],
-    "signal_or_takeaway": "고위험 모멘텀 추세매수: 19.54 고점 돌파 시 진입, 목표가 23.22, 손절가 12.45(SMA50) 이탈 시 즉시 손절.",
+    "signal_or_takeaway": "추격매수 주의: 진입트리거 20.00달러 안착 후 23.59달러 돌파, 목표가 23.22달러/17.00달러, 손절가 12.45달러 이탈 시 무효.",
     "data_snapshot": {
       "Price": "19.54 USD",
       "Daily Change": "-8.31%",
@@ -189,9 +190,9 @@
       }
     ],
     "news_tone": {
-      "label": "혼조",
-      "confidence": 4,
-      "reasoning": "우주데이터·AI 연계 서사는 살아있지만 손실 지속 가이던스가 부담. 급등 후 조정 가능성과 모멘텀이 함께 존재."
+      "label": "강세",
+      "confidence": 2,
+      "reasoning": "가이던스/실적 우려가 남아있어도 가격·수급·옵션 흐름이 강세를 지지. 다만 변동성이 매우 커 추격매수 리스크도 큼."
     },
     "trade_frame": {
       "entry_price": "현재가 19.54 또는 눌림 시 17.09 USD",
@@ -199,7 +200,7 @@
       "target_1": "23.22 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 17.00 USD",
       "risk_reward_ratio": "0.5R",
-      "position_size_note": "$62,369 계좌 1% 리스크 기준 약 254주 (ATR $2.45 기반)",
+      "position_size_note": "$57,940 계좌 1% 리스크 기준 약 236주 (ATR $2.45 기반)",
       "bull_scenario": "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다.",
       "base_scenario": "19.54 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
@@ -208,32 +209,25 @@
     },
     "options_summary": {
       "expiry": "2026-05-15",
-      "atm_call_iv": "117.0%",
-      "atm_put_iv": "109.4%",
+      "atm_call_iv": "119.1%",
+      "atm_put_iv": "111.5%",
       "put_call_ratio": "0.44x",
-      "iv_percentile_30d": "27th"
+      "iv_percentile_30d": "28th",
+      "tone": "bullish",
+      "unusual_activity": "CALL $13, vol 19, OI 대비 70% ; CALL $5, vol 7, OI 대비 700% ; PUT $15, vol 21, OI 대비 46%",
+      "oi_change": "N/A"
     },
     "signal_history": [
       {
         "date": "2026-04-17",
-        "direction": "neutral",
-        "llm_direction": "bear",
+        "direction": "bear",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "19.54 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다."
       },
       {
-        "date": "2026-04-16",
-        "direction": "neutral",
-        "llm_direction": "unknown",
-        "catalyst": "실적",
-        "return_5d": "N/A",
-        "note": "21.31 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
-      },
-      {
         "date": "2026-04-15",
-        "direction": "bear",
-        "llm_direction": "unknown",
+        "direction": "bull",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "20.54 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -241,7 +235,6 @@
       {
         "date": "2026-04-14",
         "direction": "bull",
-        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "실적 전까지 18.42-22.57 USD의 고변동 박스권 등락이 예상됩니다."
@@ -249,7 +242,6 @@
       {
         "date": "2026-04-13",
         "direction": "bear",
-        "llm_direction": "unknown",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "실적 전까지 21.79 USD~25.31 USD의 높은 변동성 박스권이 유력합니다."
@@ -273,12 +265,7 @@
         "difference": null
       }
     },
-    "peer_rank": {
-      "per_pctl": 67,
-      "rs_pctl": 80,
-      "revenue_growth_pctl": 0,
-      "summary": "모멘텀 상위 20%"
-    },
+    "peer_rank": {},
     "valuation_score": {
       "score": "4/10",
       "factors": [
@@ -290,23 +277,21 @@
     "analysis_consensus": {
       "status": "agreed",
       "economy_action": "watch",
-      "economy_conviction": 47,
-      "economy_reason": "섹터 대비 +45.7% / SMA50·SMA200 위 / 상대 거래량 1.91배 / 실적 D-23 / 하드 촉매 2026-03-19 / 현재 가격 기준 밸류에이션 부담이 큽니다.",
+      "economy_conviction": 62,
+      "economy_reason": "섹터 대비 +45.7% / SMA50·SMA200 위 / 상대 거래량 1.91배 / 실적 D-23 / 하드 촉매 2026-03-19 / 리스크온 환경의 중립 업종",
       "deep_action": "watch",
-      "deep_conviction": 47,
-      "deep_reason": "섹터 대비 +45.7% / SMA50·SMA200 위 / 상대 거래량 1.91배 / 실적 D-23 / 하드 촉매 2026-03-19 / 현재 가격 기준 밸류에이션 부담이 큽니다.",
+      "deep_conviction": 62,
+      "deep_reason": "섹터 대비 +45.7% / SMA50·SMA200 위 / 상대 거래량 1.91배 / 실적 D-23 / 하드 촉매 2026-03-19 / 리스크온 환경의 중립 업종",
+      "tie_break_action": null,
+      "tie_break_conviction": null,
+      "tie_break_reason": "",
       "direction_agreement": true,
       "conflicted": false,
       "confidence_delta": 5,
       "selection_reason": "selected",
       "third_review_completed": false,
       "final_consensus": "agree",
-      "final_action": "watch",
-      "conviction_mean": 47.0,
-      "conviction_stdev": 0.0,
-      "conviction_adjusted": 55,
-      "conviction_prior": 47,
-      "conviction_sample_size": 2
+      "final_action": "watch"
     },
     "period_changes": {
       "7d": "-9.37%",
@@ -342,20 +327,20 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 55,
-      "reason": "섹터 대비 +45.7% / SMA50·SMA200 위 / 상대 거래량 1.91배 / 실적 D-23 / 하드 촉매 2026-03-19 / 현재 가격 기준 밸류에이션 부담이 큽니다. / 앙상블 보정: 47→55 (↑8, spread σ=0.0)",
+      "conviction": 62,
+      "reason": "섹터 대비 +45.7% / SMA50·SMA200 위 / 상대 거래량 1.91배 / 실적 D-23 / 하드 촉매 2026-03-19 / 리스크온 환경의 중립 업종",
       "valid_until": "2026-05-13",
       "factors": {
-        "catalyst_recency": -5.0,
+        "catalyst_recency": 13.0,
         "earnings_pattern": 0.0,
-        "fundamentals": -3.0,
-        "momentum": 8.0,
+        "fundamentals": 2.0,
+        "momentum": 19.0,
         "news_tone": 0.0,
-        "peer_rank": 1.0,
+        "peer_rank": 0.0,
         "portfolio_risk": 0.0,
-        "regime_adjustment": 1.0,
+        "regime_adjustment": 10.0,
         "signal_track_record": 0.0,
-        "valuation": -4.0
+        "valuation": 8.0
       },
       "ensemble_agreement": "agree",
       "final_consensus": "agree"

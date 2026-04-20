@@ -1,6 +1,6 @@
 {
-  "run_date": "2026-04-15",
-  "log_path": "logs\\pipeline\\2026-04-15.jsonl",
+  "run_date": "2026-04-17",
+  "log_path": "logs\\pipeline\\2026-04-17.jsonl",
   "pipeline_completed": true,
   "providers": {
     "yfinance": {
@@ -13,11 +13,11 @@
     },
     "alpha_vantage": {
       "overall_status": "active",
-      "used_tickers": 4,
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 7
+      "not_used_tickers": 0
     },
     "polygon": {
       "overall_status": "active",
@@ -28,12 +28,12 @@
       "not_used_tickers": 0
     },
     "fmp": {
-      "overall_status": "limited",
+      "overall_status": "active",
       "used_tickers": 0,
-      "throttled_tickers": 2,
+      "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 9
+      "not_used_tickers": 11
     },
     "finnhub": {
       "overall_status": "active",
@@ -62,14 +62,27 @@
   },
   "llm": {
     "used": true,
-    "planned_batches": 4,
-    "completed_batches": 4,
+    "planned_batches": 0,
+    "completed_batches": 8,
     "failed_batches": 0,
-    "validation_failures": 1,
-    "estimated_cost_usd": 0.09476845,
+    "validation_failures": 10,
+    "estimated_cost_usd": 0.17641775,
     "latest_model": "gpt-5.4-mini",
     "models_used": {
-      "gpt-5.4-mini": 4
+      "gpt-5.4-mini": 8
+    },
+    "quality": {
+      "run_date": "2026-04-20",
+      "success": true,
+      "daily_api_cost_usd": 0.0834533,
+      "batch_count": 0,
+      "validated_ticker_count": 64,
+      "validation_failure_count": 5,
+      "schema_violation_count": 0,
+      "fact_warning_count": 5,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 0,
+      "hallucination_ratio": 0.0
     }
   }
 }

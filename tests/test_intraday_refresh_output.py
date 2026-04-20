@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
 from datetime import date
@@ -124,6 +125,58 @@ class IntradayRefreshOutputTests(unittest.TestCase):
             self.assertEqual(latest_payload["payload"]["fundamentals"]["analyst_target_price"], "135.00 USD")
             self.assertEqual(price_history_payload[0]["price"], "111.25 USD")
             self.assertIn("intraday_refreshed_at", index_payload)
+
+    def test_intraday_refresh_syncs_dashboard_json_to_web_mirror(self) -> None:
+        """Regression: intraday refresh must also sync dashboard.json so the
+        frontend never loses its primary payload after an intraday run.
+        Previously only index.json and price_history.json were synced, which
+        left web/public/output/data/dashboard.json stale or missing.
+        """
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            temp_path = Path(temp_dir)
+            output_root = temp_path / "output"
+            (temp_path / "web").mkdir(parents=True, exist_ok=True)
+
+            with patch.dict(os.environ, {"EMIT_LEGACY_DASHBOARD": "true"}):
+                write_json_outputs(
+                    [_sample_analysis()],
+                    date(2026, 4, 8),
+                    output_root=output_root,
+                    market_overview=[],
+                )
+
+            source_dashboard = output_root / "data" / "dashboard.json"
+            mirror_dashboard = temp_path / "web" / "public" / "output" / "data" / "dashboard.json"
+            self.assertTrue(source_dashboard.exists(), "precondition: write_json_outputs produces dashboard.json")
+            # Remove the mirror to prove the intraday refresh repopulates it.
+            if mirror_dashboard.exists():
+                mirror_dashboard.unlink()
+
+            fake_datastore = type(
+                "FakeDatastore",
+                (),
+                {
+                    "load_period_changes": lambda self, run_date: {},
+                    "query_prices": lambda self: [],
+                },
+            )()
+
+            with patch("src.output.intraday_refresh.get_datastore", return_value=fake_datastore):
+                write_intraday_refresh_outputs(
+                    {},
+                    date(2026, 4, 8),
+                    output_root=output_root,
+                )
+
+            self.assertTrue(
+                mirror_dashboard.exists(),
+                "intraday_refresh must sync dashboard.json into web/public/output/data/",
+            )
+            self.assertEqual(
+                source_dashboard.read_bytes(),
+                mirror_dashboard.read_bytes(),
+                "mirrored dashboard.json must match source byte-for-byte",
+            )
 
 
 if __name__ == "__main__":
