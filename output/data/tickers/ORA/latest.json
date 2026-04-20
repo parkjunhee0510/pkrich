@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-04-17",
+  "date": "2026-04-20",
   "ticker": "ORA",
   "payload": {
     "ticker": "ORA",
@@ -60,36 +60,36 @@
     ],
     "signal_or_takeaway": "매수 대기: 진입트리거 116.00달러 돌파 또는 110.08달러 눌림, 목표가 117.48달러/127.09달러, 손절가 113.07달러 이탈 시 무효.",
     "data_snapshot": {
-      "Price": "113.04 USD",
-      "Daily Change": "+0.46%",
-      "Market Cap": "6.95B",
-      "Trailing P/E": "55.96",
+      "Price": "114.12 USD",
+      "Daily Change": "+0.96%",
+      "Market Cap": "7.01B",
+      "Trailing P/E": "56.50",
       "EPS": "2.02",
       "52W High": "132.58",
       "52W Low": "70.02",
       "50D SMA": "113.07",
       "200D SMA": "105.63",
-      "Volume": "594,888",
-      "3M Avg Volume": "843,185",
-      "Price/Book": "2.70",
+      "Volume": "116211",
+      "3M Avg Volume": "848,055",
+      "Price/Book": "2.73",
       "Dividend Yield": "0.42%",
       "Sector": "Utilities",
-      "Open": "112.45",
-      "High": "113.51",
-      "Low": "110.53",
-      "Close": "113.04",
+      "Open": "112.08",
+      "High": "114.24",
+      "Low": "111.82",
+      "Close": "114.12",
       "RS vs Sector ETF": "+2.12%"
     },
     "fundamentals": {
-      "market_cap": "6.95B",
-      "trailing_pe": "55.96",
+      "market_cap": "7.01B",
+      "trailing_pe": "56.50",
       "eps": "2.02",
       "forward_eps": "2.58",
       "earnings_growth": "-24.40% YoY",
-      "price_to_book": "2.70",
+      "price_to_book": "2.73",
       "dividend_yield": "0.42%",
-      "volume": "594,888",
-      "avg_volume_3m": "843,185",
+      "volume": "116211",
+      "avg_volume_3m": "848,055",
       "52w_high": "132.58",
       "52w_low": "70.02",
       "short_float_pct": "8.82%",
@@ -128,15 +128,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "2.96",
-      "atr_percent": "2.62%",
-      "relative_volume": "0.71x",
-      "gap_percent": "-0.06%",
-      "price_vs_sma50": "-0.03%",
-      "price_vs_sma200": "+7.02%",
-      "week52_position": "69%",
+      "atr_14d": "2.87",
+      "atr_percent": "2.51%",
+      "relative_volume": "0.14x",
+      "gap_percent": "-0.85%",
+      "price_vs_sma50": "+0.92%",
+      "price_vs_sma200": "+8.04%",
+      "week52_position": "70%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+2.12%"
+      "rs_vs_sector_etf": "+2.93%"
     },
     "quarterly_financials": [
       {
@@ -209,10 +209,10 @@
     },
     "options_summary": {
       "expiry": "2026-05-15",
-      "atm_call_iv": "46.4%",
-      "atm_put_iv": "41.7%",
+      "atm_call_iv": "43.7%",
+      "atm_put_iv": "43.1%",
       "put_call_ratio": "0.12x",
-      "iv_percentile_30d": "40th",
+      "iv_percentile_30d": "37th",
       "tone": "neutral",
       "unusual_activity": "N/A",
       "oi_change": "N/A"
@@ -294,8 +294,8 @@
       "final_action": "watch"
     },
     "period_changes": {
-      "7d": "-1.89%",
-      "30d": "+5.15%"
+      "7d": "+1.64%",
+      "30d": "+7.24%"
     },
     "sec_filing_tags": [
       "실적",
@@ -345,5 +345,6 @@
       "ensemble_agreement": "agree",
       "final_consensus": "agree"
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-04-20T15:12:34"
 }
