@@ -24,6 +24,11 @@ FIELDNAMES = [
     "evaluated_1d",
     "evaluated_5d",
     "evaluated_20d",
+    # Triple-barrier labels (Phase A Task 2) — additive, backward compatible.
+    "barrier_label",
+    "barrier_hit_day",
+    "barrier_return",
+    "barrier_date",
 ]
 _NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*\.?\d*")
 _BULLISH_TERMS = ("상승", "강세", "반등", "회복", "돌파", "bull")
@@ -62,6 +67,10 @@ def record_signals(
                 "evaluated_1d": "False",
                 "evaluated_5d": "False",
                 "evaluated_20d": "False",
+                "barrier_label": "pending",
+                "barrier_hit_day": "",
+                "barrier_return": "",
+                "barrier_date": "",
             }
         )
 
@@ -107,6 +116,80 @@ def update_signal_returns(
 
     _write_rows(csv_path, rows)
     return len(updated_row_keys)
+
+
+def update_triple_barrier_labels(
+    csv_path: Path,
+    run_date: date,
+    *,
+    price_history_rows: list[dict[str, str]] | None = None,
+    tp: float | None = None,
+    sl: float | None = None,
+    horizon: int | None = None,
+) -> int:
+    """Fill `barrier_label` / `barrier_hit_day` / `barrier_return` for rows
+    still in `pending` state. Uses OHLC bars from `price_history_rows`.
+
+    Returns the number of rows updated. Pending rows remain pending when
+    there are not yet `horizon` future sessions *and* no barrier touched.
+    """
+    from src.decision.triple_barrier import (
+        HORIZON_DEFAULT,
+        SL_DEFAULT,
+        TP_DEFAULT,
+        build_ohlc_series,
+        label_signal,
+    )
+
+    tp_pct = tp if tp is not None else TP_DEFAULT
+    sl_pct = sl if sl is not None else SL_DEFAULT
+    window = horizon if horizon is not None else HORIZON_DEFAULT
+
+    rows = _load_rows(csv_path)
+    if not rows:
+        return 0
+
+    ohlc_map = build_ohlc_series(price_history_rows or [])
+    updated = 0
+
+    for row in rows:
+        label = str(row.get("barrier_label", "")).strip().lower()
+        if label and label != "pending":
+            continue
+
+        ticker = str(row.get("ticker", "")).strip().upper()
+        signal_date = _parse_date(row.get("signal_date", ""))
+        signal_price = _parse_float(row.get("signal_price", ""))
+        direction = str(row.get("signal_direction", "neutral")).strip() or "neutral"
+        if not ticker or signal_date is None or signal_price is None or signal_price == 0:
+            continue
+
+        sessions = ohlc_map.get(ticker, [])
+        # Only sessions strictly after the signal date, bounded by run_date.
+        relevant = [s for s in sessions if signal_date < s[0] <= run_date]
+        if not relevant:
+            continue
+
+        result = label_signal(
+            signal_date=signal_date,
+            signal_price=signal_price,
+            direction=direction,
+            sessions=relevant,
+            tp=tp_pct,
+            sl=sl_pct,
+            horizon=window,
+        )
+        if result is None:
+            continue  # still pending
+
+        row["barrier_label"] = result["barrier_label"]
+        row["barrier_hit_day"] = result["barrier_hit_day"]
+        row["barrier_return"] = result["barrier_return"]
+        row["barrier_date"] = result.get("barrier_date", "")
+        updated += 1
+
+    _write_rows(csv_path, rows)
+    return updated
 
 
 def load_signal_stats(csv_path: Path) -> dict[str, Any]:
@@ -405,10 +488,16 @@ def _load_rows(csv_path: Path) -> list[dict[str, str]]:
 def _write_rows(csv_path: Path, rows: list[dict[str, str]]) -> None:
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     ordered_rows = sorted(rows, key=lambda row: (row.get("signal_date", ""), row.get("ticker", "")))
+    # Normalize each row to the current FIELDNAMES shape so older CSVs
+    # without the triple-barrier columns can be rewritten cleanly.
+    normalized_rows = [
+        {name: row.get(name, "") for name in FIELDNAMES}
+        for row in ordered_rows
+    ]
     with csv_path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=FIELDNAMES)
         writer.writeheader()
-        writer.writerows(ordered_rows)
+        writer.writerows(normalized_rows)
 
 
 def _parse_date(raw_value: str) -> date | None:

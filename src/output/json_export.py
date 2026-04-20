@@ -101,6 +101,7 @@ def write_json_outputs(
     )
     _write_calibration_json(data_dir)
     _write_factor_audit_json(data_dir)
+    _write_signal_quality_json(data_dir)
     _write_tuning_report_json(data_dir)
     _write_validation_warnings_json(data_dir)
     write_direction_alignment_output(output_root=root)
@@ -517,6 +518,27 @@ def _write_factor_audit_json(data_dir: Path) -> None:
     )
 
 
+def _write_signal_quality_json(data_dir: Path) -> None:
+    """Emit Phase A signal-quality metrics (IC decay, rolling IC, Kelly, turnover)."""
+    from src.decision.signal_quality import build_signal_quality_payload
+    from src.utils.signal_tracker import load_signal_rows
+
+    try:
+        rows = load_signal_rows(data_dir / "signal_tracker.csv")
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            **build_signal_quality_payload(rows),
+        }
+    except Exception as exc:  # graceful degradation
+        payload = {
+            "schema_version": SCHEMA_VERSION,
+            "error": str(exc),
+        }
+    (data_dir / "signal_quality.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
 def _write_tuning_report_json(data_dir: Path) -> None:
     """Emit regime-multiplier grid search + walk-forward CV + threshold suggestions.
 
@@ -654,6 +676,8 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
         "backtest_summary.json",
         "monthly_summary.json",
         "sectors.json",
+        "factor_audit.json",
+        "signal_quality.json",
         "index.json",
     ]
     dashboard_json = data_dir / "dashboard.json"

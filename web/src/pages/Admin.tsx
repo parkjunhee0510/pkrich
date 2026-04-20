@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ErrorState } from '../components/ErrorState'
+import { SignalQualityPanel } from '../components/SignalQualityPanel'
 import { TablePageSkeleton } from '../components/Skeleton'
 import type {
   AnalysisQualityPayload,
@@ -160,6 +161,30 @@ type WalkForwardRegimeReport = {
   selected_multipliers: Record<string, number> | null
 }
 
+type PurgedWalkForwardFold = {
+  status?: string
+  train_size: number
+  purged: number
+  test_size: number
+  test_start?: string
+  test_end?: string
+  train_spearman?: number | null
+  oos_spearman?: number
+  multipliers?: Record<string, number>
+}
+
+type PurgedWalkForwardRegimeReport = {
+  status: string
+  sample_size: number
+  folds: PurgedWalkForwardFold[]
+  oos_spearman_mean: number | null
+  oos_spearman_std: number | null
+  in_sample_spearman_leaky?: number | null
+  overfit_gap?: number | null
+  avg_purged_per_fold?: number | null
+  selected_multipliers: Record<string, number> | null
+}
+
 type TuningHorizon = {
   horizon: number
   regime_multipliers: {
@@ -181,6 +206,14 @@ type TuningHorizon = {
     horizon: number
     n_folds_requested: number
     regimes: Record<string, WalkForwardRegimeReport>
+  }
+  purged_walk_forward?: {
+    status: string
+    horizon: number
+    n_folds_requested: number
+    embargo_days: number
+    purge_horizon_days: number
+    regimes: Record<string, PurgedWalkForwardRegimeReport>
   }
 }
 
@@ -513,6 +546,7 @@ export function Admin() {
       <DirectionAlignmentSection payload={directionAlignment} />
       <CalibrationSection payload={calibration} />
       <FactorAuditSection payload={factorAudit} />
+      <SignalQualityPanel />
       <TuningReportSection payload={tuningReport} />
 
       <section className="signals-meta-section">
@@ -1342,6 +1376,8 @@ function TuningReportSection({ payload }: { payload: TuningReportPayload | null 
         </div>
       )}
 
+      <PurgedWalkForwardBlock payload={horizon.purged_walk_forward} />
+
       <h4 style={{ marginTop: 16 }}>임계값 권고</h4>
       {thresholds.status === 'ok' && thresholds.suggested ? (
         <div className="signal-summary-grid">
@@ -1365,6 +1401,152 @@ function TuningReportSection({ payload }: { payload: TuningReportPayload | null 
         <p className="empty">임계값 계산에 필요한 데이터가 부족합니다.</p>
       )}
     </section>
+  )
+}
+
+function PurgedWalkForwardBlock({
+  payload,
+}: {
+  payload?: TuningHorizon['purged_walk_forward']
+}) {
+  if (!payload) return null
+  const entries = Object.entries(payload.regimes ?? {})
+  if (entries.length === 0) return null
+
+  return (
+    <>
+      <h4 style={{ marginTop: 16 }}>
+        Purged Walk-Forward CV (embargo {payload.embargo_days}D · label horizon{' '}
+        {payload.purge_horizon_days}D)
+      </h4>
+      <p className="section-kicker" style={{ marginBottom: 8 }}>
+        학습 샘플 중 테스트 라벨 윈도우와 겹치는 행을 제거 + 양쪽에 embargo 갭을 추가 (López de Prado).
+        위의 기본 walk-forward는 라벨 누수가 있을 수 있으므로, 의사결정은 이 표의 OOS ρ 기준으로.
+      </p>
+      <div className="watchlist-table-shell">
+        <table className="watchlist-table">
+          <thead>
+            <tr>
+              <th>Regime</th>
+              <th>N</th>
+              <th>OOS ρ (mean ± std)</th>
+              <th>IS ρ (leaky)</th>
+              <th>Overfit gap</th>
+              <th>Fold당 평균 purge</th>
+              <th>권고 multipliers</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map(([regime, report]) => {
+              if (report.status !== 'ok') {
+                return (
+                  <tr key={regime}>
+                    <td>{regime}</td>
+                    <td>{report.sample_size}</td>
+                    <td colSpan={5}>샘플 부족 ({report.status})</td>
+                  </tr>
+                )
+              }
+              const mults = report.selected_multipliers
+              const gap = report.overfit_gap
+              return (
+                <tr key={regime}>
+                  <td>{regime}</td>
+                  <td>{report.sample_size}</td>
+                  <td>
+                    {(report.oos_spearman_mean ?? 0).toFixed(3)} ±{' '}
+                    {(report.oos_spearman_std ?? 0).toFixed(3)}
+                  </td>
+                  <td>
+                    {report.in_sample_spearman_leaky !== null &&
+                    report.in_sample_spearman_leaky !== undefined
+                      ? report.in_sample_spearman_leaky.toFixed(3)
+                      : 'N/A'}
+                  </td>
+                  <td>
+                    {gap !== null && gap !== undefined ? (
+                      <span
+                        className="status"
+                        style={{ background: gap > 0.2 ? '#d98a7b' : undefined }}
+                      >
+                        {gap >= 0 ? '+' : ''}
+                        {gap.toFixed(3)}
+                      </span>
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                  <td>{(report.avg_purged_per_fold ?? 0).toFixed(1)}</td>
+                  <td style={{ fontSize: 12 }}>
+                    {mults
+                      ? Object.entries(mults)
+                          .map(([k, v]) => `${k}=${v}`)
+                          .join(', ')
+                      : 'N/A'}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <PurgedFoldDetails entries={entries} />
+    </>
+  )
+}
+
+function PurgedFoldDetails({
+  entries,
+}: {
+  entries: Array<[string, PurgedWalkForwardRegimeReport]>
+}) {
+  const okEntries = entries.filter(([, r]) => r.status === 'ok' && r.folds.length > 0)
+  if (okEntries.length === 0) return null
+  return (
+    <details style={{ marginTop: 8 }}>
+      <summary className="section-kicker" style={{ cursor: 'pointer' }}>
+        Fold별 상세 (train/purged/test_window/OOS ρ)
+      </summary>
+      <div className="watchlist-table-shell" style={{ marginTop: 8 }}>
+        <table className="watchlist-table">
+          <thead>
+            <tr>
+              <th>Regime</th>
+              <th>Fold</th>
+              <th>Train</th>
+              <th>Purged</th>
+              <th>Test</th>
+              <th>Test 기간</th>
+              <th>OOS ρ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {okEntries.flatMap(([regime, report]) =>
+              report.folds.map((fold, idx) => (
+                <tr key={`${regime}-${idx}`}>
+                  <td>{regime}</td>
+                  <td>#{idx + 1}</td>
+                  <td>{fold.train_size}</td>
+                  <td>{fold.purged}</td>
+                  <td>{fold.test_size}</td>
+                  <td style={{ fontSize: 12 }}>
+                    {fold.test_start ?? '—'} → {fold.test_end ?? '—'}
+                  </td>
+                  <td>
+                    {fold.status === 'ok' && fold.oos_spearman !== undefined
+                      ? fold.oos_spearman.toFixed(3)
+                      : fold.status === 'skipped_small_train'
+                        ? 'skipped'
+                        : 'N/A'}
+                  </td>
+                </tr>
+              )),
+            )}
+          </tbody>
+        </table>
+      </div>
+    </details>
   )
 }
 

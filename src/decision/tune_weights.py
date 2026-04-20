@@ -26,6 +26,7 @@ is sufficient. Guard rails:
 from __future__ import annotations
 
 import math
+from datetime import date, timedelta
 from typing import Any, Iterable
 
 from src.decision.factor_audit import _parse_factors, _parse_float, _spearman
@@ -54,6 +55,15 @@ MIN_SAMPLES_FOR_THRESHOLDS = 50
 WALKFORWARD_DEFAULT_FOLDS = 5
 WALKFORWARD_MIN_TEST_SIZE = 10
 WALKFORWARD_MIN_TRAIN_SIZE = 20
+
+# Purged K-fold + embargo (López de Prado, Advances in Financial ML, ch.7).
+# Labels are computed as forward N-day returns, so a training sample whose
+# label window overlaps the test window leaks the test label back into
+# training. `PURGE_HORIZON_DEFAULT` must match the return horizon used for
+# the label. `EMBARGO_DAYS` adds a one-sided gap after the test window to
+# absorb residual autocorrelation in the error term.
+PURGE_HORIZON_DEFAULT = 5
+EMBARGO_DAYS_DEFAULT = 5
 
 
 def _weighted_sum(factors: dict[str, float], multipliers: dict[str, float]) -> float:
@@ -438,11 +448,220 @@ def walk_forward_grid_search(
     return report
 
 
+def _parse_iso_date(raw: str) -> date | None:
+    try:
+        return date.fromisoformat(raw.strip())
+    except (ValueError, AttributeError):
+        return None
+
+
+def _purge_training_set(
+    dated: list[tuple[str, dict[str, float], float]],
+    test_start: date,
+    test_end: date,
+    *,
+    horizon_days: int,
+    embargo_days: int,
+) -> list[tuple[dict[str, float], float]]:
+    """Drop training samples whose label window overlaps the test window
+    (after adding `embargo_days` of one-sided padding on each side).
+
+    Label window for a sample observed on `d` is `[d, d + horizon_days]` —
+    if any part of that interval falls within `[test_start - embargo,
+    test_end + embargo]`, the sample is purged.
+    """
+    embargo_start = test_start - timedelta(days=embargo_days)
+    embargo_end = test_end + timedelta(days=embargo_days)
+    keep: list[tuple[dict[str, float], float]] = []
+    for signal_date_str, factors, ret in dated:
+        signal_date = _parse_iso_date(signal_date_str)
+        if signal_date is None:
+            continue
+        label_start = signal_date
+        label_end = signal_date + timedelta(days=horizon_days)
+        # Overlap check: two intervals overlap iff start_a <= end_b and
+        # start_b <= end_a.
+        overlaps = label_start <= embargo_end and embargo_start <= label_end
+        if overlaps:
+            continue
+        keep.append((factors, ret))
+    return keep
+
+
+def purged_walk_forward_grid_search(
+    rows: Iterable[dict[str, str]],
+    *,
+    horizon: int = 5,
+    n_folds: int = WALKFORWARD_DEFAULT_FOLDS,
+    embargo_days: int = EMBARGO_DAYS_DEFAULT,
+    purge_horizon_days: int | None = None,
+) -> dict[str, Any]:
+    """Walk-forward grid search with purging + embargo (López de Prado).
+
+    The plain `walk_forward_grid_search` partitions by row index, which
+    silently leaks labels: a train row at position (cursor - 1) has its
+    forward 5D return bleeding into the first few days of the test fold.
+    Purging drops any train row whose `[signal_date, signal_date + horizon]`
+    window touches the embargoed test window; embargo pads both sides so
+    residual autocorrelation in the error term can't sneak across either.
+
+    Each fold reports its in-sample ρ (on the purged train set) and OOS
+    ρ (on the untouched test set). The gap between the two is the honest
+    overfit estimate — substantially more trustworthy than the naive
+    walk-forward's, which inherits a leaked baseline.
+    """
+    rows_list = list(rows)
+    horizon_days = purge_horizon_days if purge_horizon_days is not None else horizon
+    report: dict[str, Any] = {
+        "status": "ok",
+        "horizon": horizon,
+        "n_folds_requested": n_folds,
+        "embargo_days": embargo_days,
+        "purge_horizon_days": horizon_days,
+        "regimes": {},
+    }
+
+    for regime in ("risk_on", "risk_off", "neutral"):
+        dated = _extract_regime_rows_dated(rows_list, regime, horizon=horizon)
+        dated.sort(key=lambda triple: triple[0])
+        total = len(dated)
+
+        min_total = WALKFORWARD_MIN_TRAIN_SIZE + 2 * WALKFORWARD_MIN_TEST_SIZE
+        if total < min_total:
+            report["regimes"][regime] = {
+                "status": "insufficient_data",
+                "sample_size": total,
+                "min_required": min_total,
+                "folds": [],
+                "oos_spearman_mean": None,
+                "oos_spearman_std": None,
+                "selected_multipliers": None,
+            }
+            continue
+
+        test_region_start = max(WALKFORWARD_MIN_TRAIN_SIZE, total // 3)
+        test_pool = total - test_region_start
+        fold_size = max(WALKFORWARD_MIN_TEST_SIZE, test_pool // n_folds)
+
+        fold_results: list[dict[str, Any]] = []
+        oos_rhos: list[float] = []
+        purged_counts: list[int] = []
+        cursor = test_region_start
+        while cursor < total and len(fold_results) < n_folds:
+            test_end_idx = min(cursor + fold_size, total)
+            test_window = dated[cursor:test_end_idx]
+            cursor = test_end_idx
+            if len(test_window) < WALKFORWARD_MIN_TEST_SIZE:
+                continue
+
+            test_start_date = _parse_iso_date(test_window[0][0])
+            test_end_date = _parse_iso_date(test_window[-1][0])
+            if test_start_date is None or test_end_date is None:
+                continue
+
+            # Train candidates = everything NOT in the test window.
+            raw_train = [d for d in dated if d not in test_window]
+            train_slice = _purge_training_set(
+                raw_train,
+                test_start_date,
+                test_end_date,
+                horizon_days=horizon_days,
+                embargo_days=embargo_days,
+            )
+            purged_count = len(raw_train) - len(train_slice)
+            purged_counts.append(purged_count)
+
+            if len(train_slice) < WALKFORWARD_MIN_TRAIN_SIZE:
+                fold_results.append({
+                    "status": "skipped_small_train",
+                    "train_size": len(train_slice),
+                    "purged": purged_count,
+                    "test_size": len(test_window),
+                    "test_start": test_start_date.isoformat(),
+                    "test_end": test_end_date.isoformat(),
+                })
+                continue
+
+            train_mults, train_rho = _best_multipliers_on(train_slice)
+            if train_mults is None:
+                continue
+
+            test_pairs = [(f, r) for _, f, r in test_window]
+            predicted_test = [_weighted_sum(f, train_mults) for f, _ in test_pairs]
+            realized_test = [r for _, r in test_pairs]
+            oos_rho = _spearman(predicted_test, realized_test)
+            if oos_rho is None or math.isnan(oos_rho):
+                continue
+
+            fold_results.append({
+                "status": "ok",
+                "train_size": len(train_slice),
+                "purged": purged_count,
+                "test_size": len(test_window),
+                "test_start": test_start_date.isoformat(),
+                "test_end": test_end_date.isoformat(),
+                "train_spearman": round(train_rho, 4) if train_rho is not None else None,
+                "oos_spearman": round(oos_rho, 4),
+                "multipliers": {k: round(v, 2) for k, v in train_mults.items()},
+            })
+            oos_rhos.append(oos_rho)
+
+        valid_folds = [f for f in fold_results if f.get("status") == "ok"]
+        if len(valid_folds) < 2:
+            report["regimes"][regime] = {
+                "status": "insufficient_data",
+                "sample_size": total,
+                "folds": fold_results,
+                "oos_spearman_mean": None,
+                "oos_spearman_std": None,
+                "selected_multipliers": None,
+                "avg_purged_per_fold": (
+                    round(sum(purged_counts) / len(purged_counts), 1)
+                    if purged_counts else None
+                ),
+            }
+            continue
+
+        mean_rho = sum(oos_rhos) / len(oos_rhos)
+        variance = sum((r - mean_rho) ** 2 for r in oos_rhos) / len(oos_rhos)
+        std_rho = math.sqrt(variance)
+
+        # Full-set in-sample reference is purely informational — the
+        # whole point of purging is to stop trusting it. Keep it but
+        # label clearly.
+        full = [(f, r) for _, f, r in dated]
+        full_mults, full_rho = _best_multipliers_on(full)
+
+        report["regimes"][regime] = {
+            "status": "ok",
+            "sample_size": total,
+            "folds": fold_results,
+            "oos_spearman_mean": round(mean_rho, 4),
+            "oos_spearman_std": round(std_rho, 4),
+            "in_sample_spearman_leaky": round(full_rho, 4) if full_rho is not None else None,
+            "overfit_gap": (
+                round(full_rho - mean_rho, 4) if full_rho is not None else None
+            ),
+            "avg_purged_per_fold": (
+                round(sum(purged_counts) / len(purged_counts), 1)
+                if purged_counts else 0.0
+            ),
+            "selected_multipliers": (
+                {k: round(v, 2) for k, v in full_mults.items()}
+                if full_mults is not None
+                else None
+            ),
+        }
+
+    return report
+
+
 def build_tuning_payload(
     rows: Iterable[dict[str, str]],
     *,
     horizon: int = 5,
     include_walk_forward: bool = True,
+    include_purged_walk_forward: bool = True,
 ) -> dict[str, Any]:
     """Convenience wrapper returning grid search, walk-forward CV, and thresholds."""
     rows_list = list(rows)
@@ -453,4 +672,8 @@ def build_tuning_payload(
     }
     if include_walk_forward:
         payload["walk_forward"] = walk_forward_grid_search(rows_list, horizon=horizon)
+    if include_purged_walk_forward:
+        payload["purged_walk_forward"] = purged_walk_forward_grid_search(
+            rows_list, horizon=horizon
+        )
     return payload

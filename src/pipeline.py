@@ -189,6 +189,24 @@ def run_pipeline(run_date: date | None = None) -> None:
             price_lookup,
             price_history_rows=historical_price_rows,
         )
+        # Triple-barrier labeling (Phase A Task 2) — additive; runs alongside
+        # classical return_Nd fill so both outcome models coexist.
+        try:
+            from src.utils.signal_tracker import update_triple_barrier_labels
+            barrier_updated = update_triple_barrier_labels(
+                datastore.data_dir / "signal_tracker.csv",
+                effective_date,
+                price_history_rows=historical_price_rows,
+            )
+            record_pipeline_event(
+                "decision.triple_barrier", "info", "barrier_labels_updated",
+                updated=barrier_updated,
+            )
+        except Exception as exc:
+            record_pipeline_event(
+                "decision.triple_barrier", "error", "barrier_labeling_error",
+                error=str(exc),
+            )
         signal_stats = datastore.load_signal_stats_data()
         # Decision layer: market regime + per-ticker decisions
         try:
