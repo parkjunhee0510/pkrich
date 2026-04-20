@@ -34,6 +34,12 @@ const Admin = lazy(() =>
 const Calendar = lazy(() =>
   import('./pages/Calendar').then((module) => ({ default: module.Calendar })),
 )
+const Sectors = lazy(() =>
+  import('./pages/Sectors').then((module) => ({ default: module.Sectors })),
+)
+const SectorDetail = lazy(() =>
+  import('./pages/SectorDetail').then((module) => ({ default: module.SectorDetail })),
+)
 const ApiStatus = lazy(() =>
   import('./pages/ApiStatus').then((module) => ({ default: module.ApiStatus })),
 )
@@ -59,6 +65,8 @@ export default function App() {
             <Route path="/backtest" element={<Backtest />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/calendar" element={<Calendar />} />
+            <Route path="/sectors" element={<Sectors />} />
+            <Route path="/sectors/:sectorId" element={<SectorDetail />} />
             <Route path="/api-status" element={<ApiStatus />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

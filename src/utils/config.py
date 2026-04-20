@@ -1,9 +1,91 @@
 ﻿from __future__ import annotations
 
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from src.types import PortfolioHolding, WatchlistItem
+
+
+@dataclass(frozen=True)
+class SectorTickerConfig:
+    """A single ticker entry inside a sector. Minimal schema — no CIK/keywords
+    needed because the sector explorer skips filings/IR feeds."""
+    ticker: str
+    name: str
+
+
+@dataclass(frozen=True)
+class SectorConfig:
+    """Declarative sector grouping for the read-only sector explorer page.
+
+    Fields intentionally narrow: the sector page does NOT run the analyzer or
+    decision layer, so CIK, alert rules, SEC priorities etc. are omitted.
+
+    `benchmark_etf` is optional -- when set the collector fetches one extra
+    yfinance series per sector so the frontend can show relative strength
+    vs the benchmark (e.g. XLK for Technology, XLE for Energy).
+    """
+    id: str
+    name: str
+    description: str = ""
+    news_keywords: list[str] = field(default_factory=list)
+    tickers: list[SectorTickerConfig] = field(default_factory=list)
+    benchmark_etf: str = ""
+
+
+def load_sectors(path: str = 'config/sectors.yaml') -> list[SectorConfig]:
+    """Read `config/sectors.yaml` → list[SectorConfig].
+
+    Returns an empty list (no raise) when the file is absent or malformed so
+    the main pipeline keeps running even if the sector explorer is
+    misconfigured. Pipeline-level logging surfaces the parse failure.
+    """
+    payload = load_yaml_mapping(path, optional=True)
+    raw_sectors = payload.get('sectors', [])
+    if not isinstance(raw_sectors, list):
+        return []
+
+    result: list[SectorConfig] = []
+    seen_ids: set[str] = set()
+    for entry in raw_sectors:
+        if not isinstance(entry, dict):
+            continue
+        sector_id = str(entry.get('id', '')).strip().lower()
+        if not sector_id or sector_id in seen_ids:
+            continue
+        seen_ids.add(sector_id)
+        tickers = _normalize_sector_tickers(entry.get('tickers', []))
+        if not tickers:
+            continue
+        result.append(
+            SectorConfig(
+                id=sector_id,
+                name=str(entry.get('name', sector_id)).strip() or sector_id,
+                description=str(entry.get('description', '')).strip(),
+                news_keywords=_normalize_string_list(entry.get('news_keywords', [])),
+                tickers=tickers,
+                benchmark_etf=str(entry.get('benchmark_etf', '')).strip().upper(),
+            )
+        )
+    return result
+
+
+def _normalize_sector_tickers(raw: object) -> list[SectorTickerConfig]:
+    if not isinstance(raw, list):
+        return []
+    normalized: list[SectorTickerConfig] = []
+    seen: set[str] = set()
+    for entry in raw:
+        if not isinstance(entry, dict):
+            continue
+        ticker = str(entry.get('ticker', '')).strip().upper()
+        if not ticker or ticker in seen:
+            continue
+        seen.add(ticker)
+        name = str(entry.get('name', ticker)).strip() or ticker
+        normalized.append(SectorTickerConfig(ticker=ticker, name=name))
+    return normalized
 
 
 _DEFAULT_SECTOR_ETF_MAP: dict[str, str] = {

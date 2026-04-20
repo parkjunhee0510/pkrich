@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/prices', label: '시세' },
   { to: '/portfolio', label: '포트폴리오' },
   { to: '/signals', label: '시그널 통계' },
+  { to: '/sectors', label: '섹터 탐색' },
   { to: '/scenario', label: '시나리오' },
   { to: '/backtest', label: '백테스트' },
   { to: '/chat', label: '리서치 채팅' },

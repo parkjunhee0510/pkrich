@@ -34,21 +34,26 @@ from src.collector.orchestrated_collection import (
     collect_news_via_orchestrator,
 )
 from src.collector.price import collect_market_data, collect_market_overview
+from src.collector.sector_scan import scan_sectors
 from src.collector.shadow_compare import run_shadow_comparison
 from src.output.alert import evaluate_alert_rules
 from src.output.analysis_quality import write_analysis_quality_output
 from src.output.api_status import write_api_status_outputs
 from src.output.ab_test import write_ab_test_results
+from src.output.cost_log import write_cost_log_output
+from src.output.intraday_refresh import write_intraday_refresh_outputs
 from src.output.markdown import write_outputs
+from src.output.routing_outcome import write_routing_outcome_output
+from src.output.schema import SCHEMA_VERSION
+from src.output.sectors_json import write_sectors_json
 from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
 from src.types import CollectedTickerData, MarketRegime
-from src.utils.config import load_portfolio, load_watchlist
+from src.utils.config import load_portfolio, load_sectors, load_watchlist
 from src.utils.datastore import get_datastore
 from src.utils.env import is_env_flag_enabled, load_dotenv
 from src.utils.macro_sensitivity import attach_portfolio_macro_sensitivity
 from src.utils.portfolio import calculate_portfolio_summary
 from src.utils.pipeline_logging import finalize_pipeline_logging, get_pipeline_logger, record_pipeline_event, start_pipeline_logging
-from src.utils.signal_tracker import load_recent_signals, load_signal_stats, record_signals, update_signal_returns
 
 
 def _build_analysis_orchestrator(model_profile_name: str | None = None) -> AnalysisOrchestrator:
@@ -81,11 +86,19 @@ def _build_analysis_ensemble() -> AnalysisEnsemble:
     second_profile = load_model_profile(profile_name=ensemble_config.second_model)
     if ensemble_config.second_prompt:
         second_profile = replace(second_profile, prompt_version=ensemble_config.second_prompt)
+    third_profile = load_model_profile(profile_name=ensemble_config.third_model)
+    if ensemble_config.third_prompt:
+        third_profile = replace(third_profile, prompt_version=ensemble_config.third_prompt)
     return AnalysisEnsemble(
         economy_orchestrator=_build_analysis_orchestrator(model_profile_name="economy"),
         deep_orchestrator=AnalysisOrchestrator(
             _build_analysis_orchestrator(model_profile_name=ensemble_config.second_model).registry,
             model_profile=second_profile,
+            logger=get_pipeline_logger(),
+        ),
+        tie_break_orchestrator=AnalysisOrchestrator(
+            _build_analysis_orchestrator(model_profile_name=ensemble_config.third_model).registry,
+            model_profile=third_profile,
             logger=get_pipeline_logger(),
         ),
         config=ensemble_config,
@@ -105,36 +118,11 @@ def run_pipeline(run_date: date | None = None) -> None:
         portfolio_holdings = load_portfolio()
         datastore = get_datastore(output_root=Path("output"))
 
-        # Phase 1-0e Step 5b: orchestrator is now the default primary path.
-        # The CollectionOrchestrator (YFinance/FMP/Finnhub/AV providers) is
-        # the source of truth. Set ENABLE_ORCHESTRATOR_PRIMARY=false to
-        # revert to the legacy collect_market_data() path if needed.
-        orchestrator_primary = is_env_flag_enabled(
-            "ENABLE_ORCHESTRATOR_PRIMARY", default=True
+        collected, effective_date, historical_price_rows, market_overview, macro_context = _collect_market_context(
+            watchlist,
+            effective_date,
+            datastore,
         )
-        if orchestrator_primary:
-            collected = collect_market_data_via_orchestrator(watchlist, effective_date)
-        else:
-            # Legacy fallback — active only when ENABLE_ORCHESTRATOR_PRIMARY=false.
-            # Shadow comparison is only meaningful in this mode.
-            collected = collect_market_data(watchlist, effective_date)
-            if is_env_flag_enabled("ENABLE_ORCHESTRATOR_SHADOW", default=False):
-                run_shadow_comparison(watchlist, effective_date, collected)
-
-        market_date = _detect_actual_market_date(collected, fallback=effective_date)
-        if market_date != effective_date:
-            record_pipeline_event(
-                "pipeline", "info", "market_date_adjusted",
-                run_date=effective_date.isoformat(),
-                market_date=market_date.isoformat(),
-            )
-            effective_date = market_date
-        collected = _filter_historical_prices_to_market_date(collected, effective_date)
-        historical_price_rows = datastore.query_prices(tickers=[item.ticker for item in watchlist])
-        collected = _merge_missing_prices_from_history(collected, historical_price_rows)
-        market_overview = collect_market_overview()
-        vix_data = _extract_vix_from_overview(market_overview)
-        macro_context = collect_macro_context(effective_date, vix_data=vix_data)
 
         # Phase 1-0e Step 5a: NewsOrchestrator primary dispatch.
         # When ENABLE_NEWS_ORCHESTRATOR_PRIMARY=true, the NewsOrchestrator
@@ -165,9 +153,8 @@ def run_pipeline(run_date: date | None = None) -> None:
             watchlist,
         )
         portfolio_account_size = portfolio_summary.total_market_value if portfolio_summary else None
-        signal_csv_path = Path("output") / "data" / "signal_tracker.csv"
         signal_history_map = {
-            item.ticker: load_recent_signals(signal_csv_path, item.ticker)
+            item.ticker: datastore.load_recent_signals_data(item.ticker)
             for item in watchlist
         }
         peer_candidates_by_ticker = load_peer_candidates(
@@ -184,7 +171,7 @@ def run_pipeline(run_date: date | None = None) -> None:
             news_map,
             effective_date,
             market_regime=market_regime,
-            signal_stats=load_signal_stats(signal_csv_path),
+            signal_stats=datastore.load_signal_stats_data(),
             macro_context=macro_context,
             signal_history_map=signal_history_map,
             portfolio_account_size=portfolio_account_size,
@@ -195,16 +182,14 @@ def run_pipeline(run_date: date | None = None) -> None:
         analyses = ensemble_result.analyses
         portfolio_risk: dict[str, object] = ensemble_result.portfolio_result.get("portfolio_risk", {})
         persist_peer_selections(ensemble.economy_orchestrator.diagnostics, effective_date, output_root=Path("output"))
+        _persist_routing_log(ensemble.config, ensemble_result.diagnostics, Path("output"))
         price_lookup = {ticker: data.price for ticker, data in collected.items() if data.price is not None}
-        updated_signals = update_signal_returns(
-            signal_csv_path,
+        updated_signals = datastore.update_signal_returns(
             effective_date,
             price_lookup,
             price_history_rows=historical_price_rows,
         )
-        record_signals(analyses, effective_date, price_lookup, signal_csv_path)
-        datastore.sync_signal_history(signal_csv_path)
-        signal_stats = load_signal_stats(signal_csv_path)
+        signal_stats = datastore.load_signal_stats_data()
         # Decision layer: market regime + per-ticker decisions
         try:
             decisions = apply_consensus_to_decisions(
@@ -227,11 +212,21 @@ def run_pipeline(run_date: date | None = None) -> None:
                 ensemble_eligible_count=len(ensemble_result.diagnostics.get("eligible_tickers", [])),
                 ensemble_selected_count=len(ensemble_result.diagnostics.get("selected_tickers", [])),
                 ensemble_skipped_due_to_cap=len(ensemble_result.diagnostics.get("skipped_due_to_cap", [])),
+                ensemble_conflicted_count=len(ensemble_result.diagnostics.get("conflicted_tickers", [])),
             )
         except Exception:
             market_regime = MarketRegime()
             decisions = []
             record_pipeline_event("decision", "warning", "decision_failed")
+
+        datastore.record_signals(
+            analyses,
+            effective_date,
+            price_lookup,
+            decisions=decisions,
+            market_regime=market_regime,
+        )
+        signal_stats = datastore.load_signal_stats_data()
 
         direct_period_changes = {
             ticker: {"7d": data.price_change_7d, "30d": data.price_change_30d}
@@ -260,6 +255,7 @@ def run_pipeline(run_date: date | None = None) -> None:
             output_root=Path("output"),
         )
         write_ab_test_results(ab_test_payload, output_root=Path("output"))
+        _run_sector_scan(watchlist, effective_date)
         send_daily_summary(
             analyses,
             effective_date,
@@ -293,6 +289,144 @@ def run_pipeline(run_date: date | None = None) -> None:
     finally:
         finalize_pipeline_logging(success)
         write_analysis_quality_output(output_root=Path("output"), logs_root=Path("logs") / "pipeline")
+        write_cost_log_output(output_root=Path("output"), logs_root=Path("logs") / "pipeline")
+        write_routing_outcome_output(output_root=Path("output"))
+
+
+def collect_only(run_date: date | None = None) -> dict[str, object]:
+    load_dotenv()
+    calendar_run_date = run_date or date.today()
+    effective_date = calendar_run_date
+    start_pipeline_logging(effective_date)
+    record_pipeline_event("pipeline", "info", "collect_only_started", run_date=effective_date.isoformat())
+
+    success = False
+    try:
+        watchlist = load_watchlist()
+        portfolio_holdings = load_portfolio()
+        datastore = get_datastore(output_root=Path("output"))
+        collected, effective_date, _historical_price_rows, market_overview, macro_context = _collect_market_context(
+            watchlist,
+            effective_date,
+            datastore,
+        )
+        datastore.upsert_collected_prices(collected, effective_date)
+        portfolio_summary = calculate_portfolio_summary(portfolio_holdings, collected)
+        macro_context = attach_portfolio_macro_sensitivity(
+            macro_context,
+            portfolio_summary,
+            collected,
+            watchlist,
+        )
+        refresh_payload = write_intraday_refresh_outputs(
+            collected,
+            effective_date,
+            market_overview=market_overview,
+            macro_context=macro_context,
+            portfolio_summary=portfolio_summary,
+            output_root=Path("output"),
+        )
+        success = True
+        record_pipeline_event(
+            "pipeline",
+            "info",
+            "collect_only_completed",
+            run_date=effective_date.isoformat(),
+            ticker_count=len(collected),
+        )
+        return refresh_payload
+    except Exception as exc:
+        send_pipeline_failure_alert(effective_date, str(exc))
+        record_pipeline_event(
+            "pipeline",
+            "error",
+            "collect_only_failed",
+            error_type=type(exc).__name__,
+            error_message=str(exc),
+        )
+        raise
+    finally:
+        finalize_pipeline_logging(success)
+
+
+def _persist_routing_log(
+    ensemble_config,
+    diagnostics: dict,
+    output_root: Path,
+) -> None:
+    if not getattr(ensemble_config, "emit_routing_log", False):
+        return
+    routing_log = diagnostics.get("routing_log")
+    if not routing_log:
+        return
+    import json as _json
+
+    data_dir = output_root / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    latest_path = data_dir / "routing_log.json"
+    latest_path.write_text(
+        _json.dumps(routing_log, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    history_path = data_dir / "routing_log_history.json"
+    history_payload = {
+        "schema_version": SCHEMA_VERSION,
+        "runs": [],
+    }
+    if history_path.exists():
+        try:
+            existing = _json.loads(history_path.read_text(encoding="utf-8"))
+        except _json.JSONDecodeError:
+            existing = {}
+        if isinstance(existing, dict):
+            runs = existing.get("runs", [])
+            if isinstance(runs, list):
+                history_payload["runs"] = [run for run in runs if isinstance(run, dict)]
+
+    run_date = str(routing_log.get("run_date", "")).strip()
+    filtered_runs = [
+        run for run in history_payload["runs"]
+        if str(run.get("run_date", "")).strip() != run_date
+    ]
+    filtered_runs.append(routing_log)
+    filtered_runs.sort(key=lambda item: str(item.get("run_date", "")))
+    history_payload["runs"] = filtered_runs[-90:]
+    history_path.write_text(
+        _json.dumps(history_payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
+def _collect_market_context(
+    watchlist,
+    effective_date: date,
+    datastore,
+):
+    orchestrator_primary = is_env_flag_enabled(
+        "ENABLE_ORCHESTRATOR_PRIMARY", default=True
+    )
+    if orchestrator_primary:
+        collected = collect_market_data_via_orchestrator(watchlist, effective_date)
+    else:
+        collected = collect_market_data(watchlist, effective_date)
+        if is_env_flag_enabled("ENABLE_ORCHESTRATOR_SHADOW", default=False):
+            run_shadow_comparison(watchlist, effective_date, collected)
+
+    market_date = _detect_actual_market_date(collected, fallback=effective_date)
+    if market_date != effective_date:
+        record_pipeline_event(
+            "pipeline", "info", "market_date_adjusted",
+            run_date=effective_date.isoformat(),
+            market_date=market_date.isoformat(),
+        )
+        effective_date = market_date
+    collected = _filter_historical_prices_to_market_date(collected, effective_date)
+    historical_price_rows = datastore.query_prices(tickers=[item.ticker for item in watchlist])
+    collected = _merge_missing_prices_from_history(collected, historical_price_rows)
+    market_overview = collect_market_overview()
+    vix_data = _extract_vix_from_overview(market_overview)
+    macro_context = collect_macro_context(effective_date, vix_data=vix_data)
+    return collected, effective_date, historical_price_rows, market_overview, macro_context
 
 
 def _extract_vix_from_overview(market_overview: list[dict[str, str]]) -> dict[str, str] | None:
@@ -387,3 +521,33 @@ def _parse_price_value(raw_value: object) -> float | None:
         return float(match.group(0))
     except ValueError:
         return None
+
+
+def _run_sector_scan(watchlist, effective_date) -> None:
+    """Scan sector explorer tickers (price + news only). Isolated so a sector
+    outage cannot fail the whole pipeline — logged and swallowed."""
+    try:
+        sectors_config = load_sectors()
+        if not sectors_config:
+            return
+        watchlist_tickers = {item.ticker.upper() for item in watchlist}
+        snapshots = scan_sectors(
+            sectors_config,
+            effective_date,
+            skip_tickers=watchlist_tickers,
+        )
+        write_sectors_json(snapshots, effective_date, output_root=Path("output"))
+        record_pipeline_event(
+            "pipeline",
+            "info",
+            "sector_scan_completed",
+            sector_count=len(snapshots),
+        )
+    except Exception as exc:  # defensive — decoupled from main flow
+        record_pipeline_event(
+            "pipeline",
+            "warning",
+            "sector_scan_failed",
+            error_type=type(exc).__name__,
+            error_message=str(exc)[:200],
+        )

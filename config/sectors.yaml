@@ -1,0 +1,152 @@
+sectors:
+
+  - id: ai_infra
+    name: AI 인프라
+    description: GPU, 반도체, AI 서버
+    benchmark_etf: SMH
+    news_keywords: ["AI chip", "GPU", "datacenter", "HBM"]
+    tickers:
+      - { ticker: NVDA, name: NVIDIA }
+      - { ticker: AMD, name: AMD }
+      - { ticker: AVGO, name: Broadcom }
+      - { ticker: TSM, name: TSMC }
+      - { ticker: ARM, name: Arm }
+      - { ticker: SMCI, name: Super Micro }
+      - { ticker: VRT, name: Vertiv }
+
+  - id: semicap
+    name: 반도체 장비
+    description: 반도체 제조 장비
+    benchmark_etf: SOXX
+    news_keywords: ["EUV", "semiconductor equipment"]
+    tickers:
+      - { ticker: ASML, name: ASML }
+      - { ticker: AMAT, name: Applied Materials }
+      - { ticker: LRCX, name: Lam Research }
+      - { ticker: KLAC, name: KLA }
+      - { ticker: ONTO, name: Onto Innovation }
+
+  - id: cybersecurity
+    name: 사이버보안
+    description: 네트워크 및 클라우드 보안
+    benchmark_etf: CIBR
+    news_keywords: ["cybersecurity", "zero trust"]
+    tickers:
+      - { ticker: CRWD, name: CrowdStrike }
+      - { ticker: PANW, name: Palo Alto Networks }
+      - { ticker: ZS, name: Zscaler }
+      - { ticker: FTNT, name: Fortinet }
+
+  - id: data_infra
+    name: 데이터 인프라
+    description: 데이터 플랫폼, 분석
+    benchmark_etf: XLK
+    news_keywords: ["data platform", "analytics"]
+    tickers:
+      - { ticker: PLTR, name: Palantir }
+      - { ticker: MDB, name: MongoDB }
+      - { ticker: ESTC, name: Elastic }
+      - { ticker: CFLT, name: Confluent }
+
+  - id: power_grid
+    name: 전력 인프라
+    description: 발전 및 송전
+    benchmark_etf: XLU
+    news_keywords: ["electricity", "grid"]
+    tickers:
+      - { ticker: NEE, name: NextEra Energy }
+      - { ticker: DUK, name: Duke Energy }
+      - { ticker: SO, name: Southern Company }
+      - { ticker: EXC, name: Exelon }
+      - { ticker: CEG, name: Constellation Energy }
+
+  - id: industrial_infra
+    name: 산업 인프라
+    description: 제조, 자동화, 산업 장비
+    benchmark_etf: XLI
+    news_keywords: ["industrial", "manufacturing", "automation"]
+    tickers:
+      - { ticker: CAT, name: Caterpillar }
+      - { ticker: DE, name: Deere }
+      - { ticker: ETN, name: Eaton }
+      - { ticker: PH, name: Parker Hannifin }
+      - { ticker: EMR, name: Emerson }
+      - { ticker: HUBB, name: Hubbell }
+
+  - id: robotics
+    name: 로보틱스
+    description: 자동화, 산업 로봇
+    benchmark_etf: BOTZ
+    news_keywords: ["robotics", "automation"]
+    tickers:
+      - { ticker: ABB, name: ABB Ltd }
+      - { ticker: ISRG, name: Intuitive Surgical }
+      - { ticker: SYM, name: Symbotic }
+      - { ticker: FANUY, name: Fanuc }
+
+  - id: biotech
+    name: 생명공학
+    description: 유전자 치료, CRISPR
+    benchmark_etf: XBI
+    news_keywords: ["gene therapy", "CRISPR"]
+    tickers:
+      - { ticker: MRNA, name: Moderna }
+      - { ticker: BNTX, name: BioNTech }
+      - { ticker: CRSP, name: CRISPR Therapeutics }
+      - { ticker: NTLA, name: Intellia }
+      - { ticker: VRTX, name: Vertex }
+
+  - id: pharma
+    name: 제약
+    description: 글로벌 제약
+    benchmark_etf: XLV
+    news_keywords: ["FDA", "drug"]
+    tickers:
+      - { ticker: LLY, name: Eli Lilly }
+      - { ticker: NVO, name: Novo Nordisk }
+      - { ticker: MRK, name: Merck }
+      - { ticker: ABBV, name: AbbVie }
+
+  - id: staples
+    name: 필수소비재
+    description: 생활 소비재
+    benchmark_etf: XLP
+    news_keywords: ["consumer staples"]
+    tickers:
+      - { ticker: KO, name: Coca-Cola }
+      - { ticker: PEP, name: PepsiCo }
+      - { ticker: PG, name: P&G }
+      - { ticker: COST, name: Costco }
+      - { ticker: WMT, name: Walmart }
+
+  - id: defense
+    name: 방산
+    description: 군수 산업
+    benchmark_etf: ITA
+    news_keywords: ["defense", "military"]
+    tickers:
+      - { ticker: LMT, name: Lockheed Martin }
+      - { ticker: RTX, name: RTX }
+      - { ticker: NOC, name: Northrop Grumman }
+      - { ticker: GD, name: General Dynamics }
+
+  - id: space
+    name: 우주 (선별)
+    description: 위성 및 발사체
+    benchmark_etf: UFO
+    news_keywords: ["satellite", "launch"]
+    tickers:
+      - { ticker: RKLB, name: Rocket Lab }
+      - { ticker: ASTS, name: AST SpaceMobile }
+
+  - id: foodtech
+    name: 식량 기술
+    description: 농업, 비료, 대체식품
+    benchmark_etf: MOO
+    news_keywords: ["food supply", "agriculture", "fertilizer", "food tech"]
+    tickers:
+      - { ticker: AGCO, name: AGCO }
+      - { ticker: ADM, name: Archer-Daniels-Midland }
+      - { ticker: MOS, name: Mosaic }
+      - { ticker: CTVA, name: Corteva }
+      - { ticker: BG, name: Bunge }
