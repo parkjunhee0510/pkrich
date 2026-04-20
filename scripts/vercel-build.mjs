@@ -10,14 +10,23 @@ const webRoot = path.join(repoRoot, 'web')
 const distDataRoot = path.join(webRoot, 'dist', 'output', 'data')
 const sourceDataRoot = path.join(repoRoot, 'output', 'data')
 
-execSync('npm ci', {
+const npmEnv = {
+  ...process.env,
+  npm_config_install_strategy: 'hoisted',
+  NPM_CONFIG_INSTALL_STRATEGY: 'hoisted',
+  NPM_FLAGS: '',
+}
+
+execSync('npm ci --install-strategy=hoisted', {
   cwd: webRoot,
   stdio: 'inherit',
+  env: npmEnv,
 })
 
 execSync('npm run build', {
   cwd: webRoot,
   stdio: 'inherit',
+  env: npmEnv,
 })
 
 mkdirSync(distDataRoot, { recursive: true })
