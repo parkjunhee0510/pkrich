@@ -332,6 +332,32 @@ export interface DailyEntry {
   tickers: TickerAnalysisData[]
 }
 
+export interface WeeklyReportSection {
+  summary?: string
+  details?: string[]
+  items?: Array<
+    | string
+    | {
+        ticker?: string
+        name?: string
+        weekly_change?: string
+        catalyst?: string
+        decision_change?: string
+      }
+  >
+}
+
+export interface WeeklyReport {
+  headline?: string
+  summary?: string
+  market_environment?: WeeklyReportSection
+  top_movers?: WeeklyReportSection
+  signal_review?: WeeklyReportSection
+  risk_points?: WeeklyReportSection
+  next_week_action_plan?: WeeklyReportSection
+  portfolio_suggestions?: WeeklyReportSection
+}
+
 export interface WeeklySummaryPreview {
   iso_year: number
   iso_week: number
@@ -339,6 +365,7 @@ export interface WeeklySummaryPreview {
   end_date: string
   trading_days: number
   weekly_insight?: string
+  weekly_report?: WeeklyReport
 }
 
 export interface SignalHistoryRow {
@@ -378,6 +405,7 @@ export interface SignalStats {
 }
 
 export interface DashboardData {
+  schema_version?: number
   days: DailyEntry[]
   signal_stats?: SignalStats
   weekly_summary?: WeeklySummaryPreview
@@ -416,6 +444,9 @@ export interface BacktestTickerRow {
 export interface BacktestSummary {
   status: string
   strategy?: string
+  message?: string
+  first_eval_date?: string
+  pending_signals?: number
   signals?: number
   win_rate?: string
   avg_return?: string
@@ -471,6 +502,141 @@ export interface AnalyticsCostResponse {
   total_cost_usd: number
   average_cost_usd: number
   successful_runs: number
+  cost_log?: CostLogPayload
+}
+
+export interface CostLogRunProfile {
+  cost_usd: number
+  tokens: number
+  calls: number
+  models: Record<string, number>
+}
+
+export interface CostLogRun {
+  run_date: string
+  success: boolean
+  total_cost_usd: number
+  profiles: Record<string, CostLogRunProfile>
+  routing: {
+    ensemble_enabled: boolean
+    eligible_count: number
+    selected_count: number
+    skipped_due_to_cap_count: number
+    conflicted_count: number
+  }
+  deep_pass_value: {
+    deep_cost_usd: number
+    selected_ticker_count: number
+    cost_per_selected_ticker_usd: number
+    share_of_total_cost: number
+    worth_it_hint: string
+  }
+}
+
+export interface CostLogPayload {
+  schema_version?: number
+  runs: CostLogRun[]
+  latest?: CostLogRun
+}
+
+export interface AnalysisQualityRun {
+  run_date: string
+  success: boolean
+  daily_api_cost_usd: number
+  batch_count: number
+  validated_ticker_count: number
+  validation_failure_count: number
+  schema_violation_count: number
+  fact_warning_count: number
+  consistency_warning_count: number
+  hallucination_warning_count: number
+  hallucination_ratio: number
+}
+
+export interface AnalysisQualityPayload {
+  runs: AnalysisQualityRun[]
+  latest?: AnalysisQualityRun
+}
+
+export interface DirectionAlignmentPair {
+  rule_direction: string
+  llm_direction: string
+  count: number
+}
+
+export interface DirectionAlignmentConflict {
+  signal_date: string
+  ticker: string
+  signal_direction: string
+  llm_direction: string
+  catalyst_tag?: string
+  conviction?: string
+  action?: string
+  regime?: string
+}
+
+export interface DirectionAlignmentPayload {
+  schema_version?: number
+  summary: {
+    total_signals: number
+    comparable_signals: number
+    agreement_count: number
+    conflict_count: number
+    agreement_rate: number | null
+    latest_signal_date?: string
+  }
+  by_pair: DirectionAlignmentPair[]
+  recent_conflicts: DirectionAlignmentConflict[]
+}
+
+export interface RoutingOutcomePayload {
+  schema_version?: number
+  run_count: number
+  evaluated_signals: number
+  latest_run_date?: string
+  status?: string
+  summary: {
+    deep_selected_count: number
+    economy_only_count: number
+    portfolio_priority_count: number
+    deep_selected_avg_return_20d: number | null
+    economy_only_avg_return_20d: number | null
+    portfolio_priority_avg_return_20d: number | null
+    deep_selected_hit_rate: number | null
+    economy_only_hit_rate: number | null
+    portfolio_priority_hit_rate: number | null
+    avg_return_delta_20d: number | null
+    hit_rate_delta: number | null
+  }
+  periods: Array<{
+    period: string
+    deep_selected_count: number
+    economy_only_count: number
+    portfolio_priority_count: number
+    deep_selected_avg_return_20d: number | null
+    economy_only_avg_return_20d: number | null
+    portfolio_priority_avg_return_20d: number | null
+    deep_selected_hit_rate: number | null
+    economy_only_hit_rate: number | null
+    portfolio_priority_hit_rate: number | null
+    avg_return_delta_20d: number | null
+    hit_rate_delta: number | null
+  }>
+  latest_run?: {
+    run_date: string
+    trigger_range: [number, number]
+    max_daily_ensemble: number
+    portfolio_priority: boolean
+    deep_pass_count: number
+    tickers: Array<{
+      ticker: string
+      selected_for_deep: boolean
+      reason?: string
+      in_portfolio?: boolean
+      conviction?: number
+      action?: string
+    }>
+  }
 }
 
 export type ApiProviderState = 'used' | 'failed' | 'throttled' | 'unavailable' | 'not_used'
