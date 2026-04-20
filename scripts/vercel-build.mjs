@@ -34,6 +34,7 @@ const dataFiles = [
   'api_ticker_matrix.json',
   'calibration.json',
   'factor_audit.json',
+  'sectors.json',
   'tuning_report.json',
   'validation_warnings.json',
 ]
