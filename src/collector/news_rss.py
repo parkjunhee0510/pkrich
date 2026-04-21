@@ -6,6 +6,7 @@ from urllib.parse import quote_plus, urlparse
 
 from src.collector.ir_rss import collect_ir_rss_news
 from src.collector.news_search import search_news
+from src.collector.news_title_utils import looks_like_unresolved_placeholder
 from src.collector.sec_edgar import collect_sec_edgar_news
 from src.types import NewsItem, WatchlistItem
 from src.utils.config import load_simple_mapping
@@ -172,6 +173,16 @@ def _collect_google_news_provider(item: WatchlistItem, provider: dict[str, str])
         for entry in feed.entries[:5]:
             title = str(getattr(entry, "title", "")).strip()
             if not title:
+                continue
+            if looks_like_unresolved_placeholder(title):
+                record_pipeline_event(
+                    "collector",
+                    "info",
+                    "news_title_placeholder_dropped",
+                    ticker=item.ticker,
+                    source=provider["name"],
+                    title=title[:80],
+                )
                 continue
             source_title = provider["name"]
             if hasattr(entry, "source"):

@@ -54,6 +54,7 @@ from src.utils.env import is_env_flag_enabled, load_dotenv
 from src.utils.macro_sensitivity import attach_portfolio_macro_sensitivity
 from src.utils.portfolio import calculate_portfolio_summary
 from src.utils.pipeline_logging import finalize_pipeline_logging, get_pipeline_logger, record_pipeline_event, start_pipeline_logging
+from src.output.json_export import _write_validation_warnings_json
 
 
 def _build_analysis_orchestrator(model_profile_name: str | None = None) -> AnalysisOrchestrator:
@@ -113,6 +114,7 @@ def run_pipeline(run_date: date | None = None) -> None:
     record_pipeline_event("pipeline", "info", "pipeline_started", run_date=effective_date.isoformat())
 
     success = False
+    watchlist = []
     try:
         watchlist = load_watchlist()
         portfolio_holdings = load_portfolio()
@@ -287,7 +289,6 @@ def run_pipeline(run_date: date | None = None) -> None:
         send_signal_alerts(signal_alerts)
         success = True
         record_pipeline_event("pipeline", "info", "pipeline_completed", ticker_count=len(analyses), updated_signal_rows=updated_signals)
-        write_api_status_outputs(effective_date, watchlist, output_root=Path("output"))
         datastore.record_analysis_run(run_date=effective_date, success=True, logger=get_pipeline_logger())
     except Exception as exc:
         send_pipeline_failure_alert(effective_date, str(exc))
@@ -306,9 +307,12 @@ def run_pipeline(run_date: date | None = None) -> None:
         raise
     finally:
         finalize_pipeline_logging(success)
+        _write_validation_warnings_json(Path("output") / "data")
         write_analysis_quality_output(output_root=Path("output"), logs_root=Path("logs") / "pipeline")
         write_cost_log_output(output_root=Path("output"), logs_root=Path("logs") / "pipeline")
         write_routing_outcome_output(output_root=Path("output"))
+        if watchlist:
+            write_api_status_outputs(effective_date, watchlist, output_root=Path("output"))
 
 
 def collect_only(run_date: date | None = None) -> dict[str, object]:

@@ -11,6 +11,7 @@ from src.collector.providers.news.google_news_news_provider import (
     GoogleNewsNewsProvider,
     _build_query,
 )
+from src.collector.news_title_utils import looks_like_unresolved_placeholder
 from src.types import WatchlistItem
 
 
@@ -130,6 +131,19 @@ class GoogleNewsCollectTests(unittest.TestCase):
         self.assertEqual(result.status, "failure")
         self.assertIn("feedparser_missing", result.reason)
 
+    def test_collect_drops_placeholder_titles(self) -> None:
+        fake = MagicMock()
+        fake.parse.return_value = self._build_feed(
+            ["META_TITLE_QUOTE - Yahoo Finance", "Meta_Title_Quote - Yahoo Finance", "Real headline"]
+        )
+        p = GoogleNewsNewsProvider()
+
+        with patch.dict("sys.modules", {"feedparser": fake}):
+            result = p.collect(_ctx())
+
+        self.assertEqual(len(result.items), 6)
+        self.assertTrue(all(item.title == "Real headline" for item in result.items))
+
     def test_single_feed_failure_does_not_kill_others(self) -> None:
         """If one of the 6 feed parses raises, others still contribute items."""
         fake = MagicMock()
@@ -212,6 +226,13 @@ class BuildQueryTests(unittest.TestCase):
         query = _build_query(item, "")
         self.assertIn("Microsoft", query)
         self.assertNotIn("Corporation", query)
+
+
+class PlaceholderDetectionTests(unittest.TestCase):
+    def test_detects_placeholder_tokens_case_insensitively(self) -> None:
+        self.assertTrue(looks_like_unresolved_placeholder("META_TITLE_QUOTE - Yahoo Finance"))
+        self.assertTrue(looks_like_unresolved_placeholder("Meta_Title_Quote - Yahoo Finance"))
+        self.assertFalse(looks_like_unresolved_placeholder("Caterpillar earnings update - Yahoo Finance"))
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import unittest
 from datetime import date
 from unittest.mock import patch
 
-from src.collector.news_rss import _build_google_news_query, _merge_news_items, collect_news_for_watchlist
+from src.collector.news_rss import _build_google_news_query, _collect_google_news_provider, _merge_news_items, collect_news_for_watchlist
 from src.collector.news_search import build_news_query, search_news
 from src.types import NewsItem, WatchlistItem
 
@@ -261,6 +261,35 @@ class NewsCollectionTests(unittest.TestCase):
         self.assertEqual(len(items), 5)
         self.assertEqual(items[0].source, 'SEC EDGAR')
         self.assertTrue({'Yahoo Finance', 'Associated Press', 'SEC EDGAR', 'IR RSS'}.issubset({entry.source for entry in items}))
+
+    def test_collect_google_news_provider_drops_placeholder_titles(self) -> None:
+        fake_module = types.ModuleType('feedparser')
+        fake_module.parse = lambda _url: types.SimpleNamespace(entries=[
+            types.SimpleNamespace(
+                title='META_TITLE_QUOTE - Yahoo Finance',
+                published='Mon, 14 Apr 2026 10:00:00 GMT',
+                link='https://news.google.com/meta',
+                source={'title': 'Yahoo Finance'},
+            ),
+            types.SimpleNamespace(
+                title='CAT demand update',
+                published='Mon, 14 Apr 2026 10:00:00 GMT',
+                link='https://news.google.com/cat',
+                source={'title': 'Yahoo Finance'},
+            ),
+        ])
+
+        item = WatchlistItem(ticker='CAT', name='Caterpillar Inc.', sector='Industrials')
+        provider = {'name': 'Yahoo Finance', 'site_filter': 'finance.yahoo.com'}
+
+        with patch.dict(sys.modules, {'feedparser': fake_module}):
+            with patch('src.collector.news_rss.record_pipeline_event') as logged:
+                items = _collect_google_news_provider(item, provider)
+
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].title, 'CAT demand update')
+        drop_events = [call for call in logged.call_args_list if call.args[2] == 'news_title_placeholder_dropped']
+        self.assertEqual(len(drop_events), 1)
 
     def test_search_news_maps_ddgs_results(self) -> None:
         fake_module = types.ModuleType('ddgs')

@@ -27,6 +27,7 @@ from urllib.parse import quote_plus
 
 from src.collector.base import RateLimit
 from src.collector.news_base import NewsContext, NewsProvider, NewsResult
+from src.collector.news_title_utils import looks_like_unresolved_placeholder
 from src.types import NewsItem, WatchlistItem
 from src.utils.env import is_env_flag_enabled
 from src.utils.network import can_open_tcp_connection
@@ -119,6 +120,14 @@ class GoogleNewsNewsProvider(NewsProvider):
             title = str(getattr(raw, "title", "") or "").strip()
             if not title:
                 continue
+            if looks_like_unresolved_placeholder(title):
+                record_pipeline_event(
+                    "collector", "info", "news_title_placeholder_dropped",
+                    ticker=item.ticker,
+                    source=feed_meta["name"],
+                    title=title[:80],
+                )
+                continue
             # Per-entry source override — many Google News items carry their
             # true outlet (e.g. "Bloomberg") even under the "Google News" feed.
             source_title = feed_meta["name"]
@@ -152,6 +161,5 @@ def _build_query(item: WatchlistItem, site_filter: str) -> str:
     if site_filter:
         parts.append(f"site:{site_filter}")
     return " ".join(part for part in parts if part).strip()
-
 
 __all__ = ["GoogleNewsNewsProvider"]
