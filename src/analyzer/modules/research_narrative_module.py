@@ -6,6 +6,7 @@ from typing import Any
 from src.analyzer import research_note
 from src.analyzer.base import AnalysisContext, ModuleResult, StructuredLLMModule
 from src.analyzer.llm_runtime import parse_ticker_batch
+from src.utils.macro_event_match import match_macro_events_for_context
 
 
 class ResearchNarrativeModule(StructuredLLMModule):
@@ -30,6 +31,7 @@ class ResearchNarrativeModule(StructuredLLMModule):
                     "trade_frame": upstream.get("trade_frame", {}),
                     "news_tone": upstream.get("news_tone", {}),
                     "peer_rank": upstream.get("peer_rank", {}),
+                    "macro_event_summary": _compact_macro_event_summary(raw_payload, ctx.macro_context),
                 }
             )
         return payloads
@@ -94,3 +96,28 @@ class ResearchNarrativeModule(StructuredLLMModule):
             "summary": fallback["summary"],
             "financial_highlights": fallback["financial_highlights"],
         }
+
+
+def _compact_macro_event_summary(
+    raw_payload: dict[str, Any],
+    macro_context: dict[str, Any] | None,
+) -> list[str]:
+    if not isinstance(macro_context, dict):
+        return []
+    matched_events = match_macro_events_for_context(
+        macro_context,
+        sector=str(raw_payload.get("sector", "")),
+        industry=str(raw_payload.get("industry", "")),
+        keywords=[str(item) for item in raw_payload.get("keywords", []) if str(item).strip()],
+    )
+    summaries: list[str] = []
+    for event in matched_events[:2]:
+        score = int(event.get("score", 0) or 0)
+        matched_dimension = str(event.get("matched_dimension", ""))
+        if abs(score) < 3 and matched_dimension != "industry":
+            continue
+        summary = str(event.get("summary_ko", "")).strip()
+        severity = str(event.get("severity", "")).strip()
+        if summary:
+            summaries.append(f"{severity}: {summary}" if severity else summary)
+    return summaries

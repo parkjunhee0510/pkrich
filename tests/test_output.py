@@ -11,7 +11,7 @@ from types import SimpleNamespace
 
 from src.output.json_export import _serialize_analysis, write_json_outputs
 from src.output.markdown import append_price_history, render_daily_markdown, render_ticker_markdown
-from src.types import NewsItem, PortfolioPosition, PortfolioSummary, TickerAnalysis
+from src.types import NewsItem, PortfolioPosition, PortfolioSummary, TickerAnalysis, TickerDecision
 
 
 def _sample_analysis() -> TickerAnalysis:
@@ -146,6 +146,16 @@ class OutputTests(unittest.TestCase):
             [_sample_analysis()],
             date(2026, 4, 8),
             market_overview=[{'label': 'S&P 500', 'symbol': '^GSPC', 'price': '5,234.18', 'change': '+0.45%'}],
+            decisions=[
+                TickerDecision(
+                    ticker='AAPL',
+                    action='buy',
+                    conviction=74,
+                    reason='실적 전 추세와 모멘텀이 유지됩니다.',
+                    valid_until='2026-04-14',
+                    factors={'momentum': 12, 'earnings_pattern': 8, 'regime_adjustment': -2},
+                )
+            ],
             portfolio_summary=PortfolioSummary(
                 positions=[
                     PortfolioPosition(
@@ -168,6 +178,9 @@ class OutputTests(unittest.TestCase):
         )
 
         self.assertIn('# 일일 리서치 - 2026-04-08', content)
+        self.assertIn('## TL;DR', content)
+        self.assertIn('- AAPL: 우선 실행 · 확신도 74 · 실적 전 추세와 모멘텀이 유지됩니다.', content)
+        self.assertIn('- 일정 체크: AAPL 실적 발표 2026-04-14 (D-6 · AMC)', content)
         self.assertIn('## 시장 개요', content)
         self.assertIn('## 포트폴리오 현황', content)
         self.assertIn('## 주요 뉴스 링크', content)
@@ -256,6 +269,21 @@ class OutputTests(unittest.TestCase):
         self.assertIn('| 52주 최고 | 110.00 USD |', content)
         self.assertNotIn('Apple legacy milestone feature', content)
         self.assertLess(content.find('Apple earnings beat expectations'), content.find('Apple product preview gains attention'))
+
+    def test_render_ticker_markdown_drops_empty_original_news_details_block(self) -> None:
+        analysis = _sample_analysis()
+        analysis = TickerAnalysis(
+            **{
+                **analysis.__dict__,
+                'key_news': ['요약만 남는 뉴스입니다.'],
+                'news_references': [NewsItem(title='   ', source='', published_at='', link='')],
+            }
+        )
+
+        content = render_ticker_markdown(analysis)
+
+        self.assertIn('- 요약만 남는 뉴스입니다.', content)
+        self.assertNotIn('<summary>원문 보기</summary>', content)
 
     def test_append_price_history_replaces_same_day_rows(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

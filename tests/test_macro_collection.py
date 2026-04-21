@@ -3,9 +3,10 @@ from __future__ import annotations
 import unittest
 from datetime import date
 
+from src.collector.macro_events import _classify_macro_shock_event, _merge_macro_shock_events
 from src.collector.finnhub import _normalize_macro_event
 from src.collector.macro import _find_upcoming_events
-from src.types import CollectedTickerData, PortfolioPosition, PortfolioSummary, WatchlistItem
+from src.types import CollectedTickerData, NewsItem, PortfolioPosition, PortfolioSummary, WatchlistItem
 from src.utils.macro_sensitivity import attach_portfolio_macro_sensitivity
 
 
@@ -73,6 +74,56 @@ class MacroCollectionTests(unittest.TestCase):
         self.assertEqual(retail_row['sensitive_holdings'][0]['ticker'], 'KO')
         self.assertIn('portfolio_sensitivity_summary', enriched)
         self.assertIn('CPI', enriched['portfolio_sensitivity_summary'])
+
+    def test_classify_macro_shock_event_normalizes_hormuz_story(self) -> None:
+        event = _classify_macro_shock_event(
+            NewsItem(
+                title="Strait of Hormuz closure risk lifts oil and shipping costs",
+                source="Reuters",
+                published_at="2026-04-14",
+                link="https://example.com/hormuz",
+            ),
+            date(2026, 4, 14),
+        )
+        self.assertIsNotNone(event)
+        assert event is not None
+        self.assertEqual(event["event_type"], "hormuz_disruption")
+        self.assertEqual(event["severity"], "high")
+        self.assertIn("oil", event["transmission_channels"])
+        self.assertIn("Energy", event["affected_sectors"])
+        self.assertIn("Airlines", event["affected_industries"])
+
+    def test_merge_macro_shock_events_deduplicates_same_event_type(self) -> None:
+        merged = _merge_macro_shock_events(
+            [
+                {
+                    "event_type": "shipping_disruption",
+                    "severity": "medium",
+                    "region": "global",
+                    "transmission_channels": ["shipping", "supply_chain"],
+                    "affected_sectors": ["Industrials"],
+                    "direction": "risk_off",
+                    "summary_ko": "글로벌 해운 차질이 공급망 부담을 높입니다.",
+                    "expires_at": "2026-04-20",
+                    "headline": "Red Sea shipping disruption raises freight rates",
+                    "published_at": "2026-04-14",
+                },
+                {
+                    "event_type": "shipping_disruption",
+                    "severity": "medium",
+                    "region": "global",
+                    "transmission_channels": ["shipping", "supply_chain"],
+                    "affected_sectors": ["Industrials"],
+                    "direction": "risk_off",
+                    "summary_ko": "글로벌 해운 차질이 공급망 부담을 높입니다.",
+                    "expires_at": "2026-04-20",
+                    "headline": "Container routes reroute after Red Sea attacks",
+                    "published_at": "2026-04-14",
+                },
+            ]
+        )
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0]["event_type"], "shipping_disruption")
 
 
 if __name__ == '__main__':

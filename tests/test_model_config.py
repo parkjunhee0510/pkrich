@@ -11,6 +11,7 @@ from src.utils.cost_tracker import calculate_response_cost
 from src.utils.model_config import (
     load_ensemble_config,
     load_model_profile,
+    response_temperature_kwargs,
     resolve_module_model_profile,
     safe_input_token_budget,
 )
@@ -20,6 +21,7 @@ class ModelConfigTests(unittest.TestCase):
     def test_default_profile_includes_prompt_version(self) -> None:
         profile = load_model_profile()
         self.assertTrue(profile.prompt_version)
+        self.assertIsNone(profile.temperature)
 
     def test_load_model_profile_prefers_profile_then_model_override(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -32,6 +34,7 @@ class ModelConfigTests(unittest.TestCase):
                         '  economy:',
                         '    model: gpt-5.4-mini',
                         '    prompt_version: research_v1',
+                        '    temperature:',
                         '    context_window: 400000',
                         '    max_output_tokens: 32000',
                         '    monthly_cost_estimate_usd: 0.31',
@@ -41,6 +44,7 @@ class ModelConfigTests(unittest.TestCase):
                         '  standard:',
                         '    model: gpt-5.4',
                         '    prompt_version: research_v2',
+                        '    temperature:',
                         '    context_window: 300000',
                         '    max_output_tokens: 16000',
                         '    monthly_cost_estimate_usd: 3.0',
@@ -58,6 +62,7 @@ class ModelConfigTests(unittest.TestCase):
         self.assertEqual(profile.name, 'standard')
         self.assertEqual(profile.model, 'custom-model')
         self.assertEqual(profile.prompt_version, 'research_v2')
+        self.assertIsNone(profile.temperature)
         self.assertEqual(profile.context_window, 300000)
         self.assertEqual(safe_input_token_budget(profile), int(300000 * 0.8) - 16000)
 
@@ -92,6 +97,7 @@ class ModelConfigTests(unittest.TestCase):
                         '  economy:',
                         '    model: gpt-5.4-mini',
                         '    prompt_version: research_v2',
+                        '    temperature:',
                         '    context_window: 400000',
                         '    max_output_tokens: 32000',
                         '    monthly_cost_estimate_usd: 0.31',
@@ -101,6 +107,7 @@ class ModelConfigTests(unittest.TestCase):
                         '  standard:',
                         '    model: gpt-5.4',
                         '    prompt_version: research_v1',
+                        '    temperature:',
                         '    context_window: 400000',
                         '    max_output_tokens: 32000',
                         '    monthly_cost_estimate_usd: 3.0',
@@ -118,6 +125,40 @@ class ModelConfigTests(unittest.TestCase):
         self.assertEqual(resolved.model, 'gpt-5.4')
         self.assertEqual(resolved.name, 'standard')
         self.assertEqual(resolved.prompt_version, 'research_v2')
+        self.assertIsNone(resolved.temperature)
+
+    def test_resolve_module_model_profile_falls_back_when_override_profile_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_path = Path(temp_dir) / 'models.yaml'
+            config_path.write_text(
+                '\n'.join(
+                    [
+                        'default_profile: economy',
+                        'module_profile_overrides:',
+                        '  signal_takeaway_module: typo_profile',
+                        'profiles:',
+                        '  economy:',
+                        '    model: gpt-5.4-mini',
+                        '    prompt_version: research_v1',
+                        '    temperature:',
+                        '    context_window: 400000',
+                        '    max_output_tokens: 32000',
+                        '    monthly_cost_estimate_usd: 0.31',
+                        '    input_cost_per_1m_tokens: 0.25',
+                        '    cached_input_cost_per_1m_tokens: 0.025',
+                        '    output_cost_per_1m_tokens: 2.0',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            base_profile = load_model_profile(str(config_path), profile_name='economy')
+            with patch('src.utils.model_config.record_pipeline_event') as logged:
+                resolved = resolve_module_model_profile(base_profile, 'signal_takeaway_module', str(config_path))
+
+        self.assertEqual(resolved, base_profile)
+        logged.assert_called_once()
+        self.assertEqual(logged.call_args.args[:3], ('analyzer', 'warning', 'module_profile_override_invalid'))
 
     def test_load_ensemble_config_reads_values(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -136,6 +177,7 @@ class ModelConfigTests(unittest.TestCase):
                         '  economy:',
                         '    model: gpt-5.4-mini',
                         '    prompt_version: research_v1',
+                        '    temperature:',
                         '    context_window: 400000',
                         '    max_output_tokens: 32000',
                         '    monthly_cost_estimate_usd: 0.31',
@@ -145,6 +187,7 @@ class ModelConfigTests(unittest.TestCase):
                         '  deep:',
                         '    model: o3-mini',
                         '    prompt_version: research_v2',
+                        '    temperature:',
                         '    context_window: 200000',
                         '    max_output_tokens: 100000',
                         '    monthly_cost_estimate_usd: 8.0',
@@ -181,6 +224,7 @@ class ModelConfigTests(unittest.TestCase):
                         '  economy:',
                         '    model: gpt-5.4-mini',
                         '    prompt_version: research_v1',
+                        '    temperature:',
                         '    context_window: 400000',
                         '    max_output_tokens: 32000',
                         '    monthly_cost_estimate_usd: 0.31',
@@ -194,6 +238,36 @@ class ModelConfigTests(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 load_ensemble_config(str(config_path))
+
+    def test_response_temperature_kwargs_omits_reasoning_models(self) -> None:
+        profile = load_model_profile(profile_name='deep')
+        self.assertEqual(response_temperature_kwargs(profile), {})
+
+    def test_response_temperature_kwargs_includes_non_reasoning_model_temperature(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_path = Path(temp_dir) / 'models.yaml'
+            config_path.write_text(
+                '\n'.join(
+                    [
+                        'default_profile: custom',
+                        'profiles:',
+                        '  custom:',
+                        '    model: gpt-4.1-mini',
+                        '    prompt_version: research_v1',
+                        '    context_window: 128000',
+                        '    max_output_tokens: 16000',
+                        '    monthly_cost_estimate_usd: 1.0',
+                        '    input_cost_per_1m_tokens: 0.8',
+                        '    cached_input_cost_per_1m_tokens: 0.08',
+                        '    output_cost_per_1m_tokens: 3.2',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+            profile = load_model_profile(str(config_path))
+
+        self.assertEqual(profile.temperature, 0.2)
+        self.assertEqual(response_temperature_kwargs(profile), {'temperature': 0.2})
 
 
 if __name__ == '__main__':

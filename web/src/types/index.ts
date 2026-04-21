@@ -234,11 +234,20 @@ export interface MacroContextVix {
 
 export interface MacroEvent {
   type: string
+  event_type?: string
   event_code?: string
   category?: string
   date: string
   days_until: string
   label: string
+  severity?: 'high' | 'medium' | 'low' | string
+  region?: string
+  transmission_channels?: string[]
+  affected_sectors?: string[]
+  affected_industries?: string[]
+  direction?: string
+  summary_ko?: string
+  expires_at?: string
   impact?: 'high' | 'medium' | 'low'
   source?: string
   actual?: string
@@ -269,6 +278,7 @@ export interface MacroContext {
     change?: string
   }
   upcoming_macro_events?: MacroEvent[]
+  macro_events?: MacroEvent[]
   portfolio_event_sensitivity?: PortfolioMacroSensitivity[]
   ticker_macro_sensitivity?: Record<string, Array<{ event_code: string; label: string; date: string; sensitivity: string; reason: string }>>
   portfolio_sensitivity_summary?: string

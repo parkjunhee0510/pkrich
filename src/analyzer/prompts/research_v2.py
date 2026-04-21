@@ -35,6 +35,7 @@ PROMPT_SET = {
             "각 티커에 대해 트레이딩 관점의 2문장 요약과 정량 중심 financial_highlights를 작성해주세요.\n"
             "summary는 가격 맥락과 다음 촉매를 모두 포함해야 하고, highlights는 숫자 중심으로 작성해주세요.\n"
             "peer_rank가 주어지면 PER/RS/ROE percentile을 짧게 활용할 수 있지만, percentile만으로 과장된 결론을 만들지 마세요.\n\n"
+            "macro_event_summary가 주어지면 업종 전이 경로가 분명한 거시 충격만 1문장 안에서 짧게 반영하고, 공포감을 과장하지 마세요.\n\n"
             "{batch_payload_json}"
         ),
         output_schema=_NARRATIVE_SCHEMA,
@@ -59,7 +60,7 @@ PROMPT_SET = {
             "Return strict JSON with key 'tickers'. All human-readable output must be in Korean. "
             "signal_or_takeaway MUST be exactly one sentence matching the shape "
             "\"[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격1]/[가격2] | 손절 [가격]\". "
-            "방향은 반드시 '매수 관찰|매수 유지|매수 우선|중립 관찰|중립 경계|매도 경계' 중 하나여야 합니다. "
+            "방향은 반드시 '매수 관찰|매수 유지|매수 우선|중립 관찰|중립 경계|매도 경계|매도 관찰|매도 유지|매도' 중 하나여야 합니다. "
             "매수 시 목표가는 오름차순(가격1 < 가격2), 매도 시 내림차순이어야 하며 손절은 진입 반대편에 위치해야 합니다. "
             "'진입트리거:', '목표가:', '손절가:' 같은 콜론 포맷이나 '/' 구분자는 금지하고 반드시 ' | ' 구분자와 '—'(em-dash)를 사용합니다. "
             "좋은 예시: "

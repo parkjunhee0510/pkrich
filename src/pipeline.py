@@ -220,6 +220,7 @@ def run_pipeline(run_date: date | None = None) -> None:
                     signal_stats,
                     effective_date,
                     portfolio_risk=portfolio_risk,
+                    macro_context=macro_context,
                 ),
                 ensemble_result.consensus_by_ticker,
             )

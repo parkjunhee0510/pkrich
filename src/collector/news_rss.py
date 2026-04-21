@@ -234,6 +234,8 @@ def _merge_news_items(
     seen_hosted_titles: set[tuple[str, str]] = set()
 
     for candidate in filtered_items:
+        if not _is_displayable_news_item(candidate):
+            continue
         normalized_title = _normalize_title(candidate.title)
         hostname = _normalize_hostname(candidate.link)
         hosted_key = (hostname, normalized_title)
@@ -280,6 +282,12 @@ def _filter_excluded_news(items: list[NewsItem], exclude_keywords: list[str]) ->
             continue
         filtered.append(item)
     return filtered
+
+
+def _is_displayable_news_item(item: NewsItem) -> bool:
+    title = str(item.title or "").strip()
+    link = str(item.link or "").strip()
+    return bool(title or link)
 
 
 def _news_rank_key(item: WatchlistItem, news_item: NewsItem, run_date: date | None) -> tuple[int, datetime, int, str]:

@@ -82,6 +82,7 @@ class AnalysisEnsemble:
             signal_stats,
             run_date,
             portfolio_risk=effective_portfolio_risk,
+            macro_context=macro_context,
         )
         economy_decision_map = {decision.ticker: decision for decision in economy_decisions}
         eligible_tickers = [
@@ -156,6 +157,7 @@ class AnalysisEnsemble:
                 signal_stats,
                 run_date,
                 portfolio_risk=effective_portfolio_risk,
+                macro_context=macro_context,
             )
             deep_decision_map = {decision.ticker: decision for decision in deep_decisions}
 
@@ -205,6 +207,7 @@ class AnalysisEnsemble:
                     signal_stats,
                     run_date,
                     portfolio_risk=effective_portfolio_risk,
+                    macro_context=macro_context,
                 )
                 tie_break_decision_map = {decision.ticker: decision for decision in tie_break_decisions}
 
@@ -240,6 +243,7 @@ class AnalysisEnsemble:
             signal_stats,
             run_date,
             portfolio_risk=effective_portfolio_risk,
+            macro_context=macro_context,
         )
         final_decisions = apply_consensus_to_decisions(final_decisions, consensus_by_ticker)
 

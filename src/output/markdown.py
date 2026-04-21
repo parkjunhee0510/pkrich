@@ -178,9 +178,13 @@ def render_daily_markdown(
     top_news_links = _render_daily_news_links(analyses)
     upcoming_schedule = _render_daily_upcoming_schedule(analyses)
     action_items = "\n".join(f"- [ ] {analysis.ticker}: {analysis.signal_or_takeaway}" for analysis in analyses) or "- [ ] 점검할 항목이 없습니다."
+    tldr_lines = _render_daily_tldr(analyses, decisions=decisions, market_regime=market_regime)
 
     lines = [
         f"# 일일 리서치 - {run_date.isoformat()}",
+        "",
+        "## TL;DR",
+        tldr_lines,
         "",
         "## 시장 개요",
         _render_market_overview(market_overview or []),
@@ -254,6 +258,67 @@ def render_daily_markdown(
 
     lines.extend(["## 다가오는 일정", upcoming_schedule, "", "## 점검 항목", action_items, ""])
     return "\n".join(lines)
+
+
+def _render_daily_tldr(
+    analyses: list[TickerAnalysis],
+    *,
+    decisions: list[TickerDecision] | None = None,
+    market_regime: MarketRegime | None = None,
+) -> str:
+    bullets: list[str] = []
+    added_tickers: set[str] = set()
+
+    if market_regime:
+        regime_labels = {
+            "risk_on": "위험선호",
+            "neutral": "중립",
+            "risk_off": "위험회피",
+        }
+        bullets.append(
+            f"- 시장 리짐: {regime_labels.get(market_regime.regime, market_regime.regime)} ({market_regime.confidence}%) · {market_regime.implication or '포지션 크기는 보수적으로 점검'}"
+        )
+
+    ordered_decisions = sorted(
+        decisions or [],
+        key=lambda item: (
+            0 if item.action == "buy" else 1 if item.action == "avoid" else 2,
+            -item.conviction,
+            item.ticker,
+        ),
+    )
+    for decision in ordered_decisions:
+        if len(bullets) >= 4:
+            break
+        if decision.ticker in added_tickers:
+            continue
+        action_label = {
+            "buy": "우선 실행",
+            "watch": "관찰 유지",
+            "avoid": "회피 유지",
+        }.get(decision.action, decision.action)
+        bullets.append(
+            f"- {decision.ticker}: {action_label} · 확신도 {decision.conviction} · {decision.reason or '세부 근거 점검'}"
+        )
+        added_tickers.add(decision.ticker)
+
+    next_event = _next_upcoming_event(analyses)
+    if next_event and len(bullets) < 5:
+        bullets.append(
+            "- 일정 체크: {ticker} {label} {date} ({days_until}{timing})".format(
+                ticker=next_event["ticker"],
+                label=next_event["label"],
+                date=next_event["date"],
+                days_until=next_event["days_until"],
+                timing=f" · {next_event['timing']}" if next_event.get("timing") else "",
+            )
+        )
+
+    if not bullets:
+        fallback = analyses[:4]
+        bullets = [f"- {analysis.ticker}: {analysis.signal_or_takeaway}" for analysis in fallback]
+
+    return "\n".join(bullets[:5])
 
 
 def render_ticker_markdown(
@@ -542,7 +607,16 @@ def _render_news_items(analysis: TickerAnalysis) -> str:
             hide_fallback_without_links=_hide_fallback_news_without_links_in_ticker_notes(),
         )
         if visible_news:
-            return "\n".join(_render_news_line(item, _news_summary_for_reference(analysis, item)) for item in visible_news)
+            rendered_lines = [
+                line
+                for line in (
+                    _render_news_line(item, _news_summary_for_reference(analysis, item))
+                    for item in visible_news
+                )
+                if line.strip()
+            ]
+            if rendered_lines:
+                return "\n".join(rendered_lines)
         if _hide_fallback_news_without_links_in_ticker_notes():
             return "- 없음."
     return _render_bullets(analysis.key_news)
@@ -630,6 +704,34 @@ def _render_daily_sec_filings(analyses: list[TickerAnalysis]) -> str:
         tag_prefix = f"[{tag}] " if tag else ""
         lines.append(f"- **{ticker}** {tag_prefix}{title_text}{suffix}")
     return "\n".join(lines)
+
+
+def _next_upcoming_event(analyses: list[TickerAnalysis]) -> dict[str, str] | None:
+    ranked_events: list[tuple[int, str, dict[str, str]]] = []
+    for analysis in analyses:
+        for event in analysis.upcoming_events or []:
+            days_until = str(event.get("days_until", "")).strip()
+            try:
+                sort_days = int(days_until)
+            except ValueError:
+                sort_days = 9999
+            ranked_events.append(
+                (
+                    sort_days,
+                    analysis.ticker,
+                    {
+                        "ticker": analysis.ticker,
+                        "label": str(event.get("label", "")).strip() or str(event.get("type", "이벤트")).strip() or "이벤트",
+                        "date": str(event.get("date", "")).strip() or "N/A",
+                        "days_until": f"D-{days_until}" if days_until and not days_until.startswith("D-") else (days_until or "D-?"),
+                        "timing": str(event.get("timing", "")).strip(),
+                    },
+                )
+            )
+    if not ranked_events:
+        return None
+    ranked_events.sort(key=lambda item: (item[0], item[1], item[2]["label"]))
+    return ranked_events[0][2]
 
 
 def _render_portfolio_summary(portfolio_summary: PortfolioSummary) -> str:
@@ -875,18 +977,30 @@ def _render_news_line(item, translated_summary: str | None = None) -> str:
 def _render_daily_news_entry(ticker: str, item, translated_summary: str | None) -> str:
     if translated_summary:
         return _render_collapsed_news_block(f"- **{ticker}**: {translated_summary}", item)
-    return f"- **{ticker}**: {_render_original_news_line(item)[2:]}"
+    original_line = _render_original_news_line(item)
+    if original_line:
+        return f"- **{ticker}**: {original_line[2:]}"
+    return f"- **{ticker}**: 뉴스 원문 링크 없음"
 
 
 def _render_collapsed_news_block(summary_line: str, item) -> str:
-    original_line = _render_original_news_line(item)[2:]
+    original_line = _render_original_news_line(item)
+    if not original_line:
+        return summary_line
+    original_line = original_line[2:]
     return "\n".join([summary_line, "  <details>", "  <summary>원문 보기</summary>", "", f"  {original_line}", "  </details>"])
 
 
 def _render_original_news_line(item) -> str:
-    source = item.source or "Source"
-    published_suffix = f" ({item.published_at})" if item.published_at else ""
-    title_text = f"[{item.title}]({item.link})" if item.link else item.title
+    title = str(getattr(item, "title", "") or "").strip()
+    link = str(getattr(item, "link", "") or "").strip()
+    source = str(getattr(item, "source", "") or "").strip()
+    published_at = str(getattr(item, "published_at", "") or "").strip()
+    if not title and not link:
+        return ""
+    source = source or "Source"
+    published_suffix = f" ({published_at})" if published_at else ""
+    title_text = f"[{title}]({link})" if link else title
     return f"- {title_text} - {source}{published_suffix}"
 
 

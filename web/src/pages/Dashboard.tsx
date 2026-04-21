@@ -283,9 +283,13 @@ export function Dashboard() {
           <div className="dashboard-header-meta">
             <span className="dashboard-stat-chip">전체 {day.tickers.length}개</span>
             <span className="dashboard-stat-chip">표시 {sortedWatchlistTickers.length}개</span>
-            {selectedSector !== 'ALL' ? <span className="dashboard-stat-chip">섹터: {SECTOR_LABELS[selectedSector] ?? selectedSector}</span> : null}
-            {activeTraderFilterCount > 0 ? <span className="dashboard-stat-chip">필터 {activeTraderFilterCount}개 적용</span> : null}
-            {searchQuery.trim() ? <span className="dashboard-stat-chip">검색: {searchQuery.trim()}</span> : null}
+            <span className="dashboard-stat-chip">
+              섹터: {selectedSector === 'ALL' ? '전체' : (SECTOR_LABELS[selectedSector] ?? selectedSector)}
+            </span>
+            <span className="dashboard-stat-chip">필터 {activeTraderFilterCount}개 적용</span>
+            <span className="dashboard-stat-chip">
+              검색: {searchQuery.trim() ? `"${searchQuery.trim()}"` : '없음'}
+            </span>
           </div>
         </div>
         {data.days.length > 1 && (
@@ -695,7 +699,9 @@ function sortWatchlistTickers(tickers: TickerAnalysisData[], mode: WatchlistSort
       }
     }
 
-    const scoreDiff = computeSetupScore(right).score - computeSetupScore(left).score
+    const rightScore = typeof right.decision?.conviction === 'number' ? right.decision.conviction : computeSetupScore(right).score
+    const leftScore = typeof left.decision?.conviction === 'number' ? left.decision.conviction : computeSetupScore(left).score
+    const scoreDiff = rightScore - leftScore
     if (scoreDiff !== 0) {
       return scoreDiff
     }

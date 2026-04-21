@@ -13,6 +13,7 @@ profiles:
   economy:
     model: gpt-5.4-mini
     prompt_version: research_v1
+    temperature:
     context_window: 400000
     max_output_tokens: 32000
     monthly_cost_estimate_usd: 0.31
@@ -22,6 +23,7 @@ profiles:
   standard:
     model: gpt-5.4
     prompt_version: research_v1
+    temperature:
     context_window: 400000
     max_output_tokens: 32000
     monthly_cost_estimate_usd: 3.0
@@ -31,6 +33,7 @@ profiles:
   deep:
     model: o3-mini
     prompt_version: research_v2
+    temperature:
     context_window: 200000
     max_output_tokens: 100000
     monthly_cost_estimate_usd: 8.0

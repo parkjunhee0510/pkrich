@@ -4,6 +4,7 @@ import unittest
 
 from src.decision.factors.earnings_factor import EarningsFactor
 from src.decision.factors.fundamentals_factor import FundamentalsFactor
+from src.decision.factors.macro_event_factor import MacroEventFactor
 from src.decision.factors.momentum_factor import MomentumFactor
 from src.decision.factors.news_tone_factor import NewsToneFactor
 from src.decision.factors.peer_rank_factor import PeerRankFactor
@@ -131,6 +132,49 @@ class DecisionFactorTests(unittest.TestCase):
             {},
         )
         self.assertEqual(score.value, -4)
+
+    def test_macro_event_factor_rewards_energy_on_hormuz_shock(self) -> None:
+        factor = MacroEventFactor()
+        score = factor.score(
+            _make_analysis(data_snapshot={"Price": "100", "Sector": "Energy"}),
+            _make_collected(sector="Energy"),
+            MarketRegime(),
+            {
+                "_macro_context": {
+                    "macro_events": [
+                        {
+                            "event_type": "hormuz_disruption",
+                            "severity": "high",
+                            "summary_ko": "호르무즈 해협 차질로 유가와 물류 변동성이 커질 수 있습니다.",
+                            "expires_at": "2026-04-17",
+                        }
+                    ]
+                }
+            },
+        )
+        self.assertGreater(score.value, 0)
+        self.assertGreaterEqual(score.confidence, 0.6)
+
+    def test_macro_event_factor_penalizes_consumer_cyclical_on_hormuz_shock(self) -> None:
+        factor = MacroEventFactor()
+        score = factor.score(
+            _make_analysis(data_snapshot={"Price": "100", "Sector": "Consumer Cyclical"}),
+            _make_collected(sector="Consumer Cyclical"),
+            MarketRegime(),
+            {
+                "_macro_context": {
+                    "macro_events": [
+                        {
+                            "event_type": "hormuz_disruption",
+                            "severity": "high",
+                            "summary_ko": "호르무즈 해협 차질로 유가와 물류 변동성이 커질 수 있습니다.",
+                            "expires_at": "2026-04-17",
+                        }
+                    ]
+                }
+            },
+        )
+        self.assertLess(score.value, 0)
 
 
 if __name__ == "__main__":

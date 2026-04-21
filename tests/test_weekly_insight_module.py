@@ -75,7 +75,7 @@ class WeeklyInsightModuleTests(unittest.TestCase):
         self.assertIn("portfolio_suggestions", report)
         self.assertTrue(report["summary"])
 
-    def test_module_passes_temperature_point_two_to_openai(self) -> None:
+    def test_module_omits_temperature_for_reasoning_model(self) -> None:
         module = WeeklyInsightModule()
         ctx = AnalysisContext(
             watchlist=[],
@@ -101,7 +101,7 @@ class WeeklyInsightModuleTests(unittest.TestCase):
         ):
             module.analyze(ctx)
 
-        self.assertEqual(fake_client.responses.calls[0]["temperature"], 0.2)
+        self.assertNotIn("temperature", fake_client.responses.calls[0])
 
 
 if __name__ == "__main__":

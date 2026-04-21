@@ -11,13 +11,11 @@ from src.utils.cost_tracker import calculate_response_cost
 from src.utils.model_config import (
     resolve_module_batch_size,
     resolve_module_model_profile,
+    response_temperature_kwargs,
     safe_input_token_budget,
 )
 from src.utils.pipeline_logging import record_pipeline_event
 from src.utils.token_estimator import estimate_batch_tokens
-
-_LLM_TEMPERATURE = 0.2
-
 
 def run_structured_llm_module(
     module: StructuredLLMModule,
@@ -239,7 +237,6 @@ def _request_structured_batch(
     batch_payload = module.build_batch_payload(ctx, batch_tickers)
     response = client.responses.create(
         model=model_profile.model,
-        temperature=_LLM_TEMPERATURE,
         max_output_tokens=model_profile.max_output_tokens,
         input=[
             {
@@ -260,6 +257,7 @@ def _request_structured_batch(
             }
         },
         prompt_cache_key=f"{prompt_template.version}:{prompt_template.name}",
+        **response_temperature_kwargs(model_profile),
     )
     usage_cost = calculate_response_cost(response, model_profile)
     record_pipeline_event(

@@ -177,6 +177,9 @@ function SortableWatchlistCard({
   const pct = parseNumericChange(ticker.data_snapshot['Daily Change'] ?? '0')
   const signalDirection = extractSignalDirection(ticker.signal_or_takeaway)
   const setup = computeSetupScore(ticker)
+  const convictionScore = ticker.decision?.conviction
+  const displayScore = typeof convictionScore === 'number' ? convictionScore : setup.score
+  const scoreSource: 'conviction' | 'setup' = typeof convictionScore === 'number' ? 'conviction' : 'setup'
   const sizingSummary = buildPositionSizingSummary(ticker, accountSize)
   const actionPlan = extractActionPlan(ticker)
   const scoreFactorTags = setup.tags.slice(0, 2)
@@ -200,7 +203,7 @@ function SortableWatchlistCard({
     <article
       ref={setNodeRef}
       style={{ ...style, cursor: 'pointer' }}
-      className={`watchlist-card ${getSetupToneClass(setup.score)}${isDragging ? ' dragging' : ''}`}
+      className={`watchlist-card ${getSetupToneClass(displayScore)}${isDragging ? ' dragging' : ''}`}
       onClick={handleCardClick}
     >
       <div className="watchlist-card-head">
@@ -232,9 +235,9 @@ function SortableWatchlistCard({
             <div className="watchlist-card-context">{contextSummary}</div>
           ) : null}
         </div>
-        <div className="watchlist-card-score">
-          <strong>{setup.score}</strong>
-          <span>Setup Score</span>
+        <div className="watchlist-card-score" title={scoreSource === 'conviction' ? '파이프라인 의사결정 컨빅션 (src/decision/)' : '실시간 셋업 휴리스틱 (decision 없음)'}>
+          <strong>{displayScore}</strong>
+          <span>{scoreSource === 'conviction' ? 'Conviction' : 'Setup Score'}</span>
         </div>
       </div>
 

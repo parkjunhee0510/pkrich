@@ -3,6 +3,7 @@
 from src.decision.factors.catalyst_factor import CatalystFactor
 from src.decision.factors.earnings_factor import EarningsFactor
 from src.decision.factors.fundamentals_factor import FundamentalsFactor
+from src.decision.factors.macro_event_factor import MacroEventFactor
 from src.decision.factors.momentum_factor import MomentumFactor
 from src.decision.factors.news_tone_factor import NewsToneFactor
 from src.decision.factors.peer_rank_factor import PeerRankFactor
@@ -15,6 +16,7 @@ __all__ = [
     "CatalystFactor",
     "EarningsFactor",
     "FundamentalsFactor",
+    "MacroEventFactor",
     "MomentumFactor",
     "NewsToneFactor",
     "PeerRankFactor",

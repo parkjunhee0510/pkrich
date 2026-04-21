@@ -1,0 +1,1088 @@
+<!DOCTYPE html><html lang="ko"><head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>준희의 포트폴리오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&amp;family=Gaegu:wght@400;700&amp;family=Nanum+Pen+Script&amp;display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --cream:#fdf6e3; --cream2:#fae8c0; --cream3:#f5d99a;
+  --gold:#c8932a; --gold2:#e8b84b; --gold3:#f5d07a;
+  --ink:#4a2e0a; --ink2:#6b4520; --ink3:#8b6340;
+  --green-btn:#3a8c4a; --green-btn2:#52b066;
+  --blue-btn:#2a6ea8; --orange-btn:#d4621a;
+  --purple-btn:#7a3da8; --teal-btn:#1a8c7a;
+  --sky1:#d4e8f5; --sky2:#e8f2fa; --sky3:#f5f0e8;
+  --font:'Gowun Dodum',sans-serif;
+  --font-display:'Gaegu',cursive;
+}
+
+html,body{min-height:100vh;font-family:var(--font);color:var(--ink);overflow-x:hidden}
+
+/* ── PAINTED BACKGROUND ────────────────────────────────── */
+body{
+  background:
+    radial-gradient(ellipse 120% 60% at 20% 5%,rgba(255,255,255,0.92) 0%,transparent 58%),
+    radial-gradient(ellipse 100% 50% at 78% 8%,rgba(255,255,255,0.88) 0%,transparent 52%),
+    radial-gradient(ellipse 70% 35% at 50% 18%,rgba(255,245,215,0.65) 0%,transparent 55%),
+    linear-gradient(180deg,#7ab8e0 0%,#a8d0f0 7%,#c8e4f8 14%,#deeef5 22%,#eef5ee 32%,#f2ece0 44%,#ead8b4 58%,#d4c890 72%,#b8b870 85%,#98a858 100%);
+  background-attachment:fixed;
+}
+
+/* Sky clouds layer */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 32% 16% at 10% 7%,  rgba(255,255,255,0.97) 0%,rgba(255,255,255,0.4) 45%,transparent 70%),
+    radial-gradient(ellipse 24% 12% at 22% 5%,  rgba(255,255,255,0.90) 0%,transparent 68%),
+    radial-gradient(ellipse 18% 9%  at 31% 9%,  rgba(255,255,255,0.80) 0%,transparent 65%),
+    radial-gradient(ellipse 38% 18% at 58% 6%,  rgba(255,255,255,0.95) 0%,rgba(255,255,255,0.4) 50%,transparent 72%),
+    radial-gradient(ellipse 22% 10% at 72% 9%,  rgba(255,255,255,0.85) 0%,transparent 68%),
+    radial-gradient(ellipse 20% 9%  at 86% 5%,  rgba(255,255,255,0.82) 0%,transparent 68%),
+    radial-gradient(ellipse 44% 20% at 38% 13%, rgba(255,255,255,0.72) 0%,transparent 65%),
+    radial-gradient(ellipse 28% 12% at 6%  13%, rgba(255,255,255,0.78) 0%,transparent 65%),
+    radial-gradient(ellipse 16% 7%  at 95% 11%, rgba(255,255,255,0.70) 0%,transparent 62%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Ground/grass/trees bottom layer */
+body::after{
+  content:"";
+  position:fixed;
+  bottom:0; left:0; right:0;
+  height:42%;
+  background:
+    /* tall trees left */
+    radial-gradient(ellipse 10% 70% at 2%   100%,#3a6a28 0%,transparent 55%),
+    radial-gradient(ellipse 8%  60% at 7%   100%,#4a8a38 0%,transparent 52%),
+    radial-gradient(ellipse 11% 75% at 13%  100%,#2a5a1e 0%,transparent 58%),
+    radial-gradient(ellipse 7%  55% at 19%  100%,#5a9a40 0%,transparent 50%),
+    /* right trees */
+    radial-gradient(ellipse 10% 68% at 82%  100%,#3a6a28 0%,transparent 55%),
+    radial-gradient(ellipse 8%  58% at 88%  100%,#4a8a38 0%,transparent 52%),
+    radial-gradient(ellipse 12% 72% at 94%  100%,#2a5a1e 0%,transparent 58%),
+    radial-gradient(ellipse 7%  52% at 99%  100%,#5a9a40 0%,transparent 50%),
+    /* distant mid trees */
+    radial-gradient(ellipse 6%  40% at 35%  100%,#5a8a3a 0%,transparent 48%),
+    radial-gradient(ellipse 5%  38% at 50%  100%,#4a7a2a 0%,transparent 46%),
+    radial-gradient(ellipse 6%  42% at 65%  100%,#5a8a3a 0%,transparent 48%),
+    /* ground gradient */
+    linear-gradient(180deg,transparent 0%,rgba(140,190,90,0.6) 25%,#a8d878 40%,#88c060 55%,#72aa48 70%,#5a9038 100%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── LAYOUT ─────────────────────────────────────────────── */
+.page{position:relative;z-index:1;min-height:100vh;padding-bottom:60px}
+.container{max-width:1380px;margin:0 auto;padding:0 20px}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+.header{
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.75) 0%,rgba(253,246,227,0.85) 100%);
+  border-bottom:2px solid rgba(200,147,42,0.3);
+  backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:100;
+}
+
+.header-logo{
+  display:flex;align-items:center;gap:8px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 52'%3E%3Cpath d='M10 26 Q100 4 190 26 Q100 48 10 26Z' fill='%23f5d07a' stroke='%23c8932a' stroke-width='2'/%3E%3C/svg%3E") center/contain no-repeat;
+  padding:6px 28px 6px 16px;
+  position:relative;
+}
+.logo-mascot{font-size:26px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.15))}
+.logo-diamond{color:var(--gold);font-size:13px;margin-right:2px}
+.logo-text{
+  font-family:var(--font-display);
+  font-size:19px;font-weight:700;
+  color:var(--ink);
+  text-shadow:0 1px 0 rgba(255,255,255,0.8);
+  white-space:nowrap;
+}
+.watchlist-btn{
+  padding:5px 14px;
+  background:linear-gradient(180deg,#f0a832 0%,#d4821a 100%);
+  border:2px solid #a86010;
+  border-radius:999px;
+  color:#fff;
+  font-family:var(--font-display);
+  font-size:12px;font-weight:700;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(180,100,20,.4),inset 0 1px 0 rgba(255,255,255,.3);
+  text-shadow:0 1px 1px rgba(0,0,0,.3);
+  white-space:nowrap;
+}
+
+.header-nav{display:flex;gap:0;margin-left:auto;flex-wrap:wrap}
+.nav-link{
+  padding:7px 13px;
+  font-family:var(--font);
+  font-size:12.5px;
+  color:var(--ink2);
+  cursor:pointer;
+  border-radius:6px;
+  transition:background .15s,color .15s;
+  white-space:nowrap;
+}
+.nav-link:hover{background:rgba(200,147,42,.18);color:var(--ink)}
+.nav-link.active{background:rgba(200,147,42,.28);color:var(--ink);font-weight:700}
+
+/* ── MAIN CONTENT ───────────────────────────────────────── */
+.main{padding:18px 20px 80px;max-width:1380px;margin:0 auto}
+
+.page-title{
+  font-family:var(--font-display);
+  font-size:26px;font-weight:700;
+  color:var(--ink);
+  margin-bottom:14px;
+  text-shadow:0 1px 2px rgba(255,255,255,.7);
+}
+
+/* automation box */
+.auto-box{
+  background:linear-gradient(180deg,rgba(255,255,255,0.82) 0%,rgba(253,246,227,0.88) 100%);
+  border:1.5px solid rgba(200,147,42,0.45);
+  border-radius:14px;
+  padding:12px 16px;
+  margin-bottom:14px;
+  box-shadow:0 3px 12px rgba(180,130,40,.12),inset 0 1px 0 rgba(255,255,255,.8);
+}
+.auto-box-title{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--font-display);font-size:15px;font-weight:700;
+  color:var(--ink);margin-bottom:6px;
+}
+.auto-box-title::before{content:"◆";color:var(--gold);font-size:11px}
+.auto-box p{font-size:12.5px;color:var(--ink2);line-height:1.55}
+.auto-box p+p{margin-top:4px}
+.auto-box p::before{content:"✦ ";color:var(--gold3);font-size:10px}
+
+/* filter rows */
+.filter-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.fchip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:5px 11px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.9) 0%,rgba(250,232,192,0.9) 100%);
+  border:1.5px solid rgba(200,147,42,0.5);
+  border-radius:999px;
+  font-size:12px;color:var(--ink2);
+  cursor:pointer;
+  box-shadow:0 1px 4px rgba(180,130,40,.1),inset 0 1px 0 rgba(255,255,255,.7);
+  transition:transform .12s,box-shadow .12s;
+}
+.fchip:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(180,130,40,.2)}
+.fchip.active{background:linear-gradient(180deg,#ffe1a8 0%,#f5c050 100%);border-color:var(--gold);color:var(--ink)}
+.fchip-x{color:var(--ink3);font-size:11px;margin-left:1px}
+.fchip .ico{font-size:13px}
+.filter-sep{width:1px;height:20px;background:rgba(200,147,42,.3);margin:0 3px}
+
+.filter-row-right{margin-left:auto;display:flex;gap:6px}
+
+/* ── CARD GRID ──────────────────────────────────────────── */
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-top:12px;
+}
+@media(max-width:1100px){.card-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.card-grid{grid-template-columns:1fr}}
+
+/* ── PARCHMENT CARD ─────────────────────────────────────── */
+.pcard{
+  position:relative;
+  background:linear-gradient(180deg,#fffdf5 0%,#fef3d0 40%,#fae8b8 100%);
+  border:2px solid #c8932a;
+  border-radius:16px;
+  padding:13px 13px 10px;
+  box-shadow:
+    0 4px 16px rgba(140,100,30,.2),
+    0 1px 0 rgba(255,255,255,.8) inset,
+    inset 0 -2px 4px rgba(140,100,30,.08);
+  overflow:hidden;
+  transition:transform .15s,box-shadow .15s;
+}
+.pcard:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(140,100,30,.28),0 1px 0 rgba(255,255,255,.8) inset}
+
+/* corner decorations */
+.pcard::before,.pcard::after{
+  content:"✿";
+  position:absolute;
+  font-size:14px;
+  opacity:.45;
+  color:var(--gold);
+}
+.pcard::before{top:7px;left:9px}
+.pcard::after{top:7px;right:9px}
+
+/* inner texture */
+.pcard-inner{
+  background:
+    repeating-linear-gradient(0deg,transparent 0 18px,rgba(200,147,42,.04) 18px 19px);
+  border-radius:10px;
+  position:relative;
+  z-index:1;
+}
+
+/* card top row */
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.card-ticker{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:700;
+  color:var(--ink);
+  display:flex;align-items:center;gap:5px;
+}
+.card-ticker .diamond{color:var(--gold);font-size:14px;animation:sparkle 2.5s ease-in-out infinite}
+@keyframes sparkle{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
+
+.score-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:4px 9px;
+  background:linear-gradient(180deg,#f5c050 0%,#d4821a 100%);
+  border:2px solid #a86010;
+  border-radius:999px;
+  box-shadow:0 2px 6px rgba(168,96,16,.35),inset 0 1px 0 rgba(255,255,255,.25);
+  white-space:nowrap;
+}
+.score-badge .sb-label{font-size:11px;color:rgba(255,255,255,.9);font-weight:700}
+.score-badge .sb-val{font-family:var(--font-display);font-size:15px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+
+.card-company{font-size:11.5px;color:var(--ink3);margin-bottom:7px;padding-left:2px}
+
+/* broker / RS row */
+.card-meta{display:none}
+.meta-broker{display:none}
+.meta-rs{display:none}
+.card-eps{display:none}
+.card-stats{
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:6px;
+  font-size:11.5px;
+}
+.card-stats td{padding:2px 0;vertical-align:middle;color:var(--ink2)}
+.card-stats td:last-child{text-align:right;color:var(--ink3);font-size:10.5px}
+.card-stats .val{font-weight:700;color:var(--ink);font-size:12px}
+.card-stats .pos{color:#2a7a3a;font-weight:700}
+.card-stats .neg{color:#b82a2a;font-weight:700}
+.card-stats-divider{border-top:1px dashed rgba(200,147,42,.3)}
+
+/* EPS row */
+.card-eps{display:none;}
+.eps-label{font-size:11.5px;color:var(--ink3)}
+.eps-val{font-size:13px;font-weight:700;color:var(--ink)}
+.eps-unit{font-size:10px;color:var(--ink3)}
+.eps-note{font-size:10px;color:var(--ink2);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* YoY */
+.card-yoy{
+  font-family:var(--font-display);
+  font-size:18px;font-weight:700;
+  margin:5px 0 8px;
+  padding:3px 0;
+  border-top:1px dashed rgba(200,147,42,.35);
+  border-bottom:1px dashed rgba(200,147,42,.35);
+}
+.yoy-pos{color:#2a7a3a}
+.yoy-neg{color:#b82a2a}
+
+/* action buttons */
+.card-actions{display:flex;gap:6px;margin-bottom:8px}
+.btn-action{
+  flex:1;
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  padding:7px 8px;
+  border-radius:10px;
+  font-size:11.5px;font-weight:700;
+  cursor:pointer;
+  border:2px solid transparent;
+  box-shadow:0 2px 6px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.25);
+  transition:transform .1s,box-shadow .1s;
+  white-space:nowrap;
+}
+.btn-action:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-action:active{transform:translateY(1px);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.btn-strong-buy{background:linear-gradient(180deg,#52c064 0%,#2a8a3c 100%);border-color:#1a6a2c;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.3)}
+.btn-buy{background:linear-gradient(180deg,#78d878 0%,#3aaa3a 100%);border-color:#2a8a2a;color:#fff}
+.btn-target{background:linear-gradient(180deg,#78b8f0 0%,#2a72d0 100%);border-color:#1a52b0;color:#fff}
+.btn-gl{background:linear-gradient(180deg,#a8e888 0%,#5aaa2a 100%);border-color:#3a8a1a;color:#fff}
+.btn-heat{background:linear-gradient(180deg,#f8d040 0%,#e8901a 100%);border-color:#c87010;color:#fff}
+.btn-short{background:linear-gradient(180deg,#c878e8 0%,#8828b8 100%);border-color:#6818a0;color:#fff}
+.btn-star::before{content:"★ "}
+
+/* detail text */
+.card-detail{
+  background:rgba(250,232,192,0.6);
+  border:1px solid rgba(200,147,42,.25);
+  border-radius:8px;
+  padding:6px 8px;
+  font-size:10.5px;
+  color:var(--ink2);
+  line-height:1.55;
+  margin-bottom:6px;
+  overflow:hidden;
+}
+.card-detail-row{display:flex;flex-wrap:wrap;gap:3px 8px;margin-top:3px}
+.detail-item{font-size:10px;color:var(--ink3);overflow:hidden;text-overflow:ellipsis}
+.detail-item span{font-weight:700;color:var(--ink2)}
+
+/* tag chips */
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.tag{
+  display:inline-block;
+  padding:3px 7px;
+  background:rgba(255,255,255,.7);
+  border:1px solid rgba(200,147,42,.4);
+  border-radius:999px;
+  font-size:10px;color:var(--ink2);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.tag-date{background:rgba(240,220,180,.6)}
+.tag-score{background:linear-gradient(180deg,#fce888,#f0c040);border-color:var(--gold);color:var(--ink)}
+
+/* bottom catalyst bar */
+.card-bottom{
+  display:flex;gap:5px;flex-wrap:wrap;
+  padding-top:7px;
+  border-top:1.5px solid rgba(200,147,42,.3);
+  margin-top:2px;
+}
+.catalyst-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:4px 9px;
+  border-radius:8px;
+  font-size:11px;font-weight:700;
+  border:1.5px solid transparent;
+}
+.cb-neutral{background:rgba(180,180,160,.25);border-color:rgba(160,160,140,.4);color:#6b6a50}
+.cb-soft{background:linear-gradient(180deg,#d8f0a8,#a8d870);border-color:#7ab840;color:#2a5a10}
+.cb-strong{background:linear-gradient(180deg,#a8e8a8,#52c060);border-color:#2a8a38;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.2)}
+.cb-hard{background:linear-gradient(180deg,#f8d870,#e8a820);border-color:#c88010;color:#4a2e00}
+.cb-heat{background:linear-gradient(180deg,#f8a040,#e85010);border-color:#c84010;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.2);display:flex;align-items:center;gap:3px}
+.cb-buy{background:linear-gradient(180deg,#78d878,#2a9a3a);border-color:#1a7a2a;color:#fff}
+
+/* divider line in card */
+.card-divider{border:0;border-top:1px dashed rgba(200,147,42,.3);margin:6px 0}
+
+/* ── TWEAKS PANEL ──────────────────────────────────────── */
+.tweaks-panel{
+  position:fixed;bottom:20px;right:20px;
+  background:linear-gradient(180deg,rgba(255,253,245,.97) 0%,rgba(253,240,210,.97) 100%);
+  border:2px solid var(--gold);
+  border-radius:16px;
+  padding:14px 16px;
+  box-shadow:0 8px 28px rgba(140,100,30,.3);
+  width:210px;
+  z-index:200;
+  display:none;
+}
+.tweaks-panel.open{display:block}
+.tweaks-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.tweaks-title::before{content:"⚙";font-size:14px}
+.tweak-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.tweak-label{font-size:11.5px;color:var(--ink2)}
+.tweak-toggle{
+  appearance:none;width:34px;height:18px;
+  background:#ddd;border-radius:999px;cursor:pointer;
+  position:relative;transition:background .2s;
+}
+.tweak-toggle:checked{background:var(--green-btn2)}
+.tweak-toggle::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tweak-toggle:checked::after{left:18px}
+.tweak-select{font-size:11px;padding:3px 7px;border:1.5px solid rgba(200,147,42,.5);border-radius:8px;background:rgba(255,255,255,.8);color:var(--ink2);font-family:var(--font);cursor:pointer}
+
+/* flower scatter on ground */
+.ground-deco{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  height:20%;
+  pointer-events:none;
+  z-index:1;
+  overflow:hidden;
+}
+.ground-deco::before{
+  content:"🌸 🌼 🌿 🌺 🍀 🌸 🌼 🌿 🌺 🍀 🌸 🌼 🌿";
+  position:absolute;
+  bottom:4px;
+  left:0;
+  width:100%;
+  font-size:16px;
+  letter-spacing:48px;
+  opacity:.55;
+  white-space:nowrap;
+}
+.ground-deco::after{
+  content:"✿ 🌾 ✿ 🌾 ✿ 🌾 ✿ 🌾 ✿ 🌾 ✿ 🌾 ✿ 🌾";
+  position:absolute;
+  bottom:22px;
+  left:30px;
+  width:100%;
+  font-size:13px;
+  letter-spacing:60px;
+  opacity:.38;
+  white-space:nowrap;
+}
+
+/* sparkle floating flowers */
+.deco-float{
+  position:fixed;
+  pointer-events:none;
+  z-index:0;
+  font-size:18px;
+  opacity:.55;
+  animation:floatUp 12s ease-in-out infinite;
+}
+@keyframes floatUp{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-18px) rotate(12deg)}
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(200,147,42,.35);border-radius:999px}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE REFINEMENTS — ≤ 640px
+   (preserves cozy-fantasy parchment aesthetic; focuses on:
+    touch targets, readable hierarchy, sticky bottom nav,
+    horizontal-scroll filter rail, card density, safe-area insets)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 640px){
+  /* ── viewport & safe areas ── */
+  html,body{overflow-x:hidden}
+  .page{padding-bottom:calc(72px + env(safe-area-inset-bottom,0))}
+
+  /* ── background quieter on mobile (perf + legibility) ── */
+  body::before{opacity:.55}
+  .ground-deco,.deco-float{display:none!important}
+  body > div[style*="height:56px"]{display:none!important}
+
+  /* ── HEADER: compact, two-line hierarchy ── */
+  .header{
+    padding:8px 12px calc(8px + env(safe-area-inset-top,0));
+    gap:8px;
+    flex-wrap:wrap;
+    box-shadow:0 2px 10px rgba(140,100,30,.12);
+  }
+  .header-logo{
+    padding:5px 22px 5px 12px;
+    gap:6px;
+    background-size:100% 100%;
+  }
+  .logo-mascot{font-size:22px}
+  .logo-diamond{font-size:11px}
+  .logo-text{font-size:16px;letter-spacing:-.3px}
+  .watchlist-btn{
+    padding:6px 12px;
+    font-size:11.5px;
+    margin-left:auto;
+  }
+  /* nav → horizontal scrollable chip rail under logo */
+  .header-nav{
+    order:3;
+    width:100%;
+    margin:2px -12px -8px;
+    padding:6px 12px 8px;
+    gap:2px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    flex-wrap:nowrap;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    border-top:1px dashed rgba(200,147,42,.25);
+  }
+  .header-nav::-webkit-scrollbar{display:none}
+  .nav-link{
+    padding:8px 13px;
+    font-size:13px;
+    flex-shrink:0;
+    border-radius:999px;
+    border:1px solid transparent;
+  }
+  .nav-link.active{
+    border-color:rgba(200,147,42,.5);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 1px 3px rgba(180,130,40,.15);
+  }
+
+  /* ── MAIN content ── */
+  .main{padding:12px 12px 24px;max-width:none}
+  .page-title{
+    font-size:22px;
+    margin-bottom:10px;
+    letter-spacing:-.3px;
+  }
+  .page-title::before{content:"❦ ";color:var(--gold);font-size:16px;vertical-align:2px}
+
+  /* ── automation tip box: tightens ── */
+  .auto-box{
+    padding:10px 13px;
+    margin-bottom:10px;
+    border-radius:12px;
+  }
+  .auto-box-title{font-size:13.5px;margin-bottom:4px}
+  .auto-box p{font-size:12px;line-height:1.5}
+
+  /* ── filter row: horizontal scroll w/ fade mask ── */
+  .filter-row{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overflow-y:hidden;
+    margin:0 -12px 8px;
+    padding:4px 12px 6px;
+    gap:6px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 18px),transparent 100%);
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 18px),transparent 100%);
+  }
+  .filter-row::-webkit-scrollbar{display:none}
+  .fchip{
+    flex-shrink:0;
+    padding:7px 12px;
+    font-size:12.5px;
+    min-height:34px;
+  }
+  .filter-sep{display:none}
+  .filter-row-right{margin-left:4px;flex-shrink:0}
+
+  /* ── CARD GRID: single column, generous ── */
+  .card-grid{
+    grid-template-columns:1fr;
+    gap:12px;
+    margin-top:10px;
+  }
+  .pcard{
+    padding:14px 14px 12px;
+    border-radius:18px;
+    box-shadow:
+      0 2px 10px rgba(140,100,30,.15),
+      0 1px 0 rgba(255,255,255,.8) inset,
+      inset 0 -2px 4px rgba(140,100,30,.08);
+  }
+  /* disable hover-lift on touch (prevents sticky hover) */
+  .pcard:hover{transform:none;box-shadow:
+    0 2px 10px rgba(140,100,30,.15),
+    0 1px 0 rgba(255,255,255,.8) inset,
+    inset 0 -2px 4px rgba(140,100,30,.08);}
+  .pcard:active{transform:scale(.995);transition:transform .08s}
+  .pcard::before,.pcard::after{font-size:12px;top:8px}
+
+  /* ticker row: bigger ticker, softer score badge */
+  .card-ticker{font-size:26px;gap:6px}
+  .card-ticker .diamond{font-size:16px}
+  .score-badge{padding:5px 11px}
+  .score-badge .sb-label{font-size:10.5px}
+  .score-badge .sb-val{font-size:16px}
+
+  .card-company{font-size:12.5px;margin-bottom:8px}
+
+  /* stats: roomier rows */
+  .card-stats{font-size:12.5px;margin-bottom:8px}
+  .card-stats td{padding:4px 0}
+  .card-stats .val{font-size:13px}
+  .card-stats td:last-child{font-size:11px}
+
+  .card-yoy{font-size:20px;margin:8px 0 10px;padding:5px 0}
+
+  /* action buttons: 44px touch targets, wrap to 2x row */
+  .card-actions{
+    gap:8px;
+    margin-bottom:10px;
+    flex-wrap:wrap;
+  }
+  .btn-action{
+    min-height:42px;
+    padding:10px 10px;
+    font-size:13px;
+    border-radius:12px;
+    flex:1 1 calc(50% - 4px);
+  }
+  .btn-action:hover{transform:none}
+
+  /* detail block: slightly larger for readability */
+  .card-detail{
+    padding:8px 10px;
+    font-size:11.5px;
+    border-radius:10px;
+  }
+  .detail-item{font-size:11px}
+
+  /* tag chips */
+  .card-tags{gap:5px;margin-bottom:10px}
+  .tag{padding:4px 9px;font-size:11px}
+
+  /* catalyst bar — wrap cleanly */
+  .card-bottom{gap:6px;padding-top:9px}
+  .catalyst-badge{padding:5px 10px;font-size:11.5px;min-height:28px}
+
+  /* ── TWEAKS PANEL → mobile bottom sheet ── */
+  .tweaks-panel{
+    right:12px;
+    left:12px;
+    bottom:calc(76px + env(safe-area-inset-bottom,0));
+    width:auto;
+    border-radius:18px;
+    padding:16px 18px calc(18px + env(safe-area-inset-bottom,0));
+    box-shadow:0 -4px 20px rgba(140,100,30,.25),0 12px 30px rgba(140,100,30,.25);
+  }
+  .tweak-row{margin-bottom:12px}
+  .tweak-label{font-size:13px}
+  .tweak-toggle{width:42px;height:24px}
+  .tweak-toggle::after{width:20px;height:20px;top:2px;left:2px}
+  .tweak-toggle:checked::after{left:20px}
+  .tweak-select{font-size:12.5px;padding:6px 10px;min-height:32px}
+
+  /* ── STICKY BOTTOM TAB BAR (mobile-native feel) ── */
+  .mobile-tabbar{
+    display:flex!important;
+    position:fixed;
+    left:0;right:0;
+    bottom:0;
+    z-index:150;
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom,0));
+    background:linear-gradient(180deg,rgba(253,246,227,.94) 0%,rgba(245,208,122,.97) 100%);
+    border-top:2px solid rgba(200,147,42,.55);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 -6px 18px rgba(140,100,30,.22);
+    justify-content:space-around;
+    align-items:stretch;
+    gap:4px;
+  }
+  .mobile-tabbar .tab-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    padding:6px 4px;
+    font-family:var(--font);
+    font-size:10.5px;
+    color:var(--ink2);
+    border-radius:12px;
+    border:1.5px solid transparent;
+    background:transparent;
+    cursor:pointer;
+    transition:background .15s,transform .08s;
+    min-height:48px;
+    line-height:1.2;
+    text-align:center;
+  }
+  .mobile-tabbar .tab-item .tab-ico{font-size:18px;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))}
+  .mobile-tabbar .tab-item.active{
+    background:linear-gradient(180deg,rgba(255,255,255,.85) 0%,rgba(255,225,168,.85) 100%);
+    border-color:rgba(200,147,42,.55);
+    color:var(--ink);
+    font-weight:700;
+    box-shadow:0 2px 6px rgba(180,130,40,.22),inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .mobile-tabbar .tab-item:active{transform:scale(.94)}
+
+  /* ── pull-to-refresh hint (subtle) ── */
+  .page::before{
+    content:"";
+    position:absolute;top:-40px;left:0;right:0;height:40px;
+    background:radial-gradient(ellipse 40% 80% at 50% 100%,rgba(200,147,42,.12),transparent 70%);
+    pointer-events:none;
+  }
+}
+
+/* hide tabbar on desktop by default */
+.mobile-tabbar{display:none}
+
+/* very-small (≤ 380px): tighter still */
+@media (max-width: 380px){
+  .page-title{font-size:19px}
+  .card-ticker{font-size:23px}
+  .btn-action{font-size:12px;flex:1 1 100%}
+  .mobile-tabbar .tab-item{font-size:10px}
+  .mobile-tabbar .tab-item .tab-ico{font-size:16px}
+}
+
+/* respect reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  .pcard,.btn-action,.fchip,.mobile-tabbar .tab-item{transition:none}
+  .card-ticker .diamond{animation:none}
+  .deco-float{animation:none}
+}
+</style>
+</head>
+<body data-cc-id="cc-1" style="cursor: crosshair; background-color: rgb(255, 255, 255);">
+
+<!-- Floating decorations -->
+<div class="deco-float" style="top: 25%; left: 3%; animation-delay: 0s; display: none;">🌸</div>
+<div class="deco-float" style="top: 35%; left: 96%; animation-delay: 2s; display: none;">🌼</div>
+<div class="deco-float" style="top: 55%; left: 1.5%; animation-delay: 4s; display: none;">🍀</div>
+<div class="deco-float" style="top: 60%; left: 97%; animation-delay: 1s; display: none;">🌿</div>
+<div class="deco-float" style="top: 15%; left: 50%; animation-delay: 3s; display: none;">✨</div>
+<div class="deco-float" style="top: 42%; left: 92%; animation-delay: 5s; display: none;">🌺</div>
+
+<div class="ground-deco"></div>
+<!-- bottom nature bar -->
+<div style="position:fixed;bottom:0;left:0;right:0;height:56px;z-index:2;pointer-events:none;display:flex;align-items:flex-end;justify-content:space-around;padding:0 2%;">
+  <span style="font-size:22px;opacity:.7">🌸</span><span style="font-size:28px;opacity:.65">🌲</span><span style="font-size:18px;opacity:.6">🌼</span><span style="font-size:26px;opacity:.7">🌳</span><span style="font-size:16px;opacity:.55">🍀</span><span style="font-size:24px;opacity:.65">🌲</span><span style="font-size:18px;opacity:.6">🌺</span><span style="font-size:20px;opacity:.7">🌿</span><span style="font-size:26px;opacity:.65">🌳</span><span style="font-size:16px;opacity:.55">🌸</span><span style="font-size:22px;opacity:.6">🌲</span><span style="font-size:18px;opacity:.7">🌼</span><span style="font-size:28px;opacity:.65">🌳</span><span style="font-size:16px;opacity:.55">🍀</span><span style="font-size:20px;opacity:.6">🌺</span><span style="font-size:24px;opacity:.7">🌲</span>
+</div>
+<div class="page">
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <div class="header-logo">
+      <span class="logo-mascot">🦉</span>
+      <span class="logo-diamond">◆</span>
+      <span class="logo-text">준희의 포트폴리오</span>
+    </div>
+    <button class="watchlist-btn">워치리스트 모고</button>
+    <nav class="header-nav">
+      <a class="nav-link active">포트폴리오</a>
+      <a class="nav-link">포트폴리오</a>
+      <a class="nav-link">시그널 활용</a>
+      <a class="nav-link">백스오 파워</a>
+      <a class="nav-link">ADMIN</a>
+      <a class="nav-link">캘린더</a>
+      <a class="nav-link">API 상태</a>
+    </nav>
+  </header>
+
+  <div class="main">
+    <!-- Title -->
+    <h1 class="page-title">부자 되고 싶어요 · 2026-04-21</h1>
+
+    <!-- Auto box -->
+    <div class="auto-box">
+      <div class="auto-box-title">고연 리서치 자동화</div>
+      <p>티폭원 watchList가 기처 MopleHistory만 기동 독처 저씌프로운 바포 심찍할 수 있습니다.</p>
+      <p>왓 파트 돔 쉬로도 가픈: 읍워밥 가족 민뢰밖이산 사쫑할 수 있습니다.</p>
+    </div>
+
+    <!-- Filter row 1 -->
+    <div class="filter-row">
+      <span class="fchip active">전수 70여 믄</span>
+      <span class="fchip">RS 80포 고두²</span>
+      <span class="fchip">RS 80포 고두²</span>
+      <span class="fchip">EPS +2+ USD <span class="fchip-x">×</span></span>
+      <select class="fchip" style="border-radius:999px;font-family:var(--font)"><option>10000</option><option>50000</option><option>100000</option></select>
+      <div class="filter-sep"></div>
+      <span class="fchip active"><span class="ico">⚡</span> MARO CATALYST</span>
+      <span class="fchip"><span class="ico">🌿</span> STRONG BUY</span>
+      <span class="fchip"><span class="ico">💰</span> 극대들: 150% <span class="fchip-x">×</span></span>
+      <div class="filter-row-right">
+        <span class="fchip active">소소 <span class="fchip-x">×</span></span>
+        <span class="fchip active">판익은 <span class="fchip-x">×</span></span>
+        <span class="fchip active">합다스 <span class="fchip-x">×</span></span>
+        <span class="fchip">상소 · COMPACT</span>
+        <span class="fchip">드는👁‍🗨란 · FOCUS</span>
+      </div>
+    </div>
+
+    <!-- Card grid -->
+    <div class="card-grid">
+
+      <!-- IONQ -->
+      <div class="pcard">
+        <div class="pcard-inner">
+          <div class="card-top">
+            <div class="card-ticker">IONQ <span class="diamond">◆</span></div>
+            <div class="score-badge"><span class="sb-label">조합</span><span class="sb-val">90</span></div>
+          </div>
+          <div class="card-company">IONQ, Inc.</div>
+          <table class="card-stats">
+            <tbody><tr class="card-stats-divider">
+              <td><span class="val">B-25 AMC</span></td>
+              <td>RS: <span class="val">222</span></td>
+            </tr>
+            <tr>
+              <td>EPS: <span class="val">4.91</span> <small>USD</small></td>
+              <td>저기열 블루</td>
+            </tr>
+          </tbody></table>
+          <div class="card-yoy yoy-pos">+191.07% YoY</div>
+          <div class="card-actions">
+            <button class="btn-action btn-strong-buy btn-star">STRONG BUY</button>
+            <button class="btn-action btn-target">중↗C-124</button>
+          </div>
+          <div class="card-detail">
+            <div>샡탈: A-32.9 · -1.85판: 의려 항발 진롤</div>
+            <div class="card-detail-row">
+              <span class="detail-item">필딘: <span>266.96, 32원</span> 워읍뮤: 94,31%</span>
+              <span class="detail-item">이근 파2.23→: <span>5 96</span> 잔뷰</span>
+            </div>
+            <div style="margin-top:4px;font-size:10.5px;color:var(--ink3)">노요 파절 2기여서</div>
+          </div>
+          <div class="card-tags">
+            <span class="tag tag-date">MAY·TUD</span>
+            <span class="tag tag-score">3/20</span>
+            <span class="tag">화뷔</span>
+          </div>
+          <div class="card-bottom">
+            <span class="catalyst-badge cb-neutral">NEUTRAL</span>
+            <span class="catalyst-badge cb-soft">🌿 SOFT CATALYST</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLUG -->
+      <div class="pcard">
+        <div class="pcard-inner">
+          <div class="card-top">
+            <div class="card-ticker">PLUG <span class="diamond">◆</span></div>
+            <div class="score-badge"><span class="sb-label">조합</span><span class="sb-val">70</span></div>
+          </div>
+          <div class="card-company">Plug Power Inc.</div>
+          <table class="card-stats">
+            <tbody><tr class="card-stats-divider">
+              <td><span class="val">D-26 PMC</span></td>
+              <td>RS: <span class="val">165</span></td>
+            </tr>
+            <tr>
+              <td>EPS: <span class="val neg">-0.30</span> <small>USD</small></td>
+              <td>솔래열 블루</td>
+            </tr>
+          </tbody></table>
+          <div class="card-yoy yoy-pos">+26.16% YoY</div>
+          <div class="card-actions">
+            <button class="btn-action btn-strong-buy btn-star">STRONG BUY</button>
+            <button class="btn-action btn-gl">AT.GL</button>
+          </div>
+          <div class="card-detail">
+            <div>살탈: -9.098 0.7연 섹사증 풀알 %.</div>
+            <div class="card-detail-row">
+              <span class="detail-item">필딘: <span>24,6.78</span> 워읍뮤: 51점.35</span>
+              <span class="detail-item">이근 원당: <span>99,333</span> 운</span>
+            </div>
+            <div style="margin-top:4px;font-size:10.5px;color:var(--ink3)">발탁 동발 노저</div>
+          </div>
+          <div class="card-tags">
+            <span class="tag tag-date">BE-2T</span>
+            <span class="tag tag-score">3/20</span>
+            <span class="tag">8래버</span>
+          </div>
+          <div class="card-bottom">
+            <span class="catalyst-badge cb-neutral">NEUTRAL</span>
+            <span class="catalyst-badge cb-strong">⭐ STRONG BUY</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPIR -->
+      <div class="pcard">
+        <div class="pcard-inner">
+          <div class="card-top">
+            <div class="card-ticker">SPIR <span class="diamond">◆</span></div>
+            <div class="score-badge"><span class="sb-label">조합</span><span class="sb-val">70</span></div>
+          </div>
+          <div class="card-company">Spire Global, Inc.</div>
+          <table class="card-stats">
+            <tbody><tr class="card-stats-divider">
+              <td><span class="val">D-27 BMO</span></td>
+              <td>RS: <span class="val">141</span></td>
+            </tr>
+            <tr>
+              <td>EPS: <span class="val neg">-0.15</span> <small>USD</small></td>
+              <td>공두댁 블루</td>
+            </tr>
+          </tbody></table>
+          <div class="card-yoy yoy-pos">+22.68% YoY</div>
+          <div class="card-actions">
+            <button class="btn-action btn-strong-buy btn-star">STRONG BUY</button>
+            <button class="btn-action btn-heat">S-10 MARC</button>
+          </div>
+          <div class="card-detail">
+            <div>샡탈: 살 9% · 🌿 포락위 린즈 통탁</div>
+            <div class="card-detail-row">
+              <span class="detail-item">판딘: <span>93.39 / 34,8.236</span> 폴팔뮤: 1역.39%</span>
+            </div>
+            <div class="card-detail-row">
+              <span class="detail-item">이근 임뷰: <span>91.98</span> 포료레 창탄</span>
+            </div>
+            <div style="margin-top:4px;font-size:10.5px;color:var(--ink3)">4추할 필딩 (0 불딩)</div>
+          </div>
+          <div class="card-tags">
+            <span class="tag tag-date">EJ3.5T</span>
+            <span class="tag tag-score">3/20</span>
+            <span class="tag">업현</span>
+            <span class="tag">끄드 채팅</span>
+          </div>
+          <div class="card-bottom">
+            <span class="catalyst-badge cb-strong">⭐ STRONG BUY</span>
+            <span class="catalyst-badge cb-buy">🌱 BUY</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AAPL -->
+      <div class="pcard">
+        <div class="pcard-inner">
+          <div class="card-top">
+            <div class="card-ticker">AAPL <span class="diamond">◆</span></div>
+            <div class="score-badge"><span class="sb-label">조합</span><span class="sb-val">68</span></div>
+          </div>
+          <div class="card-company">APPLE Inc.</div>
+          <table class="card-stats">
+            <tbody><tr class="card-stats-divider">
+              <td><span class="val">B-34 AMC</span></td>
+              <td>RS: <span class="val">124</span></td>
+            </tr>
+            <tr>
+              <td>EPS: <span class="val neg">-3.06</span> <small>USD</small></td>
+              <td>도꽤란 됴픈</td>
+            </tr>
+          </tbody></table>
+          <div class="card-yoy yoy-pos">+58.39% YoY</div>
+          <div class="card-actions">
+            <button class="btn-action btn-target">☆ BOF-150+</button>
+            <button class="btn-action btn-buy">→ BUY</button>
+          </div>
+          <div class="card-detail">
+            <div>샡탈: -172.38 삶요 해리크 밀선 →글제</div>
+            <div class="card-detail-row">
+              <span class="detail-item">왜솔 뽁: <span>3354, 353.39%</span>, △173.38 →극래료</span>
+            </div>
+            <div class="card-detail-row">
+              <span class="detail-item">이근 임뷰: <span>242,268</span> 포원했</span>
+            </div>
+            <div style="margin-top:4px;font-size:10.5px;color:var(--ink3)">4추할 필딩 (0 봐딩)</div>
+          </div>
+          <div class="card-tags">
+            <span class="tag tag-date">UAY-1-8</span>
+            <span class="tag">1/1LA 아람</span>
+            <span class="tag">그스도 채팅</span>
+          </div>
+          <div class="card-bottom">
+            <span class="catalyst-badge cb-hard">⚡ MARD CATALYST</span>
+            <span class="catalyst-badge cb-heat">🔥 HEAT ▾</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /card-grid -->
+  </div><!-- /main -->
+</div><!-- /page -->
+
+<!-- Tweaks panel -->
+<div class="tweaks-panel open" id="tweaks">
+  <div class="tweaks-title">Tweaks</div>
+  <div class="tweak-row">
+    <span class="tweak-label">배경 꽃 장식</span>
+    <input type="checkbox" class="tweak-toggle" checked="" id="tw-deco" onchange="toggleDeco(this)">
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">카드 수</span>
+    <select class="tweak-select" onchange="setColumns(this.value)">
+      <option value="4">4열</option>
+      <option value="3">3열</option>
+      <option value="2">2열</option>
+    </select>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">카드 밀도</span>
+    <select class="tweak-select" id="tw-density" onchange="setDensity(this.value)">
+      <option value="comfortable">기본</option>
+      <option value="compact">좁게</option>
+    </select>
+  </div>
+  <div class="tweak-row">
+    <span class="tweak-label">테마 스킨</span>
+    <select class="tweak-select" id="tw-theme" onchange="setTheme(this.value)">
+      <option value="cozy">코지 🌸</option>
+      <option value="dark">다크 🌑</option>
+    </select>
+  </div>
+</div>
+
+<script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "deco": false,
+  "columns": 4,
+  "density": "comfortable",
+  "theme": "cozy"
+}/*EDITMODE-END*/;
+
+// Tweaks toggle
+window.addEventListener('message', e => {
+  if (e.data?.type === '__activate_edit_mode')   document.getElementById('tweaks').classList.add('open');
+  if (e.data?.type === '__deactivate_edit_mode') document.getElementById('tweaks').classList.remove('open');
+});
+window.parent.postMessage({type:'__edit_mode_available'},'*');
+
+function toggleDeco(el) {
+  document.querySelectorAll('.deco-float').forEach(d => d.style.display = el.checked ? '' : 'none');
+  window.parent.postMessage({type:'__edit_mode_set_keys',edits:{deco:el.checked}},'*');
+}
+function setColumns(v) {
+  document.querySelector('.card-grid').style.gridTemplateColumns = `repeat(${v},1fr)`;
+  window.parent.postMessage({type:'__edit_mode_set_keys',edits:{columns:parseInt(v)}},'*');
+}
+function setDensity(v) {
+  document.querySelectorAll('.pcard').forEach(c => c.style.padding = v==='compact' ? '8px' : '13px 13px 10px');
+  window.parent.postMessage({type:'__edit_mode_set_keys',edits:{density:v}},'*');
+}
+function setTheme(v) {
+  if (v === 'dark') {
+    document.body.style.background = 'linear-gradient(180deg,#1a1228 0%,#221a35 30%,#1a2838 70%,#121820 100%)';
+    document.querySelectorAll('.pcard').forEach(c => {
+      c.style.background = 'linear-gradient(180deg,#2a2040 0%,#1e1830 100%)';
+      c.style.borderColor = '#7a58c8';
+    });
+    document.querySelector('.header').style.background = 'rgba(20,14,40,0.92)';
+  } else {
+    document.body.style.background = '';
+    document.querySelectorAll('.pcard').forEach(c => { c.style.background=''; c.style.borderColor=''; });
+    document.querySelector('.header').style.background = '';
+  }
+  window.parent.postMessage({type:'__edit_mode_set_keys',edits:{theme:v}},'*');
+}
+
+// Apply saved state
+if (!TWEAK_DEFAULTS.deco) toggleDeco({checked:false});
+if (TWEAK_DEFAULTS.columns !== 4) setColumns(TWEAK_DEFAULTS.columns);
+if (TWEAK_DEFAULTS.density !== 'comfortable') setDensity(TWEAK_DEFAULTS.density);
+if (TWEAK_DEFAULTS.theme !== 'cozy') setTheme(TWEAK_DEFAULTS.theme);
+
+// Persist page state
+const page = localStorage.getItem('cozy-page') || 'watchlist';
+
+// ── MOBILE TAB BAR: active state sync + haptic-like feedback ──
+(function(){
+  const bar = document.querySelector('.mobile-tabbar');
+  if(!bar) return;
+  const items = bar.querySelectorAll('.tab-item');
+  items.forEach(item => {
+    item.addEventListener('click', (e) => {
+      items.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      // mirror to top nav if names match
+      const label = item.dataset.tab;
+      if(label){
+        document.querySelectorAll('.header-nav .nav-link').forEach(link => {
+          link.classList.toggle('active', link.textContent.trim() === label);
+        });
+      }
+      // light vibration on capable devices
+      if(navigator.vibrate) navigator.vibrate(8);
+    });
+  });
+})();
+</script>
+
+<!-- ── MOBILE BOTTOM TAB BAR (shown only ≤ 640px) ── -->
+<nav class="mobile-tabbar" role="navigation" aria-label="모바일 하단 탭">
+  <button class="tab-item active" data-tab="포트폴리오"><span class="tab-ico">🏠</span><span>포트</span></button>
+  <button class="tab-item" data-tab="워치리스트"><span class="tab-ico">⭐</span><span>관심</span></button>
+  <button class="tab-item" data-tab="실적"><span class="tab-ico">📊</span><span>실적</span></button>
+  <button class="tab-item" data-tab="일정"><span class="tab-ico">🗓️</span><span>일정</span></button>
+  <button class="tab-item" data-tab="설정"><span class="tab-ico">⚙️</span><span>설정</span></button>
+</nav>
+
+</body></html>

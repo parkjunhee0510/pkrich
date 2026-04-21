@@ -45,6 +45,18 @@ class NewsCollectionTests(unittest.TestCase):
         self.assertEqual(len(merged), 1)
         self.assertEqual(merged[0].title, 'Apple earnings preview')
 
+    def test_merge_news_items_drops_entries_without_title_and_link(self) -> None:
+        item = WatchlistItem(ticker='AAPL', name='Apple Inc.', sector='Technology', keywords=['iPhone'])
+        primary = [
+            NewsItem(title='   ', source='Google News', link=''),
+            NewsItem(title='Apple earnings preview', source='Reuters', link='https://example.com/a'),
+        ]
+
+        merged = _merge_news_items(item, primary, [], max_items=5, run_date=date(2026, 4, 8))
+
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0].title, 'Apple earnings preview')
+
     def test_merge_news_items_prefers_recent_articles_over_stale_results(self) -> None:
         item = WatchlistItem(ticker='AAPL', name='Apple Inc.', sector='Technology', keywords=['iPhone'])
         primary = [

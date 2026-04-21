@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 're
 import { useParams, Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useTickerAnalysis } from '../hooks/useTickerAnalysis'
+import { useTickerHistory } from '../hooks/useTickerHistory'
 import { usePriceHistory } from '../hooks/usePriceHistory'
 import { useTickerTimeline } from '../hooks/useTickerTimeline'
 import { DataSnapshot } from '../components/DataSnapshot'
@@ -14,7 +15,7 @@ import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
 import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
 import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../types'
-import { parseNumericChange, changeColor, extractSignalDirection } from '../utils/format'
+import { parseNumericChange, extractSignalDirection } from '../utils/format'
 import { EpsSurpriseChart } from '../components/EpsSurpriseChart'
 import { buildPositionSizingSummary, buildPriceActionTags, extractActionPlan, getLatestCatalystItem } from '../utils/trader'
 
@@ -70,6 +71,7 @@ export function TickerDetail() {
   const { ticker } = useParams<{ ticker: string }>()
   const { data, loading, error } = useDashboardData()
   const { analysis: shardAnalysis, missing: shardMissing } = useTickerAnalysis(ticker)
+  const { history: tickerHistory } = useTickerHistory(ticker)
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
   const [timelineWindow, setTimelineWindow] = useState<'30' | '90'>('30')
@@ -83,12 +85,41 @@ export function TickerDetail() {
   const analysis = shardAnalysis ?? summaryAnalysis
   const fallbackSignalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
   const pct = parseNumericChange(analysis?.data_snapshot['Daily Change'] ?? '0')
+  const dailyChangeTone = pct > 0 ? 'positive' : pct < 0 ? 'negative' : 'neutral'
   const signalDirection = extractSignalDirection(analysis?.signal_or_takeaway)
   const visibleTimeline = useMemo(() => {
     const limit = timelineWindow === '30' ? 30 : 90
     return timelineEntries.slice(0, limit)
   }, [timelineEntries, timelineWindow])
   const upcomingEvents = analysis?.upcoming_events ?? []
+  const tickerMacroBadges = useMemo(() => {
+    if (!ticker) return []
+    const raw = latestDay?.macro_context?.ticker_macro_sensitivity?.[ticker] ?? []
+    const today = new Date().toISOString().slice(0, 10)
+    const rank: Record<string, number> = { high: 0, medium: 1, low: 2 }
+    return [...raw]
+      .filter((item) => !item.date || item.date >= today)
+      .sort((a, b) => {
+        const ra = rank[a.sensitivity] ?? 3
+        const rb = rank[b.sensitivity] ?? 3
+        if (ra !== rb) return ra - rb
+        return (a.date ?? '').localeCompare(b.date ?? '')
+      })
+      .slice(0, 4)
+      .map((item) => {
+        const days = item.date ? Math.round((new Date(item.date).getTime() - new Date(today).getTime()) / 86_400_000) : null
+        const dday = days === null ? '' : days <= 0 ? 'D-0' : `D-${days}`
+        return {
+          key: `${item.event_code}-${item.date}`,
+          code: item.event_code,
+          label: item.label,
+          dday,
+          sensitivity: item.sensitivity,
+          reason: item.reason,
+          date: item.date,
+        }
+      })
+  }, [latestDay?.macro_context?.ticker_macro_sensitivity, ticker])
   const newsReferences = analysis?.news_references ?? []
   const keyNews = analysis?.key_news ?? []
   const secFilings = useMemo(() => analysis?.sec_filings ?? [], [analysis?.sec_filings])
@@ -102,6 +133,16 @@ export function TickerDetail() {
     () => normalizeSignalHistory(analysis?.signal_history, fallbackSignalHistory),
     [analysis?.signal_history, fallbackSignalHistory],
   )
+  const previousDecision = useMemo(() => {
+    if (!analysis) {
+      return null
+    }
+    const candidates = tickerHistory
+      .filter((day) => day.date < analysis.date)
+      .map((day) => day.tickers[0]?.decision ?? null)
+      .filter((decision): decision is NonNullable<typeof analysis.decision> => Boolean(decision))
+    return candidates.length > 0 ? candidates[candidates.length - 1] : null
+  }, [analysis, tickerHistory])
   const sectorComparisonRows = useMemo(
     () => buildSectorComparisonRows(analysis?.sector_comparison),
     [analysis?.sector_comparison],
@@ -235,6 +276,20 @@ export function TickerDetail() {
             <p className="ticker-meta-explainer">{analysis.news_tone.reasoning}</p>
           ) : null}
           <SecFilingBadges tags={analysis.sec_filing_tags ?? []} />
+          {tickerMacroBadges.length > 0 && (
+            <div className="ticker-macro-badge-row" aria-label="종목 직접 매칭 거시 이벤트">
+              {tickerMacroBadges.map((badge) => (
+                <span
+                  key={badge.key}
+                  className={`ticker-macro-badge sensitivity-${badge.sensitivity}`}
+                  title={`${badge.label} · ${badge.date}${badge.reason ? `\n${badge.reason}` : ''}`}
+                >
+                  <span className="ticker-macro-badge-code">{badge.code}</span>
+                  {badge.dday && <span className="ticker-macro-badge-dday">{badge.dday}</span>}
+                </span>
+              ))}
+            </div>
+          )}
           {priceActionTags.length > 0 && (
             <div className="watchlist-chip-row">
               {priceActionTags.map((tag) => (
@@ -245,7 +300,7 @@ export function TickerDetail() {
         </div>
         <div className="ticker-price-group">
           <span className="ticker-price">{analysis.data_snapshot['Price']}</span>
-          <span className="ticker-daily-change" style={{ color: changeColor(pct) }}>
+          <span className={`ticker-daily-change ${dailyChangeTone}`}>
             {analysis.data_snapshot['Daily Change']}
           </span>
           <SignalBadge changePercent={pct} signalDirection={signalDirection} />
@@ -263,6 +318,10 @@ export function TickerDetail() {
           dashboardSizing={dashboardSizing}
           targetPrice={analysis.fundamentals?.analyst_target_price}
           tradeFrame={tradeFrame}
+          decision={analysis.decision}
+          previousDecision={previousDecision}
+          upcomingEvents={analysis.upcoming_events}
+          currentPrice={analysis.data_snapshot['Price']}
         />
       )}
 

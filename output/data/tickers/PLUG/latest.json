@@ -6,13 +6,13 @@
     "ticker": "PLUG",
     "name": "Plug Power Inc.",
     "date": "2026-04-20",
-    "summary": "주가는 30일간 +44.39% 상승했지만 RSI 72.5로 과열 구간에 있고, Forward EPS -0.21로 아직 적자 상태입니다. 다음 촉매는 2026-05-11 실적 발표이며, 매출 성장과 현금소진 속도 개선이 반등 지속 여부를 가를 것입니다.",
+    "summary": "주가는 30일간 +44.4% 급반등했고 RS도 섹터 대비 +36.52%로 강하지만, RSI 72.5로 과열 신호가 남아 있습니다. 다음 촉매는 D-20 실적으로, 수소 사업의 매출 회복과 적자 축소 속도가 반등 지속 여부를 결정할 가능성이 큽니다.",
     "key_news": [
-      "EU, 2035 내연기관 금지 철회",
-      "SEC 8-K 중요 공시 제출",
-      "10-K 연간 사업 및 재무 보고서 제출",
-      "Zacks가 플러그 파워를 매수 후보로 언급",
-      "4월 16일 전 매수 이유 제시"
+      "EU drops 2035 combustion engine ban as global EV shift faces reset - Reuters",
+      "[기타 공시] PLUG POWER INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "[실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
+      "Bloom Energy and Dave & Buster's have been highlighted as Zacks Bull and Bear of the Day - Yahoo Finance",
+      "Here's Why Plug Power Stock Is a Buy Before April 16 - Yahoo Finance"
     ],
     "news_references": [
       {
@@ -47,16 +47,19 @@
       }
     ],
     "financial_highlights": [
-      "PER 관련 수치 미제공, 밸류에이션 점수 4/10",
+      "RS vs Sector ETF +36.52%, RS pctl 83",
+      "RSI 72.5, RVOL 1.26x",
       "Forward EPS -0.21, TTM EPS -1.42",
-      "EPS 성장률 -24.0% YoY",
-      "Short float 24.51%, 4.43일",
-      "RSI 72.5, 52주 고점 대비 65%"
+      "주가 50일선 대비 +43.9%, 200일선 대비 +46.7%",
+      "애널리스트 16명 Hold, 목표가 2.83달러"
     ],
     "risks_or_watchpoints": [
-      "공매도 비율 24.5%로 높음 — 숏 스퀴즈 또는 추가 하락 양면 리스크."
+      "2026-05-11 실적 발표 전까지 2.24달러(SMA50) 아래로 종가가 내려가면 단기 추세 훼손",
+      "RSI(14)가 현재 72.5에서 75 이상 유지되면서 3.22달러 부근 돌파 실패가 3거래일 지속되면 과열 조정 리스크",
+      "2026-04-24 옵션 만기 전 7달러 PUT 거래량이 OI 대비 96% 수준을 넘어 추가 증가하면 변동성 급등 경계",
+      "현재 3.22달러에서 2.99달러(눌림 시 진입가) 이탈 시 2.24달러까지 낙폭 확대 가능성"
     ],
-    "signal_or_takeaway": "중립 관찰 — 정책 기대와 최근 급등세는 긍정적이나 RSI 과열과 실적 전 불확실성이 공존 | 진입 트리거 3.22달러 회복 후 거래량 동반 유지 | 목표 3.57달러/3.85달러 | 손절 2.24달러",
+    "signal_or_takeaway": "매수 관찰 — [실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 2.99–3.45 | 손절 SMA50(2.24 USD) (R:R 0.4R)",
     "data_snapshot": {
       "Price": "3.22 USD",
       "Daily Change": "+15.83%",
@@ -190,7 +193,7 @@
     "news_tone": {
       "label": "bullish",
       "confidence": 3,
-      "reasoning": "정책 변화와 매수 의견이 긍정적이지만, 회사 자체의 근본적 불확실성은 남아 있습니다."
+      "reasoning": "친환경 전환 논의와 매수 의견이 긍정적이나, 근본적인 실적 불확실성은 여전히 남아 있다."
     },
     "trade_frame": {
       "entry_price": "현재가 3.22 또는 눌림 시 2.99 USD",
@@ -218,7 +221,7 @@
     "signal_history": [
       {
         "date": "2026-04-20",
-        "direction": "bear",
+        "direction": "bull",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "3.22 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
@@ -256,7 +259,7 @@
       "summary": "Industrials 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
         "company": "N/A",
-        "peer_average": "N/A",
+        "peer_average": "59.00x",
         "difference": null
       },
       "rs_vs_spy": {
@@ -266,11 +269,15 @@
       },
       "price_change_30d": {
         "company": "+44.39%",
-        "peer_average": "N/A",
-        "difference": null
+        "peer_average": "16.08%",
+        "difference": "+28.31"
       }
     },
-    "peer_rank": {},
+    "peer_rank": {
+      "rs_pctl": 83,
+      "revenue_growth_pctl": 67,
+      "summary": "모멘텀 상위 17%"
+    },
     "valuation_score": {
       "score": "4/10",
       "factors": [
@@ -319,13 +326,14 @@
     ],
     "decision": {
       "action": "buy",
-      "conviction": 75,
+      "conviction": 71,
       "reason": "섹터 대비 +36.5% / SMA50·SMA200 위 / 실적 D-20 / 하드 촉매 2026-03-02 / 최근 시그널 승률 75% (3/4)",
       "valid_until": "2026-05-11",
       "factors": {
         "catalyst_recency": 13.0,
         "earnings_pattern": 5.0,
         "fundamentals": 5.0,
+        "macro_event": -6.0,
         "momentum": 17.0,
         "news_tone": 5.0,
         "peer_rank": 0.0,

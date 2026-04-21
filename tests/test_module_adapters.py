@@ -30,7 +30,7 @@ def _make_collected() -> CollectedTickerData:
         quarterly_financials=[{"quarter": "2025-Q4", "surprise_pct": "+5.0%", "beat_miss": "beat"}],
         atr_14d="5.0",
         sma_50="205",
-        fundamental_metrics={"roe": "30%", "fcf_yield": "4.5%"},
+        fundamental_metrics={"roe": "30%", "fcf_yield": "4.5%", "industry": "Consumer Electronics"},
     )
 
 
@@ -101,7 +101,56 @@ class ModuleAdapterTests(unittest.TestCase):
                     },
                 }
             },
+            macro_context={
+                "macro_events": [
+                    {
+                        "event_type": "sanctions_escalation",
+                        "severity": "high",
+                        "summary_ko": "제재 강화는 반도체와 전자 공급망에 직접 부담이 될 수 있습니다.",
+                    }
+                ]
+            },
         )
         payload = ResearchNarrativeModule().build_batch_payload(ctx, ["AAPL"])
         self.assertEqual(payload[0]["peer_rank"]["per_pctl"], 25)
         self.assertEqual(payload[0]["peer_rank"]["rs_pctl"], 78)
+        self.assertTrue(payload[0]["macro_event_summary"])
+
+    def test_research_narrative_module_skips_macro_summary_when_not_matched(self) -> None:
+        ctx = AnalysisContext(
+            watchlist=self.watchlist,
+            collected=self.collected,
+            news_map={},
+            run_date=date(2026, 4, 16),
+            model_profile=load_model_profile(),
+            available_inputs={
+                "price",
+                "fundamentals",
+                "news",
+                "upcoming_events",
+                "quarterly_financials",
+                "options_summary",
+                "historical_prices",
+            },
+            raw_payload_by_ticker=self.raw_payloads,
+            fallback_payload_by_ticker=self.fallback_payloads,
+            intermediate_results={
+                "AAPL": {
+                    "valuation_score": {"score": "7/10"},
+                    "trade_frame": {"entry_price": "현재가 210"},
+                    "news_tone": {"label": "bullish"},
+                    "peer_rank": {},
+                }
+            },
+            macro_context={
+                "macro_events": [
+                    {
+                        "event_type": "middle_east_escalation",
+                        "severity": "medium",
+                        "summary_ko": "중동 확전 우려가 커지고 있습니다.",
+                    }
+                ]
+            },
+        )
+        payload = ResearchNarrativeModule().build_batch_payload(ctx, ["AAPL"])
+        self.assertEqual(payload[0]["macro_event_summary"], [])

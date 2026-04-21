@@ -119,6 +119,13 @@ def generate_weekly_report(
             continue
         if days_until <= 7:
             next_macro_events.append(event)
+    macro_shock_events = []
+    for event in (macro_context or {}).get("macro_events", []):
+        if not isinstance(event, dict):
+            continue
+        summary = str(event.get("summary_ko", "")).strip()
+        if summary:
+            macro_shock_events.append(summary)
 
     weekly_inputs = {
         "iso_year": iso_year,
@@ -158,8 +165,14 @@ def generate_weekly_report(
         "market_regime": _serialize_market_regime(market_regime),
         "portfolio_risk": portfolio_risk or {},
         "next_macro_events": next_macro_events[:5],
+        "macro_event_summary": macro_shock_events[:2],
         "top_conviction_items": top_conviction_items,
-        "market_environment_details": _build_market_environment_details(market_moves, sector_performance, next_macro_events),
+        "market_environment_details": _build_market_environment_details(
+            market_moves,
+            sector_performance,
+            next_macro_events,
+            macro_shock_events[:2],
+        ),
     }
     model_profile = load_model_profile()
     ctx = AnalysisContext(
@@ -183,6 +196,7 @@ def _build_market_environment_details(
     market_moves: list[Any],
     sector_performance: list[Any],
     next_macro_events: list[dict[str, Any]],
+    macro_shock_events: list[str] | None = None,
 ) -> list[str]:
     lines: list[str] = []
     if market_moves:
@@ -196,6 +210,8 @@ def _build_market_environment_details(
                 for event in next_macro_events[:3]
             )
         )
+    if macro_shock_events:
+        lines.extend(str(item).strip() for item in macro_shock_events[:2] if str(item).strip())
     return lines
 
 

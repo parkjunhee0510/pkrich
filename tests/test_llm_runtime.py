@@ -196,6 +196,39 @@ class MissingTickerRetryTests(unittest.TestCase):
 
         self.assertEqual(result.results_by_ticker["AAPL"]["summary"], "llm:AAPL")
         self.assertEqual(fake_client.responses.calls[0]["model"], "gpt-5.4")
+        self.assertNotIn("temperature", fake_client.responses.calls[0])
+
+    def test_non_reasoning_model_includes_temperature_when_configured(self) -> None:
+        fake_client = _FakeOpenAIClient(
+            [_FakeResponse({"tickers": [{"ticker": "AAPL", "summary": "llm:AAPL"}, {"ticker": "MSFT", "summary": "llm:MSFT"}]})]
+        )
+        self.ctx = AnalysisContext(
+            watchlist=[SimpleNamespace(ticker="AAPL"), SimpleNamespace(ticker="MSFT")],
+            collected={},
+            news_map={},
+            run_date=date(2026, 4, 21),
+            model_profile=ModelProfile(
+                name="custom",
+                model="gpt-4.1-mini",
+                prompt_version="research_v1",
+                context_window=400000,
+                max_output_tokens=32000,
+                monthly_cost_estimate_usd=0.0,
+                input_cost_per_1m_tokens=0.0,
+                cached_input_cost_per_1m_tokens=0.0,
+                output_cost_per_1m_tokens=0.0,
+                temperature=0.2,
+            ),
+            metadata={"llm_missing_retry_budget": 1},
+            fallback_payload_by_ticker={
+                "AAPL": {"summary": "fallback:AAPL"},
+                "MSFT": {"summary": "fallback:MSFT"},
+            },
+            intermediate_results={"AAPL": {}, "MSFT": {}},
+        )
+
+        self._run_with_responses([], client=fake_client)
+
         self.assertEqual(fake_client.responses.calls[0]["temperature"], 0.2)
 
     def test_sends_prompt_cache_key_for_cache_routing(self) -> None:

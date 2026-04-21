@@ -465,27 +465,18 @@ body::before, body::after { display: none !important; }
 }
 
 .ticker-price-group {
-  background: #fffdf5;
-  border: 1.5px solid var(--cozy-gold-soft);
+  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%);
+  border: 1.5px solid var(--cozy-gold);
   border-radius: 12px;
   box-shadow: var(--shadow-hard-sm);
 }
 
 .ticker-detail-primary-section {
   background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%);
-  border: 1.5px solid var(--cozy-gold-soft);
+  border: 1.5px solid var(--cozy-gold);
   border-radius: 6px;
   box-shadow: var(--shadow-hard-sm);
 }
-
-/* thesis diff cards: cozy tone bands */
-.thesis-diff-card {
-  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%) !important;
-  border: 1.5px solid var(--cozy-gold-soft) !important;
-  border-radius: 6px;
-}
-.thesis-diff-card.changed { border-left: 6px solid var(--cozy-gold) !important; }
-.thesis-diff-card.steady  { border-left: 6px solid var(--cozy-muted) !important; }
 
 /* decision board price-action cards: replace hazard left bands with cozy palette */
 .decision-board-grid .price-action-card {
@@ -544,7 +535,9 @@ body::before, body::after { display: none !important; }
   border: 1.5px solid var(--cozy-gold-soft);
   background: #fffdf5;
   color: var(--cozy-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   box-shadow: var(--shadow-hard-sm);
 }
 

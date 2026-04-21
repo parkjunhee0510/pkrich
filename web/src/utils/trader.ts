@@ -29,6 +29,7 @@ export interface SetupScoreCard {
   ticker: string
   name: string
   score: number
+  scoreSource: 'conviction' | 'setup'
   focusLabel: SetupFocusLabel
   actionPlan: TraderActionPlan
   earningsDday: string
@@ -107,10 +108,13 @@ export function buildSetupCards(tickers: TickerAnalysisData[], limit = 5): Setup
   return [...tickers]
     .map((ticker) => {
       const setup = computeSetupScore(ticker)
+      const conviction = ticker.decision?.conviction
+      const useConviction = typeof conviction === 'number'
       return {
         ticker: ticker.ticker,
         name: ticker.name,
-        score: setup.score,
+        score: useConviction ? (conviction as number) : setup.score,
+        scoreSource: useConviction ? 'conviction' : 'setup',
         focusLabel: setup.focusLabel,
         actionPlan: extractActionPlan(ticker),
         earningsDday: extractEarningsDdayLabel(ticker),

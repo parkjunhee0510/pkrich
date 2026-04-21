@@ -49,8 +49,11 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
                 <strong>{card.ticker}</strong>
                 <span>{card.name}</span>
               </div>
-              <div className="setup-score-badge">
-                <span>{card.focusLabel}</span>
+              <div
+                className="setup-score-badge"
+                title={card.scoreSource === 'conviction' ? '파이프라인 의사결정 컨빅션' : '실시간 셋업 휴리스틱 (decision 없음)'}
+              >
+                <span>{card.scoreSource === 'conviction' ? 'Conviction' : card.focusLabel}</span>
                 <strong>{card.score}</strong>
               </div>
             </div>
@@ -305,6 +308,8 @@ export function SignalPerformanceBoard({ highlights }: { highlights: SignalPerfo
 
 export function TickerMetaStack({ ticker }: { ticker: TickerAnalysisData }) {
   const setup = computeSetupScore(ticker)
+  const conviction = ticker.decision?.conviction
+  const displayScore = typeof conviction === 'number' ? conviction : setup.score
   const priceActionTags = buildPriceActionTags(ticker)
   const optionsTags = buildOptionsSignalTags(ticker)
 
@@ -312,7 +317,12 @@ export function TickerMetaStack({ ticker }: { ticker: TickerAnalysisData }) {
     <>
       <div>{ticker.name}</div>
       <div className="watchlist-meta-row">
-        <span className="setup-score-inline">{setup.score}</span>
+        <span
+          className="setup-score-inline"
+          title={typeof conviction === 'number' ? '파이프라인 컨빅션' : '실시간 셋업 휴리스틱'}
+        >
+          {displayScore}
+        </span>
         <span className="watchlist-focus-label">{setup.focusLabel}</span>
       </div>
       <SecFilingBadges tags={ticker.sec_filing_tags} />

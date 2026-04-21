@@ -1,4 +1,4 @@
-"""Collect macro context: VIX, rates, and upcoming macro events."""
+"""Collect macro context: VIX, rates, macro calendar, and shock events."""
 from __future__ import annotations
 
 import logging
@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from typing import Any
 
 from src.collector.finnhub import collect_finnhub_economic_calendar, is_finnhub_ready
+from src.collector.macro_events import collect_macro_shock_events
 from src.utils.network import can_open_tcp_connection
 
 logger = logging.getLogger(__name__)
@@ -123,6 +124,7 @@ def collect_macro_context(
         context["vix"] = {"level": "N/A", "change": "N/A", "regime": "N/A"}
 
     context["upcoming_macro_events"] = _find_upcoming_events(run_date, lookahead_days)
+    context["macro_events"] = collect_macro_shock_events(run_date)
     context.update(_collect_macro_market_series())
     context["spy_technicals"] = _collect_spy_technicals()
     return context

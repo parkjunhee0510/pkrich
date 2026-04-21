@@ -178,7 +178,7 @@ class TestDecideTicker(unittest.TestCase):
         decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
         expected_keys = {
             "valuation", "momentum", "catalyst_recency", "signal_track_record",
-            "news_tone", "regime_adjustment", "earnings_pattern", "fundamentals", "peer_rank", "portfolio_risk",
+            "news_tone", "regime_adjustment", "earnings_pattern", "fundamentals", "macro_event", "peer_rank", "portfolio_risk",
         }
         self.assertEqual(set(decision.factors.keys()), expected_keys)
 
@@ -280,6 +280,29 @@ class TestDecideTicker(unittest.TestCase):
         weak_decision = _decide_ticker(weak, None, self.regime, {}, date(2026, 4, 10), self.config)
         strong_decision = _decide_ticker(strong, None, self.regime, {}, date(2026, 4, 10), self.config)
         self.assertGreater(strong_decision.factors["peer_rank"], weak_decision.factors["peer_rank"])
+
+    def test_macro_event_factor_flows_from_macro_context(self) -> None:
+        analysis = _make_analysis(data_snapshot={"Price": "100", "Sector": "Consumer Cyclical"})
+        decision = _decide_ticker(
+            analysis,
+            None,
+            self.regime,
+            {
+                "_macro_context": {
+                    "macro_events": [
+                        {
+                            "event_type": "hormuz_disruption",
+                            "severity": "high",
+                            "summary_ko": "호르무즈 해협 차질로 유가와 물류 변동성이 커질 수 있습니다.",
+                            "expires_at": "2026-04-17",
+                        }
+                    ]
+                }
+            },
+            date(2026, 4, 10),
+            self.config,
+        )
+        self.assertLess(decision.factors["macro_event"], 0)
 
 
 class TestLoadWeights(unittest.TestCase):

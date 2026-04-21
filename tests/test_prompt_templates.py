@@ -55,6 +55,19 @@ class PromptTemplateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             template.validate_response(invalid)
 
+    def test_signal_template_accepts_extended_short_direction_tokens(self) -> None:
+        template = get_prompt_template("research_v1", "signal_takeaway_module")
+        for direction in ("매도 관찰", "매도 유지", "매도"):
+            payload = {
+                "tickers": [
+                    {
+                        "ticker": "AAPL",
+                        "signal_or_takeaway": f"{direction} — 하방 리스크 확대 | 진입 트리거 180 이탈 확인 | 목표 172/165달러 | 손절 186달러",
+                    }
+                ]
+            }
+            self.assertTrue(template.validate_response(payload))
+
     def test_research_narrative_template_renders_peer_rank_context(self) -> None:
         template = get_prompt_template("research_v1", "research_narrative_module")
         ctx = PromptContext(run_date=date(2026, 4, 16))
@@ -78,6 +91,25 @@ class PromptTemplateTests(unittest.TestCase):
         self.assertIn("peer_rank", user_text)
         self.assertIn("25", user_text)
         self.assertIn("78", user_text)
+
+    def test_research_narrative_template_renders_macro_event_context(self) -> None:
+        template = get_prompt_template("research_v1", "research_narrative_module")
+        ctx = PromptContext(run_date=date(2026, 4, 16))
+
+        user_text = template.render_user(
+            [
+                {
+                    "ticker": "XOM",
+                    "macro_event_summary": [
+                        "high: 호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다."
+                    ],
+                }
+            ],
+            ctx,
+        )
+
+        self.assertIn("macro_event_summary", user_text)
+        self.assertIn("호르무즈", user_text)
 
     def test_weekly_insight_template_validates_structured_report(self) -> None:
         template = get_prompt_template("research_v1", "weekly_insight_module")

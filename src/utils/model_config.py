@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from src.utils.config import load_yaml_mapping
+from src.utils.pipeline_logging import record_pipeline_event
 
 _DEFAULT_CONFIG: dict[str, Any] = {
     'default_profile': 'economy',
@@ -25,6 +26,7 @@ _DEFAULT_CONFIG: dict[str, Any] = {
         'economy': {
             'model': 'gpt-5.4-mini',
             'prompt_version': 'research_v1',
+            'temperature': None,
             'context_window': 400000,
             'max_output_tokens': 32000,
             'monthly_cost_estimate_usd': 0.31,
@@ -35,6 +37,7 @@ _DEFAULT_CONFIG: dict[str, Any] = {
         'standard': {
             'model': 'gpt-5.4',
             'prompt_version': 'research_v1',
+            'temperature': None,
             'context_window': 400000,
             'max_output_tokens': 32000,
             'monthly_cost_estimate_usd': 3.0,
@@ -45,6 +48,7 @@ _DEFAULT_CONFIG: dict[str, Any] = {
         'deep': {
             'model': 'o3-mini',
             'prompt_version': 'research_v2',
+            'temperature': None,
             'context_window': 200000,
             'max_output_tokens': 100000,
             'monthly_cost_estimate_usd': 8.0,
@@ -67,6 +71,7 @@ class ModelProfile:
     input_cost_per_1m_tokens: float
     cached_input_cost_per_1m_tokens: float
     output_cost_per_1m_tokens: float
+    temperature: float | None = None
 
 
 @dataclass(frozen=True)
@@ -108,10 +113,31 @@ def resolve_module_model_profile(
         return base_profile
     profiles = config.get('profiles', {}) or {}
     if override_profile_name not in profiles:
-        raise ValueError(
-            f'module_profile_overrides.{module_name} must reference a configured profile: {override_profile_name}'
+        record_pipeline_event(
+            'analyzer',
+            'warning',
+            'module_profile_override_invalid',
+            module=module_name,
+            override_profile=override_profile_name,
+            base_profile=base_profile.name,
+            config_path=path,
         )
-    override_profile = load_model_profile(path, profile_name=override_profile_name)
+        return base_profile
+    try:
+        override_profile = load_model_profile(path, profile_name=override_profile_name)
+    except Exception as exc:
+        record_pipeline_event(
+            'analyzer',
+            'warning',
+            'module_profile_override_invalid',
+            module=module_name,
+            override_profile=override_profile_name,
+            base_profile=base_profile.name,
+            config_path=path,
+            error_type=type(exc).__name__,
+            error_message=str(exc),
+        )
+        return base_profile
     return replace(
         override_profile,
         prompt_version=base_profile.prompt_version,
@@ -129,6 +155,10 @@ def load_model_profile(path: str = 'config/models.yaml', *, profile_name: str | 
         name=requested_profile_name if requested_profile_name in profiles else default_profile_name,
         model=str(raw_profile.get('model', 'gpt-5.4-mini')),
         prompt_version=str(raw_profile.get('prompt_version', 'research_v1')),
+        temperature=_coerce_temperature(
+            raw_profile.get('temperature'),
+            default=_default_temperature_for_model(str(raw_profile.get('model', 'gpt-5.4-mini'))),
+        ),
         context_window=int(raw_profile.get('context_window', 400000)),
         max_output_tokens=int(raw_profile.get('max_output_tokens', 32000)),
         monthly_cost_estimate_usd=float(raw_profile.get('monthly_cost_estimate_usd', 0.0)),
@@ -202,3 +232,29 @@ def _load_model_config(path: str) -> dict[str, Any]:
         return _DEFAULT_CONFIG
     loaded = load_yaml_mapping(path, optional=True)
     return loaded if loaded else _DEFAULT_CONFIG
+
+
+def response_temperature_kwargs(profile: ModelProfile) -> dict[str, float]:
+    if profile.temperature is None:
+        return {}
+    return {'temperature': profile.temperature}
+
+
+def _default_temperature_for_model(model: str) -> float | None:
+    normalized = model.strip().lower()
+    if normalized.startswith(('o1', 'o3', 'gpt-5')):
+        return None
+    return 0.2
+
+
+def _coerce_temperature(value: Any, *, default: float | None) -> float | None:
+    if value is None:
+        return default
+    if isinstance(value, str) and not value.strip():
+        return default
+    if isinstance(value, str) and value.strip().lower() in {'none', 'null'}:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default

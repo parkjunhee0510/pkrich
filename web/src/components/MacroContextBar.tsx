@@ -19,6 +19,17 @@ function sensitivityLabel(value: string | undefined): string {
   return 'low'
 }
 
+function buildShockSummary(macroContext?: MacroContext | null): string | null {
+  const macroEvents = macroContext?.macro_events ?? []
+  if (!macroEvents.length) return null
+  const topEvent = macroEvents[0]
+  const summary = topEvent?.summary_ko?.trim()
+  if (!summary) return null
+  const severity = topEvent?.severity ? String(topEvent.severity).toUpperCase() : ''
+  const prefix = severity ? `${severity} 충격` : '거시 충격'
+  return `${prefix}: ${summary}`
+}
+
 export function MacroContextBar({ macroContext }: { macroContext?: MacroContext | null }) {
   const vix = macroContext?.vix
   const macroSeries = [
@@ -28,8 +39,9 @@ export function MacroContextBar({ macroContext }: { macroContext?: MacroContext 
   ].filter((item) => item.value)
   const macroEvents = (macroContext?.portfolio_event_sensitivity ?? macroContext?.upcoming_macro_events ?? []).slice(0, 3)
   const sensitivitySummary = macroContext?.portfolio_sensitivity_summary
+  const shockSummary = buildShockSummary(macroContext)
 
-  if (!vix && macroEvents.length === 0 && macroSeries.length === 0) {
+  if (!vix && macroEvents.length === 0 && macroSeries.length === 0 && !shockSummary) {
     return null
   }
 
@@ -44,6 +56,9 @@ export function MacroContextBar({ macroContext }: { macroContext?: MacroContext 
         </div>
         {sensitivitySummary && sensitivitySummary !== 'N/A' ? (
           <p className="macro-context-summary-text">{sensitivitySummary}</p>
+        ) : null}
+        {shockSummary ? (
+          <p className="macro-context-shock-summary">{shockSummary}</p>
         ) : null}
       </div>
 

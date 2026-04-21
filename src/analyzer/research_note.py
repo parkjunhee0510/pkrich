@@ -11,12 +11,17 @@ from typing import Any
 from src.types import CollectedTickerData, NewsItem, PortfolioSummary, TickerAnalysis, WatchlistItem
 from src.utils.cost_tracker import calculate_response_cost
 from src.utils.env import load_dotenv
-from src.utils.model_config import ModelProfile, build_model_profile, load_model_profile, safe_input_token_budget
+from src.utils.model_config import (
+    ModelProfile,
+    build_model_profile,
+    load_model_profile,
+    response_temperature_kwargs,
+    safe_input_token_budget,
+)
 from src.utils.pipeline_logging import record_pipeline_event
 from src.utils.token_estimator import estimate_batch_tokens
 
 logger = logging.getLogger(__name__)
-_LLM_TEMPERATURE = 0.2
 _SECTOR_TRANSLATIONS = {
     'Technology': '기술',
     'Semiconductors': '반도체',
@@ -795,7 +800,6 @@ def _call_openai_batch(
         )
         response = client.responses.create(
             model=model_profile.model,
-            temperature=_LLM_TEMPERATURE,
             max_output_tokens=model_profile.max_output_tokens,
             input=[
                 {
@@ -825,6 +829,7 @@ def _call_openai_batch(
                     'strict': True,
                 }
             },
+            **response_temperature_kwargs(model_profile),
         )
     except Exception as exc:
         _log_analyzer_event(

@@ -8,10 +8,8 @@ from typing import Any
 from src.analyzer.base import AnalysisContext, AnalysisModule, ModuleResult
 from src.analyzer.prompts import PromptContext, get_prompt_template
 from src.utils.env import load_dotenv
-from src.utils.model_config import load_model_profile
+from src.utils.model_config import load_model_profile, response_temperature_kwargs
 from src.utils.pipeline_logging import record_pipeline_event
-
-_LLM_TEMPERATURE = 0.2
 
 
 class WeeklyInsightModule(AnalysisModule):
@@ -45,7 +43,6 @@ class WeeklyInsightModule(AnalysisModule):
             client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
             response = client.responses.create(
                 model=model_profile.model,
-                temperature=_LLM_TEMPERATURE,
                 max_output_tokens=min(model_profile.max_output_tokens, 1800),
                 input=[
                     {
@@ -66,6 +63,7 @@ class WeeklyInsightModule(AnalysisModule):
                     }
                 },
                 prompt_cache_key=f"{prompt_template.version}:{prompt_template.name}",
+                **response_temperature_kwargs(model_profile),
             )
             content = getattr(response, "output_text", "").strip()
             payload = json.loads(content)

@@ -26,6 +26,7 @@ _DEFAULT_FACTORS = {
     "regime_adjustment": {"min": -15, "max": 15},
     "earnings_pattern": {"min": -10, "max": 10},
     "fundamentals": {"min": 0, "max": 10},
+    "macro_event": {"min": -8, "max": 6},
     "portfolio_risk": {"min": -10, "max": 0},
 }
 _DEFAULT_THRESHOLDS = {"buy": 65, "buy_risk_off": 75, "avoid": 35}
@@ -41,12 +42,17 @@ def generate_decisions(
     run_date: date,
     *,
     portfolio_risk: dict[str, Any] | None = None,
+    macro_context: dict[str, Any] | None = None,
 ) -> list[TickerDecision]:
     try:
         config = _load_weights()
         collected = collected or {}
         signal_stats = signal_stats or {}
-        decision_context = {**signal_stats, "_portfolio_risk": portfolio_risk or {}}
+        decision_context = {
+            **signal_stats,
+            "_portfolio_risk": portfolio_risk or {},
+            "_macro_context": macro_context or {},
+        }
         return [
             _decide_ticker(analysis, collected.get(analysis.ticker), regime, decision_context, run_date, config)
             for analysis in analyses
