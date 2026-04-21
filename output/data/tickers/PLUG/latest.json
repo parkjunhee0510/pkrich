@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-04-20",
+  "date": "2026-04-21",
   "ticker": "PLUG",
   "payload": {
     "ticker": "PLUG",
@@ -61,36 +61,36 @@
     ],
     "signal_or_takeaway": "매수 관찰 — [실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 2.99–3.45 | 손절 SMA50(2.24 USD) (R:R 0.4R)",
     "data_snapshot": {
-      "Price": "3.22 USD",
-      "Daily Change": "+15.83%",
-      "Market Cap": "4.49B",
+      "Price": "3.06 USD",
+      "Daily Change": "-4.91%",
+      "Market Cap": "4.28B",
       "Trailing P/E": "N/A",
       "EPS": "-1.42",
       "52W High": "4.58",
       "52W Low": "0.69",
-      "50D SMA": "2.24",
-      "200D SMA": "2.19",
-      "Volume": "110.56M",
-      "3M Avg Volume": "88.08M",
-      "Price/Book": "4.59",
+      "50D SMA": "2.27",
+      "200D SMA": "2.20",
+      "Volume": "35784827",
+      "3M Avg Volume": "87.68M",
+      "Price/Book": "4.37",
       "Dividend Yield": "N/A",
       "Sector": "Industrials",
-      "Open": "2.72",
-      "High": "3.23",
-      "Low": "2.71",
-      "Close": "3.22",
+      "Open": "3.22",
+      "High": "3.26",
+      "Low": "3.06",
+      "Close": "3.06",
       "RS vs Sector ETF": "+36.52%"
     },
     "fundamentals": {
-      "market_cap": "4.49B",
+      "market_cap": "4.28B",
       "trailing_pe": "N/A",
       "eps": "-1.42",
       "forward_eps": "-0.21",
       "earnings_growth": "-24.00% YoY",
-      "price_to_book": "4.59",
+      "price_to_book": "4.37",
       "dividend_yield": "N/A",
-      "volume": "110.56M",
-      "avg_volume_3m": "88.08M",
+      "volume": "35784827",
+      "avg_volume_3m": "87.68M",
       "52w_high": "4.58",
       "52w_low": "0.69",
       "short_float_pct": "24.51%",
@@ -99,7 +99,7 @@
       "analyst_recommendation": "Hold",
       "analyst_count": "16명",
       "held_by_insiders": "4.53%",
-      "held_by_institutions": "50.86%",
+      "held_by_institutions": "50.85%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
@@ -129,15 +129,15 @@
       "pattern_note": "최근 2개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "0.23",
-      "atr_percent": "7.26%",
-      "relative_volume": "1.26x",
-      "gap_percent": "-2.16%",
-      "price_vs_sma50": "+43.88%",
-      "price_vs_sma200": "+46.73%",
-      "week52_position": "65%",
+      "atr_14d": "0.24",
+      "atr_percent": "7.79%",
+      "relative_volume": "0.41x",
+      "gap_percent": "+0.00%",
+      "price_vs_sma50": "+35.17%",
+      "price_vs_sma200": "+38.95%",
+      "week52_position": "61%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+36.52%"
+      "rs_vs_sector_etf": "+30.59%"
     },
     "quarterly_financials": [
       {
@@ -210,10 +210,10 @@
     },
     "options_summary": {
       "expiry": "2026-04-24",
-      "atm_call_iv": "134.4%",
-      "atm_put_iv": "154.7%",
-      "put_call_ratio": "0.19x",
-      "iv_percentile_30d": "4th",
+      "atm_call_iv": "168.8%",
+      "atm_put_iv": "59.4%",
+      "put_call_ratio": "0.16x",
+      "iv_percentile_30d": "21th",
       "tone": "bullish",
       "unusual_activity": "PUT $7, vol 2500, OI 대비 96% ; PUT $6, vol 1, OI 대비 33%",
       "oi_change": "콜 OI +0.3% / 풋 OI +0.2%"
@@ -293,8 +293,8 @@
       "final_consensus": "single"
     },
     "period_changes": {
-      "7d": "+16.25%",
-      "30d": "+44.39%"
+      "7d": "+4.08%",
+      "30d": "+37.22%"
     },
     "sec_filing_tags": [
       "실적",
@@ -345,5 +345,6 @@
       "ensemble_agreement": "single",
       "final_consensus": "single"
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-04-21T15:07:16"
 }
