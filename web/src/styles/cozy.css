@@ -146,7 +146,8 @@ a:hover { color: var(--cozy-ink); }
   transition: background 0.18s, transform 0.18s;
 }
 .nav-link:hover { background: var(--cozy-peach); color: var(--cozy-ink); transform: translateY(-1px); }
-.nav-link.active { background: var(--cozy-peach); color: var(--cozy-ink); border-color: var(--cozy-gold-2); font-weight: 700; }
+.nav-link.active    { background: var(--cozy-peach); color: var(--cozy-ink); border-color: var(--cozy-gold-2); font-weight: 700; }
+.nav-link.nav-active { background: var(--cozy-gold); color: var(--cozy-ink) !important; border-color: var(--cozy-gold-2); font-weight: 700; }
 
 /* ── generic card surfaces ────────────────────────────────── */
 .watchlist-card,
@@ -562,7 +563,6 @@ body::before, body::after { display: none !important; }
    global.css uses `background: var(--ink)` in ~40 places. Because we overrode --ink
    to brown, the cozy pill catch-all (which forces color: var(--cozy-ink)) produced
    brown-on-brown. Target the actual classes and give them cozy-ink bg + cream text. */
-.nav-active,
 .watchlist-action-details summary,
 .watchlist-table th,
 .snapshot-table th,
