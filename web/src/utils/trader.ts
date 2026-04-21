@@ -114,7 +114,7 @@ export function buildSetupCards(tickers: TickerAnalysisData[], limit = 5): Setup
         ticker: ticker.ticker,
         name: ticker.name,
         score: useConviction ? (conviction as number) : setup.score,
-        scoreSource: useConviction ? 'conviction' : 'setup',
+        scoreSource: (useConviction ? 'conviction' : 'setup') as 'conviction' | 'setup',
         focusLabel: setup.focusLabel,
         actionPlan: extractActionPlan(ticker),
         earningsDday: extractEarningsDdayLabel(ticker),
