@@ -79,6 +79,11 @@ _RISK_SCHEMA = {
     "required": ["tickers"],
 }
 
+_SIGNAL_TAKEAWAY_PATTERN = (
+    r"^(매수 관찰|매수 유지|매수 우선|중립 관찰|중립 경계|매도 경계) "
+    r"— .+ \| 진입 트리거 .+ \| 목표 .+ \| 손절 .+$"
+)
+
 _SIGNAL_SCHEMA = {
     "type": "object",
     "additionalProperties": False,
@@ -90,7 +95,11 @@ _SIGNAL_SCHEMA = {
                 "additionalProperties": False,
                 "properties": {
                     "ticker": {"type": "string"},
-                    "signal_or_takeaway": {"type": "string", "minLength": 30},
+                    "signal_or_takeaway": {
+                        "type": "string",
+                        "minLength": 30,
+                        "pattern": _SIGNAL_TAKEAWAY_PATTERN,
+                    },
                 },
                 "required": ["ticker", "signal_or_takeaway"],
             },
@@ -237,11 +246,21 @@ PROMPT_SET = {
         version="research_v1",
         system_template=(
             "Return strict JSON with key 'tickers'. All human-readable output must be in Korean. "
-            "signal_or_takeaway must be one structured sentence: "
-            "\"[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격]/[가격] | 손절 [가격]\"."
+            "signal_or_takeaway MUST be exactly one sentence matching the shape "
+            "\"[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격1]/[가격2] | 손절 [가격]\". "
+            "방향은 반드시 '매수 관찰|매수 유지|매수 우선|중립 관찰|중립 경계|매도 경계' 중 하나여야 합니다. "
+            "매수 시 목표가 오름차순(가격1 < 가격2), 매도 시 내림차순이어야 하며 손절은 진입 반대편에 위치해야 합니다. "
+            "'진입트리거:', '목표가:', '손절가:' 같은 콜론 포맷이나 '/' 구분자는 금지합니다. "
+            "반드시 ' | ' (공백 파이프 공백) 구분자를 사용하고 '—'(em-dash)로 catalyst를 연결합니다. "
+            "좋은 예시: "
+            "\"매수 관찰 — 실적 D-7 강세 모멘텀 | 진입 트리거 273 상향 돌파 | 목표 282/297달러 | 손절 260달러\". "
+            "\"중립 경계 — 실적 직전 변동성 확대 | 진입 트리거 101 지지 확인 | 목표 108/112달러 | 손절 97달러\". "
+            "금지 예시: "
+            "\"진입트리거: 273 / 목표가: 282, 297 / 손절가: 260\". "
+            "\"매수 관찰 — x | 목표 835/759 | 손절 733\"."
         ),
         user_template=(
-            "각 티커에 대해 최종 시그널 한 줄을 작성해주세요. 방향은 매수 관찰, 매수 우선, 중립 관찰, 중립 경계, 매도 경계 중 하나여야 합니다.\n\n"
+            "각 티커에 대해 최종 시그널 한 줄을 작성해주세요. 방향은 매수 관찰, 매수 우선, 매수 유지, 중립 관찰, 중립 경계, 매도 경계 중 하나여야 합니다.\n\n"
             "{batch_payload_json}"
         ),
         output_schema=_SIGNAL_SCHEMA,

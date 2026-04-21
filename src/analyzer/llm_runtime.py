@@ -8,9 +8,15 @@ from src.analyzer.base import AnalysisContext, ModuleResult, StructuredLLMModule
 from src.analyzer.prompts import PromptContext, PromptTemplate, get_prompt_template
 from src.analyzer.validator import ResponseValidator
 from src.utils.cost_tracker import calculate_response_cost
-from src.utils.model_config import safe_input_token_budget
+from src.utils.model_config import (
+    resolve_module_batch_size,
+    resolve_module_model_profile,
+    safe_input_token_budget,
+)
 from src.utils.pipeline_logging import record_pipeline_event
 from src.utils.token_estimator import estimate_batch_tokens
+
+_LLM_TEMPERATURE = 0.2
 
 
 def run_structured_llm_module(
@@ -32,72 +38,126 @@ def run_structured_llm_module(
 
     tickers = [item.ticker for item in ctx.watchlist]
     all_results: dict[str, dict[str, Any]] = {}
-    diagnostics: dict[str, Any] = {"batch_count": 0, "fallback_batches": 0}
+    diagnostics: dict[str, Any] = {
+        "batch_count": 0,
+        "fallback_batches": 0,
+        "missing_retry_batches": 0,
+        "missing_retry_attempts": 0,
+        "missing_retry_recovered_tickers": 0,
+    }
     if capture_validation_details:
         diagnostics["validation_details"] = {}
     validator = ResponseValidator()
+    active_model_profile = resolve_module_model_profile(ctx.model_profile, module.name)
     prompt_template = prompt_template_override or get_prompt_template(
-        getattr(ctx.model_profile, "prompt_version", "research_v1"),
+        getattr(active_model_profile, "prompt_version", "research_v1"),
         module.name,
     )
     prompt_context = PromptContext(
         run_date=ctx.run_date,
         macro_context=ctx.macro_context,
         account_size_hint=ctx.portfolio_account_size,
-        model_profile=ctx.model_profile,
+        model_profile=active_model_profile,
         metadata={"module_name": module.name},
     )
+    retry_budget = _missing_retry_budget(ctx)
     for batch_tickers in _split_batches(module, ctx, tickers):
         diagnostics["batch_count"] += 1
-        batch_payload = module.build_batch_payload(ctx, batch_tickers)
         try:
-            response = client.responses.create(
-                model=ctx.model_profile.model,
-                max_output_tokens=ctx.model_profile.max_output_tokens,
-                input=[
-                    {
-                        "role": "system",
-                        "content": [{"type": "input_text", "text": prompt_template.render_system(prompt_context)}],
-                    },
-                    {
-                        "role": "user",
-                        "content": [{"type": "input_text", "text": prompt_template.render_user(batch_payload, prompt_context)}],
-                    },
-                ],
-                text={
-                    "format": {
-                        "type": "json_schema",
-                        "name": f"{prompt_template.version}_{prompt_template.name}",
-                        "schema": prompt_template.output_schema,
-                        "strict": True,
-                    }
-                },
+            parsed = _request_structured_batch(
+                client,
+                module,
+                ctx,
+                active_model_profile,
+                prompt_template,
+                prompt_context,
+                batch_tickers,
             )
-            usage_cost = calculate_response_cost(response, ctx.model_profile)
-            record_pipeline_event(
-                "analyzer",
-                "info",
-                "openai_usage_recorded",
-                model=ctx.model_profile.model,
-                model_profile=ctx.model_profile.name,
-                module=module.name,
-                input_tokens=usage_cost.input_tokens,
-                output_tokens=usage_cost.output_tokens,
-                cached_input_tokens=usage_cost.cached_input_tokens,
-                total_tokens=usage_cost.total_tokens,
-                estimated_cost_usd=usage_cost.estimated_cost_usd,
-            )
-            response_text = getattr(response, "output_text", "").strip()
-            prompt_template.validate_response(json.loads(response_text))
-            parsed = module.parse_batch_response(response_text, batch_tickers, ctx)
-            record_pipeline_event(
-                "analyzer",
-                "info",
-                "openai_response_validated",
-                module=module.name,
-                ticker_count=len(batch_tickers),
-            )
-            for ticker in batch_tickers:
+            missing_tickers = [ticker for ticker in batch_tickers if ticker not in parsed]
+            if missing_tickers and retry_budget > 0:
+                diagnostics["missing_retry_batches"] += 1
+                record_pipeline_event(
+                    "analyzer",
+                    "info",
+                    "openai_missing_ticker_retry_started",
+                    module=module.name,
+                    missing_tickers=",".join(missing_tickers),
+                    missing_count=len(missing_tickers),
+                    retry_budget=retry_budget,
+                )
+                remaining_tickers = list(missing_tickers)
+                recovered_tickers: list[str] = []
+                for attempt in range(1, retry_budget + 1):
+                    if not remaining_tickers:
+                        break
+                    diagnostics["missing_retry_attempts"] += 1
+                    try:
+                        retry_parsed = _request_structured_batch(
+                            client,
+                            module,
+                            ctx,
+                            active_model_profile,
+                            prompt_template,
+                            prompt_context,
+                            remaining_tickers,
+                        )
+                    except Exception as exc:
+                        record_pipeline_event(
+                            "analyzer",
+                            "warning",
+                            "openai_missing_ticker_retry_failed",
+                            module=module.name,
+                            missing_tickers=",".join(remaining_tickers),
+                            missing_count=len(remaining_tickers),
+                            retry_attempt=attempt,
+                            error_type=type(exc).__name__,
+                            error_message=str(exc),
+                        )
+                        break
+                    recovered_now = [ticker for ticker in remaining_tickers if ticker in retry_parsed]
+                    if recovered_now:
+                        for ticker in recovered_now:
+                            parsed[ticker] = retry_parsed[ticker]
+                        recovered_tickers.extend(recovered_now)
+                        diagnostics["missing_retry_recovered_tickers"] += len(recovered_now)
+                    remaining_tickers = [ticker for ticker in remaining_tickers if ticker not in retry_parsed]
+                    record_pipeline_event(
+                        "analyzer",
+                        "info",
+                        "openai_missing_ticker_retry_completed",
+                        module=module.name,
+                        retry_attempt=attempt,
+                        recovered_tickers=",".join(recovered_now),
+                        recovered_count=len(recovered_now),
+                        remaining_tickers=",".join(remaining_tickers),
+                        remaining_count=len(remaining_tickers),
+                    )
+                missing_tickers = remaining_tickers
+            if missing_tickers:
+                record_pipeline_event(
+                    "analyzer",
+                    "warning",
+                    "openai_response_missing_tickers",
+                    module=module.name,
+                    missing_tickers=",".join(missing_tickers),
+                    missing_count=len(missing_tickers),
+                    batch_ticker_count=len(batch_tickers),
+                )
+                for ticker in missing_tickers:
+                    all_results[ticker] = module.fallback_for_ticker(ticker, ctx)
+                    if capture_validation_details:
+                        diagnostics["validation_details"][ticker] = {
+                            "warning_count": 1,
+                            "counts": {"schema_violation": 1},
+                            "warnings": [
+                                {
+                                    "category": "schema_violation",
+                                    "field": "*",
+                                    "message": "missing_from_batch_response",
+                                }
+                            ],
+                        }
+            for ticker in [t for t in batch_tickers if t in parsed]:
                 validated = validator.validate(
                     parsed.get(ticker, {}),
                     _result_schema_for_ticker(module, ticker, ctx),
@@ -167,18 +227,82 @@ def run_structured_llm_module(
     return ModuleResult(results_by_ticker=all_results, diagnostics=diagnostics)
 
 
+def _request_structured_batch(
+    client: Any,
+    module: StructuredLLMModule,
+    ctx: AnalysisContext,
+    model_profile: Any,
+    prompt_template: PromptTemplate,
+    prompt_context: PromptContext,
+    batch_tickers: list[str],
+) -> dict[str, dict[str, Any]]:
+    batch_payload = module.build_batch_payload(ctx, batch_tickers)
+    response = client.responses.create(
+        model=model_profile.model,
+        temperature=_LLM_TEMPERATURE,
+        max_output_tokens=model_profile.max_output_tokens,
+        input=[
+            {
+                "role": "system",
+                "content": [{"type": "input_text", "text": prompt_template.render_system(prompt_context)}],
+            },
+            {
+                "role": "user",
+                "content": [{"type": "input_text", "text": prompt_template.render_user(batch_payload, prompt_context)}],
+            },
+        ],
+        text={
+            "format": {
+                "type": "json_schema",
+                "name": f"{prompt_template.version}_{prompt_template.name}",
+                "schema": prompt_template.output_schema,
+                "strict": True,
+            }
+        },
+        prompt_cache_key=f"{prompt_template.version}:{prompt_template.name}",
+    )
+    usage_cost = calculate_response_cost(response, model_profile)
+    record_pipeline_event(
+        "analyzer",
+        "info",
+        "openai_usage_recorded",
+        model=model_profile.model,
+        model_profile=model_profile.name,
+        module=module.name,
+        input_tokens=usage_cost.input_tokens,
+        output_tokens=usage_cost.output_tokens,
+        cached_input_tokens=usage_cost.cached_input_tokens,
+        total_tokens=usage_cost.total_tokens,
+        estimated_cost_usd=usage_cost.estimated_cost_usd,
+    )
+    response_text = getattr(response, "output_text", "").strip()
+    prompt_template.validate_response(json.loads(response_text))
+    parsed = module.parse_batch_response(response_text, batch_tickers, ctx)
+    record_pipeline_event(
+        "analyzer",
+        "info",
+        "openai_response_validated",
+        module=module.name,
+        ticker_count=len(batch_tickers),
+    )
+    return parsed
+
+
 def _split_batches(
     module: StructuredLLMModule,
     ctx: AnalysisContext,
     tickers: list[str],
 ) -> list[list[str]]:
-    token_budget = safe_input_token_budget(ctx.model_profile)
+    token_budget = safe_input_token_budget(resolve_module_model_profile(ctx.model_profile, module.name))
+    max_tickers = resolve_module_batch_size(module.name)
     batches: list[list[str]] = []
     current: list[str] = []
     for ticker in tickers:
         candidate = current + [ticker]
         payload = module.build_batch_payload(ctx, candidate)
-        should_split = current and estimate_batch_tokens(payload) > token_budget
+        over_tokens = estimate_batch_tokens(payload) > token_budget
+        over_count = max_tickers is not None and len(candidate) > max_tickers
+        should_split = bool(current) and (over_tokens or over_count)
         if should_split:
             batches.append(current)
             current = [ticker]
@@ -204,6 +328,14 @@ def _build_fallback_result(
     )
 
 
+def _missing_retry_budget(ctx: AnalysisContext) -> int:
+    raw_value = ctx.metadata.get("llm_missing_retry_budget", 1)
+    try:
+        return max(0, int(raw_value))
+    except (TypeError, ValueError):
+        return 1
+
+
 def parse_ticker_batch(content: str, expected_tickers: list[str]) -> list[dict[str, Any]]:
     parsed = json.loads(content)
     tickers = parsed.get("tickers")
@@ -222,9 +354,6 @@ def parse_ticker_batch(content: str, expected_tickers: list[str]) -> list[dict[s
             raise ValueError(f"Duplicate ticker in response: {ticker}")
         seen.add(ticker)
         validated.append(entry)
-    missing = expected - seen
-    if missing:
-        raise ValueError(f"Missing tickers in response: {', '.join(sorted(missing))}")
     return validated
 
 

@@ -11,6 +11,8 @@ from src.utils.env import load_dotenv
 from src.utils.model_config import load_model_profile
 from src.utils.pipeline_logging import record_pipeline_event
 
+_LLM_TEMPERATURE = 0.2
+
 
 class WeeklyInsightModule(AnalysisModule):
     name = "weekly_insight_module"
@@ -43,6 +45,7 @@ class WeeklyInsightModule(AnalysisModule):
             client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
             response = client.responses.create(
                 model=model_profile.model,
+                temperature=_LLM_TEMPERATURE,
                 max_output_tokens=min(model_profile.max_output_tokens, 1800),
                 input=[
                     {
@@ -54,10 +57,18 @@ class WeeklyInsightModule(AnalysisModule):
                         "content": [{"type": "input_text", "text": prompt_template.render_user(weekly_inputs, prompt_ctx)}],
                     },
                 ],
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": f"{prompt_template.version}_{prompt_template.name}",
+                        "schema": prompt_template.output_schema,
+                        "strict": True,
+                    }
+                },
+                prompt_cache_key=f"{prompt_template.version}:{prompt_template.name}",
             )
             content = getattr(response, "output_text", "").strip()
             payload = json.loads(content)
-            prompt_template.validate_response(payload)
             report = _normalize_weekly_report(payload, fallback_report)
             return ModuleResult(
                 portfolio_result={"weekly_report": report},

@@ -77,8 +77,10 @@ class ResponseValidator:
                 sanitized[field_name] = fallback[field_name]
 
         if "signal_or_takeaway" in sanitized:
+            signal_text = str(sanitized.get("signal_or_takeaway", ""))
             news_tone = sanitized.get("news_tone") or intermediate.get("news_tone") or fallback.get("news_tone") or {}
-            if _has_tone_signal_conflict(news_tone, sanitized.get("signal_or_takeaway", "")):
+            signal_replaced = False
+            if _has_tone_signal_conflict(news_tone, signal_text):
                 warnings.append(
                     ValidationWarning(
                         "consistency_warning",
@@ -87,6 +89,14 @@ class ResponseValidator:
                     )
                 )
                 if "signal_or_takeaway" in fallback:
+                    sanitized["signal_or_takeaway"] = fallback["signal_or_takeaway"]
+                    signal_replaced = True
+            if not signal_replaced:
+                current_price = _extract_current_price(raw_payload, intermediate)
+                price_issues = _find_signal_price_issues(signal_text, current_price=current_price)
+                for issue in price_issues:
+                    warnings.append(ValidationWarning("fact_warning", "signal_or_takeaway", issue))
+                if price_issues and "signal_or_takeaway" in fallback:
                     sanitized["signal_or_takeaway"] = fallback["signal_or_takeaway"]
 
         return ValidationResult(sanitized_response=sanitized, warnings=warnings)
@@ -235,6 +245,83 @@ def _normalize_text(value: str) -> str:
     return " ".join(value.strip().lower().split())
 
 
+_TARGET_SEGMENT_RE = re.compile(r"목표[^|]*?([\d.,]+)\s*/\s*([\d.,]+)")
+_STOP_SEGMENT_RE = re.compile(r"손절[^|]*?([\d.,]+)")
+_LONG_TOKENS = ("매수 관찰", "매수 유지", "매수 우선")
+_SHORT_TOKENS = ("매도 경계", "매도 관찰", "매도 유지", "매도")
+
+
+def _find_signal_price_issues(signal_text: str, *, current_price: float | None = None) -> list[str]:
+    """Detect internal price-logic errors in a signal string.
+
+    The module prompt enforces the shape
+    ``[방향] — [catalyst] | 진입 트리거 … | 목표 A/B | 손절 C``. Even when the
+    shape is honored, LLMs occasionally emit non-monotone target pairs or a
+    stop loss on the wrong side of the first target. Those are factually
+    inconsistent regardless of current price, so flag them as fact warnings
+    so the orchestrator can fall back to the heuristic takeaway.
+    """
+    text = str(signal_text or "")
+    if not text.strip():
+        return []
+    direction = _signal_direction(text)
+    if direction is None:
+        return []
+    issues: list[str] = []
+    targets = _extract_targets(text)
+    stop = _extract_stop(text)
+    if "목표" in text and targets is None:
+        issues.append("targets must use slash-delimited pair")
+    if targets:
+        t1, t2 = targets
+        if direction == "long" and t2 <= t1:
+            issues.append(f"targets not ascending for long: {t1}/{t2}")
+        elif direction == "short" and t2 >= t1:
+            issues.append(f"targets not descending for short: {t1}/{t2}")
+    if stop is not None and targets:
+        t1 = targets[0]
+        if direction == "long" and stop >= t1:
+            issues.append(f"stop {stop} not below first target {t1} for long")
+        elif direction == "short" and stop <= t1:
+            issues.append(f"stop {stop} not above first target {t1} for short")
+    if current_price is not None and current_price > 0:
+        if stop is not None and abs(stop - current_price) / current_price > 0.15:
+            issues.append(f"stop {stop} outside 15% band from current price {current_price}")
+        if targets:
+            for target in targets:
+                if abs(target - current_price) / current_price > 0.30:
+                    issues.append(f"target {target} outside 30% band from current price {current_price}")
+    return issues
+
+
+def _signal_direction(text: str) -> str | None:
+    for token in _SHORT_TOKENS:
+        if token in text:
+            return "short"
+    for token in _LONG_TOKENS:
+        if token in text:
+            return "long"
+    return None
+
+
+def _extract_targets(text: str) -> tuple[float, float] | None:
+    match = _TARGET_SEGMENT_RE.search(text)
+    if not match:
+        return None
+    first = _to_float(match.group(1))
+    second = _to_float(match.group(2))
+    if first is None or second is None:
+        return None
+    return first, second
+
+
+def _extract_stop(text: str) -> float | None:
+    match = _STOP_SEGMENT_RE.search(text)
+    if not match:
+        return None
+    return _to_float(match.group(1))
+
+
 def _to_float(raw: str) -> float | None:
     try:
         normalized = str(raw).replace(",", "").strip()
@@ -246,3 +333,24 @@ def _to_float(raw: str) -> float | None:
         return number
     except (AttributeError, TypeError, ValueError):
         return None
+
+
+def _extract_current_price(raw_payload: dict[str, Any], intermediate: dict[str, Any]) -> float | None:
+    direct_price = raw_payload.get("price")
+    if isinstance(direct_price, (int, float)):
+        return float(direct_price)
+    parsed_direct = _to_float(str(direct_price or ""))
+    if parsed_direct is not None:
+        return parsed_direct
+    price_action = intermediate.get("price_action")
+    if isinstance(price_action, dict):
+        for key in ("current_price", "price"):
+            parsed_price = _to_float(str(price_action.get(key, "")))
+            if parsed_price is not None:
+                return parsed_price
+    data_snapshot = intermediate.get("data_snapshot")
+    if isinstance(data_snapshot, dict):
+        parsed_snapshot = _to_float(str(data_snapshot.get("Price", "")))
+        if parsed_snapshot is not None:
+            return parsed_snapshot
+    return None

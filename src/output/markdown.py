@@ -172,7 +172,7 @@ def render_daily_markdown(
     decisions: list[TickerDecision] | None = None,
 ) -> str:
     watchlist_rows = "\n".join(
-        f"| {analysis.ticker} | {analysis.data_snapshot['Price']} | {analysis.data_snapshot['Daily Change']} | {analysis.signal_or_takeaway} |"
+        f"| {analysis.ticker} | {analysis.data_snapshot['Price']} | {analysis.data_snapshot['Daily Change']} | {_escape_table_cell(analysis.signal_or_takeaway)} |"
         for analysis in analyses
     )
     top_news_links = _render_daily_news_links(analyses)
@@ -223,7 +223,7 @@ def render_daily_markdown(
     if decisions:
         decision_map = {d.ticker: d for d in decisions}
         decision_rows = "\n".join(
-            f"| {d.ticker} | {d.action} | {d.conviction} | {d.reason} | {d.valid_until} |"
+            f"| {d.ticker} | {d.action} | {d.conviction} | {_escape_table_cell(d.reason)} | {d.valid_until} |"
             for d in decisions
         )
         lines.extend([
@@ -446,6 +446,11 @@ def _merge_period_changes(
 def _enrich_analysis(analysis: TickerAnalysis) -> TickerAnalysis:
     news_tone = analysis.news_tone or build_news_tone(analysis)
     return replace(analysis, news_tone=news_tone)
+
+
+def _escape_table_cell(value: Any) -> str:
+    text = str(value) if value is not None else ""
+    return text.replace("\\", "\\\\").replace("|", "\\|").replace("\n", " ")
 
 
 def _render_weekly_market_moves(summary: WeeklySummaryData) -> str:

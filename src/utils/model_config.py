@@ -9,6 +9,9 @@ from src.utils.config import load_yaml_mapping
 
 _DEFAULT_CONFIG: dict[str, Any] = {
     'default_profile': 'economy',
+    'module_profile_overrides': {
+        'signal_takeaway_module': 'standard',
+    },
     'ensemble': {
         'enabled': True,
         'trigger_range': [25, 75],
@@ -75,6 +78,44 @@ class EnsembleConfig:
     third_model: str
     third_prompt: str
     max_daily_ensemble: int
+
+
+def resolve_module_batch_size(
+    module_name: str,
+    path: str = 'config/models.yaml',
+) -> int | None:
+    config = _load_model_config(path)
+    overrides = config.get('module_batch_size_overrides', {}) or {}
+    raw = overrides.get(module_name)
+    if raw is None:
+        return None
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        return None
+    return value if value > 0 else None
+
+
+def resolve_module_model_profile(
+    base_profile: ModelProfile,
+    module_name: str,
+    path: str = 'config/models.yaml',
+) -> ModelProfile:
+    config = _load_model_config(path)
+    overrides = config.get('module_profile_overrides', {}) or {}
+    override_profile_name = str(overrides.get(module_name, '')).strip()
+    if not override_profile_name:
+        return base_profile
+    profiles = config.get('profiles', {}) or {}
+    if override_profile_name not in profiles:
+        raise ValueError(
+            f'module_profile_overrides.{module_name} must reference a configured profile: {override_profile_name}'
+        )
+    override_profile = load_model_profile(path, profile_name=override_profile_name)
+    return replace(
+        override_profile,
+        prompt_version=base_profile.prompt_version,
+    )
 
 
 def load_model_profile(path: str = 'config/models.yaml', *, profile_name: str | None = None) -> ModelProfile:

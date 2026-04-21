@@ -2,6 +2,51 @@
   "schema_version": 1,
   "runs": [
     {
+      "run_date": "2026-04-21",
+      "success": true,
+      "total_cost_usd": 0.11293005,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.0417428,
+          "tokens": 29602,
+          "calls": 3,
+          "models": {
+            "gpt-5.4-mini": 3
+          }
+        },
+        "economy": {
+          "cost_usd": 0.024551,
+          "tokens": 61405,
+          "calls": 3,
+          "models": {
+            "gpt-5.4-mini": 3
+          }
+        },
+        "standard": {
+          "cost_usd": 0.04663625,
+          "tokens": 27572,
+          "calls": 6,
+          "models": {
+            "gpt-5.4-mini": 6
+          }
+        }
+      },
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 11,
+        "selected_count": 5,
+        "skipped_due_to_cap_count": 6,
+        "conflicted_count": 0
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.0417428,
+        "selected_ticker_count": 5,
+        "cost_per_selected_ticker_usd": 0.008349,
+        "share_of_total_cost": 0.3696,
+        "worth_it_hint": "efficient"
+      }
+    },
+    {
       "run_date": "2026-04-20",
       "success": true,
       "total_cost_usd": 0.0842275,
@@ -269,24 +314,32 @@
     }
   ],
   "latest": {
-    "run_date": "2026-04-20",
+    "run_date": "2026-04-21",
     "success": true,
-    "total_cost_usd": 0.0842275,
+    "total_cost_usd": 0.11293005,
     "profiles": {
       "deep": {
-        "cost_usd": 0.0529595,
-        "tokens": 38107,
-        "calls": 4,
+        "cost_usd": 0.0417428,
+        "tokens": 29602,
+        "calls": 3,
         "models": {
-          "gpt-5.4-mini": 4
+          "gpt-5.4-mini": 3
         }
       },
       "economy": {
-        "cost_usd": 0.031268,
-        "tokens": 78445,
-        "calls": 4,
+        "cost_usd": 0.024551,
+        "tokens": 61405,
+        "calls": 3,
         "models": {
-          "gpt-5.4-mini": 4
+          "gpt-5.4-mini": 3
+        }
+      },
+      "standard": {
+        "cost_usd": 0.04663625,
+        "tokens": 27572,
+        "calls": 6,
+        "models": {
+          "gpt-5.4-mini": 6
         }
       }
     },
@@ -298,10 +351,10 @@
       "conflicted_count": 0
     },
     "deep_pass_value": {
-      "deep_cost_usd": 0.0529595,
+      "deep_cost_usd": 0.0417428,
       "selected_ticker_count": 5,
-      "cost_per_selected_ticker_usd": 0.010592,
-      "share_of_total_cost": 0.6288,
+      "cost_per_selected_ticker_usd": 0.008349,
+      "share_of_total_cost": 0.3696,
       "worth_it_hint": "efficient"
     }
   }

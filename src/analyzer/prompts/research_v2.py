@@ -57,7 +57,18 @@ PROMPT_SET = {
         version="research_v2",
         system_template=(
             "Return strict JSON with key 'tickers'. All human-readable output must be in Korean. "
-            "The signal line must be concise, structured, and immediately actionable for a swing trader."
+            "signal_or_takeaway MUST be exactly one sentence matching the shape "
+            "\"[방향] — [핵심 catalyst] | 진입 트리거 [조건] | 목표 [가격1]/[가격2] | 손절 [가격]\". "
+            "방향은 반드시 '매수 관찰|매수 유지|매수 우선|중립 관찰|중립 경계|매도 경계' 중 하나여야 합니다. "
+            "매수 시 목표가는 오름차순(가격1 < 가격2), 매도 시 내림차순이어야 하며 손절은 진입 반대편에 위치해야 합니다. "
+            "'진입트리거:', '목표가:', '손절가:' 같은 콜론 포맷이나 '/' 구분자는 금지하고 반드시 ' | ' 구분자와 '—'(em-dash)를 사용합니다. "
+            "좋은 예시: "
+            "\"매수 관찰 — 실적 D-7 강세 모멘텀 | 진입 트리거 273 상향 돌파 | 목표 282/297달러 | 손절 260달러\". "
+            "\"매도 경계 — 가이던스 하향과 약한 수급 | 진입 트리거 88 이탈 확인 | 목표 82/76달러 | 손절 92달러\". "
+            "\"중립 관찰 — 이벤트 대기와 박스권 지속 | 진입 트리거 145 돌파 확인 | 목표 152/158달러 | 손절 139달러\". "
+            "금지 예시: "
+            "\"진입트리거: 273 / 목표가: 282, 297 / 손절가: 260\". "
+            "\"매수 관찰 — x | 목표 835/759 | 손절 733\"."
         ),
         user_template=(
             "각 티커에 대해 최종 시그널 한 줄을 작성해주세요. 진입 트리거, 목표가, 손절가가 빠지면 안 됩니다.\n\n"

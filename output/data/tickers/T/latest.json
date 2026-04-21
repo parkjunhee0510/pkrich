@@ -5,13 +5,13 @@
   "payload": {
     "ticker": "T",
     "name": "AT&T Inc.",
-    "date": "2026-04-17",
-    "summary": "주가는 26.51달러로 50일선 27.86달러와 200일선 26.81달러 아래에 있어 약세 흐름이 우세합니다. 다음 촉매는 2026-04-22 실적(D-2)이며, 실적 발표 전까지는 27달러 회복 여부와 25.83달러 눌림 지지 유지가 핵심입니다.",
+    "date": "2026-04-20",
+    "summary": "주가는 26.18달러로 30일 기준 -6.56% 약세이며 50일선(27.86달러)과 200일선(26.81달러) 아래에 있어 단기 수급이 아직 무겁습니다. 다음 촉매는 2026-04-22 실적 발표(D-1)로, 발표 직전 25.5달러 부근 지지와 27.86달러 회복 여부가 트레이딩 포인트입니다.",
     "key_news": [
-      "실적 D-2, 단기 촉매는 4/22 실적",
-      "야후 금융 보도: 네트워크 점검 이슈 부각",
-      "경쟁사 버라이즌 호실적으로 업계 비교 부담",
-      "옵션에서 풋 우위와 약세 포지셔닝"
+      "실적 발표 D-1, 단기 촉매 최우선",
+      "무선 경쟁사 실적은 업계 수요 점검 포인트",
+      "네트워크 리뷰 관련 우려 재부각",
+      "배당 지급일 임박으로 방어주 수급 변수"
     ],
     "news_references": [
       {
@@ -46,19 +46,19 @@
       }
     ],
     "financial_highlights": [
-      "PER 8.7x, Forward EPS 2.55, TTM EPS 3.04",
-      "EPS 성장률 -5.60% YoY",
-      "SMA50 27.86달러 대비 -4.84%, SMA200 26.81달러 대비 -1.11%",
-      "RSI 43.1, MACD -0.43/-0.22, ATR 0.68달러(2.56%)",
-      "분석가 23명 Buy, 목표가 30.43달러"
+      "PER 8.6x, 목표가 대비 업사이드 +16.2%",
+      "Forward EPS 2.55, TTM EPS 3.04, EPS 성장률 -5.6% YoY",
+      "주가가 50일선 대비 -6.02%, 200일선 대비 -2.34%",
+      "RS vs Sector ETF -12.71%, RVOL 0.68x, RSI 40.0",
+      "52주 범위 22.95~29.79달러, 현재 52주 위치 47%"
     ],
     "risks_or_watchpoints": [
-      "현재가 26.51달러가 SMA200 26.81달러와 SMA50 27.86달러 모두 아래라서 반등이 실패하면 하락 추세가 강화될 수 있습니다.",
-      "RSI(14) 43.1과 MACD 음수(-0.43/-0.22) 조합은 26.51달러 부근에서 재차 약세 전환될 수 있음을 시사합니다.",
-      "2026-04-22 실적 발표 전까지 25.83달러 지지선이 무너지면 25.00달러대 옵션 최대손익점(MaxPain 25달러)로 끌릴 위험이 있습니다.",
-      "27.86달러를 종가 기준으로 회복하지 못하면 약세 시나리오를 유지하고, 회복 후에도 거래량이 0.75x 미만이면 추세 신뢰도를 낮춰야 합니다."
+      "2026-04-22 실적 발표 전까지 27.86달러(SMA50) 회복 실패가 지속되면 약세 추세가 유지될 가능성이 높습니다.",
+      "26.18달러 종가가 25.51달러(눌림 시 진입가) 아래로 내려가면 25.00달러 심리 지지 테스트 가능성을 봅니다.",
+      "MACD가 현재 -0.44/-0.26보다 더 악화되거나 RSI(14) 40.0이 35 미만으로 하락하면 하방 모멘텀이 강화됩니다.",
+      "RVOL 0.68x가 0.8x 미만으로 더 낮아지면 반등 시도 신뢰도가 떨어집니다."
     ],
-    "signal_or_takeaway": "매도 우위: 진입트리거 26.51달러 하향 이탈 또는 25.83달러 눌림 확인, 목표가 25.00달러/27.53달러, 손절가 27.86달러 회복 시 무효.",
+    "signal_or_takeaway": "중립 경계 — 실적 D-1 앞두고 27.86달러 회복 실패 시 약세가 이어질 수 있음 | 진입 트리거 27.86달러 상향 회복 및 실적 확인 | 목표 27.19달러/30.43달러 | 손절 25.51달러",
     "data_snapshot": {
       "Price": "26.18 USD",
       "Daily Change": "-1.24%",
@@ -69,7 +69,7 @@
       "52W Low": "22.95",
       "50D SMA": "27.86",
       "200D SMA": "26.81",
-      "Volume": "30264042",
+      "Volume": "30.26M",
       "3M Avg Volume": "44.57M",
       "Price/Book": "1.67",
       "Dividend Yield": "4.19%",
@@ -78,7 +78,7 @@
       "High": "26.67",
       "Low": "26.17",
       "Close": "26.18",
-      "RS vs Sector ETF": "-11.84%"
+      "RS vs Sector ETF": "-12.71%"
     },
     "fundamentals": {
       "market_cap": "183.28B",
@@ -88,7 +88,7 @@
       "earnings_growth": "-5.60% YoY",
       "price_to_book": "1.67",
       "dividend_yield": "4.19%",
-      "volume": "30264042",
+      "volume": "30.26M",
       "avg_volume_3m": "44.57M",
       "52w_high": "29.79",
       "52w_low": "22.95",
@@ -109,7 +109,7 @@
       "latest_estimated_eps": "0.47 USD/share",
       "latest_surprise_pct": "+0.12%",
       "latest_beat_miss": "beat",
-      "next_earnings_event": "2026-04-22 실적 발표 (D-2 · BMO)"
+      "next_earnings_event": "2026-04-22 실적 발표 (D-1 · BMO)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 0,
@@ -185,46 +185,53 @@
         "type": "earnings",
         "label": "실적 발표",
         "date": "2026-04-22",
-        "days_until": "2",
+        "days_until": "1",
         "timing": "BMO"
       },
       {
         "type": "dividend",
         "label": "배당 지급일",
         "date": "2026-05-01",
-        "days_until": "11",
+        "days_until": "10",
         "timing": ""
       }
     ],
     "news_tone": {
-      "label": "약세",
-      "confidence": 2,
-      "reasoning": "실적 직전인데 주가가 SMA50 아래, 섹터 대비 약세. 네트워크 이슈와 풋 중심 옵션 수요가 방어적 톤을 강화."
+      "label": "중립-약세",
+      "confidence": 4,
+      "reasoning": "실적 직전이지만 네트워크 관련 우려와 약한 상대강도가 부담이며, 옵션도 방어적입니다."
     },
     "trade_frame": {
-      "entry_price": "현재가 26.51 또는 눌림 시 25.83 USD",
+      "entry_price": "현재가 26.18 또는 눌림 시 25.51 USD",
       "stop_loss": "SMA50 27.86 USD",
-      "target_1": "27.53 USD (1.5×ATR)",
+      "target_1": "27.19 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 30.43 USD",
       "risk_reward_ratio": "N/A",
-      "position_size_note": "$57,940 계좌 1% 리스크 기준 약 852주 (ATR $0.68 기반)",
+      "position_size_note": "$58,427 계좌 1% 리스크 기준 약 872주 (ATR $0.67 기반)",
       "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-      "base_scenario": "26.51 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+      "base_scenario": "26.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
       "invalidation_price": "50일 이동평균선인 27.86 USD 아래로 밀리면 약세 시나리오 확인",
       "watch_period": "2026-04-22 실적 발표 전까지"
     },
     "options_summary": {
       "expiry": "2026-04-24",
-      "atm_call_iv": "54.3%",
-      "atm_put_iv": "45.6%",
+      "atm_call_iv": "60.7%",
+      "atm_put_iv": "50.6%",
       "put_call_ratio": "0.50x",
-      "iv_percentile_30d": "13th",
+      "iv_percentile_30d": "18th",
       "tone": "bearish",
-      "unusual_activity": "PUT $23, vol 871, OI 대비 36% ; PUT $40, vol 15, OI 대비 62% ; PUT $27, vol 39, OI 대비 43%",
-      "oi_change": "N/A"
+      "unusual_activity": "PUT $27, vol 210, OI 대비 84% ; PUT $40, vol 15, OI 대비 38% ; CALL $27, vol 74, OI 대비 50%",
+      "oi_change": "콜 OI +0.1% / 풋 OI +2.8%"
     },
     "signal_history": [
+      {
+        "date": "2026-04-20",
+        "direction": "bear",
+        "catalyst": "실적",
+        "return_5d": "N/A",
+        "note": "26.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
       {
         "date": "2026-04-17",
         "direction": "bear",
@@ -250,21 +257,14 @@
         "date": "2026-04-13",
         "direction": "bull",
         "catalyst": "실적",
-        "return_5d": "N/A",
+        "return_5d": "+2.23%",
         "note": "실적 전까지 25.00 USD~26.25 USD 범위에서 과매도 반등 시도가 이어질 수 있습니다."
-      },
-      {
-        "date": "2026-04-12",
-        "direction": "bull",
-        "catalyst": "실적",
-        "return_5d": "+0.19%",
-        "note": "실적 전까지 25.82달러에서 27.74달러 사이, 즉 현재가 ±1 ATR 구간에서 횡보 가능성이 큽니다. 25달러 MaxPain 자석이 하단을 지지할 수 있습니다."
       }
     ],
     "sector_comparison": {
       "summary": "Communication Services 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "8.72",
+        "company": "8.61",
         "peer_average": "N/A",
         "difference": null
       },
@@ -274,28 +274,28 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "-5.38%",
+        "company": "-6.56%",
         "peer_average": "N/A",
         "difference": null
       }
     },
     "peer_rank": {},
     "valuation_score": {
-      "score": "5/10",
+      "score": "6/10",
       "factors": [
-        "PER 8.7x",
-        "목표가 대비 업사이드 +14.8%"
+        "PER 8.6x",
+        "목표가 대비 업사이드 +16.2%"
       ],
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
     "analysis_consensus": {
       "status": "agreed",
       "economy_action": "buy",
-      "economy_conviction": 66,
-      "economy_reason": "실적 D-2 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (3/3)",
+      "economy_conviction": 67,
+      "economy_reason": "실적 D-1 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
       "deep_action": "buy",
-      "deep_conviction": 67,
-      "deep_reason": "실적 D-2 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (3/3)",
+      "deep_conviction": 68,
+      "deep_reason": "실적 D-1 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
       "tie_break_action": null,
       "tie_break_conviction": null,
       "tie_break_reason": "",
@@ -341,8 +341,8 @@
     ],
     "decision": {
       "action": "buy",
-      "conviction": 67,
-      "reason": "실적 D-2 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (3/3)",
+      "conviction": 68,
+      "reason": "실적 D-1 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
       "valid_until": "2026-04-22",
       "factors": {
         "catalyst_recency": 20.0,
@@ -354,11 +354,10 @@
         "portfolio_risk": 0.0,
         "regime_adjustment": 15.0,
         "signal_track_record": 15.0,
-        "valuation": 10.0
+        "valuation": 12.0
       },
       "ensemble_agreement": "agree",
       "final_consensus": "agree"
     }
-  },
-  "intraday_refreshed_at": "2026-04-20T20:38:53"
+  }
 }

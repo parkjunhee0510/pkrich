@@ -21,18 +21,22 @@
     "by_direction": {
       "neutral": {
         "status": "insufficient_data",
-        "n": 14
+        "n": 15
       },
       "bull": {
         "status": "insufficient_data",
-        "n": 10
+        "n": 19
+      },
+      "bear": {
+        "status": "insufficient_data",
+        "n": 1
       }
     }
   },
   "turnover": {
     "status": "ok",
-    "sample_size": 7,
-    "avg_turnover": 0.046,
+    "sample_size": 8,
+    "avg_turnover": 0.039,
     "points": [
       {
         "date": "2026-04-11",
@@ -61,6 +65,11 @@
       },
       {
         "date": "2026-04-17",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-20",
         "tickers": 11,
         "turnover": 0.0
       }

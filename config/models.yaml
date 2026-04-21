@@ -1,4 +1,8 @@
 default_profile: deep
+module_profile_overrides:
+  signal_takeaway_module: standard
+module_batch_size_overrides:
+  signal_takeaway_module: 3
 ensemble:
   enabled: true
   trigger_range: [25, 75]

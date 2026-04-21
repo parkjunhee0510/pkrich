@@ -464,6 +464,20 @@ body::before, body::after { display: none !important; }
   box-shadow: var(--shadow-hard);
 }
 
+.ticker-price-group {
+  background: #fffdf5;
+  border: 1.5px solid var(--cozy-gold-soft);
+  border-radius: 12px;
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.ticker-detail-primary-section {
+  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%);
+  border: 1.5px solid var(--cozy-gold-soft);
+  border-radius: 6px;
+  box-shadow: var(--shadow-hard-sm);
+}
+
 /* thesis diff cards: cozy tone bands */
 .thesis-diff-card {
   background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%) !important;
@@ -523,6 +537,22 @@ body::before, body::after { display: none !important; }
   padding: 10px 14px;
   box-shadow: var(--shadow-hard-sm);
   backdrop-filter: blur(4px);
+}
+
+.dashboard-stat-chip {
+  border-radius: 999px;
+  border: 1.5px solid var(--cozy-gold-soft);
+  background: #fffdf5;
+  color: var(--cozy-ink);
+  font-family: var(--font-sans);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.dashboard-filter-summary {
+  color: var(--cozy-muted);
+  font-family: var(--font-sans);
+  letter-spacing: 0.01em;
+  text-transform: none;
 }
 
 /* ── section kicker / muted labels ────────────────────────── */

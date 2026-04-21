@@ -160,6 +160,10 @@ export function Dashboard() {
     () => sortWatchlistTickers(filteredTickers, watchlistSort),
     [filteredTickers, watchlistSort],
   )
+  const activeTraderFilterCount = useMemo(
+    () => Object.values(traderFilters).filter(Boolean).length,
+    [traderFilters],
+  )
   const topSetupCards = useMemo(() => buildSetupCards(filteredTickers, 5), [filteredTickers])
   const earningsBoardSections = useMemo(() => buildEarningsBoardSections(day.tickers), [day.tickers])
   const catalystFeedSections = useMemo(() => buildCatalystFeedSections(day.tickers), [day.tickers])
@@ -274,7 +278,16 @@ export function Dashboard() {
       )}
 
       <div className="dashboard-header">
-        <h2>부자 되고 싶어요 · {day.date}</h2>
+        <div className="dashboard-header-main">
+          <h2>부자 되고 싶어요 · {day.date}</h2>
+          <div className="dashboard-header-meta">
+            <span className="dashboard-stat-chip">전체 {day.tickers.length}개</span>
+            <span className="dashboard-stat-chip">표시 {sortedWatchlistTickers.length}개</span>
+            {selectedSector !== 'ALL' ? <span className="dashboard-stat-chip">섹터: {SECTOR_LABELS[selectedSector] ?? selectedSector}</span> : null}
+            {activeTraderFilterCount > 0 ? <span className="dashboard-stat-chip">필터 {activeTraderFilterCount}개 적용</span> : null}
+            {searchQuery.trim() ? <span className="dashboard-stat-chip">검색: {searchQuery.trim()}</span> : null}
+          </div>
+        </div>
         {data.days.length > 1 && (
           <select className="date-select" value={idx} onChange={(e) => setSelectedIdx(Number(e.target.value))}>
             {data.days.map((entry, index) => (
@@ -375,6 +388,11 @@ export function Dashboard() {
             />
           </label>
         </div>
+        <p className="dashboard-filter-summary">
+          현재 보기: {sortedWatchlistTickers.length} / {day.tickers.length}
+          {selectedSector !== 'ALL' ? ` · ${SECTOR_LABELS[selectedSector] ?? selectedSector}` : ''}
+          {activeTraderFilterCount > 0 ? ` · 트레이더 필터 ${activeTraderFilterCount}개` : ''}
+        </p>
 
         <div className="dashboard-quick-bar-row">
           <div className="preset-chip-row compact-row">
@@ -434,7 +452,7 @@ export function Dashboard() {
               onClick={() => toggleTraderFilter(setTraderFilters, 'rsPositive')}
             />
             <FilterChip
-              label="Hard catalyst only"
+              label="강한 촉매만"
               active={traderFilters.hardCatalystOnly}
               onClick={() => toggleTraderFilter(setTraderFilters, 'hardCatalystOnly')}
             />
@@ -453,17 +471,17 @@ export function Dashboard() {
           <div className="density-chip-row compact-row">
             <span className="watchlist-sort-label">밀도</span>
             <button type="button" className={`preset-chip ${density === 'compact' ? 'active' : ''}`} onClick={() => setDensity('compact')}>
-              Compact
+              간결
             </button>
             <button
               type="button"
               className={`preset-chip ${density === 'comfortable' ? 'active' : ''}`}
               onClick={() => setDensity('comfortable')}
             >
-              Comfortable
+              기본
             </button>
             <button type="button" className={`preset-chip ${density === 'focus' ? 'active' : ''}`} onClick={() => setDensity('focus')}>
-              Focus
+              집중
             </button>
           </div>
         </div>

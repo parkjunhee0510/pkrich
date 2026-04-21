@@ -5,14 +5,13 @@
   "payload": {
     "ticker": "XOM",
     "name": "Exxon Mobil Corporation",
-    "date": "2026-04-17",
-    "summary": "주가는 30일 -8.29%로 약세이고 50일선 아래에 있지만, 200일선 대비 +16.26%로 중기 추세는 아직 유지 중입니다. 다음 촉매는 2026-05-01 실적 발표로, 유가 흐름과 정제·생산 마진이 실적과 배당 기대를 좌우할 전망입니다.",
+    "date": "2026-04-20",
+    "summary": "주가는 147.68달러로 30일 기준 -7.51% 조정됐지만 200일선(125.96달러) 위에 있어 중기 추세는 아직 유지되고, 50일선(154.71달러) 아래라 단기 반등은 확인이 필요합니다. 다음 촉매는 2026-05-01 실적 발표(D-10)이며, 그 전까지는 154.71달러 회복 여부와 옵션상 160~165달러 구간의 수급 반응이 핵심입니다.",
     "key_news": [
-      "엑손, 2030년까지 이익 성장 전망 상향",
-      "유가 급등과 트레이딩 호조로 수익성 개선 기대",
-      "엑손, SEC에 8-K 중요 공시 제출",
-      "엑손, 주주총회 위임장 설명서 제출",
-      "지정학적 요인과 LNG 노출 변화가 주목"
+      "2030년까지 이익 250억달러 확대 목표 상향",
+      "LNG·지정학 노출 재평가 이슈",
+      "8-K 공시로 이벤트성 재료 확인",
+      "주총/위임장 공시로 거버넌스 이슈 지속"
     ],
     "news_references": [
       {
@@ -47,16 +46,19 @@
       }
     ],
     "financial_highlights": [
-      "주가 146.44달러, 30일 -8.29%",
-      "PER 21.8배, 목표가 대비 +12.5%",
-      "FCF Yield 4.5%, ND-EBITDA 0.5배",
-      "RS vs 섹터 -1.66%",
-      "SMA50 대비 -5.34%, SMA200 대비 +16.26%"
+      "PER 22.0x, ROE 11.1%, FCF Yield 4.5%",
+      "Forward EPS 10.12, TTM EPS 6.71, EPS 성장률 -11.0% YoY",
+      "ND/EBITDA 0.5x, CR 1.15",
+      "RS vs Sector ETF -0.97%, RVOL 0.58x, RSI 38.8",
+      "52주 범위 101.19~176.41달러, 현재 52주 위치 62%"
     ],
     "risks_or_watchpoints": [
-      "일간 -3.6% 하락 — 추가 하락 또는 데드캣 바운스 주의."
+      "2026-05-01 실적 발표 전까지 154.71달러(SMA50) 회복 실패 시 약세 시나리오가 강화됩니다.",
+      "147.68달러 종가가 141.61달러(눌림 시 진입가) 아래로 이탈하면 단기 추세 훼손 신호로 봅니다.",
+      "RSI(14) 38.8이 35 미만으로 하락하거나 MACD가 현재 -1.95/-0.13보다 더 벌어지면 모멘텀 약화로 해석합니다.",
+      "거래량이 RVOL 0.58x 수준에서 1.0x 미만으로 계속 유지되면 반등 신뢰도가 낮습니다."
     ],
-    "signal_or_takeaway": "매수 관찰 — 유가 강세와 정제·생산 마진 개선이 실적과 배당 기대를 강화함 | 진입 트리거 146.44달러 회복 후 반등 지속이 확인될 때 | 목표 155.80달러/164.79달러 | 손절 154.71달러",
+    "signal_or_takeaway": "중립 관찰 — 실적 D-10 전까지 154.71달러 회복 여부가 방향성을 좌우 | 진입 트리거 154.71달러 상향 회복 및 거래량 동반 | 목표 156.78달러/164.79달러 | 손절 141.61달러",
     "data_snapshot": {
       "Price": "147.68 USD",
       "Daily Change": "+0.85%",
@@ -67,7 +69,7 @@
       "52W Low": "101.19",
       "50D SMA": "154.71",
       "200D SMA": "125.96",
-      "Volume": "13332556",
+      "Volume": "13.33M",
       "3M Avg Volume": "23.17M",
       "Price/Book": "2.38",
       "Dividend Yield": "2.81%",
@@ -76,7 +78,7 @@
       "High": "149.37",
       "Low": "146.35",
       "Close": "147.68",
-      "RS vs Sector ETF": "-1.66%"
+      "RS vs Sector ETF": "-0.97%"
     },
     "fundamentals": {
       "market_cap": "613.84B",
@@ -86,7 +88,7 @@
       "earnings_growth": "-11.00% YoY",
       "price_to_book": "2.38",
       "dividend_yield": "2.81%",
-      "volume": "13332556",
+      "volume": "13.33M",
       "avg_volume_3m": "23.17M",
       "52w_high": "176.41",
       "52w_low": "101.19",
@@ -100,14 +102,14 @@
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
-      "forward_eps": "10.15 USD/share",
+      "forward_eps": "10.12 USD/share",
       "ttm_eps": "6.71 USD/share",
-      "forward_vs_ttm": "+51.27%",
+      "forward_vs_ttm": "+50.82%",
       "earnings_growth": "-11.00% YoY",
       "latest_estimated_eps": "1.69 USD/share",
       "latest_surprise_pct": "+0.01%",
       "latest_beat_miss": "in-line",
-      "next_earnings_event": "2026-05-01 실적 발표 (D-11 · BMO)"
+      "next_earnings_event": "2026-05-01 실적 발표 (D-10 · BMO)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 0,
@@ -183,42 +185,49 @@
         "type": "earnings",
         "label": "실적 발표",
         "date": "2026-05-01",
-        "days_until": "11",
+        "days_until": "10",
         "timing": "BMO"
       }
     ],
     "news_tone": {
-      "label": "bullish",
+      "label": "중립-강세",
       "confidence": 3,
-      "reasoning": "이익 전망 상향과 유가 강세가 엑손의 실적 모멘텀을 강화하고 있습니다."
+      "reasoning": "장기 성장 가이던스 상향은 우호적이나, 최근 뉴스는 구조적 재평가와 공시성 재료가 중심이라 즉시 모멘텀은 제한적입니다."
     },
     "trade_frame": {
-      "entry_price": "현재가 146.44 또는 눌림 시 140.20 USD",
+      "entry_price": "현재가 147.68 또는 눌림 시 141.61 USD",
       "stop_loss": "SMA50 154.71 USD",
-      "target_1": "155.80 USD (1.5×ATR)",
+      "target_1": "156.78 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 164.79 USD",
       "risk_reward_ratio": "N/A",
-      "position_size_note": "$57,940 계좌 1% 리스크 기준 약 92주 (ATR $6.24 기반)",
-      "bull_scenario": "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다.",
-      "base_scenario": "146.44 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
+      "position_size_note": "$58,427 계좌 1% 리스크 기준 약 96주 (ATR $6.07 기반)",
+      "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
+      "base_scenario": "147.68 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
       "invalidation_price": "50일 이동평균선인 154.71 USD 아래로 밀리면 약세 시나리오 확인",
       "watch_period": "2026-05-01 실적 발표 전까지"
     },
     "options_summary": {
       "expiry": "2026-04-24",
-      "atm_call_iv": "33.0%",
-      "atm_put_iv": "32.1%",
+      "atm_call_iv": "36.9%",
+      "atm_put_iv": "35.9%",
       "put_call_ratio": "0.49x",
       "iv_percentile_30d": "6th",
-      "tone": "bullish",
-      "unusual_activity": "CALL $170, vol 455, OI 대비 39% ; PUT $155, vol 168, OI 대비 37% ; PUT $185, vol 68, OI 대비 43%",
-      "oi_change": "N/A"
+      "tone": "neutral",
+      "unusual_activity": "PUT $185, vol 68, OI 대비 43% ; PUT $180, vol 58, OI 대비 36% ; PUT $210, vol 12, OI 대비 171%",
+      "oi_change": "콜 OI +2.0% / 풋 OI +0.6%"
     },
     "signal_history": [
       {
+        "date": "2026-04-20",
+        "direction": "bull",
+        "catalyst": "기타 공시",
+        "return_5d": "N/A",
+        "note": "147.68 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
+      {
         "date": "2026-04-17",
-        "direction": "bear",
+        "direction": "bull",
         "catalyst": "기타 공시",
         "return_5d": "N/A",
         "note": "146.44 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다."
@@ -241,21 +250,14 @@
         "date": "2026-04-13",
         "direction": "bull",
         "catalyst": "기타 공시",
-        "return_5d": "N/A",
+        "return_5d": "-3.25%",
         "note": "현재가 기준 ±1 ATR인 146.70-158.58 USD에서 실적 전까지 횡보할 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-12",
-        "direction": "bull",
-        "catalyst": "기타 공시",
-        "return_5d": "-3.98%",
-        "note": "실적 전까지 147.07달러에서 160.57달러 사이, 즉 현재가 ±1 ATR 구간에서 횡보 가능성이 큽니다. 최근 7일 약세를 감안하면 반등은 점진적일 가능성이 높습니다."
       }
     ],
     "sector_comparison": {
       "summary": "Energy 피어 3개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "21.82",
+        "company": "22.01",
         "peer_average": "N/A",
         "difference": null
       },
@@ -265,7 +267,7 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "-8.29%",
+        "company": "-7.51%",
         "peer_average": "N/A",
         "difference": null
       }
@@ -274,19 +276,31 @@
     "valuation_score": {
       "score": "6/10",
       "factors": [
-        "PER 21.8x",
-        "목표가 대비 업사이드 +12.5%",
+        "PER 22.0x",
+        "목표가 대비 업사이드 +11.6%",
         "ROE 11.1%",
         "FCF Yield 4.5%"
       ],
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
     "analysis_consensus": {
-      "status": "not_applicable",
-      "direction_agreement": null,
-      "selection_reason": "cap_exceeded",
+      "status": "agreed",
+      "economy_action": "watch",
+      "economy_conviction": 57,
+      "economy_reason": "섹터 대비 -1.0% / 실적 D-10 / 선행 EPS 성장 +50.8% / 기관 보유 67.7%",
+      "deep_action": "watch",
+      "deep_conviction": 55,
+      "deep_reason": "섹터 대비 -1.0% / 실적 D-10 / 선행 EPS 성장 +50.8% / 기관 보유 67.7%",
+      "tie_break_action": null,
+      "tie_break_conviction": null,
+      "tie_break_reason": "",
+      "direction_agreement": true,
+      "conflicted": false,
+      "confidence_delta": 5,
+      "selection_reason": "selected",
       "third_review_completed": false,
-      "final_consensus": "single"
+      "final_consensus": "agree",
+      "final_action": "watch"
     },
     "period_changes": {
       "7d": "-3.25%",
@@ -322,24 +336,23 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 57,
-      "reason": "섹터 대비 -1.7% / 실적 D-11 / 선행 EPS 성장 +51.3% / 기관 보유 67.7%",
+      "conviction": 55,
+      "reason": "섹터 대비 -1.0% / 실적 D-10 / 선행 EPS 성장 +50.8% / 기관 보유 67.7%",
       "valid_until": "2026-05-01",
       "factors": {
         "catalyst_recency": 10.0,
         "earnings_pattern": 0.0,
         "fundamentals": 10.0,
         "momentum": 10.0,
-        "news_tone": 5.0,
+        "news_tone": 0.0,
         "peer_rank": 0.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 10.0,
         "signal_track_record": -10.0,
         "valuation": 12.0
       },
-      "ensemble_agreement": "single",
-      "final_consensus": "single"
+      "ensemble_agreement": "agree",
+      "final_consensus": "agree"
     }
-  },
-  "intraday_refreshed_at": "2026-04-20T20:38:53"
+  }
 }

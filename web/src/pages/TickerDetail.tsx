@@ -186,7 +186,7 @@ export function TickerDetail() {
       <Link to="/" className="back-link">&larr; Dashboard</Link>
 
       <div className="ticker-header">
-        <div>
+        <div className="ticker-header-main">
           <h2>{analysis.ticker} · {analysis.name}</h2>
           <span className="ticker-date">{analysis.date}</span>
           <div className="ticker-meta-row">
@@ -245,7 +245,7 @@ export function TickerDetail() {
         </div>
         <div className="ticker-price-group">
           <span className="ticker-price">{analysis.data_snapshot['Price']}</span>
-          <span style={{ color: changeColor(pct), fontWeight: 600, fontSize: '1.1rem' }}>
+          <span className="ticker-daily-change" style={{ color: changeColor(pct) }}>
             {analysis.data_snapshot['Daily Change']}
           </span>
           <SignalBadge changePercent={pct} signalDirection={signalDirection} />
@@ -320,7 +320,7 @@ export function TickerDetail() {
         </section>
       )}
 
-      <section>
+      <section className="ticker-detail-primary-section ticker-price-history-section">
         <h3>Price History</h3>
         {priceLoading ? (
           <p>Loading chart...</p>
@@ -331,7 +331,7 @@ export function TickerDetail() {
         )}
       </section>
 
-      <section>
+      <section className="ticker-detail-primary-section ticker-summary-section">
         <h3>요약</h3>
         <p>{analysis.summary}</p>
       </section>
