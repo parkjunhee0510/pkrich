@@ -30,16 +30,50 @@ function buildShockSummary(macroContext?: MacroContext | null): string | null {
   return `${prefix}: ${summary}`
 }
 
+function buildShockImpacts(macroContext?: MacroContext | null): string[] {
+  const topEvent = macroContext?.macro_events?.[0]
+  if (!topEvent) return []
+  const industries = (topEvent.affected_industries ?? [])
+    .map((item) => item.trim())
+    .filter(Boolean)
+  if (industries.length > 0) {
+    return industries.slice(0, 4)
+  }
+  return (topEvent.affected_sectors ?? [])
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 4)
+}
+
 export function MacroContextBar({ macroContext }: { macroContext?: MacroContext | null }) {
   const vix = macroContext?.vix
+  const curve2s10s = macroContext?.yield_curve_10y_2y
+  const credit = macroContext?.credit_spread
+  const surprise = macroContext?.surprise_score
   const macroSeries = [
     { label: 'US10Y', value: macroContext?.us10y?.level ?? macroContext?.us10y?.price, change: macroContext?.us10y?.change },
     { label: 'DXY', value: macroContext?.dxy?.level ?? macroContext?.dxy?.price, change: macroContext?.dxy?.change },
+    { label: 'WTI', value: macroContext?.oil_wti?.level ?? macroContext?.oil_wti?.price, change: macroContext?.oil_wti?.change },
     { label: 'Copper', value: macroContext?.copper?.level ?? macroContext?.copper?.price, change: macroContext?.copper?.change },
+    { label: 'Gold', value: macroContext?.gold?.level ?? macroContext?.gold?.price, change: macroContext?.gold?.change },
+    curve2s10s?.level
+      ? { label: '10Y-2Y', value: curve2s10s.level, change: curve2s10s.status ?? '' }
+      : { label: '', value: undefined, change: undefined },
+    credit?.level
+      ? { label: 'HY/IG', value: credit.level, change: '' }
+      : { label: '', value: undefined, change: undefined },
+    surprise && typeof surprise.composite === 'number'
+      ? {
+          label: 'Surprise',
+          value: surprise.composite.toFixed(2),
+          change: surprise.confidence ?? '',
+        }
+      : { label: '', value: undefined, change: undefined },
   ].filter((item) => item.value)
   const macroEvents = (macroContext?.portfolio_event_sensitivity ?? macroContext?.upcoming_macro_events ?? []).slice(0, 3)
   const sensitivitySummary = macroContext?.portfolio_sensitivity_summary
   const shockSummary = buildShockSummary(macroContext)
+  const shockImpacts = buildShockImpacts(macroContext)
 
   if (!vix && macroEvents.length === 0 && macroSeries.length === 0 && !shockSummary) {
     return null
@@ -58,7 +92,16 @@ export function MacroContextBar({ macroContext }: { macroContext?: MacroContext 
           <p className="macro-context-summary-text">{sensitivitySummary}</p>
         ) : null}
         {shockSummary ? (
-          <p className="macro-context-shock-summary">{shockSummary}</p>
+          <div className="macro-context-shock-block">
+            <p className="macro-context-shock-summary">{shockSummary}</p>
+            {shockImpacts.length > 0 ? (
+              <div className="macro-context-impact-chips" aria-label="macro shock impacted industries">
+                {shockImpacts.map((impact) => (
+                  <span key={impact} className="macro-context-impact-chip">{impact}</span>
+                ))}
+              </div>
+            ) : null}
+          </div>
         ) : null}
       </div>
 

@@ -100,8 +100,8 @@ class OutputSchemaTests(unittest.TestCase):
             (logs_root / "2026-04-17.jsonl").write_text(
                 "\n".join(
                     [
-                        json.dumps({"event": "openai_usage_recorded", "model_profile": "economy", "model": "gpt-5.4-mini", "estimated_cost_usd": 0.12, "total_tokens": 1000}),
-                        json.dumps({"event": "openai_usage_recorded", "model_profile": "deep", "model": "o3-mini", "estimated_cost_usd": 0.30, "total_tokens": 2200}),
+                        json.dumps({"event": "openai_usage_recorded", "model_profile": "economy", "model": "gpt-5.4-mini", "estimated_cost_usd": 0.12, "input_tokens": 800, "cached_input_tokens": 600, "total_tokens": 1000}),
+                        json.dumps({"event": "openai_usage_recorded", "model_profile": "deep", "model": "o3-mini", "estimated_cost_usd": 0.30, "input_tokens": 1000, "cached_input_tokens": 250, "total_tokens": 2200}),
                         json.dumps({"event": "decision_completed", "ensemble_enabled": True, "ensemble_eligible_count": 6, "ensemble_selected_count": 3, "ensemble_skipped_due_to_cap": 1, "ensemble_conflicted_count": 2}),
                     ]
                 ),

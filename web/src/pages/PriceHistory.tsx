@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
+﻿import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { TablePageSkeleton } from '../components/Skeleton'
@@ -66,7 +66,7 @@ export function PriceHistory() {
   const { allRows, tickers, loading: priceLoading, lastUpdated, refresh } = usePriceHistoryLive()
 
   useEffect(() => {
-    document.title = '시세 · Stock Research'
+    document.title = '가격 흐름 · Stock Research'
   }, [])
 
   const latestDay = dashboardData?.days[dashboardData.days.length - 1]
@@ -125,15 +125,15 @@ export function PriceHistory() {
     return rows
   }, [periodRows, sortDirection, sortKey])
 
-  if (dashboardLoading || priceLoading) return <TablePageSkeleton title="시세" />
+  if (dashboardLoading || priceLoading) return <TablePageSkeleton title="가격 흐름" />
   if (dashboardError) return <ErrorState message={dashboardError} />
 
   const selectedSummary = tickers.find((item) => item.ticker === selectedTicker)
   const stats = [
     { label: '현재가', value: latestRow?.price ?? selectedSummary?.latestPrice ?? 'N/A' },
-    { label: '일변동', value: latestRow?.daily_change ?? selectedSummary?.latestChange ?? 'N/A' },
-    { label: '52주 고가', value: latestRow?.['52w_high'] || selectedAnalysis?.data_snapshot['52W High'] || 'N/A' },
-    { label: '52주 저가', value: latestRow?.['52w_low'] || selectedAnalysis?.data_snapshot['52W Low'] || 'N/A' },
+    { label: '하루 변동', value: latestRow?.daily_change ?? selectedSummary?.latestChange ?? 'N/A' },
+    { label: '52주 최고가', value: latestRow?.['52w_high'] || selectedAnalysis?.data_snapshot['52W High'] || 'N/A' },
+    { label: '52주 최저가', value: latestRow?.['52w_low'] || selectedAnalysis?.data_snapshot['52W Low'] || 'N/A' },
     { label: '거래량', value: latestRow?.volume || selectedAnalysis?.data_snapshot.Volume || 'N/A' },
     { label: 'PER', value: latestRow?.trailing_pe || selectedAnalysis?.data_snapshot['Trailing P/E'] || 'N/A' },
     { label: '시가총액', value: latestRow?.market_cap || selectedAnalysis?.data_snapshot['Market Cap'] || 'N/A' },
@@ -154,8 +154,8 @@ export function PriceHistory() {
     <div className="price-history-page">
       <div className="dashboard-header">
         <div>
-          <h2>시세</h2>
-          <p className="section-kicker">전체 종목의 과거 시세 기록과 최신 상태를 한눈에 확인합니다.</p>
+          <h2>가격 흐름</h2>
+          <p className="section-kicker">종목별 과거 가격 흐름과 최신 상태를 한 화면에서 확인합니다.</p>
         </div>
         <div className="price-history-toolbar-meta">
           <span className="price-history-updated">마지막 갱신 {updatedLabel}</span>
@@ -225,15 +225,15 @@ export function PriceHistory() {
             <PriceChart rows={periodRows} height={480} />
           </Suspense>
         ) : (
-          <p className="empty">선택한 종목의 시세 데이터가 없습니다.</p>
+          <p className="empty">선택한 종목의 가격 데이터가 아직 없습니다.</p>
         )}
       </section>
 
       <section className="price-history-section">
         <div className="section-header-with-kicker">
           <div>
-            <h3>시세 기록</h3>
-            <p className="section-kicker">{selectedTicker} · 최신 우선, 컬럼 정렬 지원</p>
+            <h3>가격 기록</h3>
+            <p className="section-kicker">{selectedTicker}의 최근 데이터입니다. 열 제목을 누르면 정렬됩니다.</p>
           </div>
         </div>
         <div className="watchlist-table-shell price-history-table-shell">

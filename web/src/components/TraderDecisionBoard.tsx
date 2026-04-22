@@ -1,4 +1,4 @@
-import type { TickerDecisionData, TradeFrame, UpcomingEvent } from '../types'
+﻿import type { TickerDecisionData, TradeFrame, UpcomingEvent } from '../types'
 import { parsePrice } from '../utils/format'
 import type { CatalystFeedItem, PositionSizingSummary, TraderActionPlan } from '../utils/trader'
 
@@ -32,45 +32,45 @@ type TimelineEvent = {
 }
 
 const FACTOR_LABELS: Record<string, string> = {
-  valuation: '밸류에이션',
-  momentum: '모멘텀',
-  catalyst_recency: '촉매',
-  signal_track_record: '시그널 이력',
-  news_tone: '뉴스 톤',
-  regime_adjustment: '매크로 적합도',
-  earnings_pattern: '실적 셋업',
-  fundamentals: '펀더멘털',
+  valuation: '밸류 매력도',
+  momentum: '가격 흐름',
+  catalyst_recency: '최근 재료',
+  signal_track_record: '과거 신호 성과',
+  news_tone: '뉴스 분위기',
+  regime_adjustment: '시장 분위기 적합도',
+  earnings_pattern: '실적 흐름',
+  fundamentals: '기초 체력',
   macro_event: '거시 충격',
-  portfolio_risk: '포트폴리오 리스크',
-  peer_rank: '피어 랭크',
+  portfolio_risk: '포트폴리오 쏠림',
+  peer_rank: '비슷한 종목 대비 위치',
 }
 
 const FACTOR_GROUPS: Record<string, string> = {
   valuation: '밸류',
-  momentum: '모멘텀',
-  catalyst_recency: '촉매',
-  signal_track_record: '시그널',
+  momentum: '가격 흐름',
+  catalyst_recency: '재료',
+  signal_track_record: '신호',
   news_tone: '뉴스',
-  regime_adjustment: '매크로',
+  regime_adjustment: '시장',
   earnings_pattern: '실적',
-  fundamentals: '펀더멘털',
+  fundamentals: '기초 체력',
   macro_event: '거시',
   portfolio_risk: '포트폴리오',
-  peer_rank: '피어 비교',
+  peer_rank: '비교 종목',
 }
 
 const COUNTER_SIGNAL_COPY: Record<string, string> = {
-  valuation: '밸류 부담이 남아 상단 확장성을 제한합니다.',
-  momentum: '추세 강도가 약해지면 진입 명분이 빠르게 훼손될 수 있습니다.',
-  catalyst_recency: '가까운 촉매가 약하거나 이미 소화돼 추가 동력이 제한됩니다.',
-  signal_track_record: '과거 유사 시그널의 재현성이 충분히 확인되지 않았습니다.',
-  news_tone: '최근 뉴스 흐름이 기대를 강하게 밀어주지 못하고 있습니다.',
-  regime_adjustment: '현재 시장 환경과 종목 성격의 궁합이 완전히 맞지 않습니다.',
-  earnings_pattern: '실적 전후 변동성 또는 패턴 불확실성이 남아 있습니다.',
-  fundamentals: '기초 체력 대비 기대가 앞서 있을 수 있습니다.',
-  macro_event: '최근 거시 충격 이벤트가 현재 업종에 추가 변동성 또는 역풍을 만들 수 있습니다.',
-  portfolio_risk: '기존 포트폴리오 집중도가 신규 진입 매력을 깎습니다.',
-  peer_rank: '동종 peer 대비 상대 우위가 충분히 강하지 않습니다.',
+  valuation: '현재 가격 부담이 남아 있어 추가 상승 여력이 제한될 수 있습니다.',
+  momentum: '주가 흐름이 충분히 강하지 않아 진입 명분이 약해질 수 있습니다.',
+  catalyst_recency: '가까운 재료가 약하거나 이미 반영되어 새 동력이 부족할 수 있습니다.',
+  signal_track_record: '비슷한 과거 신호의 성과가 충분히 좋지 않아 확신을 낮춥니다.',
+  news_tone: '최근 뉴스 흐름이 기대를 강하게 뒷받침하지 못하고 있습니다.',
+  regime_adjustment: '지금 시장 분위기와 이 종목의 성격이 완전히 잘 맞지는 않습니다.',
+  earnings_pattern: '실적 전후 변동성이나 이익 흐름 불확실성이 남아 있습니다.',
+  fundamentals: '기초 체력 대비 기대가 앞서 있을 가능성이 있습니다.',
+  macro_event: '최근 거시 충격이 이 업종에 추가 변동성을 만들 수 있습니다.',
+  portfolio_risk: '기존 보유 비중과 겹쳐서 새 진입 매력이 줄어들 수 있습니다.',
+  peer_rank: '비슷한 종목과 비교했을 때 상대적인 강점이 충분히 뚜렷하지 않습니다.',
 }
 
 export function TraderDecisionBoard({
@@ -86,8 +86,8 @@ export function TraderDecisionBoard({
 }: TraderDecisionBoardProps) {
   const entryLabel = tradeFrame?.entry_price || actionPlan.entry
   const stopLabel = tradeFrame?.stop_loss || tradeFrame?.invalidation_price || actionPlan.invalidation
-  const targetLabel = [tradeFrame?.target_1, tradeFrame?.target_2].filter(Boolean).join(' / ') || targetPrice || '목표가 미확인'
-  const sizingNote = tradeFrame?.position_size_note || `10,000 USD 기준 ${dashboardSizing.positionShares}`
+  const targetLabel = [tradeFrame?.target_1, tradeFrame?.target_2].filter(Boolean).join(' / ') || targetPrice || '목표가 확인 필요'
+  const sizingNote = tradeFrame?.position_size_note || `계좌 10,000 USD 기준 ${dashboardSizing.positionShares}`
   const riskReward = tradeFrame?.risk_reward_ratio || dashboardSizing.riskReward
   const factorEntries = Object.entries(decision?.factors ?? {})
     .sort(([, left], [, right]) => Math.abs(right) - Math.abs(left))
@@ -124,41 +124,41 @@ export function TraderDecisionBoard({
     <section className="dashboard-panel-section trader-decision-board-section">
       <div className="section-header-with-kicker">
         <div>
-          <h3>의사결정 보드</h3>
+          <h3>매매 판단 요약</h3>
           <p className="section-kicker">
-            방향, 진입존, 무효화, 다음 catalyst, 2ATR 스탑, 리스크/리워드를 첫 화면에서 바로 확인합니다.
+            지금 판단, 진입 가격대, 손절선, 다음 일정, 목표가를 한 화면에서 빠르게 확인합니다.
           </p>
         </div>
       </div>
 
       <div className="decision-board-grid">
         <div className="price-action-card">
-          <span className="price-action-label">방향</span>
+          <span className="price-action-label">지금 판단</span>
           <strong>{actionPlan.direction}</strong>
           <span className="price-action-subtext">{actionPlan.thesis}</span>
         </div>
         <div className="price-action-card">
-          <span className="price-action-label">진입존</span>
+          <span className="price-action-label">진입 가격대</span>
           <strong>{entryLabel}</strong>
-          <span className="price-action-subtext">시그널 또는 트레이드 프레임 기준</span>
+          <span className="price-action-subtext">한 번에 들어가기보다 분할 진입 기준으로 보세요.</span>
         </div>
         <div className="price-action-card">
-          <span className="price-action-label">손절 / 무효화</span>
+          <span className="price-action-label">손절선 / 판단 취소 가격</span>
           <strong>{stopLabel}</strong>
-          <span className="price-action-subtext">{tradeFrame?.watch_period ?? '관찰 기간 확인 필요'}</span>
+          <span className="price-action-subtext">{tradeFrame?.watch_period ?? '관찰 기간을 함께 확인하세요.'}</span>
         </div>
         <div className="price-action-card">
-          <span className="price-action-label">다음 Catalyst</span>
+          <span className="price-action-label">다음 재료</span>
           <strong>{actionPlan.nextCatalyst}</strong>
-          <span className="price-action-subtext">{latestCatalyst?.tag ?? '공시/뉴스 모니터링'}</span>
+          <span className="price-action-subtext">{latestCatalyst?.tag ?? '공시와 뉴스 흐름을 함께 확인 중입니다.'}</span>
         </div>
         <div className="price-action-card">
-          <span className="price-action-label">포지션 사이징</span>
+          <span className="price-action-label">권장 비중</span>
           <strong>{dashboardSizing.stopPrice}</strong>
           <span className="price-action-subtext">{sizingNote}</span>
         </div>
         <div className="price-action-card">
-          <span className="price-action-label">목표가 / R:R</span>
+          <span className="price-action-label">목표가 / 기대 대비 위험</span>
           <strong>{riskReward}</strong>
           <span className="price-action-subtext">{targetLabel}</span>
         </div>
@@ -166,7 +166,7 @@ export function TraderDecisionBoard({
 
       <div className="decision-board-timing-grid">
         <article className="decision-board-panel decision-board-panel-wide">
-          <span className="decision-board-panel-label">D-day 타임라인</span>
+          <span className="decision-board-panel-label">다가오는 일정</span>
           {timelineEvents.length > 0 ? (
             <>
               <div className="decision-timeline-bar">
@@ -193,12 +193,12 @@ export function TraderDecisionBoard({
               </div>
             </>
           ) : (
-            <p className="decision-board-panel-copy">가까운 예정 이벤트가 없어 일반 일정 관리 규칙을 적용합니다.</p>
+            <p className="decision-board-panel-copy">가까운 일정이 없어서 일반적인 진입 규칙을 기준으로 보면 됩니다.</p>
           )}
         </article>
 
         <article className="decision-board-panel">
-          <span className="decision-board-panel-label">이벤트 직전 행동 규칙</span>
+          <span className="decision-board-panel-label">일정 전 행동 규칙</span>
           <ul className="decision-board-list">
             {eventRules.map((rule) => (
               <li key={rule}>{rule}</li>
@@ -207,8 +207,8 @@ export function TraderDecisionBoard({
         </article>
 
         <article className="decision-board-panel">
-          <span className="decision-board-panel-label">재평가 트리거</span>
-          <strong className="decision-board-panel-value">{decision?.valid_until || '상시 재평가'}</strong>
+          <span className="decision-board-panel-label">다시 판단해야 하는 가격</span>
+          <strong className="decision-board-panel-value">{decision?.valid_until || '상시 재점검'}</strong>
           <ul className="decision-board-list">
             {reevaluationTriggers.map((rule) => (
               <li key={rule}>{rule}</li>
@@ -255,30 +255,30 @@ export function TraderDecisionBoard({
             </article>
 
             <article className="decision-board-panel">
-              <span className="decision-board-panel-label">전일 대비 델타</span>
+              <span className="decision-board-panel-label">전일 대비 변화</span>
               <strong className="decision-board-panel-value">
                 {convictionDelta === null ? 'N/A' : `${decision.conviction} (${convictionDelta >= 0 ? '↑' : '↓'}${Math.abs(convictionDelta)})`}
               </strong>
               {previousDecision ? (
                 <>
-                  <p className="decision-board-panel-copy">전일 {previousDecision.conviction}점 대비 변화입니다.</p>
+                  <p className="decision-board-panel-copy">전일 {previousDecision.conviction}점과 비교한 변화입니다.</p>
                   <ul className="decision-board-list">
                     {factorDeltaEntries.length > 0 ? factorDeltaEntries.slice(0, 3).map((entry) => (
                       <li key={entry.key}>
                         <strong>{entry.label}</strong> {entry.delta > 0 ? '+' : ''}{entry.delta.toFixed(0)}
                       </li>
                     )) : (
-                      <li>주요 factor 변화는 크지 않습니다.</li>
+                      <li>주요 점수 변화는 크지 않습니다.</li>
                     )}
                   </ul>
                 </>
               ) : (
-                <p className="decision-board-panel-copy">직전 decision snapshot이 없어 델타를 계산하지 않았습니다.</p>
+                <p className="decision-board-panel-copy">직전 판단 기록이 없어 변화 폭은 아직 비교할 수 없습니다.</p>
               )}
             </article>
 
             <article className="decision-board-panel">
-              <span className="decision-board-panel-label">반대 신호 카운터</span>
+              <span className="decision-board-panel-label">발목 잡는 요소</span>
               <strong className="decision-board-panel-value">{counterSignals.length}개</strong>
               <ul className="decision-board-list">
                 {counterSignals.map((signal) => (
@@ -327,27 +327,27 @@ function buildTimelineEvents(upcomingEvents: UpcomingEvent[]): TimelineEvent[] {
 
 function buildEventRules(timelineEvents: TimelineEvent[]): string[] {
   if (timelineEvents.length === 0) {
-    return ['예정 이벤트가 멀어 기본 진입 규칙을 유지합니다.']
+    return ['예정된 이벤트가 없으니 기본 진입 규칙을 우선 적용합니다.']
   }
 
   const nearest = timelineEvents[0]
   const rules: string[] = []
 
   if (nearest.daysUntil <= 1) {
-    rules.push(`${nearest.label} D-1 이내: 신규 진입보다 기존 포지션 관리 우선`)
+    rules.push(`${nearest.label} D-1 이내: 새 진입보다 기존 비중 관리가 우선입니다.`)
   } else if (nearest.daysUntil <= 3) {
-    rules.push(`${nearest.label} D-3 이내: 신규 진입 금지, 기존 포지션만 유지 또는 축소`)
+    rules.push(`${nearest.label} D-3 이내: 신규 진입은 피하고, 기존 비중만 줄이거나 유지하는 편이 안전합니다.`)
   } else if (nearest.daysUntil <= 7) {
-    rules.push(`${nearest.label} D-7 구간: 분할 진입만 허용, 추격 매수 금지`)
+    rules.push(`${nearest.label} D-7 구간: 분할 진입만 고려하고 추격 매수는 피하는 편이 좋습니다.`)
   } else {
-    rules.push(`${nearest.label} 전까지 기준 가격대만 유지되면 계획대로 관찰`)
+    rules.push(`${nearest.label} 전까지는 기준 가격대를 지키는지 확인하며 계획대로 관찰합니다.`)
   }
 
   if (timelineEvents.some((event) => /earnings|실적/i.test(event.label) && event.daysUntil <= 7)) {
-    rules.push('실적 전후 1거래일은 갭 리스크를 기본 가정하고 비중을 줄입니다.')
+    rules.push('실적 전후 하루는 변동성이 커질 수 있어 비중을 보수적으로 잡는 편이 좋습니다.')
   }
   if (timelineEvents.some((event) => /dividend|배당/i.test(event.label) && event.daysUntil <= 3)) {
-    rules.push('배당락 전후 수급 왜곡 가능성을 감안해 단기 추격 진입을 피합니다.')
+    rules.push('배당 전후에는 가격이 흔들릴 수 있어 짧은 추격 진입은 신중하게 보세요.')
   }
 
   return rules.slice(0, 3)
@@ -365,13 +365,13 @@ function buildReevaluationTriggers(params: {
   const validUntil = params.decision?.valid_until || '유효기간 만료 시점'
 
   const rules = [
-    `유효기간 기준: ${validUntil} 도달 시 현재 시나리오를 기본 재평가합니다.`,
+    `기본 재점검 시점은 ${validUntil}입니다. 그전에도 상황이 바뀌면 다시 판단합니다.`,
     upgrade
-      ? `${upgrade.label} ${formatPrice(upgrade.value)} 상향 돌파 시 한 단계 긍정 시나리오로 재평가`
-      : '상향 돌파 트리거는 명시된 목표가 확인 후 재설정합니다.',
+      ? `${upgrade.label} ${formatPrice(upgrade.value)}를 넘기면 더 긍정적인 시나리오로 다시 봅니다.`
+      : '상향 판단 기준 가격은 목표가가 더 구체적으로 잡히면 함께 보강됩니다.',
     downgrade
-      ? `${downgrade.label} ${formatPrice(downgrade.value)} 하향 이탈 시 방어 모드로 강등 재평가`
-      : '하단 방어 트리거는 무효화 가격 확인 후 재설정합니다.',
+      ? `${downgrade.label} ${formatPrice(downgrade.value)} 아래로 내려가면 방어적으로 다시 판단합니다.`
+      : '하단 방어 기준 가격은 손절선이 더 구체화되면 함께 보강됩니다.',
   ]
 
   return rules
@@ -388,22 +388,22 @@ function pickUpgradePrice(current: number, tradeFrame?: TradeFrame, targetPrice?
     return candidates.sort((left, right) => left.value - right.value)[0]
   }
   if (current > 0) {
-    return { label: '단기 돌파선', value: current * 1.03 }
+    return { label: '단기 돌파 기준', value: current * 1.03 }
   }
   return null
 }
 
 function pickDowngradePrice(current: number, tradeFrame?: TradeFrame) {
   const candidates = [
-    { label: '손절가', value: parsePrice(tradeFrame?.stop_loss ?? '') },
-    { label: '무효화 가격', value: parsePrice(tradeFrame?.invalidation_price ?? '') },
+    { label: '손절선', value: parsePrice(tradeFrame?.stop_loss ?? '') },
+    { label: '판단 취소 가격', value: parsePrice(tradeFrame?.invalidation_price ?? '') },
   ].filter((candidate) => candidate.value > 0 && (current <= 0 || candidate.value < current))
 
   if (candidates.length > 0) {
     return candidates.sort((left, right) => right.value - left.value)[0]
   }
   if (current > 0) {
-    return { label: '단기 방어선', value: current * 0.97 }
+    return { label: '단기 방어 기준', value: current * 0.97 }
   }
   return null
 }
@@ -420,7 +420,7 @@ function buildCounterSignals(factorEntries: Array<[string, number]>): CounterSig
         key,
         label: FACTOR_LABELS[key] ?? key,
         score,
-        reason: COUNTER_SIGNAL_COPY[key] ?? '추가 확인이 필요한 약점 요인입니다.',
+        reason: COUNTER_SIGNAL_COPY[key] ?? '추가 확인이 필요한 약점 요소입니다.',
       })
       seen.add(key)
     }
@@ -434,7 +434,7 @@ function buildCounterSignals(factorEntries: Array<[string, number]>): CounterSig
         key,
         label: FACTOR_LABELS[key] ?? key,
         score,
-        reason: COUNTER_SIGNAL_COPY[key] ?? '추가 확인이 필요한 약점 요인입니다.',
+        reason: COUNTER_SIGNAL_COPY[key] ?? '추가 확인이 필요한 약점 요소입니다.',
       })
       seen.add(key)
       if (selected.length >= 3) break

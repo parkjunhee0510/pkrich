@@ -3,6 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from src.types import CollectedTickerData, PortfolioSummary, WatchlistItem
+from src.utils.ticker_macro_beta import (
+    build_ticker_macro_snapshot,
+    compute_ticker_macro_betas,
+    fetch_macro_driver_returns,
+)
 
 _GROWTH_SECTORS = {"technology", "semiconductors"}
 _DEFENSIVE_SECTORS = {"consumer staples", "utilities", "healthcare"}
@@ -62,7 +67,30 @@ def attach_portfolio_macro_sensitivity(
     context["portfolio_event_sensitivity"] = event_rows
     context["ticker_macro_sensitivity"] = ticker_rows
     context["portfolio_sensitivity_summary"] = _build_portfolio_sensitivity_summary(event_rows)
+    context["ticker_macro_betas"] = _compute_all_ticker_betas(collected, context)
     return context
+
+
+def _compute_all_ticker_betas(
+    collected: dict[str, CollectedTickerData],
+    macro_context: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Compute macro factor betas for every collected ticker; attach snapshot string."""
+    driver_returns = fetch_macro_driver_returns()
+    betas_by_ticker: dict[str, dict[str, Any]] = {}
+    for ticker, data in collected.items():
+        try:
+            betas = compute_ticker_macro_betas(
+                ticker,
+                driver_returns,
+                sector=(data.sector or ""),
+            )
+            if betas:
+                betas["snapshot"] = build_ticker_macro_snapshot(betas, macro_context)
+                betas_by_ticker[ticker] = betas
+        except Exception:
+            continue
+    return betas_by_ticker
 
 
 def _score_ticker_sensitivity(

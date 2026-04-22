@@ -5,6 +5,7 @@ from typing import Any
 
 from src.analyzer.base import AnalysisContext, ModuleResult, StructuredLLMModule
 from src.analyzer.llm_runtime import parse_ticker_batch
+from src.analyzer.signal_levels import compute_signal_must_use_values
 
 
 class SignalTakeawayModule(StructuredLLMModule):
@@ -19,6 +20,7 @@ class SignalTakeawayModule(StructuredLLMModule):
     def build_batch_payload(self, ctx: AnalysisContext, batch_tickers: list[str]) -> list[dict[str, Any]]:
         payloads: list[dict[str, Any]] = []
         for ticker in batch_tickers:
+            raw_payload = ctx.raw_payload_by_ticker.get(ticker, {})
             upstream = ctx.intermediate_results.get(ticker, {})
             payloads.append(
                 {
@@ -27,6 +29,10 @@ class SignalTakeawayModule(StructuredLLMModule):
                     "trade_frame": upstream.get("trade_frame", {}),
                     "news_tone": upstream.get("news_tone", {}),
                     "risks_or_watchpoints": upstream.get("risks_or_watchpoints", []),
+                    "must_use_values": compute_signal_must_use_values(
+                        raw_payload,
+                        upstream.get("trade_frame", {}),
+                    ),
                 }
             )
         return payloads

@@ -2,30 +2,35 @@
 
 ## Purpose
 
-Provide storage abstraction for structured data.
+Provide the single persistence boundary for structured pipeline data.
+
+## Current Usage
+
+The datastore is responsible for:
+* price history queries and upserts
+* signal history and signal statistics
+* analysis run metadata
+* backend-specific persistence details hidden from callers
 
 ## Backends
 
 ### CSV
 
-* Default backend
-* Simple and transparent
+* simple and transparent
+* useful for exported artifacts and compatibility flows
 
 ### SQLite
 
-* Optional backend
-* Supports advanced queries
+* preferred for indexed queries and growing history
+* used by runtime features that need efficient lookups
 
 ## Selection
 
-* Controlled via environment variable
+* Backend selection is configuration-driven
+* Callers must use datastore APIs, not backend files directly
 
 ## Rules
 
-* All storage must go through abstraction layer
-* No direct file access outside datastore
-
-## Constraints
-
-* Must remain interchangeable
-* Must not affect business logic
+* No direct SQLite queries from output, analyzer, or decision code
+* No direct CSV mutation outside datastore helpers
+* Backend choice must not change business semantics

@@ -9,7 +9,11 @@ _FACTOR_ALIASES = {
     "regime": "regime_adjustment",
     "earnings": "earnings_pattern",
 }
-_SUPPORTED_REGIMES = {"risk_on", "risk_off", "neutral"}
+_SUPPORTED_REGIMES = {"risk_on", "risk_off", "neutral", "reflation", "defensive_bias"}
+_REGIME_FALLBACK = {
+    "reflation": "risk_on",
+    "defensive_bias": "risk_off",
+}
 _DEFAULT_MULTIPLIER = 1.0
 _MIN_MULTIPLIER = 0.1
 
@@ -27,7 +31,10 @@ def normalize_decision_config(config: dict[str, Any]) -> dict[str, Any]:
 
 def multiplier_for(factor_name: str, regime_name: str, regime_multipliers: dict[str, dict[str, float]]) -> float:
     regime_key = regime_name if regime_name in _SUPPORTED_REGIMES else "neutral"
-    value = regime_multipliers.get(regime_key, {}).get(factor_name, _DEFAULT_MULTIPLIER)
+    block = regime_multipliers.get(regime_key, {})
+    if factor_name not in block and regime_key in _REGIME_FALLBACK:
+        block = regime_multipliers.get(_REGIME_FALLBACK[regime_key], {})
+    value = block.get(factor_name, _DEFAULT_MULTIPLIER)
     try:
         numeric = float(value)
     except (TypeError, ValueError) as exc:

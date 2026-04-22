@@ -19,8 +19,8 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
       <section className="dashboard-panel-section">
         <div className="section-header-with-kicker">
           <div>
-            <h3>오늘의 셋업</h3>
-            <p className="section-kicker">오늘 셋업 기준을 충족한 종목이 없습니다. 실적 보드나 하드 촉매 피드에서 다음 후보를 먼저 확인해보세요.</p>
+            <h3>오늘 볼 만한 종목</h3>
+            <p className="section-kicker">오늘 먼저 볼 조건을 충족한 종목이 없습니다. 실적 일정이나 강한 재료 목록에서 다음 후보를 먼저 확인해보세요.</p>
           </div>
         </div>
       </section>
@@ -32,9 +32,9 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
       <div className="section-header-with-kicker">
         <div>
           <h3>
-            오늘의 셋업 <InfoTooltip content="D-day, hard catalyst, RVOL, RS, Forward vs TTM 등을 합쳐 오늘 먼저 볼 종목을 추립니다." />
+            오늘 볼 만한 종목 <InfoTooltip content="실적 일정, 강한 재료, 거래량 증가, 시장 대비 강세 등을 합쳐 오늘 먼저 볼 종목을 추립니다." />
           </h3>
-          <p className="section-kicker">강한 촉매, 실적 일정, RVOL, 상대강도를 기준으로 오늘 먼저 볼 종목만 압축해서 보여줍니다.</p>
+          <p className="section-kicker">강한 재료, 실적 일정, 거래량 증가, 시장 대비 강세를 기준으로 오늘 먼저 볼 종목만 압축해서 보여줍니다.</p>
         </div>
       </div>
       <div className="setup-card-grid">
@@ -51,9 +51,9 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
               </div>
               <div
                 className="setup-score-badge"
-                title={card.scoreSource === 'conviction' ? '파이프라인 의사결정 컨빅션' : '실시간 셋업 휴리스틱 (decision 없음)'}
+                title={card.scoreSource === 'conviction' ? '파이프라인 확신도 점수' : '실시간 관심도 점수 (decision 없음)'}
               >
-                <span>{card.scoreSource === 'conviction' ? 'Conviction' : card.focusLabel}</span>
+                <span>{card.scoreSource === 'conviction' ? '확신도' : card.focusLabel}</span>
                 <strong>{card.score}</strong>
               </div>
             </div>
@@ -63,11 +63,11 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
                 <strong className="setup-metric-value">{card.earningsDday}</strong>
               </div>
               <div className="setup-metric-cell">
-                <span className="setup-metric-label">섹터 RS</span>
+                <span className="setup-metric-label">섹터 강세</span>
                 <strong className="setup-metric-value">{card.sectorRs}</strong>
               </div>
               <div className="setup-metric-cell">
-                <span className="setup-metric-label">Forward vs TTM</span>
+                <span className="setup-metric-label">예상치 vs 최근 실적</span>
                 <strong className="setup-metric-value">{card.forwardVsTtm}</strong>
               </div>
               <div className="setup-metric-cell">
@@ -84,7 +84,7 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
               <p>{card.actionPlan.thesis}</p>
               <p>진입존 {card.actionPlan.entry}</p>
               <p>무효화 {card.actionPlan.invalidation}</p>
-              <p>다음 촉매 {card.actionPlan.nextCatalyst}</p>
+              <p>다음 재료 {card.actionPlan.nextCatalyst}</p>
               {unusualSummary ? (
                 <>
                   <div className="options-context-badges">
@@ -97,7 +97,7 @@ export function TodaySetupBoard({ cards }: { cards: SetupScoreCard[] }) {
                       </span>
                     ) : null}
                   </div>
-                  <p className="setup-option-note">옵션: {unusualSummary}</p>
+                  <p className="setup-option-note">옵션 흐름: {unusualSummary}</p>
                 </>
               ) : null}
             </div>
@@ -136,8 +136,8 @@ export function EarningsBoard({ sections }: { sections: EarningsBoardSection[] }
       <section className="dashboard-panel-section">
         <div className="section-header-with-kicker">
           <div>
-            <h3>실적 발표</h3>
-            <p className="section-kicker">가까운 실적 이벤트가 없습니다. 점수순 카드나 하드 촉매 피드로 이동해 다음 일정이 있는 종목부터 확인해보세요.</p>
+            <h3>가까운 실적 일정</h3>
+            <p className="section-kicker">가까운 실적 일정이 없습니다. 점수순 카드나 강한 재료 목록에서 다음 일정이 있는 종목부터 확인해보세요.</p>
           </div>
         </div>
       </section>
@@ -149,9 +149,9 @@ export function EarningsBoard({ sections }: { sections: EarningsBoardSection[] }
       <div className="section-header-with-kicker">
         <div>
           <h3>
-            실적 플레이 보드 <InfoTooltip content="오늘, D-3, D-7, D-21 구간으로 나눠 BMO/AMC와 최근 beat-miss를 빠르게 확인합니다." />
+            실적 일정 보드 <InfoTooltip content="오늘, D-3, D-7, D-21 구간으로 나눠 장 전/장 후 발표와 최근 실적 결과를 빠르게 확인합니다." />
           </h3>
-          <p className="section-kicker">D-21 이내 실적 종목만 따로 묶어 BMO/AMC, beat-miss, Forward vs TTM을 한 번에 확인합니다.</p>
+          <p className="section-kicker">D-21 이내 실적 종목만 따로 묶어 장 전/장 후 발표, 최근 실적 결과, 예상치 흐름을 한 번에 확인합니다.</p>
         </div>
       </div>
       <div className="earnings-board-grid">
@@ -190,9 +190,9 @@ export function EarningsBoard({ sections }: { sections: EarningsBoardSection[] }
 
 export function CatalystFeed({ sections }: { sections: CatalystFeedSections }) {
   const ordered: Array<{ key: keyof CatalystFeedSections; label: string; description: string }> = [
-    { key: 'hard', label: 'Hard Catalyst', description: '지금 바로 체크할 강한 촉매' },
-    { key: 'medium', label: 'Medium Catalyst', description: '중요하지만 한 단계 더 확인할 촉매' },
-    { key: 'soft', label: 'Soft Catalyst', description: '참고용으로 따라갈 수 있는 촉매' },
+    { key: 'hard', label: '강한 재료', description: '지금 바로 체크할 강한 재료' },
+    { key: 'medium', label: '중요 재료', description: '중요하지만 한 단계 더 확인할 재료' },
+    { key: 'soft', label: '참고 재료', description: '참고용으로 따라갈 수 있는 재료' },
   ]
 
   const totalItems = ordered.reduce((sum, item) => sum + sections[item.key].length, 0)
@@ -207,9 +207,9 @@ export function CatalystFeed({ sections }: { sections: CatalystFeedSections }) {
       <div className="section-header-with-kicker">
         <div>
           <h3>
-            Catalyst Feed <InfoTooltip content="뉴스와 공시를 hard, medium, soft 촉매로 나눠 지금 먼저 볼 강도부터 정렬합니다." />
+            재료 모아보기 <InfoTooltip content="뉴스와 공시를 강도별로 나눠 지금 먼저 볼 재료부터 정렬합니다." />
           </h3>
-          <p className="section-kicker">뉴스와 공시를 촉매 강도별로 분리해서 지금 더 중요한 것부터 먼저 읽히게 정리합니다.</p>
+          <p className="section-kicker">뉴스와 공시를 재료 강도별로 분리해서 지금 더 중요한 것부터 먼저 읽히게 정리합니다.</p>
         </div>
       </div>
 
@@ -256,12 +256,12 @@ export function CatalystFeed({ sections }: { sections: CatalystFeedSections }) {
         ) : (
           <p className="empty">
             {totalItems === 0
-              ? '오늘은 표시할 촉매가 없습니다. 대신 실적 플레이 보드나 점수순 카드부터 확인해보세요.'
+              ? '오늘은 표시할 재료가 없습니다. 대신 실적 일정 보드나 점수순 카드부터 확인해보세요.'
               : activeLevel === 'hard'
-                ? '현재 hard 촉매는 비어 있습니다. medium 탭으로 내려가면 오늘 이어서 볼 만한 재료를 더 찾을 수 있습니다.'
+                ? '현재 강한 재료는 비어 있습니다. 다음 단계로 내려가면 오늘 이어서 볼 만한 재료를 더 찾을 수 있습니다.'
                 : activeLevel === 'medium'
-                  ? '현재 medium 촉매는 비어 있습니다. soft 탭이나 실적 플레이 보드에서 다음 후보를 이어서 확인해보세요.'
-                  : '현재 soft 촉매도 비어 있습니다. 실적 플레이 보드나 오늘의 셋업으로 돌아가 우선순위를 다시 잡아보세요.'}
+                  ? '현재 중요한 재료는 비어 있습니다. 참고 재료나 실적 일정 보드에서 다음 후보를 이어서 확인해보세요.'
+                  : '현재 참고 재료도 비어 있습니다. 실적 일정 보드나 오늘 볼 만한 종목으로 돌아가 우선순위를 다시 잡아보세요.'}
           </p>
         )}
       </div>
@@ -275,7 +275,7 @@ export function SignalPerformanceBoard({ highlights }: { highlights: SignalPerfo
       <section className="dashboard-panel-section">
         <div className="section-header-with-kicker">
           <div>
-            <h3>시그널 검증 랭킹</h3>
+            <h3>판단 신호 검증 요약</h3>
             <p className="section-kicker">아직 누적된 검증 표본이 충분하지 않습니다. 신호가 더 쌓이면 방향별 승률과 평균 수익률이 자동으로 요약됩니다.</p>
           </div>
         </div>
@@ -288,9 +288,9 @@ export function SignalPerformanceBoard({ highlights }: { highlights: SignalPerfo
       <div className="section-header-with-kicker">
         <div>
           <h3>
-            시그널 검증 랭킹 <InfoTooltip content="bull/bear 승률, hard catalyst 1D 평균, beat setup 5D 평균처럼 최근 검증 결과를 빠르게 훑습니다." />
+            판단 신호 검증 요약 <InfoTooltip content="상승/하락 신호 승률, 강한 재료 1일 평균, 실적 기반 신호 5일 평균처럼 최근 검증 결과를 빠르게 훑습니다." />
           </h3>
-          <p className="section-kicker">bull/bear 승률과 hard catalyst, beat setup의 최근 검증 결과를 빠르게 점검합니다.</p>
+          <p className="section-kicker">상승/하락 신호 승률과 강한 재료, 실적 기반 신호의 최근 검증 결과를 빠르게 점검합니다.</p>
         </div>
       </div>
       <div className="signal-highlight-grid compact">

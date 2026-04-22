@@ -36,6 +36,8 @@ class CostLogOutputTests(unittest.TestCase):
                                 "model_profile": "economy",
                                 "model": "gpt-5.4-mini",
                                 "estimated_cost_usd": 0.12,
+                                "input_tokens": 800,
+                                "cached_input_tokens": 600,
                                 "total_tokens": 1000,
                             }
                         ),
@@ -45,6 +47,8 @@ class CostLogOutputTests(unittest.TestCase):
                                 "model_profile": "deep",
                                 "model": "o3-mini",
                                 "estimated_cost_usd": 0.30,
+                                "input_tokens": 1000,
+                                "cached_input_tokens": 250,
                                 "total_tokens": 2200,
                             }
                         ),
@@ -69,7 +73,12 @@ class CostLogOutputTests(unittest.TestCase):
             self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
             self.assertEqual(latest["run_date"], "2026-04-17")
             self.assertEqual(latest["profiles"]["economy"]["tokens"], 1000)
+            self.assertEqual(latest["profiles"]["economy"]["input_tokens"], 800)
+            self.assertEqual(latest["profiles"]["economy"]["cached_input_tokens"], 600)
+            self.assertEqual(latest["profiles"]["economy"]["uncached_input_tokens"], 200)
+            self.assertAlmostEqual(latest["profiles"]["economy"]["cache_hit_ratio"], 0.75)
             self.assertAlmostEqual(latest["profiles"]["deep"]["cost_usd"], 0.30)
+            self.assertAlmostEqual(latest["profiles"]["deep"]["cache_hit_ratio"], 0.25)
             self.assertEqual(latest["routing"]["selected_count"], 3)
             self.assertEqual(latest["deep_pass_value"]["selected_ticker_count"], 3)
             self.assertTrue((output_root / "data" / "cost_log.json").exists())

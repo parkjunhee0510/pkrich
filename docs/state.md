@@ -2,28 +2,40 @@
 
 ## Purpose
 
-Maintain derived system state across pipeline runs.
+Maintain reproducible derived state across pipeline runs.
 
-## Components
+## Current Responsibilities
 
-### Portfolio
+### Signal Tracking
 
-* Calculate current value and P&L
-* Track allocation and exposure
+* Record newly generated signals per ticker and run date
+* Update `1d`, `5d`, and `20d` return windows from stored price history
+* Maintain signal statistics used by the decision layer, backtests, and admin views
 
-### Signal Tracker
+### Outcome Labeling
 
-* Record signals per ticker
-* Update 1D / 5D / 20D performance
-* Maintain historical accuracy
+* Maintain classical return-window evaluation
+* Maintain triple-barrier outcome labels as an additive path
+
+### Portfolio-Derived State
+
+* Compute portfolio summary inputs for analysis and output
+* Support portfolio-risk-aware decision adjustments
+
+## Source Of Truth
+
+State must come from:
+* stored history in datastore
+* current collected prices
+* deterministic recomputation
+
+State must not come from:
+* live APIs during the state step
+* manually edited opaque snapshots
 
 ## Rules
 
-* State must be derived, not arbitrary
-* Must be reproducible from inputs
-* Must not depend on external APIs
-
-## Constraints
-
-* No business logic leakage to other layers
-* No formatting logic
+* State must be reproducible
+* State updates must be idempotent at the run level
+* No formatting logic in this layer
+* No hidden business rules that should live in analyzer or decision

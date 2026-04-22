@@ -128,11 +128,22 @@ export interface TradeFrame {
 }
 
 export interface MarketRegimeData {
-  regime: 'risk_on' | 'neutral' | 'risk_off'
+  regime: 'risk_on' | 'neutral' | 'risk_off' | 'reflation' | 'defensive_bias'
   confidence: number
   drivers: Record<string, string>
   implication: string
   assessed_at: string
+  sub_regime?: string
+  forward_signals?: Record<string, string>
+}
+
+export interface MacroNarrativeData {
+  headline: string
+  three_themes: string[]
+  risk_map?: string
+  what_changed_this_week?: string
+  source?: 'llm' | 'fallback'
+  model?: string
 }
 
 export interface TickerDecisionData {
@@ -282,6 +293,32 @@ export interface MacroContext {
   portfolio_event_sensitivity?: PortfolioMacroSensitivity[]
   ticker_macro_sensitivity?: Record<string, Array<{ event_code: string; label: string; date: string; sensitivity: string; reason: string }>>
   portfolio_sensitivity_summary?: string
+  yield_curve_10y_2y?: { level?: string; spread_bps?: string; status?: string }
+  yield_curve_10y_3m?: { level?: string; spread_bps?: string; status?: string }
+  credit_spread?: { level?: string; hy_level?: string; ig_level?: string }
+  surprise_score?: {
+    growth?: { score: number; samples: number }
+    inflation?: { score: number; samples: number }
+    labor?: { score: number; samples: number }
+    composite?: number
+    confidence?: 'high' | 'medium' | 'low'
+    window_days?: number
+  }
+  oil_wti?: { level?: string; price?: string; change?: string }
+  gold?: { level?: string; price?: string; change?: string }
+  hyg?: { level?: string; price?: string; change?: string }
+  lqd?: { level?: string; price?: string; change?: string }
+  macro_narrative?: MacroNarrativeData
+  ticker_macro_betas?: Record<string, {
+    rates_beta?: number
+    usd_beta?: number
+    oil_beta?: number
+    credit_beta?: number
+    source?: string
+    r2?: number | null
+    samples?: number
+    snapshot?: string
+  }>
 }
 
 export interface SensitiveHolding {

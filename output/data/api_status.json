@@ -1,6 +1,6 @@
 {
-  "run_date": "2026-04-20",
-  "log_path": "logs\\pipeline\\2026-04-20.jsonl",
+  "run_date": "2026-04-21",
+  "log_path": "logs\\pipeline\\2026-04-21.jsonl",
   "pipeline_completed": true,
   "providers": {
     "yfinance": {
@@ -13,11 +13,11 @@
     },
     "alpha_vantage": {
       "overall_status": "active",
-      "used_tickers": 3,
+      "used_tickers": 2,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 8
+      "not_used_tickers": 9
     },
     "polygon": {
       "overall_status": "active",
@@ -63,26 +63,26 @@
   "llm": {
     "used": true,
     "planned_batches": 0,
-    "completed_batches": 8,
+    "completed_batches": 16,
     "failed_batches": 0,
-    "validation_failures": 14,
-    "estimated_cost_usd": 0.0842275,
+    "validation_failures": 20,
+    "estimated_cost_usd": 0.1292137,
     "latest_model": "gpt-5.4-mini",
     "models_used": {
-      "gpt-5.4-mini": 8
+      "gpt-5.4-mini": 16
     },
     "quality": {
-      "run_date": "2026-04-21",
+      "run_date": "2026-04-22",
       "success": true,
-      "daily_api_cost_usd": 0.1292137,
+      "daily_api_cost_usd": 0.16555355,
       "batch_count": 0,
-      "validated_ticker_count": 68,
-      "validation_failure_count": 20,
+      "validated_ticker_count": 90,
+      "validation_failure_count": 13,
       "schema_violation_count": 0,
-      "fact_warning_count": 20,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 3,
-      "hallucination_ratio": 0.0441
+      "fact_warning_count": 7,
+      "consistency_warning_count": 2,
+      "hallucination_warning_count": 15,
+      "hallucination_ratio": 0.1667
     }
   }
 }

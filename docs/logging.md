@@ -2,26 +2,36 @@
 
 ## Purpose
 
-Track pipeline execution and diagnose failures.
+Track pipeline execution, failures, warnings, and derived operational metrics.
 
-## Components
+## Current Logging Model
 
 ### Event Stream
 
-* JSONL format
-* Step-by-step events
+* Pipeline records structured step-level events during execution
+* Events are used for diagnosis and for derived reports
 
-### Summary
+### Run Finalization
 
-* Aggregated statistics
-* Error and warning counts
+* Each run is finalized with success or failure status
+* Analysis-run metadata is recorded through datastore-backed paths
+
+### Derived Operational Outputs
+
+The logging pipeline currently feeds:
+* API status reports
+* analysis quality reports
+* cost logs
+* routing outcome summaries
 
 ## Requirements
 
-* Must record all critical events
-* Must not expose secrets
+* Record critical lifecycle events
+* Keep secrets out of logs
+* Preserve enough metadata for debugging without duplicating raw payloads excessively
 
 ## Rules
 
-* Logging must not affect pipeline flow
-* Logging failures must not break execution
+* Logging must not change pipeline control flow
+* Logging failures should degrade gracefully where possible
+* Derived reports are operational artifacts, not the source of truth for core business state

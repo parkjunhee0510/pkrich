@@ -1,9 +1,9 @@
 import type { MarketRegimeData } from '../types'
 
 const REGIME_CONFIG: Record<string, { emoji: string; label: string; className: string }> = {
-  risk_on: { emoji: '\uD83D\uDFE2', label: '위험선호', className: 'regime-risk-on' },
-  neutral: { emoji: '\uD83D\uDFE1', label: '중립', className: 'regime-neutral' },
-  risk_off: { emoji: '\uD83D\uDD34', label: '위험회피', className: 'regime-risk-off' },
+  risk_on: { emoji: '🟢', label: '공격적으로 보기 좋은 장세', className: 'regime-risk-on' },
+  neutral: { emoji: '🟡', label: '중립 장세', className: 'regime-neutral' },
+  risk_off: { emoji: '🔴', label: '조심스럽게 봐야 하는 장세', className: 'regime-risk-off' },
 }
 
 interface MarketRegimeBannerProps {
@@ -22,14 +22,10 @@ export function MarketRegimeBanner({ regime }: MarketRegimeBannerProps) {
         <span className="regime-badge">
           {config.emoji} {config.label}
         </span>
-        <span className="regime-confidence">
-          확신도 {regime.confidence}%
-        </span>
+        <span className="regime-confidence">확신도 {regime.confidence}%</span>
       </div>
-      {regime.implication && (
-        <p className="regime-implication">{regime.implication}</p>
-      )}
-      {driverEntries.length > 0 && (
+      {regime.implication ? <p className="regime-implication">{regime.implication}</p> : null}
+      {driverEntries.length > 0 ? (
         <div className="regime-drivers">
           {driverEntries.map(([key, value]) => (
             <span key={key} className="regime-driver-chip">
@@ -37,7 +33,7 @@ export function MarketRegimeBanner({ regime }: MarketRegimeBannerProps) {
             </span>
           ))}
         </div>
-      )}
+      ) : null}
     </section>
   )
 }

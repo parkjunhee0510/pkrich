@@ -4,6 +4,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from src.analyzer.signal_levels import allowed_signal_levels
+
 
 _PRICE_TOKEN = re.compile(r"(?:\$|USD\s*)(\d[\d,]*\.?\d*)|(\d[\d,]*\.?\d*)\s*USD", re.IGNORECASE)
 _PERCENT_TOKEN = re.compile(r"([-+]?\d[\d,]*\.?\d*)%")
@@ -33,6 +35,15 @@ class ValidationResult:
         for warning in self.warnings:
             counts[warning.category] = counts.get(warning.category, 0) + 1
         return counts
+
+
+@dataclass(frozen=True)
+class NumericMismatch:
+    grade: str
+    value_type: str
+    number: float
+    nearest_known: float | None
+    deviation: float | None
 
 
 class ResponseValidator:
@@ -66,15 +77,23 @@ class ResponseValidator:
             if hallucinated and "key_news" in fallback:
                 sanitized["key_news"] = fallback["key_news"]
 
-        fact_warning_fields = {
-            field_name
-            for field_name, value in sanitized.items()
-            if _has_fact_mismatch(value, raw_payload, intermediate)
-        }
-        for field_name in sorted(fact_warning_fields):
-            warnings.append(ValidationWarning("fact_warning", field_name, f"{field_name} contains unsupported numeric values"))
-            if field_name in fallback:
-                sanitized[field_name] = fallback[field_name]
+        for field_name in sorted(sanitized.keys()):
+            mismatch = _find_fact_mismatch(sanitized.get(field_name), raw_payload, intermediate)
+            if mismatch is None:
+                continue
+            message = _format_numeric_mismatch_message(field_name, mismatch)
+            if mismatch.grade == "minor":
+                warnings.append(ValidationWarning("fact_warning", field_name, message))
+                continue
+            if mismatch.grade == "suspect":
+                warnings.append(ValidationWarning("fact_warning", field_name, message))
+                if field_name in fallback:
+                    sanitized[field_name] = fallback[field_name]
+                continue
+            if mismatch.grade == "hallucination":
+                warnings.append(ValidationWarning("hallucination_warning", field_name, message))
+                if field_name in fallback:
+                    sanitized[field_name] = fallback[field_name]
 
         if "signal_or_takeaway" in sanitized:
             signal_text = str(sanitized.get("signal_or_takeaway", ""))
@@ -94,6 +113,13 @@ class ResponseValidator:
             if not signal_replaced:
                 current_price = _extract_current_price(raw_payload, intermediate)
                 price_issues = _find_signal_price_issues(signal_text, current_price=current_price)
+                price_issues.extend(
+                    _find_signal_whitelist_issues(
+                        signal_text,
+                        raw_payload=raw_payload,
+                        intermediate=intermediate,
+                    )
+                )
                 for issue in price_issues:
                     warnings.append(ValidationWarning("fact_warning", "signal_or_takeaway", issue))
                 if price_issues and "signal_or_takeaway" in fallback:
@@ -131,19 +157,20 @@ def _find_hallucinated_key_news(key_news: list[Any], news_items: list[Any]) -> l
     return warnings
 
 
-def _has_fact_mismatch(value: Any, raw_payload: dict[str, Any], intermediate: dict[str, Any]) -> bool:
+def _find_fact_mismatch(value: Any, raw_payload: dict[str, Any], intermediate: dict[str, Any]) -> NumericMismatch | None:
     text_values = _collect_text_values(value)
     if not text_values:
-        return False
+        return None
     known_prices, known_percents = _extract_known_numeric_values(raw_payload, intermediate)
+    worst: NumericMismatch | None = None
     for text in text_values:
         for number in _extract_price_numbers(text):
-            if not _matches_known_value(number, known_prices):
-                return True
+            mismatch = _build_numeric_mismatch("price", number, known_prices)
+            worst = _pick_worse_mismatch(worst, mismatch)
         for number in _extract_percent_numbers(text):
-            if not _matches_known_value(number, known_percents):
-                return True
-    return False
+            mismatch = _build_numeric_mismatch("percent", number, known_percents)
+            worst = _pick_worse_mismatch(worst, mismatch)
+    return worst
 
 
 def _has_tone_signal_conflict(news_tone: Any, signal: str) -> bool:
@@ -217,12 +244,64 @@ def _extract_percent_numbers(text: str) -> list[float]:
     return values
 
 
-def _matches_known_value(target: float, known_values: list[float]) -> bool:
+def _build_numeric_mismatch(value_type: str, target: float, known_values: list[float]) -> NumericMismatch | None:
+    grade, nearest_known, deviation = _grade_mismatch(target, known_values)
+    if grade in (None, "rounding"):
+        return None
+    return NumericMismatch(
+        grade=grade,
+        value_type=value_type,
+        number=target,
+        nearest_known=nearest_known,
+        deviation=deviation,
+    )
+
+
+def _grade_mismatch(target: float, known_values: list[float]) -> tuple[str | None, float | None, float | None]:
+    if not known_values:
+        return None, None, None
+    nearest_known: float | None = None
+    min_dev: float | None = None
     for known in known_values:
         baseline = abs(known) if known != 0 else 1.0
-        if abs(target - known) / baseline <= 0.05:
-            return True
-    return False
+        deviation = abs(target - known) / baseline
+        if min_dev is None or deviation < min_dev:
+            min_dev = deviation
+            nearest_known = known
+    if min_dev is None:
+        return None, None, None
+    if min_dev < 0.005:
+        return "rounding", nearest_known, min_dev
+    if min_dev < 0.02:
+        return "minor", nearest_known, min_dev
+    if min_dev < 0.05:
+        return "suspect", nearest_known, min_dev
+    return "hallucination", nearest_known, min_dev
+
+
+def _pick_worse_mismatch(current: NumericMismatch | None, candidate: NumericMismatch | None) -> NumericMismatch | None:
+    if candidate is None:
+        return current
+    if current is None:
+        return candidate
+    severity_rank = {"minor": 1, "suspect": 2, "hallucination": 3}
+    current_rank = severity_rank.get(current.grade, 0)
+    candidate_rank = severity_rank.get(candidate.grade, 0)
+    if candidate_rank != current_rank:
+        return candidate if candidate_rank > current_rank else current
+    current_dev = current.deviation or 0.0
+    candidate_dev = candidate.deviation or 0.0
+    return candidate if candidate_dev > current_dev else current
+
+
+def _format_numeric_mismatch_message(field_name: str, mismatch: NumericMismatch) -> str:
+    if mismatch.nearest_known is None or mismatch.deviation is None:
+        return f"{field_name} contains unsupported numeric values"
+    deviation_pct = mismatch.deviation * 100
+    return (
+        f"{field_name} contains {mismatch.grade} {mismatch.value_type} mismatch: "
+        f"{mismatch.number} vs known {mismatch.nearest_known} ({deviation_pct:.2f}% dev)"
+    )
 
 
 def _looks_like_title(text: str) -> bool:
@@ -291,6 +370,42 @@ def _find_signal_price_issues(signal_text: str, *, current_price: float | None =
             for target in targets:
                 if abs(target - current_price) / current_price > 0.30:
                     issues.append(f"target {target} outside 30% band from current price {current_price}")
+    return issues
+
+
+def _find_signal_whitelist_issues(
+    signal_text: str,
+    *,
+    raw_payload: dict[str, Any],
+    intermediate: dict[str, Any],
+) -> list[str]:
+    text = str(signal_text or "")
+    if not text.strip():
+        return []
+    direction = _signal_direction(text)
+    targets = _extract_targets(text)
+    stop = _extract_stop(text)
+    if targets is None and stop is None:
+        return []
+    allowed = allowed_signal_levels(raw_payload, intermediate.get("trade_frame", {}), direction)
+    issues: list[str] = []
+    allowed_targets = allowed.get("targets", [])
+    allowed_stop = allowed.get("stop", [])
+    if targets:
+        for target in targets:
+            grade, nearest, _ = _grade_mismatch(target, allowed_targets)
+            if grade not in (None, "rounding"):
+                issues.append(
+                    f"target {target} not in MUST_USE_VALUES whitelist"
+                    + (f" (nearest {nearest})" if nearest is not None else "")
+                )
+    if stop is not None:
+        grade, nearest, _ = _grade_mismatch(stop, allowed_stop)
+        if grade not in (None, "rounding"):
+            issues.append(
+                f"stop {stop} not in MUST_USE_VALUES whitelist"
+                + (f" (nearest {nearest})" if nearest is not None else "")
+            )
     return issues
 
 

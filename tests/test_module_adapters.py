@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from src.analyzer.base import AnalysisContext
 from src.analyzer.modules.research_narrative_module import ResearchNarrativeModule
+from src.analyzer.modules.signal_takeaway_module import SignalTakeawayModule
 from src.analyzer.modules.trade_frame_module import TradeFrameModule
 from src.analyzer.modules.valuation_module import ValuationModule
 from src.analyzer.payloads import build_fallback_payloads, build_raw_payloads
@@ -154,3 +155,44 @@ class ModuleAdapterTests(unittest.TestCase):
         )
         payload = ResearchNarrativeModule().build_batch_payload(ctx, ["AAPL"])
         self.assertEqual(payload[0]["macro_event_summary"], [])
+
+    def test_signal_takeaway_module_payload_includes_must_use_values(self) -> None:
+        ctx = AnalysisContext(
+            watchlist=self.watchlist,
+            collected=self.collected,
+            news_map={},
+            run_date=date(2026, 4, 16),
+            model_profile=load_model_profile(),
+            available_inputs={
+                "price",
+                "fundamentals",
+                "news",
+                "upcoming_events",
+                "quarterly_financials",
+                "options_summary",
+                "historical_prices",
+            },
+            raw_payload_by_ticker=self.raw_payloads,
+            fallback_payload_by_ticker=self.fallback_payloads,
+            intermediate_results={
+                "AAPL": {
+                    "summary": "테스트 요약",
+                    "trade_frame": {
+                        "entry_price": "205.00",
+                        "stop_loss": "198.00",
+                        "invalidation_price": "194.00",
+                        "target_1": "220.00",
+                        "target_2": "235.00",
+                    },
+                    "news_tone": {"label": "bullish"},
+                    "risks_or_watchpoints": ["실적 전 변동성 확대 가능성"],
+                }
+            },
+        )
+        payload = SignalTakeawayModule().build_batch_payload(ctx, ["AAPL"])
+        must_use = payload[0]["must_use_values"]
+        self.assertEqual(must_use["current_price"], "210.00")
+        self.assertEqual(must_use["atr_14"], "5.00")
+        self.assertIn("198.00", must_use["support_levels"])
+        self.assertIn("220.00", must_use["resistance_levels"])
+        self.assertEqual(must_use["next_earnings"], "2026-04-30")

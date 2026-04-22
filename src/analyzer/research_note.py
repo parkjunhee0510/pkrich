@@ -932,7 +932,23 @@ def _build_user_prompt(
     macro_context: dict[str, Any] | None = None,
     account_size_hint: float | None = None,
 ) -> str:
-    compact_context = "\n\n".join(_build_ticker_context(entry) for entry in payload)
+    betas_by_ticker: dict[str, Any] = {}
+    ticker_event_sensitivity: dict[str, Any] = {}
+    if isinstance(macro_context, dict):
+        _b = macro_context.get("ticker_macro_betas", {})
+        if isinstance(_b, dict):
+            betas_by_ticker = _b
+        _s = macro_context.get("ticker_macro_sensitivity", {})
+        if isinstance(_s, dict):
+            ticker_event_sensitivity = _s
+    compact_context = "\n\n".join(
+        _build_ticker_context(
+            entry,
+            macro_betas=betas_by_ticker.get(str(entry.get("ticker", ""))),
+            event_sensitivity=ticker_event_sensitivity.get(str(entry.get("ticker", ""))),
+        )
+        for entry in payload
+    )
     account_size_text = _format_account_size_hint(account_size_hint)
     one_percent_risk = account_size_hint * 0.01 if account_size_hint and account_size_hint > 0 else 100.0
     instructions = (
@@ -1004,6 +1020,8 @@ def _build_user_prompt(
         '- 배당수익률(dividend_yield)이 섹터 평균 대비 높으면 소득 투자 매력을 언급합니다.'
     )
     macro_section = ""
+    regime_instruction = ""
+    narrative_section = ""
     if macro_context:
         vix = macro_context.get("vix", {})
         events = macro_context.get("upcoming_macro_events", [])
@@ -1011,8 +1029,8 @@ def _build_user_prompt(
         macro_lines = []
         if vix.get("level") not in (None, "N/A"):
             macro_lines.append(f"VIX: {vix['level']} ({vix.get('change', 'N/A')}) — {vix.get('regime', 'N/A')}")
-            regime = str(vix.get('regime', 'N/A'))
-            macro_lines.append(f"Volatility guidance: {_volatility_guidance(regime, vix.get('level', 'N/A'))}")
+            volatility_regime = str(vix.get('regime', 'N/A'))
+            macro_lines.append(f"Volatility guidance: {_volatility_guidance(volatility_regime, vix.get('level', 'N/A'))}")
         for evt in events[:5]:
             macro_lines.append(
                 f"{evt.get('event_code', evt.get('type', ''))}: "
@@ -1021,12 +1039,40 @@ def _build_user_prompt(
             )
         if portfolio_sensitivity not in {"", "N/A"}:
             macro_lines.append(f"Portfolio sensitivity: {portfolio_sensitivity}")
+
+        regime_info = macro_context.get("market_regime") or {}
+        if isinstance(regime_info, dict) and regime_info.get("regime"):
+            forward = regime_info.get("forward_signals") or {}
+            regime_label = regime_info.get("regime", "neutral")
+            sub = regime_info.get("sub_regime") or ""
+            macro_lines.append(
+                f"Regime: {regime_label}"
+                + (f" / sub={sub}" if sub else "")
+                + f" (conf {regime_info.get('confidence', 0)}) — {regime_info.get('implication', '')}"
+            )
+            for key, val in forward.items():
+                macro_lines.append(f"{key}: {val}")
+            regime_instruction = _build_regime_instruction(regime_label, sub)
+
+        narrative = macro_context.get("macro_narrative")
+        if isinstance(narrative, dict) and narrative.get("headline"):
+            themes = narrative.get("three_themes") or []
+            theme_text = " / ".join(str(t) for t in themes[:3]) if isinstance(themes, list) else ""
+            narrative_section = (
+                "\n\n[Macro Narrative]\n"
+                f"Headline: {narrative.get('headline', '')}\n"
+                + (f"Themes: {theme_text}\n" if theme_text else "")
+                + (f"What changed: {narrative.get('what_changed_this_week', '')}\n" if narrative.get('what_changed_this_week') else "")
+                + (f"Risk map: {narrative.get('risk_map', '')}\n" if narrative.get('risk_map') else "")
+            ).rstrip()
+
         if macro_lines:
             macro_section = "\n\n[Macro Context]\n" + "\n".join(macro_lines)
 
     return (
         f'{instructions}\n'
-        f'Data date: {run_date.isoformat()}{macro_section}\n\n'
+        f'{regime_instruction}'
+        f'Data date: {run_date.isoformat()}{macro_section}{narrative_section}\n\n'
         'Compact context:\n'
         f'{compact_context}\n\n'
         'Structured input JSON:\n'
@@ -1034,7 +1080,12 @@ def _build_user_prompt(
     )
 
 
-def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
+def _build_ticker_context(
+    analysis_input: dict[str, Any],
+    *,
+    macro_betas: dict[str, Any] | None = None,
+    event_sensitivity: list[dict[str, Any]] | None = None,
+) -> str:
     price_action = analysis_input.get('price_action', {})
     positioning = analysis_input.get('positioning', {})
     upcoming_events = analysis_input.get('upcoming_events', [])
@@ -1092,7 +1143,89 @@ def _build_ticker_context(analysis_input: dict[str, Any]) -> str:
         f"[Sector Comparison] {sector_peer_context}\n"
         f"[Fundamentals] {fundamentals}\n"
         f"[Technical Indicators] {technicals}"
+        + _render_ticker_macro_lens(macro_betas, event_sensitivity)
     )
+
+
+def _render_ticker_macro_lens(
+    betas: dict[str, Any] | None,
+    event_sensitivity: list[dict[str, Any]] | None,
+) -> str:
+    if not betas and not event_sensitivity:
+        return ""
+    parts: list[str] = []
+    if isinstance(betas, dict):
+        beta_chunks: list[str] = []
+        for key in ("rates_beta", "usd_beta", "oil_beta", "credit_beta"):
+            value = betas.get(key)
+            if value is None:
+                continue
+            try:
+                beta_chunks.append(f"{key.replace('_beta', '')}β {float(value):+.2f}")
+            except (TypeError, ValueError):
+                continue
+        meta_bits: list[str] = []
+        source = betas.get("source")
+        if source:
+            meta_bits.append(f"src={source}")
+        if betas.get("r2") is not None:
+            meta_bits.append(f"R²={betas.get('r2')}")
+        if betas.get("samples"):
+            meta_bits.append(f"n={betas.get('samples')}")
+        if beta_chunks:
+            suffix = f" ({', '.join(meta_bits)})" if meta_bits else ""
+            parts.append("Betas: " + ", ".join(beta_chunks) + suffix)
+        snapshot = str(betas.get("snapshot") or "").strip()
+        if snapshot:
+            parts.append(snapshot)
+    if isinstance(event_sensitivity, list) and event_sensitivity:
+        event_lines: list[str] = []
+        for row in event_sensitivity[:3]:
+            if not isinstance(row, dict):
+                continue
+            event_lines.append(
+                f"{row.get('event_code', 'EVENT')}({row.get('date', '')}): "
+                f"{row.get('sensitivity', '')} — {row.get('reason', '')}"
+            )
+        if event_lines:
+            parts.append("Event sensitivity: " + " | ".join(event_lines))
+    if not parts:
+        return ""
+    return "\n[Ticker Macro Lens] " + " || ".join(parts)
+
+
+_REGIME_INSTRUCTIONS: dict[str, str] = {
+    "risk_on": (
+        "[Regime-conditional guidance]\n"
+        "- 현재 리스크 선호 구간입니다. 상대 강도와 신규 catalyst를 우선 부각하고, 리스크 요인은 과장하지 말고 '언제 뒤집힐지' 트리거를 명시하세요.\n"
+        "- stop_loss는 SMA50 또는 ATR 기준 표준 폭을 유지합니다.\n"
+    ),
+    "risk_off": (
+        "[Regime-conditional guidance]\n"
+        "- 현재 리스크 회피 구간입니다. 하방 시나리오와 방어 스토리를 반드시 risks_or_watchpoints에 명시하고, 진입 조건은 눌림목 및 강도 확인을 요구하세요.\n"
+        "- stop_loss는 기본 폭보다 좁게 설정하고, 현금 비중 상향 관점을 signal_or_takeaway에 반영할 수 있으면 반영합니다.\n"
+    ),
+    "reflation": (
+        "[Regime-conditional guidance]\n"
+        "- 현재 리플레이션 편향입니다. 원자재·산업재·금융/은행 중심의 테이프로 해석하고, 성장주는 금리 민감도(rates_beta)를 명시적으로 언급하세요.\n"
+        "- yield curve 스티프닝이 thesis를 강화/약화하는지 financial_highlights 또는 risks_or_watchpoints 한 줄에 연결하세요.\n"
+    ),
+    "defensive_bias": (
+        "[Regime-conditional guidance]\n"
+        "- 현재 방어적 편향입니다. 마진 안정성, 배당 지속성, 낮은 부채 레버리지를 financial_highlights 최상단에 반영하세요.\n"
+        "- 하이일드 스프레드 확대/실질금리 상승이 개별 thesis에 주는 위협을 risks_or_watchpoints에 구체적 트리거로 명시하세요.\n"
+    ),
+    "neutral": (
+        "[Regime-conditional guidance]\n"
+        "- 현재 중립 구간입니다. 종목 특유 촉매와 최근 수급 변화를 근거로 선별적 접근을 권고하고, 매크로 관점은 보조적 참고로만 사용하세요.\n"
+    ),
+}
+
+
+def _build_regime_instruction(regime_label: str, sub_regime: str) -> str:
+    """Return a regime-conditional instruction block to prepend to the prompt."""
+    key = (sub_regime or regime_label or "neutral").strip().lower()
+    return _REGIME_INSTRUCTIONS.get(key, _REGIME_INSTRUCTIONS["neutral"]) + "\n"
 
 
 def _volatility_guidance(regime: str, vix_level: str) -> str:

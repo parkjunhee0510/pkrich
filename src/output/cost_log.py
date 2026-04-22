@@ -48,6 +48,8 @@ def _load_cost_runs(logs_root: Path, *, limit: int) -> list[dict[str, Any]]:
         total_cost = float(summary.get("daily_api_cost_usd", 0.0) or 0.0)
         profile_costs = event_payload["profile_costs"]
         profile_tokens = event_payload["profile_tokens"]
+        profile_input_tokens = event_payload["profile_input_tokens"]
+        profile_cached_input_tokens = event_payload["profile_cached_input_tokens"]
         routing = event_payload["routing"]
 
         deep_cost = float(profile_costs.get("deep", 0.0) or 0.0)
@@ -64,6 +66,16 @@ def _load_cost_runs(logs_root: Path, *, limit: int) -> list[dict[str, Any]]:
                     profile: {
                         "cost_usd": round(float(cost or 0.0), 8),
                         "tokens": int(profile_tokens.get(profile, 0) or 0),
+                        "input_tokens": int(profile_input_tokens.get(profile, 0) or 0),
+                        "cached_input_tokens": int(profile_cached_input_tokens.get(profile, 0) or 0),
+                        "uncached_input_tokens": max(
+                            int(profile_input_tokens.get(profile, 0) or 0) - int(profile_cached_input_tokens.get(profile, 0) or 0),
+                            0,
+                        ),
+                        "cache_hit_ratio": _cache_hit_ratio(
+                            int(profile_cached_input_tokens.get(profile, 0) or 0),
+                            int(profile_input_tokens.get(profile, 0) or 0),
+                        ),
                         "calls": int(event_payload["profile_calls"].get(profile, 0) or 0),
                         "models": dict(sorted(event_payload["profile_models"].get(profile, {}).items())),
                     }
@@ -91,6 +103,8 @@ def _load_cost_runs(logs_root: Path, *, limit: int) -> list[dict[str, Any]]:
 def _load_event_metrics(jsonl_path: Path) -> dict[str, Any]:
     profile_costs: dict[str, float] = defaultdict(float)
     profile_tokens: dict[str, int] = defaultdict(int)
+    profile_input_tokens: dict[str, int] = defaultdict(int)
+    profile_cached_input_tokens: dict[str, int] = defaultdict(int)
     profile_calls: dict[str, int] = defaultdict(int)
     profile_models: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     routing: dict[str, Any] = {
@@ -105,6 +119,8 @@ def _load_event_metrics(jsonl_path: Path) -> dict[str, Any]:
         return {
             "profile_costs": profile_costs,
             "profile_tokens": profile_tokens,
+            "profile_input_tokens": profile_input_tokens,
+            "profile_cached_input_tokens": profile_cached_input_tokens,
             "profile_calls": profile_calls,
             "profile_models": profile_models,
             "routing": routing,
@@ -124,6 +140,8 @@ def _load_event_metrics(jsonl_path: Path) -> dict[str, Any]:
             model = str(row.get("model", "unknown")).strip() or "unknown"
             profile_costs[profile] += float(row.get("estimated_cost_usd", 0.0) or 0.0)
             profile_tokens[profile] += int(row.get("total_tokens", 0) or 0)
+            profile_input_tokens[profile] += int(row.get("input_tokens", 0) or 0)
+            profile_cached_input_tokens[profile] += int(row.get("cached_input_tokens", 0) or 0)
             profile_calls[profile] += 1
             profile_models[profile][model] += 1
         elif event == "decision_completed":
@@ -138,10 +156,18 @@ def _load_event_metrics(jsonl_path: Path) -> dict[str, Any]:
     return {
         "profile_costs": profile_costs,
         "profile_tokens": profile_tokens,
+        "profile_input_tokens": profile_input_tokens,
+        "profile_cached_input_tokens": profile_cached_input_tokens,
         "profile_calls": profile_calls,
         "profile_models": profile_models,
         "routing": routing,
     }
+
+
+def _cache_hit_ratio(cached_input_tokens: int, input_tokens: int) -> float | None:
+    if input_tokens <= 0:
+        return None
+    return round(cached_input_tokens / input_tokens, 4)
 
 
 def _classify_deep_value(*, deep_cost: float, deep_selected: int, conflicted_count: int) -> str:

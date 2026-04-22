@@ -5,14 +5,14 @@
   "payload": {
     "ticker": "T",
     "name": "AT&T Inc.",
-    "date": "2026-04-20",
-    "summary": "주가는 26.18달러로 50일선 27.86달러와 200일선 26.81달러를 모두 하회해 단기적으로는 약세 박스권 하단을 시험하는 모습이며, 30일 기준 -6.56%와 섹터 대비 RS -12.71%가 부담입니다. 다음 촉매는 D-1인 2026-04-22 실적 발표로, 옵션이 PUT 우위(PCR 2.03, MaxPain 25달러)라서 발표 직후 25.5~27.2달러 구간의 방향성 확인이 핵심입니다.",
+    "date": "2026-04-21",
+    "summary": "주가는 25.88달러로 30D -9.07% 약세이며 SMA50 27.83달러와 SMA200 26.80달러 아래에 있어 단기 반등보다 실적 확인이 우선입니다. 다음 촉매는 오늘인 2026-04-22 실적 발표(D-0)이고, 결과와 가이던스가 나오기 전까지는 27달러 콜·풋 수급이 단기 방향을 좌우할 가능성이 큽니다.",
     "key_news": [
-      "D-1 실적 발표 앞두고 변동성 확대",
-      "AT&T 8-K 공시 제출",
-      "연간 10-K 제출로 기본 체력 재확인",
-      "에머전시 네트워크 리뷰 관련 우려 부각",
-      "Crown Castle 감원·임대수익 둔화로 통신 인프라 업황 압박"
+      "실적 발표 임박",
+      "AT&T 8-K 제출",
+      "연간 사업 및 재무 보고서(10-K) 제출",
+      "네트워크 점검 관련 투자자 우려 보도",
+      "텔레콤 업종 내 비교 기사"
     ],
     "news_references": [
       {
@@ -47,30 +47,30 @@
       }
     ],
     "financial_highlights": [
-      "PER 8.6x, 목표가 대비 업사이드 +16.2%",
-      "Forward EPS 2.55, TTM EPS 3.04",
-      "EPS 성장률 -5.60% YoY",
-      "기관 보유 68.15%, 애널리스트 Buy 23명",
-      "RS vs 섹터 ETF -12.71%, 30D 수익률 -6.56%"
+      "PER 8.6x, peer PER percentile 33",
+      "RS percentile 0",
+      "RS vs Sector ETF -13.02%",
+      "Forward EPS 2.55, TTM EPS 3.00, EPS 성장률 -5.60% YoY",
+      "ATR(14) 0.68달러 (2.61%), RVOL 0.72x"
     ],
     "risks_or_watchpoints": [
-      "종가가 27.86달러(SMA50) 아래에서 2거래일 연속 마감하면 추세 약화로 해석할 것.",
-      "26.18달러 지지 이탈 후 25.51달러 아래로 내려가면 단기 하락 가속 신호로 감시할 것.",
-      "2026-04-22 실적 발표 전까지 거래량이 0.68배(RVOL) 미만이면 반등 신뢰도 낮게 볼 것.",
-      "RS vs Sector ETF가 -12.71%인 상태가 개선되지 않고 30D 기준 -6.56% 하락이 확대되면 상대강도 악화로 경보를 둘 것."
+      "손절 무효화 기준: 가격이 50일 이동평균선 27.83 USD 아래로 밀리면 약세 시나리오로 전환 감시",
+      "단기 추세 리스크: 현재가 25.88 USD가 SMA200 26.80 USD와 SMA50 27.83 USD 모두 아래라면 추세 약세 지속 여부 확인",
+      "실적 이벤트 리스크: 2026-04-22 실적 발표 전까지 변동성 확대 가능, 발표 직후 25.88 USD 또는 25.20 USD 이탈/회복 여부 감시",
+      "옵션 수급 경고: PUT $27(볼륨 210, OI 대비 46%) 및 PCR 2.03 bearish는 하방 헤지 수요 강함, 2026-04-24 만기 전 27 USD 회복 실패 시 주의"
     ],
-    "signal_or_takeaway": "중립 경계 — 실적 D-1과 풋 우위 옵션 수급, 단기 박스 하단 시험 | 진입 트리거 25.51달러 이탈 후 약세 지속 확인 | 목표 25.00달러/24.20달러 | 손절 27.86달러",
+    "signal_or_takeaway": "중립 경계 — 실적 발표 D-0와 콜·풋 수급 경계 | 진입 트리거 26.80 상향 돌파 | 목표 27.83/29.79달러 | 손절 25.88달러",
     "data_snapshot": {
       "Price": "25.88 USD",
       "Daily Change": "-1.15%",
       "Market Cap": "181.17B",
-      "Trailing P/E": "8.51",
-      "EPS": "3.04",
+      "Trailing P/E": "8.63",
+      "EPS": "3.00",
       "52W High": "29.79",
       "52W Low": "22.95",
       "50D SMA": "27.83",
       "200D SMA": "26.80",
-      "Volume": "32192083",
+      "Volume": "32.19M",
       "3M Avg Volume": "44.41M",
       "Price/Book": "1.65",
       "Dividend Yield": "4.24%",
@@ -79,17 +79,17 @@
       "High": "26.44",
       "Low": "25.88",
       "Close": "25.88",
-      "RS vs Sector ETF": "-12.71%"
+      "RS vs Sector ETF": "-13.02%"
     },
     "fundamentals": {
       "market_cap": "181.17B",
-      "trailing_pe": "8.51",
-      "eps": "3.04",
+      "trailing_pe": "8.63",
+      "eps": "3.00",
       "forward_eps": "2.55",
       "earnings_growth": "-5.60% YoY",
       "price_to_book": "1.65",
       "dividend_yield": "4.24%",
-      "volume": "32192083",
+      "volume": "32.19M",
       "avg_volume_3m": "44.41M",
       "52w_high": "29.79",
       "52w_low": "22.95",
@@ -104,13 +104,13 @@
     },
     "earnings_setup": {
       "forward_eps": "2.55 USD/share",
-      "ttm_eps": "3.04 USD/share",
-      "forward_vs_ttm": "-16.12%",
+      "ttm_eps": "3.00 USD/share",
+      "forward_vs_ttm": "-15.00%",
       "earnings_growth": "-5.60% YoY",
       "latest_estimated_eps": "0.47 USD/share",
       "latest_surprise_pct": "+0.12%",
       "latest_beat_miss": "beat",
-      "next_earnings_event": "2026-04-22 실적 발표 (D-1 · BMO)"
+      "next_earnings_event": "2026-04-22 실적 발표 (D-0 · BMO)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 0,
@@ -137,7 +137,7 @@
       "price_vs_sma200": "-3.42%",
       "week52_position": "43%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-12.36%"
+      "rs_vs_sector_etf": "-13.02%"
     },
     "quarterly_financials": [
       {
@@ -186,49 +186,56 @@
         "type": "earnings",
         "label": "실적 발표",
         "date": "2026-04-22",
-        "days_until": "1",
+        "days_until": "0",
         "timing": "BMO"
       },
       {
         "type": "dividend",
         "label": "배당 지급일",
         "date": "2026-05-01",
-        "days_until": "10",
+        "days_until": "9",
         "timing": ""
       }
     ],
     "news_tone": {
-      "label": "약세",
-      "confidence": 4,
-      "reasoning": "실적 전 이벤트 구간에서 옵션 수급이 풋 우위로 기울고, 네트워크 리뷰 관련 불확실성이 커진 상태다. 다만 공식 공시와 10-K로 이벤트 자체는 정리되어 있어 극단적 악재보다는 경계심이 우세하다."
+      "label": "중립-약부정",
+      "confidence": 2,
+      "reasoning": "실적 발표가 임박한 가운데 네트워크 점검 우려가 겹쳐 경계심이 우세하지만, 제공된 정보만으로는 확정적 악재로 보긴 어렵다."
     },
     "trade_frame": {
-      "entry_price": "현재가 26.18 또는 눌림 시 25.51 USD",
-      "stop_loss": "SMA50 27.86 USD",
-      "target_1": "27.19 USD (1.5×ATR)",
+      "entry_price": "현재가 25.88 또는 눌림 시 25.20 USD",
+      "stop_loss": "SMA50 27.83 USD",
+      "target_1": "26.90 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 30.43 USD",
       "risk_reward_ratio": "N/A",
-      "position_size_note": "$58,427 계좌 1% 리스크 기준 약 872주 (ATR $0.67 기반)",
+      "position_size_note": "$57,921 계좌 1% 리스크 기준 약 851주 (ATR $0.68 기반)",
       "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-      "base_scenario": "26.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+      "base_scenario": "25.88 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-      "invalidation_price": "50일 이동평균선인 27.86 USD 아래로 밀리면 약세 시나리오 확인",
+      "invalidation_price": "50일 이동평균선인 27.83 USD 아래로 밀리면 약세 시나리오 확인",
       "watch_period": "2026-04-22 실적 발표 전까지"
     },
     "options_summary": {
       "expiry": "2026-04-24",
-      "atm_call_iv": "63.5%",
-      "atm_put_iv": "61.3%",
+      "atm_call_iv": "73.4%",
+      "atm_put_iv": "70.7%",
       "put_call_ratio": "0.51x",
-      "iv_percentile_30d": "17th",
+      "iv_percentile_30d": "19th",
       "tone": "bearish",
-      "unusual_activity": "PUT $27, vol 210, OI 대비 84% ; PUT $40, vol 15, OI 대비 38% ; CALL $27, vol 74, OI 대비 50%",
-      "oi_change": "콜 OI +0.1% / 풋 OI +2.8%"
+      "unusual_activity": "PUT $27, vol 210, OI 대비 46% ; PUT $40, vol 15, OI 대비 38% ; CALL $27, vol 74, OI 대비 44%",
+      "oi_change": "콜 OI +0.0% / 풋 OI +1.5%"
     },
     "signal_history": [
       {
-        "date": "2026-04-20",
+        "date": "2026-04-21",
         "direction": "neutral",
+        "catalyst": "실적",
+        "return_5d": "N/A",
+        "note": "25.88 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
+      {
+        "date": "2026-04-20",
+        "direction": "bear",
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "26.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
@@ -251,21 +258,14 @@
         "date": "2026-04-14",
         "direction": "bull",
         "catalyst": "실적",
-        "return_5d": "N/A",
+        "return_5d": "+1.01%",
         "note": "실적 전까지 24.99-27.90 USD 범위에서 박스권 등락이 유력합니다."
-      },
-      {
-        "date": "2026-04-13",
-        "direction": "bull",
-        "catalyst": "실적",
-        "return_5d": "+2.23%",
-        "note": "실적 전까지 25.00 USD~26.25 USD 범위에서 과매도 반등 시도가 이어질 수 있습니다."
       }
     ],
     "sector_comparison": {
       "summary": "Communication Services 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "8.61",
+        "company": "8.63",
         "peer_average": "8.69x",
         "difference": null
       },
@@ -275,9 +275,9 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "-6.56%",
+        "company": "-9.07%",
         "peer_average": "12.06%",
-        "difference": "-18.62"
+        "difference": "-21.13"
       }
     },
     "peer_rank": {
@@ -291,27 +291,27 @@
       "score": "6/10",
       "factors": [
         "PER 8.6x",
-        "목표가 대비 업사이드 +16.2%"
+        "목표가 대비 업사이드 +17.6%"
       ],
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
     "analysis_consensus": {
-      "status": "resolved",
-      "economy_action": "watch",
-      "economy_conviction": 64,
-      "economy_reason": "실적 D-1 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
+      "status": "agreed",
+      "economy_action": "buy",
+      "economy_conviction": 65,
+      "economy_reason": "실적 D-0 / 하드 촉매 2026-02-09 / 최근 시그널 승률 100% (5/5) / 리스크온 환경에서 공격주 선호",
       "deep_action": "buy",
       "deep_conviction": 66,
-      "deep_reason": "실적 D-1 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
-      "tie_break_action": "buy",
-      "tie_break_conviction": 66,
-      "tie_break_reason": "실적 D-1 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
-      "direction_agreement": false,
-      "conflicted": true,
-      "confidence_delta": 0,
+      "deep_reason": "실적 D-0 / 하드 촉매 2026-02-09 / 최근 시그널 승률 100% (5/5) / 리스크온 환경에서 공격주 선호",
+      "tie_break_action": null,
+      "tie_break_conviction": null,
+      "tie_break_reason": "",
+      "direction_agreement": true,
+      "conflicted": false,
+      "confidence_delta": 5,
       "selection_reason": "selected",
-      "third_review_completed": true,
-      "final_consensus": "resolved",
+      "third_review_completed": false,
+      "final_consensus": "agree",
       "final_action": "buy"
     },
     "period_changes": {
@@ -349,13 +349,14 @@
     "decision": {
       "action": "buy",
       "conviction": 66,
-      "reason": "실적 D-1 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
+      "reason": "실적 D-0 / 하드 촉매 2026-02-09 / 최근 시그널 승률 100% (5/5) / 리스크온 환경에서 공격주 선호",
       "valid_until": "2026-04-22",
       "factors": {
         "catalyst_recency": 20.0,
         "earnings_pattern": 0.0,
         "fundamentals": 4.0,
         "macro_event": -4.0,
+        "macro_regime": 4.0,
         "momentum": 3.0,
         "news_tone": 0.0,
         "peer_rank": 0.0,
@@ -365,8 +366,7 @@
         "valuation": 12.0
       },
       "ensemble_agreement": "agree",
-      "final_consensus": "resolved"
+      "final_consensus": "agree"
     }
-  },
-  "intraday_refreshed_at": "2026-04-21T20:42:49"
+  }
 }

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
+from dataclasses import replace
 from typing import Any
 
 from src.analyzer.base import AnalysisContext, ModuleResult, StructuredLLMModule
@@ -16,6 +18,9 @@ from src.utils.model_config import (
 )
 from src.utils.pipeline_logging import record_pipeline_event
 from src.utils.token_estimator import estimate_batch_tokens
+
+
+_DEFAULT_LLM_BATCH_MAX_WORKERS = 4
 
 def run_structured_llm_module(
     module: StructuredLLMModule,
@@ -42,6 +47,10 @@ def run_structured_llm_module(
         "missing_retry_batches": 0,
         "missing_retry_attempts": 0,
         "missing_retry_recovered_tickers": 0,
+        "validation_retry_batches": 0,
+        "validation_retry_attempts": 0,
+        "validation_retry_recovered_tickers": 0,
+        "parallel_batch_workers": 1,
     }
     if capture_validation_details:
         diagnostics["validation_details"] = {}
@@ -59,78 +68,30 @@ def run_structured_llm_module(
         metadata={"module_name": module.name},
     )
     retry_budget = _missing_retry_budget(ctx)
-    for batch_tickers in _split_batches(module, ctx, tickers):
-        diagnostics["batch_count"] += 1
+    validation_retry_budget = _validation_retry_budget(ctx)
+    batches = _split_batches(module, ctx, tickers)
+    diagnostics["batch_count"] = len(batches)
+    diagnostics["parallel_batch_workers"] = _resolve_batch_workers(ctx, len(batches))
+    for batch_result in _iter_batch_results(
+        client=client,
+        module=module,
+        ctx=ctx,
+        model_profile=active_model_profile,
+        prompt_template=prompt_template,
+        prompt_context=prompt_context,
+        batches=batches,
+        retry_budget=retry_budget,
+        max_workers=diagnostics["parallel_batch_workers"],
+    ):
+        diagnostics["missing_retry_batches"] += batch_result.diagnostics.get("missing_retry_batches", 0)
+        diagnostics["missing_retry_attempts"] += batch_result.diagnostics.get("missing_retry_attempts", 0)
+        diagnostics["missing_retry_recovered_tickers"] += batch_result.diagnostics.get("missing_retry_recovered_tickers", 0)
+        batch_tickers = batch_result.batch_tickers
         try:
-            parsed = _request_structured_batch(
-                client,
-                module,
-                ctx,
-                active_model_profile,
-                prompt_template,
-                prompt_context,
-                batch_tickers,
-            )
-            missing_tickers = [ticker for ticker in batch_tickers if ticker not in parsed]
-            if missing_tickers and retry_budget > 0:
-                diagnostics["missing_retry_batches"] += 1
-                record_pipeline_event(
-                    "analyzer",
-                    "info",
-                    "openai_missing_ticker_retry_started",
-                    module=module.name,
-                    missing_tickers=",".join(missing_tickers),
-                    missing_count=len(missing_tickers),
-                    retry_budget=retry_budget,
-                )
-                remaining_tickers = list(missing_tickers)
-                recovered_tickers: list[str] = []
-                for attempt in range(1, retry_budget + 1):
-                    if not remaining_tickers:
-                        break
-                    diagnostics["missing_retry_attempts"] += 1
-                    try:
-                        retry_parsed = _request_structured_batch(
-                            client,
-                            module,
-                            ctx,
-                            active_model_profile,
-                            prompt_template,
-                            prompt_context,
-                            remaining_tickers,
-                        )
-                    except Exception as exc:
-                        record_pipeline_event(
-                            "analyzer",
-                            "warning",
-                            "openai_missing_ticker_retry_failed",
-                            module=module.name,
-                            missing_tickers=",".join(remaining_tickers),
-                            missing_count=len(remaining_tickers),
-                            retry_attempt=attempt,
-                            error_type=type(exc).__name__,
-                            error_message=str(exc),
-                        )
-                        break
-                    recovered_now = [ticker for ticker in remaining_tickers if ticker in retry_parsed]
-                    if recovered_now:
-                        for ticker in recovered_now:
-                            parsed[ticker] = retry_parsed[ticker]
-                        recovered_tickers.extend(recovered_now)
-                        diagnostics["missing_retry_recovered_tickers"] += len(recovered_now)
-                    remaining_tickers = [ticker for ticker in remaining_tickers if ticker not in retry_parsed]
-                    record_pipeline_event(
-                        "analyzer",
-                        "info",
-                        "openai_missing_ticker_retry_completed",
-                        module=module.name,
-                        retry_attempt=attempt,
-                        recovered_tickers=",".join(recovered_now),
-                        recovered_count=len(recovered_now),
-                        remaining_tickers=",".join(remaining_tickers),
-                        remaining_count=len(remaining_tickers),
-                    )
-                missing_tickers = remaining_tickers
+            if batch_result.error is not None:
+                raise batch_result.error
+            parsed = batch_result.parsed
+            missing_tickers = list(batch_result.missing_tickers)
             if missing_tickers:
                 record_pipeline_event(
                     "analyzer",
@@ -165,6 +126,24 @@ def run_structured_llm_module(
                         "intermediate": ctx.intermediate_results.get(ticker, {}),
                     },
                 )
+                retried_validation = False
+                if validation_retry_budget > 0 and _should_retry_validation(validated):
+                    diagnostics["validation_retry_batches"] += 1
+                    retry_validated = _retry_single_ticker_on_validation(
+                        client=client,
+                        module=module,
+                        ctx=ctx,
+                        model_profile=active_model_profile,
+                        prompt_template=prompt_template,
+                        prompt_context=prompt_context,
+                        ticker=ticker,
+                        validator=validator,
+                        retry_budget=validation_retry_budget,
+                        diagnostics=diagnostics,
+                    )
+                    if retry_validated is not None:
+                        validated = retry_validated
+                        retried_validation = True
                 if validated.warnings:
                     counts = validated.counts
                     record_pipeline_event(
@@ -180,6 +159,7 @@ def run_structured_llm_module(
                         fact_warning_count=counts.get("fact_warning", 0),
                         consistency_warning_count=counts.get("consistency_warning", 0),
                         hallucination_warning_count=counts.get("hallucination_warning", 0),
+                        validation_retried=retried_validation,
                     )
                 if capture_validation_details:
                     diagnostics["validation_details"][ticker] = {
@@ -220,9 +200,169 @@ def run_structured_llm_module(
                                 "message": f"{type(exc).__name__}: {exc}",
                             }
                         ],
-                    }
+                }
 
     return ModuleResult(results_by_ticker=all_results, diagnostics=diagnostics)
+
+
+class _BatchRequestResult:
+    def __init__(
+        self,
+        *,
+        batch_tickers: list[str],
+        parsed: dict[str, dict[str, Any]] | None = None,
+        missing_tickers: list[str] | None = None,
+        diagnostics: dict[str, int] | None = None,
+        error: Exception | None = None,
+    ) -> None:
+        self.batch_tickers = batch_tickers
+        self.parsed = parsed or {}
+        self.missing_tickers = missing_tickers or []
+        self.diagnostics = diagnostics or {}
+        self.error = error
+
+
+def _iter_batch_results(
+    *,
+    client: Any,
+    module: StructuredLLMModule,
+    ctx: AnalysisContext,
+    model_profile: Any,
+    prompt_template: PromptTemplate,
+    prompt_context: PromptContext,
+    batches: list[list[str]],
+    retry_budget: int,
+    max_workers: int,
+):
+    if max_workers <= 1 or len(batches) <= 1:
+        for batch_tickers in batches:
+            yield _execute_batch_request(
+                client=client,
+                module=module,
+                ctx=ctx,
+                model_profile=model_profile,
+                prompt_template=prompt_template,
+                prompt_context=prompt_context,
+                batch_tickers=batch_tickers,
+                retry_budget=retry_budget,
+            )
+        return
+
+    with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="llm-batch") as pool:
+        futures = [
+            pool.submit(
+                _execute_batch_request,
+                client=client,
+                module=module,
+                ctx=ctx,
+                model_profile=model_profile,
+                prompt_template=prompt_template,
+                prompt_context=prompt_context,
+                batch_tickers=batch_tickers,
+                retry_budget=retry_budget,
+            )
+            for batch_tickers in batches
+        ]
+        for future in as_completed(futures):
+            yield future.result()
+
+
+def _execute_batch_request(
+    *,
+    client: Any,
+    module: StructuredLLMModule,
+    ctx: AnalysisContext,
+    model_profile: Any,
+    prompt_template: PromptTemplate,
+    prompt_context: PromptContext,
+    batch_tickers: list[str],
+    retry_budget: int,
+) -> _BatchRequestResult:
+    local_diagnostics = {
+        "missing_retry_batches": 0,
+        "missing_retry_attempts": 0,
+        "missing_retry_recovered_tickers": 0,
+    }
+    try:
+        parsed = _request_structured_batch(
+            client,
+            module,
+            ctx,
+            model_profile,
+            prompt_template,
+            prompt_context,
+            batch_tickers,
+        )
+        missing_tickers = [ticker for ticker in batch_tickers if ticker not in parsed]
+        if missing_tickers and retry_budget > 0:
+            local_diagnostics["missing_retry_batches"] += 1
+            record_pipeline_event(
+                "analyzer",
+                "info",
+                "openai_missing_ticker_retry_started",
+                module=module.name,
+                missing_tickers=",".join(missing_tickers),
+                missing_count=len(missing_tickers),
+                retry_budget=retry_budget,
+            )
+            remaining_tickers = list(missing_tickers)
+            for attempt in range(1, retry_budget + 1):
+                if not remaining_tickers:
+                    break
+                local_diagnostics["missing_retry_attempts"] += 1
+                try:
+                    retry_parsed = _request_structured_batch(
+                        client,
+                        module,
+                        ctx,
+                        model_profile,
+                        prompt_template,
+                        prompt_context,
+                        remaining_tickers,
+                    )
+                except Exception as exc:
+                    record_pipeline_event(
+                        "analyzer",
+                        "warning",
+                        "openai_missing_ticker_retry_failed",
+                        module=module.name,
+                        missing_tickers=",".join(remaining_tickers),
+                        missing_count=len(remaining_tickers),
+                        retry_attempt=attempt,
+                        error_type=type(exc).__name__,
+                        error_message=str(exc),
+                    )
+                    break
+                recovered_now = [ticker for ticker in remaining_tickers if ticker in retry_parsed]
+                if recovered_now:
+                    for ticker in recovered_now:
+                        parsed[ticker] = retry_parsed[ticker]
+                    local_diagnostics["missing_retry_recovered_tickers"] += len(recovered_now)
+                remaining_tickers = [ticker for ticker in remaining_tickers if ticker not in retry_parsed]
+                record_pipeline_event(
+                    "analyzer",
+                    "info",
+                    "openai_missing_ticker_retry_completed",
+                    module=module.name,
+                    retry_attempt=attempt,
+                    recovered_tickers=",".join(recovered_now),
+                    recovered_count=len(recovered_now),
+                    remaining_tickers=",".join(remaining_tickers),
+                    remaining_count=len(remaining_tickers),
+                )
+            missing_tickers = remaining_tickers
+        return _BatchRequestResult(
+            batch_tickers=batch_tickers,
+            parsed=parsed,
+            missing_tickers=missing_tickers,
+            diagnostics=local_diagnostics,
+        )
+    except Exception as exc:
+        return _BatchRequestResult(
+            batch_tickers=batch_tickers,
+            error=exc,
+            diagnostics=local_diagnostics,
+        )
 
 
 def _request_structured_batch(
@@ -256,7 +396,7 @@ def _request_structured_batch(
                 "strict": True,
             }
         },
-        prompt_cache_key=f"{prompt_template.version}:{prompt_template.name}",
+        prompt_cache_key=_prompt_cache_key(prompt_template, prompt_context),
         **response_temperature_kwargs(model_profile),
     )
     usage_cost = calculate_response_cost(response, model_profile)
@@ -334,6 +474,26 @@ def _missing_retry_budget(ctx: AnalysisContext) -> int:
         return 1
 
 
+def _resolve_batch_workers(ctx: AnalysisContext, batch_count: int) -> int:
+    if batch_count <= 1:
+        return 1
+    raw_value = ctx.metadata.get("llm_batch_max_workers", os.getenv("LLM_BATCH_MAX_WORKERS", _DEFAULT_LLM_BATCH_MAX_WORKERS))
+    try:
+        workers = int(raw_value)
+    except (TypeError, ValueError):
+        workers = _DEFAULT_LLM_BATCH_MAX_WORKERS
+    workers = max(1, workers)
+    return min(batch_count, workers)
+
+
+def _validation_retry_budget(ctx: AnalysisContext) -> int:
+    raw_value = ctx.metadata.get("llm_validation_retry_budget", 1)
+    try:
+        return max(0, int(raw_value))
+    except (TypeError, ValueError):
+        return 1
+
+
 def parse_ticker_batch(content: str, expected_tickers: list[str]) -> list[dict[str, Any]]:
     parsed = json.loads(content)
     tickers = parsed.get("tickers")
@@ -353,6 +513,135 @@ def parse_ticker_batch(content: str, expected_tickers: list[str]) -> list[dict[s
         seen.add(ticker)
         validated.append(entry)
     return validated
+
+
+def _should_retry_validation(validated: Any) -> bool:
+    counts = validated.counts
+    return counts.get("fact_warning", 0) > 0 or counts.get("hallucination_warning", 0) > 0
+
+
+def _retry_single_ticker_on_validation(
+    *,
+    client: Any,
+    module: StructuredLLMModule,
+    ctx: AnalysisContext,
+    model_profile: Any,
+    prompt_template: PromptTemplate,
+    prompt_context: PromptContext,
+    ticker: str,
+    validator: ResponseValidator,
+    retry_budget: int,
+    diagnostics: dict[str, Any],
+):
+    stricter_template = _build_stricter_prompt_template(prompt_template)
+    retry_profile = _build_validation_retry_profile(model_profile)
+    for attempt in range(1, retry_budget + 1):
+        diagnostics["validation_retry_attempts"] += 1
+        record_pipeline_event(
+            "analyzer",
+            "info",
+            "openai_validation_retry_started",
+            module=module.name,
+            ticker=ticker,
+            retry_attempt=attempt,
+        )
+        try:
+            parsed = _request_structured_batch(
+                client,
+                module,
+                ctx,
+                retry_profile,
+                stricter_template,
+                replace(
+                    prompt_context,
+                    metadata={
+                        **prompt_context.metadata,
+                        "validation_retry": "true",
+                        "stricter_prompt": "true",
+                    },
+                ),
+                [ticker],
+            )
+        except Exception as exc:
+            record_pipeline_event(
+                "analyzer",
+                "warning",
+                "openai_validation_retry_failed",
+                module=module.name,
+                ticker=ticker,
+                retry_attempt=attempt,
+                error_type=type(exc).__name__,
+                error_message=str(exc),
+            )
+            continue
+        if ticker not in parsed:
+            continue
+        validated = validator.validate(
+            parsed.get(ticker, {}),
+            _result_schema_for_ticker(module, ticker, ctx),
+            {
+                "raw_payload": ctx.raw_payload_by_ticker.get(ticker, {}),
+                "fallback": module.fallback_for_ticker(ticker, ctx),
+                "intermediate": ctx.intermediate_results.get(ticker, {}),
+            },
+        )
+        if len(validated.warnings) == 0 or not _should_retry_validation(validated):
+            diagnostics["validation_retry_recovered_tickers"] += 1
+            record_pipeline_event(
+                "analyzer",
+                "info",
+                "openai_validation_retry_completed",
+                module=module.name,
+                ticker=ticker,
+                retry_attempt=attempt,
+                recovered=True,
+                warning_count=len(validated.warnings),
+            )
+            return validated
+        record_pipeline_event(
+            "analyzer",
+            "warning",
+            "openai_validation_retry_completed",
+            module=module.name,
+            ticker=ticker,
+            retry_attempt=attempt,
+            recovered=False,
+            warning_count=len(validated.warnings),
+            warning_categories=",".join(sorted(validated.counts.keys())),
+        )
+    return None
+
+
+def _build_stricter_prompt_template(prompt_template: PromptTemplate) -> PromptTemplate:
+    strict_system_suffix = (
+        " Validation retry mode: do not paraphrase or invent unsupported values. "
+        "Use only values explicitly present in the payload. "
+        "If a numeric or event slot is uncertain, write '—' or 'N/A'."
+    )
+    strict_user_suffix = (
+        "\n\n[VALIDATION RETRY RULES]\n"
+        "- 이번 재시도에서는 입력 payload에 있는 값만 그대로 사용하세요.\n"
+        "- 숫자, 이벤트 날짜, 인물명, 가격 레벨은 추측하거나 보정하지 마세요.\n"
+        "- 근거가 없으면 '—' 또는 'N/A'를 쓰세요.\n"
+    )
+    return replace(
+        prompt_template,
+        system_template=prompt_template.system_template + strict_system_suffix,
+        user_template=prompt_template.user_template + strict_user_suffix,
+    )
+
+
+def _build_validation_retry_profile(model_profile: Any) -> Any:
+    model_name = str(getattr(model_profile, "model", "")).strip().lower()
+    if model_name.startswith(("o1", "o3", "gpt-5")):
+        return model_profile
+    return replace(model_profile, temperature=0.1)
+
+
+def _prompt_cache_key(prompt_template: PromptTemplate, prompt_context: PromptContext) -> str:
+    validation_retry = str(prompt_context.metadata.get("validation_retry", "")).strip().lower()
+    suffix = ":validation-retry" if validation_retry == "true" else ""
+    return f"{prompt_template.version}:{prompt_template.name}{suffix}"
 
 
 def _result_schema_for_ticker(module: StructuredLLMModule, ticker: str, ctx: AnalysisContext) -> dict[str, str]:

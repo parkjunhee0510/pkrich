@@ -149,7 +149,7 @@ def grid_search_regime_multipliers(
         "regimes": {},
     }
 
-    for regime in ("risk_on", "risk_off", "neutral"):
+    for regime in ("risk_on", "risk_off", "neutral", "reflation", "defensive_bias"):
         data = _extract_regime_rows(rows_list, regime, horizon=horizon)
         if len(data) < MIN_SAMPLES_PER_REGIME:
             report["regimes"][regime] = {
@@ -349,7 +349,7 @@ def walk_forward_grid_search(
         "regimes": {},
     }
 
-    for regime in ("risk_on", "risk_off", "neutral"):
+    for regime in ("risk_on", "risk_off", "neutral", "reflation", "defensive_bias"):
         dated = _extract_regime_rows_dated(rows_list, regime, horizon=horizon)
         dated.sort(key=lambda triple: triple[0])
         total = len(dated)
@@ -521,7 +521,7 @@ def purged_walk_forward_grid_search(
         "regimes": {},
     }
 
-    for regime in ("risk_on", "risk_off", "neutral"):
+    for regime in ("risk_on", "risk_off", "neutral", "reflation", "defensive_bias"):
         dated = _extract_regime_rows_dated(rows_list, regime, horizon=horizon)
         dated.sort(key=lambda triple: triple[0])
         total = len(dated)
@@ -677,3 +677,65 @@ def build_tuning_payload(
             rows_list, horizon=horizon
         )
     return payload
+
+
+def apply_tuned_multipliers_to_yaml(
+    rows: Iterable[dict[str, str]],
+    yaml_path: str = "config/decision_weights.yaml",
+    *,
+    horizon: int = 5,
+    min_spearman: float = 0.05,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Merge grid-search winners back into ``decision_weights.yaml``.
+
+    Conservative by design: only overwrites multipliers for a regime when the
+    best Spearman ≥ ``min_spearman`` and the regime had ≥MIN_SAMPLES_PER_REGIME
+    evaluated rows. Never touches regimes where data is insufficient, so this
+    is safe to run as a scheduled calibration job.
+    """
+    try:
+        import yaml  # type: ignore
+    except Exception:
+        return {"status": "pyyaml_missing"}
+
+    report = grid_search_regime_multipliers(rows, horizon=horizon)
+    summary: dict[str, Any] = {"status": "ok", "updated_regimes": [], "skipped": {}}
+
+    from pathlib import Path
+
+    path = Path(yaml_path)
+    if not path.exists():
+        return {"status": "yaml_missing", "path": str(path)}
+    with path.open("r", encoding="utf-8") as fh:
+        config = yaml.safe_load(fh) or {}
+
+    multipliers_block = config.setdefault("regime_multipliers", {})
+    for regime, info in report.get("regimes", {}).items():
+        if info.get("status") != "ok":
+            summary["skipped"][regime] = info.get("status", "unknown")
+            continue
+        best = info.get("best") or {}
+        rho = float(best.get("spearman") or 0.0)
+        if rho < min_spearman:
+            summary["skipped"][regime] = f"spearman_below_{min_spearman}"
+            continue
+        tuned = best.get("multipliers") or {}
+        if not tuned:
+            summary["skipped"][regime] = "no_multipliers"
+            continue
+        current = dict(multipliers_block.get(regime) or {})
+        current.update({k: float(v) for k, v in tuned.items()})
+        multipliers_block[regime] = current
+        summary["updated_regimes"].append({
+            "regime": regime,
+            "spearman": rho,
+            "multipliers": current,
+        })
+
+    if not dry_run and summary["updated_regimes"]:
+        with path.open("w", encoding="utf-8") as fh:
+            yaml.safe_dump(config, fh, allow_unicode=True, sort_keys=False)
+    summary["yaml_path"] = str(path)
+    summary["dry_run"] = dry_run
+    return summary

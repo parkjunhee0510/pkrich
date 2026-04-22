@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import {
   CandlestickSeries,
   createChart,
@@ -40,8 +40,7 @@ function parseNum(v?: string): number {
           : 1
   const cleaned = trimmed.replace(/[^0-9.-]/g, '')
   const n = parseFloat(cleaned)
-  return isNaN(n) ? 0 : n
-    * multiplier
+  return isNaN(n) ? 0 : n * multiplier
 }
 
 function formatVolume(v: number): string {
@@ -84,7 +83,6 @@ export function PriceChart({ rows, height = 360 }: Props) {
     })
     chartRef.current = chart
 
-    // Volume series (always shown)
     const volumeSeries = chart.addSeries(HistogramSeries, {
       priceFormat: { type: 'volume' },
       priceScaleId: 'volume',
@@ -129,7 +127,6 @@ export function PriceChart({ rows, height = 360 }: Props) {
       lineSeriesRef.current = lineSeries
     }
 
-    // Volume data
     const volumeData = sortedRows.map((r) => {
       const vol = parseNum(r.volume)
       const close = parseNum(r.close) || parsePrice(r.price)
@@ -162,10 +159,9 @@ export function PriceChart({ rows, height = 360 }: Props) {
   }, [rows, mode, ohlcAvailable, height])
 
   if (rows.length === 0) {
-    return <p className="empty">Price history not available.</p>
+    return <p className="empty">가격 기록이 아직 없습니다.</p>
   }
 
-  // Summary stats
   const latestRow = rows[rows.length - 1]
   const latestVolume = parseNum(latestRow?.volume)
 
@@ -179,19 +175,19 @@ export function PriceChart({ rows, height = 360 }: Props) {
               className={`preset-chip ${mode === 'candle' ? 'active' : ''}`}
               onClick={() => setMode('candle')}
             >
-              캔들
+              캔들 차트
             </button>
             <button
               type="button"
               className={`preset-chip ${mode === 'line' ? 'active' : ''}`}
               onClick={() => setMode('line')}
             >
-              라인
+              선 차트
             </button>
           </div>
         )}
         {latestVolume > 0 && (
-          <span className="price-chart-volume-label">Vol {formatVolume(latestVolume)}</span>
+          <span className="price-chart-volume-label">최근 거래량 {formatVolume(latestVolume)}</span>
         )}
       </div>
       <div ref={chartContainerRef} className="chart-container" style={{ height }} />

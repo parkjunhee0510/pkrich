@@ -6,6 +6,48 @@ from src.analyzer.validator import ResponseValidator
 
 
 class ResponseValidatorTests(unittest.TestCase):
+    def test_rounding_difference_does_not_warn_or_fallback(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {"summary": "목표 가격은 120.40 USD로 봅니다."},
+            {"summary": "string"},
+            {
+                "raw_payload": {"positioning": {"analyst_target_price": "120.00 USD"}},
+                "fallback": {"summary": "기본 요약"},
+                "intermediate": {},
+            },
+        )
+        self.assertEqual(result.sanitized_response["summary"], "목표 가격은 120.40 USD로 봅니다.")
+        self.assertFalse(result.warnings)
+
+    def test_minor_difference_warns_without_fallback(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {"summary": "목표 가격은 121.80 USD로 봅니다."},
+            {"summary": "string"},
+            {
+                "raw_payload": {"positioning": {"analyst_target_price": "120.00 USD"}},
+                "fallback": {"summary": "기본 요약"},
+                "intermediate": {},
+            },
+        )
+        self.assertEqual(result.sanitized_response["summary"], "목표 가격은 121.80 USD로 봅니다.")
+        self.assertEqual(result.counts["fact_warning"], 1)
+
+    def test_suspect_difference_replaces_field_on_fact_mismatch(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {"summary": "목표 가격은 124.20 USD로 봅니다."},
+            {"summary": "string"},
+            {
+                "raw_payload": {"price": 100.0, "positioning": {"analyst_target_price": "120.00 USD"}},
+                "fallback": {"summary": "기본 요약"},
+                "intermediate": {},
+            },
+        )
+        self.assertEqual(result.sanitized_response["summary"], "기본 요약")
+        self.assertEqual(result.counts["fact_warning"], 1)
+
     def test_replaces_field_on_fact_mismatch(self) -> None:
         validator = ResponseValidator()
         result = validator.validate(
@@ -18,7 +60,7 @@ class ResponseValidatorTests(unittest.TestCase):
             },
         )
         self.assertEqual(result.sanitized_response["summary"], "기본 요약")
-        self.assertEqual(result.counts["fact_warning"], 1)
+        self.assertEqual(result.counts["hallucination_warning"], 1)
 
     def test_replaces_signal_on_tone_conflict(self) -> None:
         validator = ResponseValidator()
@@ -93,6 +135,33 @@ class ResponseValidatorTests(unittest.TestCase):
         )
         self.assertEqual(result.sanitized_response["signal_or_takeaway"], "중립 관찰")
         self.assertEqual(result.counts["fact_warning"], 1)
+
+    def test_replaces_signal_when_target_or_stop_not_in_must_use_values(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {"signal_or_takeaway": "매수 관찰 — 실적 기대 반영 | 진입 트리거 205 회복 | 목표 223/236 | 손절 197"},
+            {"signal_or_takeaway": "string"},
+            {
+                "raw_payload": {
+                    "price": 210.0,
+                    "price_action": {"atr_14d": "5.0"},
+                    "positioning": {"analyst_target_price": "235.00 USD"},
+                    "upcoming_events": [{"type": "earnings", "date": "2026-04-30", "days_until": "14"}],
+                },
+                "fallback": {"signal_or_takeaway": "중립 관찰"},
+                "intermediate": {
+                    "trade_frame": {
+                        "entry_price": "205.00",
+                        "stop_loss": "198.00",
+                        "invalidation_price": "194.00",
+                        "target_1": "220.00",
+                        "target_2": "235.00",
+                    }
+                },
+            },
+        )
+        self.assertEqual(result.sanitized_response["signal_or_takeaway"], "중립 관찰")
+        self.assertEqual(result.counts["fact_warning"], 2)
 
     def test_replaces_key_news_on_unmatched_title_like_item(self) -> None:
         validator = ResponseValidator()

@@ -1,8 +1,9 @@
-﻿import type { Dispatch, SetStateAction } from 'react'
+﻿import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { MacroContextBar } from '../components/MacroContextBar'
+import { MacroNarrativePanel } from '../components/MacroNarrativePanel'
 import { MarketOverview } from '../components/MarketOverview'
 import { MarketRegimeBanner } from '../components/MarketRegimeBanner'
 import { SectorSummary } from '../components/SectorSummary'
@@ -130,6 +131,7 @@ export function Dashboard() {
   const rawIdx = selectedIdx ?? Math.max(days.length - 1, 0)
   const idx = days.length > 0 ? Math.min(rawIdx, days.length - 1) : 0
   const day = days[idx] ?? { date: '', market_overview: [], tickers: [] }
+  const previousDay = idx > 0 ? days[idx - 1] : null
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
   const sectors = useMemo(
@@ -164,10 +166,15 @@ export function Dashboard() {
     () => Object.values(traderFilters).filter(Boolean).length,
     [traderFilters],
   )
-  const topSetupCards = useMemo(() => buildSetupCards(filteredTickers, 5), [filteredTickers])
+  const topSetupCards = useMemo(() => buildSetupCards(filteredTickers, 3), [filteredTickers])
   const earningsBoardSections = useMemo(() => buildEarningsBoardSections(day.tickers), [day.tickers])
   const catalystFeedSections = useMemo(() => buildCatalystFeedSections(day.tickers), [day.tickers])
   const signalHighlights = useMemo(() => buildSignalPerformanceHighlights(data?.signal_stats), [data?.signal_stats])
+  const dashboardPriorityCards = useMemo(
+    () => buildDashboardPriorityCards(day.tickers, sortedWatchlistTickers, previousDay?.tickers ?? []),
+    [day.tickers, previousDay?.tickers, sortedWatchlistTickers],
+  )
+  const decisionCounts = useMemo(() => countDecisions(day.tickers), [day.tickers])
   const emptyState = useMemo(
     () => buildEmptyStateMessage(searchQuery, selectedSector, traderFilters),
     [searchQuery, selectedSector, traderFilters],
@@ -283,6 +290,10 @@ export function Dashboard() {
           <div className="dashboard-header-meta">
             <span className="dashboard-stat-chip">전체 {day.tickers.length}개</span>
             <span className="dashboard-stat-chip">표시 {sortedWatchlistTickers.length}개</span>
+            <span className="dashboard-stat-chip">매수 {decisionCounts.buy}개</span>
+            <span className="dashboard-stat-chip">관찰 {decisionCounts.watch}개</span>
+            <span className="dashboard-stat-chip">회피 {decisionCounts.avoid}개</span>
+            <span className="dashboard-stat-chip">판단 갈림 {dashboardPriorityCards.conflictCount}건</span>
             <span className="dashboard-stat-chip">
               섹터: {selectedSector === 'ALL' ? '전체' : (SECTOR_LABELS[selectedSector] ?? selectedSector)}
             </span>
@@ -395,7 +406,7 @@ export function Dashboard() {
         <p className="dashboard-filter-summary">
           현재 보기: {sortedWatchlistTickers.length} / {day.tickers.length}
           {selectedSector !== 'ALL' ? ` · ${SECTOR_LABELS[selectedSector] ?? selectedSector}` : ''}
-          {activeTraderFilterCount > 0 ? ` · 트레이더 필터 ${activeTraderFilterCount}개` : ''}
+          {activeTraderFilterCount > 0 ? ` · 추가 조건 ${activeTraderFilterCount}개` : ''}
         </p>
 
         <div className="dashboard-quick-bar-row">
@@ -413,7 +424,7 @@ export function Dashboard() {
           </div>
 
           <div className="watchlist-sort-row compact-row">
-            <span className="watchlist-sort-label">카드 정렬</span>
+            <span className="watchlist-sort-label">정렬 방식</span>
             <button
               type="button"
               className={`preset-chip ${watchlistSort === 'score' ? 'active' : ''}`}
@@ -433,7 +444,7 @@ export function Dashboard() {
               className={`preset-chip ${watchlistSort === 'catalyst' ? 'active' : ''}`}
               onClick={() => setWatchlistSort('catalyst')}
             >
-              하드 촉매순
+              강한 재료순
             </button>
           </div>
         </div>
@@ -456,7 +467,7 @@ export function Dashboard() {
               onClick={() => toggleTraderFilter(setTraderFilters, 'rsPositive')}
             />
             <FilterChip
-              label="강한 촉매만"
+              label="강한 재료만"
               active={traderFilters.hardCatalystOnly}
               onClick={() => toggleTraderFilter(setTraderFilters, 'hardCatalystOnly')}
             />
@@ -493,55 +504,100 @@ export function Dashboard() {
 
       {refreshing && <p className="dashboard-refresh-note">최신 output을 다시 불러오는 중입니다.</p>}
 
-      <TodaySetupBoard cards={topSetupCards} />
-      <EarningsBoard sections={earningsBoardSections} />
-
-      <div className="dashboard-split-grid">
-        <CatalystFeed sections={catalystFeedSections} />
-        <SignalPerformanceBoard highlights={signalHighlights} />
-      </div>
-
-      <MarketRegimeBanner regime={day.market_regime} />
-      <MacroContextBar macroContext={day.macro_context} />
-      {(data.weekly_summary?.weekly_report || data.weekly_summary?.weekly_insight) ? (
-        <section className="ticker-detail-section-shell">
-          <h3>주간 인사이트</h3>
-          <div className="detail-note-card">
-            {data.weekly_summary?.weekly_report ? (
-              <div className="weekly-report-panel">
-                {data.weekly_summary.weekly_report.headline ? (
-                  <strong className="weekly-report-headline">{data.weekly_summary.weekly_report.headline}</strong>
-                ) : null}
-                {data.weekly_summary.weekly_report.summary ? (
-                  <p className="weekly-report-summary">{data.weekly_summary.weekly_report.summary}</p>
-                ) : data.weekly_summary.weekly_insight ? (
-                  <p className="weekly-report-summary">{data.weekly_summary.weekly_insight}</p>
-                ) : null}
-                <div className="weekly-report-grid">
-                  <WeeklyReportCard index={1} title="시장 환경 요약" section={data.weekly_summary.weekly_report.market_environment} />
-                  <WeeklyReportCard index={2} title="핵심 이동 종목 Top 3" section={data.weekly_summary.weekly_report.top_movers} />
-                  <WeeklyReportCard index={3} title="시그널 성과 리뷰" section={data.weekly_summary.weekly_report.signal_review} />
-                  <WeeklyReportCard index={4} title="리스크 포인트" section={data.weekly_summary.weekly_report.risk_points} />
-                  <WeeklyReportCard index={5} title="다음 주 액션 플랜" section={data.weekly_summary.weekly_report.next_week_action_plan} />
-                  <WeeklyReportCard index={6} title="포트폴리오 제안" section={data.weekly_summary.weekly_report.portfolio_suggestions} />
-                </div>
-              </div>
-            ) : (
-              <p>{data.weekly_summary?.weekly_insight}</p>
-            )}
-            <div className="watchlist-chip-row">
-              <span className="period-badge">
-                {data.weekly_summary?.iso_year}-W{String(data.weekly_summary?.iso_week).padStart(2, '0')}
-              </span>
-              <span className="period-badge">
-                {data.weekly_summary?.start_date} ~ {data.weekly_summary?.end_date}
-              </span>
-            </div>
+      <section className="dashboard-priority-section">
+        <div className="section-header-with-kicker">
+          <div>
+            <h3>오늘의 우선순위</h3>
+            <p className="section-kicker">스크롤 전에 지금 바로 확인할 항목만 압축했습니다. 눈여겨볼 종목, 가까운 일정, 판단이 갈린 종목을 먼저 보고 아래 목록으로 내려가면 됩니다.</p>
           </div>
-        </section>
+        </div>
+        <div className="dashboard-priority-grid">
+          <PriorityCard
+            title="우선 확인 종목"
+            kicker={`TOP ${dashboardPriorityCards.focusItems.length}`}
+            items={dashboardPriorityCards.focusItems}
+            emptyMessage="지금 우선순위로 띄울 종목이 없습니다."
+          />
+          <PriorityCard
+            title="이벤트 임박"
+            kicker={`D-7 이내 ${dashboardPriorityCards.eventItems.length}건`}
+            items={dashboardPriorityCards.eventItems}
+            emptyMessage="가까운 주요 이벤트가 없습니다."
+          />
+          <PriorityCard
+            title="판단이 갈린 종목"
+            kicker={dashboardPriorityCards.conflictCount > 0 ? `${dashboardPriorityCards.conflictCount}건` : '안정'}
+            items={dashboardPriorityCards.consensusItems}
+            emptyMessage="판단이 크게 갈린 종목이 없습니다."
+          />
+        </div>
+      </section>
+
+      <TodaySetupBoard cards={topSetupCards} />
+
+      <DashboardAccordionSection
+        title="실적 일정 · 재료 · 판단 신호"
+        summary={`실적 일정 ${earningsBoardSections.reduce((sum, section) => sum + section.items.length, 0)}건 · 재료 ${Object.values(catalystFeedSections).reduce((sum, items) => sum + items.length, 0)}건`}
+      >
+        <EarningsBoard sections={earningsBoardSections} />
+        <div className="dashboard-split-grid">
+          <CatalystFeed sections={catalystFeedSections} />
+          <SignalPerformanceBoard highlights={signalHighlights} />
+        </div>
+      </DashboardAccordionSection>
+
+      <DashboardAccordionSection
+        title="오늘 시장 분위기"
+        summary={`${day.market_regime?.regime ?? '시장 분위기 정보 없음'} · 매크로와 섹터 흐름`}
+      >
+        <MarketRegimeBanner regime={day.market_regime} />
+        <MacroNarrativePanel narrative={day.macro_context?.macro_narrative} regime={day.market_regime} />
+        <MacroContextBar macroContext={day.macro_context} />
+        <MarketOverview entries={day.market_overview} />
+        <SectorSummary tickers={day.tickers} />
+      </DashboardAccordionSection>
+
+      {(data.weekly_summary?.weekly_report || data.weekly_summary?.weekly_insight) ? (
+        <DashboardAccordionSection
+          title="주간 인사이트"
+          summary={data.weekly_summary?.weekly_report?.headline ?? data.weekly_summary?.weekly_report?.summary ?? data.weekly_summary?.weekly_insight ?? '주간 보고서'}
+        >
+          <section className="ticker-detail-section-shell">
+            <div className="detail-note-card">
+              {data.weekly_summary?.weekly_report ? (
+                <div className="weekly-report-panel">
+                  {data.weekly_summary.weekly_report.headline ? (
+                    <strong className="weekly-report-headline">{data.weekly_summary.weekly_report.headline}</strong>
+                  ) : null}
+                  {data.weekly_summary.weekly_report.summary ? (
+                    <p className="weekly-report-summary">{data.weekly_summary.weekly_report.summary}</p>
+                  ) : data.weekly_summary.weekly_insight ? (
+                    <p className="weekly-report-summary">{data.weekly_summary.weekly_insight}</p>
+                  ) : null}
+                  <div className="weekly-report-grid">
+                    <WeeklyReportCard index={1} title="시장 환경 요약" section={data.weekly_summary.weekly_report.market_environment} />
+                    <WeeklyReportCard index={2} title="핵심 이동 종목 Top 3" section={data.weekly_summary.weekly_report.top_movers} />
+                    <WeeklyReportCard index={3} title="판단 신호 성과 리뷰" section={data.weekly_summary.weekly_report.signal_review} />
+                    <WeeklyReportCard index={4} title="리스크 포인트" section={data.weekly_summary.weekly_report.risk_points} />
+                    <WeeklyReportCard index={5} title="다음 주 액션 플랜" section={data.weekly_summary.weekly_report.next_week_action_plan} />
+                    <WeeklyReportCard index={6} title="포트폴리오 제안" section={data.weekly_summary.weekly_report.portfolio_suggestions} />
+                  </div>
+                </div>
+              ) : (
+                <p>{data.weekly_summary?.weekly_insight}</p>
+              )}
+              <div className="watchlist-chip-row">
+                <span className="period-badge">
+                  {data.weekly_summary?.iso_year}-W{String(data.weekly_summary?.iso_week).padStart(2, '0')}
+                </span>
+                <span className="period-badge">
+                  {data.weekly_summary?.start_date} ~ {data.weekly_summary?.end_date}
+                </span>
+              </div>
+            </div>
+          </section>
+        </DashboardAccordionSection>
       ) : null}
-      <MarketOverview entries={day.market_overview} />
-      <SectorSummary tickers={day.tickers} />
 
       {sortedWatchlistTickers.length > 0 ? (
         <WatchlistTable tickers={sortedWatchlistTickers} accountSize={accountSize} density={density} />
@@ -552,6 +608,87 @@ export function Dashboard() {
         </div>
       )}
     </div>
+  )
+}
+
+type PriorityItem = {
+  label: string
+  value: string
+  note: string
+  tone?: 'up' | 'down' | 'new' | 'neutral'
+  badges?: Array<{
+    label: string
+    tone: 'up' | 'down' | 'new' | 'neutral'
+  }>
+}
+
+function PriorityCard({
+  title,
+  kicker,
+  items,
+  emptyMessage,
+}: {
+  title: string
+  kicker: string
+  items: PriorityItem[]
+  emptyMessage: string
+}) {
+  return (
+    <article className="dashboard-priority-card">
+      <div className="dashboard-priority-head">
+        <span className="dashboard-priority-kicker">{kicker}</span>
+        <strong>{title}</strong>
+      </div>
+      {items.length > 0 ? (
+        <ul className="dashboard-priority-list">
+          {items.map((item) => (
+            <li key={`${title}-${item.label}-${item.value}`} className={`priority-tone-${item.tone ?? 'neutral'}`}>
+              <div className={`dashboard-priority-label-row priority-tone-${item.tone ?? 'neutral'}`}>
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+              </div>
+              {item.badges && item.badges.length > 0 ? (
+                <div className="dashboard-priority-badges">
+                  {item.badges.map((badge) => (
+                    <span key={`${item.label}-${badge.label}`} className={`dashboard-priority-badge priority-tone-${badge.tone}`}>
+                      {badge.label}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+              <p>{item.note}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="dashboard-priority-empty">{emptyMessage}</p>
+      )}
+    </article>
+  )
+}
+
+function DashboardAccordionSection({
+  title,
+  summary,
+  children,
+}: {
+  title: string
+  summary: string
+  children: ReactNode
+}) {
+  return (
+    <details className="dashboard-accordion-section">
+      <summary>
+        <div className="dashboard-accordion-copy">
+          <div className="dashboard-accordion-text">
+            <strong>{title}</strong>
+            <span>{summary}</span>
+          </div>
+          <span className="dashboard-accordion-arrow" aria-hidden="true">▾</span>
+        </div>
+      </summary>
+      <div className="dashboard-accordion-body">{children}</div>
+    </details>
   )
 }
 
@@ -603,6 +740,251 @@ function normalizeWeeklyReportItems(section?: WeeklyReportSection): string[] {
     })
     .filter(Boolean)
   return [...details, ...normalizedItems]
+}
+
+function countDecisions(tickers: TickerAnalysisData[]): { buy: number; watch: number; avoid: number } {
+  return tickers.reduce(
+    (counts, ticker) => {
+      const action = ticker.decision?.action
+      if (action === 'buy') counts.buy += 1
+      else if (action === 'avoid') counts.avoid += 1
+      else counts.watch += 1
+      return counts
+    },
+    { buy: 0, watch: 0, avoid: 0 },
+  )
+}
+
+function buildDashboardPriorityCards(
+  allTickers: TickerAnalysisData[],
+  sortedTickers: TickerAnalysisData[],
+  previousTickers: TickerAnalysisData[],
+): {
+  focusItems: PriorityItem[]
+  eventItems: PriorityItem[]
+  consensusItems: PriorityItem[]
+  conflictCount: number
+} {
+  const previousTickerMap = new Map(previousTickers.map((ticker) => [ticker.ticker, ticker]))
+  const focusItems: PriorityItem[] = sortedTickers.slice(0, 3).map((ticker, index) => ({
+    label: `${index + 1}. ${ticker.ticker}`,
+    value: buildPriorityValue(ticker, previousTickerMap.get(ticker.ticker)),
+    note: buildPriorityReason(ticker, previousTickerMap.get(ticker.ticker)),
+    tone: buildPriorityTone(ticker, previousTickerMap.get(ticker.ticker)),
+    badges: buildPriorityBadges(ticker, previousTickerMap.get(ticker.ticker)),
+  }))
+
+  const eventItems: PriorityItem[] = allTickers
+    .flatMap((ticker) =>
+      (ticker.upcoming_events ?? []).map((event) => ({
+        ticker: ticker.ticker,
+        event,
+      })),
+    )
+    .filter(({ event }) => {
+      const daysUntil = parseEventDays(event.days_until)
+      return Number.isFinite(daysUntil) && daysUntil <= 7
+    })
+    .sort((left, right) => parseEventDays(left.event.days_until) - parseEventDays(right.event.days_until))
+    .slice(0, 3)
+    .map(({ ticker, event }) => ({
+      label: ticker,
+      value: `${event.label} · D-${event.days_until}`,
+      note: buildEventPriorityReason(
+        event,
+        previousTickerMap.get(ticker)?.upcoming_events?.find((item) => item.type === event.type),
+      ),
+      tone: buildEventTone(
+        event,
+        previousTickerMap.get(ticker)?.upcoming_events?.find((item) => item.type === event.type),
+      ),
+      badges: buildEventBadges(
+        event,
+        previousTickerMap.get(ticker)?.upcoming_events?.find((item) => item.type === event.type),
+      ),
+    }))
+
+  const conflicted = allTickers.filter(
+    (ticker) => ticker.analysis_consensus?.status === 'conflicted' || ticker.analysis_consensus?.status === 'resolved',
+  )
+  const consensusItems: PriorityItem[] = conflicted.slice(0, 3).map((ticker) => ({
+    label: ticker.ticker,
+    value: ticker.analysis_consensus?.status === 'resolved' ? '3차 검토 완료' : '판단 불일치',
+    note: ticker.analysis_consensus?.selection_reason ?? ticker.decision?.reason ?? '추가 검토 필요',
+    tone: ticker.analysis_consensus?.status === 'resolved' ? 'up' : 'down',
+    badges: [
+      {
+        label: ticker.analysis_consensus?.status === 'resolved' ? '검토 완료' : '판단 갈림',
+        tone: ticker.analysis_consensus?.status === 'resolved' ? 'up' : 'down',
+      },
+    ],
+  }))
+
+  return {
+    focusItems,
+    eventItems,
+    consensusItems,
+    conflictCount: conflicted.length,
+  }
+}
+
+function buildPriorityValue(current: TickerAnalysisData, previous?: TickerAnalysisData): string {
+  const conviction = current.decision?.conviction ?? computeSetupScore(current).score
+  const previousConviction = previous?.decision?.conviction
+  const delta = typeof previousConviction === 'number' ? conviction - previousConviction : null
+  const deltaLabel = delta === null || delta === 0 ? '' : ` · ${formatDelta(delta)}`
+  return `${translateAction(current.decision?.action)} · ${conviction}점${deltaLabel}`
+}
+
+function buildPriorityReason(current: TickerAnalysisData, previous?: TickerAnalysisData): string {
+  const reasons: string[] = []
+  const currentAction = current.decision?.action
+  const previousAction = previous?.decision?.action
+  if (previousAction && currentAction && previousAction !== currentAction) {
+    reasons.push(`액션 ${translateAction(previousAction)} → ${translateAction(currentAction)}`)
+  }
+
+  const conviction = current.decision?.conviction
+  const previousConviction = previous?.decision?.conviction
+  if (typeof conviction === 'number' && typeof previousConviction === 'number' && conviction !== previousConviction) {
+    reasons.push(`확신도 ${formatDelta(conviction - previousConviction)}`)
+  }
+
+  const currentEvent = getNextEarningsEvent(current)
+  const previousEvent = previous ? getNextEarningsEvent(previous) : undefined
+  if (currentEvent) {
+    const currentDays = parseEventDays(currentEvent.days_until)
+    const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
+    if (Number.isFinite(currentDays) && (!Number.isFinite(previousDays) || currentDays < previousDays)) {
+      reasons.push(`이벤트 ${currentEvent.label} D-${currentEvent.days_until}`)
+    }
+  }
+
+  const baseline = current.signal_or_takeaway || current.summary
+  return reasons.length > 0 ? `${reasons.join(' · ')} · ${baseline}` : baseline
+}
+
+function buildPriorityBadges(
+  current: TickerAnalysisData,
+  previous?: TickerAnalysisData,
+): Array<{ label: string; tone: 'up' | 'down' | 'new' | 'neutral' }> {
+  const badges: Array<{ label: string; tone: 'up' | 'down' | 'new' | 'neutral' }> = []
+  const currentAction = current.decision?.action
+  const previousAction = previous?.decision?.action
+  if (!previous && currentAction) {
+    badges.push({ label: '새 항목', tone: 'new' })
+  }
+  if (previousAction && currentAction && previousAction !== currentAction) {
+    badges.push({
+      label: `${translateAction(previousAction)}→${translateAction(currentAction)}`,
+      tone: currentAction === 'buy' || previousAction === 'avoid' ? 'up' : 'down',
+    })
+  }
+
+  const conviction = current.decision?.conviction
+  const previousConviction = previous?.decision?.conviction
+  if (typeof conviction === 'number' && typeof previousConviction === 'number' && conviction !== previousConviction) {
+    badges.push({
+      label: `확신도 ${formatDelta(conviction - previousConviction)}`,
+      tone: conviction > previousConviction ? 'up' : 'down',
+    })
+  }
+
+  const currentEvent = getNextEarningsEvent(current)
+  const previousEvent = previous ? getNextEarningsEvent(previous) : undefined
+  if (currentEvent) {
+    const currentDays = parseEventDays(currentEvent.days_until)
+    const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
+    if (Number.isFinite(currentDays) && !Number.isFinite(previousDays)) {
+      badges.push({ label: '새 이벤트', tone: 'new' })
+    } else if (Number.isFinite(currentDays) && Number.isFinite(previousDays) && currentDays < previousDays) {
+      badges.push({ label: `이벤트 D-${currentEvent.days_until}`, tone: 'up' })
+    }
+  }
+  return badges.slice(0, 3)
+}
+
+function buildPriorityTone(
+  current: TickerAnalysisData,
+  previous?: TickerAnalysisData,
+): 'up' | 'down' | 'new' | 'neutral' {
+  const currentAction = current.decision?.action
+  const previousAction = previous?.decision?.action
+  if (!previous && (currentAction || current.signal_or_takeaway)) {
+    return 'new'
+  }
+  if (previousAction && currentAction && previousAction !== currentAction) {
+    if (currentAction === 'buy' || previousAction === 'avoid') return 'up'
+    if (currentAction === 'avoid' || previousAction === 'buy') return 'down'
+  }
+  const conviction = current.decision?.conviction
+  const previousConviction = previous?.decision?.conviction
+  if (typeof conviction === 'number' && typeof previousConviction === 'number') {
+    if (conviction > previousConviction) return 'up'
+    if (conviction < previousConviction) return 'down'
+  }
+  return 'neutral'
+}
+
+function buildEventPriorityReason(
+  currentEvent: { date: string; days_until: string; timing?: string },
+  previousEvent?: { days_until: string },
+): string {
+  const details = [currentEvent.date]
+  if (currentEvent.timing) {
+    details.push(currentEvent.timing)
+  }
+  const currentDays = parseEventDays(currentEvent.days_until)
+  const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
+  if (Number.isFinite(currentDays) && Number.isFinite(previousDays) && currentDays !== previousDays) {
+    details.push(`전일 대비 ${formatDelta(previousDays - currentDays)}일`)
+  } else if (Number.isFinite(currentDays) && !Number.isFinite(previousDays)) {
+    details.push('오늘 새로 포착')
+  }
+  return details.join(' · ')
+}
+
+function buildEventTone(
+  currentEvent: { days_until: string },
+  previousEvent?: { days_until: string },
+): 'up' | 'down' | 'new' | 'neutral' {
+  const currentDays = parseEventDays(currentEvent.days_until)
+  const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
+  if (Number.isFinite(currentDays) && !Number.isFinite(previousDays)) {
+    return 'new'
+  }
+  if (Number.isFinite(currentDays) && Number.isFinite(previousDays) && currentDays < previousDays) {
+    return 'up'
+  }
+  return 'neutral'
+}
+
+function buildEventBadges(
+  currentEvent: { days_until: string },
+  previousEvent?: { days_until: string },
+): Array<{ label: string; tone: 'up' | 'down' | 'new' | 'neutral' }> {
+  const badges: Array<{ label: string; tone: 'up' | 'down' | 'new' | 'neutral' }> = []
+  const currentDays = parseEventDays(currentEvent.days_until)
+  const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
+  if (Number.isFinite(currentDays) && !Number.isFinite(previousDays)) {
+    badges.push({ label: '새 이벤트', tone: 'new' })
+  } else if (Number.isFinite(currentDays) && Number.isFinite(previousDays) && currentDays < previousDays) {
+    badges.push({ label: `${previousDays - currentDays}일 당겨짐`, tone: 'up' })
+  }
+  if (Number.isFinite(currentDays) && currentDays <= 1) {
+    badges.push({ label: '오늘/내일', tone: 'down' })
+  }
+  return badges
+}
+
+function formatDelta(delta: number): string {
+  return `${delta > 0 ? '↑' : '↓'}${Math.abs(delta)}`
+}
+
+function translateAction(action?: string): string {
+  if (action === 'buy') return '매수'
+  if (action === 'avoid') return '회피'
+  return '관찰'
 }
 
 function applyTraderFilters(ticker: TickerAnalysisData, filters: TraderFilters): boolean {
@@ -741,8 +1123,8 @@ function buildEmptyStateMessage(query: string, sector: string, filters: TraderFi
 
   if (filters.hardCatalystOnly) {
     return {
-      title: '오늘은 하드 촉매만으로 남은 종목이 없습니다.',
-      body: '현재 조건에서는 hard catalyst가 비어 있습니다. 실적 임박순으로 바꾸거나 Catalyst Feed에서 medium 단계까지 넓혀보세요.',
+      title: '오늘은 강한 재료만으로 남은 종목이 없습니다.',
+      body: '현재 조건에서는 강한 재료가 잡히지 않았습니다. 실적 임박순으로 바꾸거나 재료 목록에서 범위를 조금 넓혀보세요.',
     }
   }
 

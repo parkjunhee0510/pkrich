@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
+import time
 import types
 import unittest
 from datetime import date
@@ -54,21 +56,27 @@ class _FakeStructuredModule(StructuredLLMModule):
 
 
 class _FakeResponse:
-    def __init__(self, payload: dict[str, object]) -> None:
+    def __init__(self, payload: dict[str, object], *, delay_seconds: float = 0.0) -> None:
         self.output_text = json.dumps(payload)
         self.usage = None
+        self.delay_seconds = delay_seconds
 
 
 class _FakeResponsesApi:
     def __init__(self, responses: list[_FakeResponse]) -> None:
         self._responses = list(responses)
         self.calls: list[dict[str, object]] = []
+        self._lock = threading.Lock()
 
     def create(self, **kwargs) -> _FakeResponse:
-        self.calls.append(kwargs)
-        if not self._responses:
-            raise AssertionError("No fake responses remaining")
-        return self._responses.pop(0)
+        with self._lock:
+            self.calls.append(kwargs)
+            if not self._responses:
+                raise AssertionError("No fake responses remaining")
+            response = self._responses.pop(0)
+        if response.delay_seconds > 0:
+            time.sleep(response.delay_seconds)
+        return response
 
 
 class _FakeOpenAIClient:
@@ -147,10 +155,14 @@ class MissingTickerRetryTests(unittest.TestCase):
             news_map={},
             run_date=date(2026, 4, 21),
             model_profile=self.model_profile,
-            metadata={"llm_missing_retry_budget": 1},
+            metadata={"llm_missing_retry_budget": 1, "llm_validation_retry_budget": 1},
             fallback_payload_by_ticker={
                 "AAPL": {"summary": "fallback:AAPL"},
                 "MSFT": {"summary": "fallback:MSFT"},
+            },
+            raw_payload_by_ticker={
+                "AAPL": {"positioning": {"analyst_target_price": "120.00 USD"}},
+                "MSFT": {},
             },
             intermediate_results={
                 "AAPL": {},
@@ -242,6 +254,80 @@ class MissingTickerRetryTests(unittest.TestCase):
             "research_v1:fake_structured",
         )
 
+    def test_retries_single_ticker_after_fact_warning_and_recovers(self) -> None:
+        fake_client = _FakeOpenAIClient(
+            [
+                _FakeResponse(
+                    {
+                        "tickers": [
+                            {"ticker": "AAPL", "summary": "목표 가격은 999.00 USD로 봅니다."},
+                            {"ticker": "MSFT", "summary": "정상 요약"},
+                        ]
+                    }
+                ),
+                _FakeResponse({"tickers": [{"ticker": "AAPL", "summary": "목표 가격은 120.00 USD로 봅니다."}]}),
+            ]
+        )
+
+        result = self._run_with_responses([], client=fake_client)
+
+        self.assertEqual(result.results_by_ticker["AAPL"]["summary"], "목표 가격은 120.00 USD로 봅니다.")
+        self.assertEqual(result.results_by_ticker["MSFT"]["summary"], "정상 요약")
+        self.assertEqual(result.diagnostics["validation_retry_batches"], 1)
+        self.assertEqual(result.diagnostics["validation_retry_attempts"], 1)
+        self.assertEqual(result.diagnostics["validation_retry_recovered_tickers"], 1)
+        self.assertEqual(len(fake_client.responses.calls), 2)
+        self.assertIn("VALIDATION RETRY RULES", fake_client.responses.calls[1]["input"][1]["content"][0]["text"])
+        self.assertEqual(fake_client.responses.calls[1]["prompt_cache_key"], "research_v1:fake_structured:validation-retry")
+
+    def test_validation_retry_uses_lower_temperature_for_non_reasoning_model(self) -> None:
+        self.ctx = AnalysisContext(
+            watchlist=[SimpleNamespace(ticker="AAPL"), SimpleNamespace(ticker="MSFT")],
+            collected={},
+            news_map={},
+            run_date=date(2026, 4, 21),
+            model_profile=ModelProfile(
+                name="custom",
+                model="gpt-4.1-mini",
+                prompt_version="research_v1",
+                context_window=400000,
+                max_output_tokens=32000,
+                monthly_cost_estimate_usd=0.0,
+                input_cost_per_1m_tokens=0.0,
+                cached_input_cost_per_1m_tokens=0.0,
+                output_cost_per_1m_tokens=0.0,
+                temperature=0.2,
+            ),
+            metadata={"llm_missing_retry_budget": 1, "llm_validation_retry_budget": 1},
+            fallback_payload_by_ticker={
+                "AAPL": {"summary": "fallback:AAPL"},
+                "MSFT": {"summary": "fallback:MSFT"},
+            },
+            raw_payload_by_ticker={
+                "AAPL": {"positioning": {"analyst_target_price": "120.00 USD"}},
+                "MSFT": {},
+            },
+            intermediate_results={"AAPL": {}, "MSFT": {}},
+        )
+        fake_client = _FakeOpenAIClient(
+            [
+                _FakeResponse(
+                    {
+                        "tickers": [
+                            {"ticker": "AAPL", "summary": "목표 가격은 999.00 USD로 봅니다."},
+                            {"ticker": "MSFT", "summary": "정상 요약"},
+                        ]
+                    }
+                ),
+                _FakeResponse({"tickers": [{"ticker": "AAPL", "summary": "목표 가격은 120.00 USD로 봅니다."}]}),
+            ]
+        )
+
+        self._run_with_responses([], client=fake_client)
+
+        self.assertEqual(fake_client.responses.calls[0]["temperature"], 0.2)
+        self.assertEqual(fake_client.responses.calls[1]["temperature"], 0.1)
+
     def _run_with_responses(self, responses: list[_FakeResponse], client: _FakeOpenAIClient | None = None):
         fake_openai = types.ModuleType("openai")
         fake_openai.OpenAI = lambda api_key=None: client or _FakeOpenAIClient(responses)
@@ -315,6 +401,89 @@ class SplitBatchesModuleBatchCapTests(unittest.TestCase):
 
         self.assertEqual(len(batches), 1)
         self.assertEqual(len(batches[0]), 7)
+
+
+class ParallelBatchExecutionTests(unittest.TestCase):
+    def test_processes_multiple_batches_in_parallel(self) -> None:
+        module = _FakeStructuredModule()
+        module.name = "signal_takeaway_module"
+        ctx = AnalysisContext(
+            watchlist=[SimpleNamespace(ticker=ticker) for ticker in ["AAPL", "MSFT", "AMD", "CAT", "XOM", "T", "KO"]],
+            collected={},
+            news_map={},
+            run_date=date(2026, 4, 21),
+            model_profile=ModelProfile(
+                name="economy",
+                model="gpt-5.4-mini",
+                prompt_version="research_v1",
+                context_window=400000,
+                max_output_tokens=32000,
+                monthly_cost_estimate_usd=0.0,
+                input_cost_per_1m_tokens=0.0,
+                cached_input_cost_per_1m_tokens=0.0,
+                output_cost_per_1m_tokens=0.0,
+            ),
+            metadata={
+                "llm_missing_retry_budget": 0,
+                "llm_validation_retry_budget": 0,
+                "llm_batch_max_workers": 3,
+            },
+            fallback_payload_by_ticker={ticker: {"summary": f"fallback:{ticker}"} for ticker in ["AAPL", "MSFT", "AMD", "CAT", "XOM", "T", "KO"]},
+            intermediate_results={ticker: {} for ticker in ["AAPL", "MSFT", "AMD", "CAT", "XOM", "T", "KO"]},
+        )
+        prompt_template = PromptTemplate(
+            name="signal_takeaway_module",
+            version="research_v1",
+            system_template="system {module_name}",
+            user_template="{batch_payload_json}",
+            output_schema={
+                "type": "object",
+                "required": ["tickers"],
+                "properties": {
+                    "tickers": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["ticker", "summary"],
+                            "properties": {
+                                "ticker": {"type": "string"},
+                                "summary": {"type": "string"},
+                            },
+                            "additionalProperties": False,
+                        },
+                    }
+                },
+                "additionalProperties": False,
+            },
+        )
+        fake_client = _FakeOpenAIClient(
+            [
+                _FakeResponse({"tickers": [{"ticker": "AAPL", "summary": "AAPL"}, {"ticker": "MSFT", "summary": "MSFT"}, {"ticker": "AMD", "summary": "AMD"}]}, delay_seconds=0.1),
+                _FakeResponse({"tickers": [{"ticker": "CAT", "summary": "CAT"}, {"ticker": "XOM", "summary": "XOM"}, {"ticker": "T", "summary": "T"}]}, delay_seconds=0.1),
+                _FakeResponse({"tickers": [{"ticker": "KO", "summary": "KO"}]}, delay_seconds=0.1),
+            ]
+        )
+
+        fake_openai = types.ModuleType("openai")
+        fake_openai.OpenAI = lambda api_key=None: fake_client
+        with (
+            patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False),
+            patch.dict(sys.modules, {"openai": fake_openai}),
+            patch("src.analyzer.llm_runtime.record_pipeline_event"),
+        ):
+            start = time.monotonic()
+            result = run_structured_llm_module(
+                module,
+                ctx,
+                prompt_template_override=prompt_template,
+            )
+            elapsed = time.monotonic() - start
+
+        self.assertLess(elapsed, 0.25)
+        self.assertEqual(result.diagnostics["batch_count"], 3)
+        self.assertEqual(result.diagnostics["parallel_batch_workers"], 3)
+        self.assertEqual(result.results_by_ticker["KO"]["summary"], "KO")
+        self.assertEqual(len(fake_client.responses.calls), 3)
 
 
 if __name__ == "__main__":

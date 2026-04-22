@@ -6,50 +6,124 @@
 * Strict separation of concerns
 * Deterministic outputs
 * Cost-aware execution
+* One storage boundary through datastore
 
 ## Layers
 
-### collector/
+### `collector/`
 
+Responsibilities:
 * External data fetching only
-* Implements fallback chains
-* No analysis or formatting logic
+* Provider fallback chains
+* Data normalization before handoff
 
-### analyzer/
+Must not:
+* Perform LLM analysis
+* Format user-facing output
+* Write storage directly outside datastore utilities
 
-* LLM-based processing only
-* Deterministic structured output
-* No direct API calls outside LLM
+### `analyzer/`
 
-### state/
+Responsibilities:
+* Structured analysis from collected inputs
+* Module DAG orchestration
+* Prompt rendering, validation, and deterministic fallback
+* Multi-model consensus for selected tickers
 
-* Portfolio tracking
-* Signal tracking
-* Derived metrics (returns, performance)
+Key components:
+* `ModuleRegistry`
+* `AnalysisOrchestrator`
+* `AnalysisEnsemble`
+* `PromptTemplate` registry
+* Modules under `src/analyzer/modules/`
 
-### output/
+Must not:
+* Call external market/news APIs directly
+* Own output formatting
+* Bypass model-profile or prompt-version configuration
 
-* Markdown and JSON generation
-* No data fetching or analysis
+### `decision/`
 
-### datastore/
+Responsibilities:
+* Plugin-based factor scoring
+* Regime-aware weighting and normalization
+* Final `buy/watch/avoid` decision generation
 
-* Storage abstraction layer
-* Supports CSV and SQLite backends
-* Selected via environment variable
+Key components:
+* `DecisionFactor`
+* factor registry under `src/decision/factors/`
+* `ConvictionScorer`
+* `generate_decisions(...)`
 
-### logging/
+Must not:
+* Fetch external data
+* Write output files
 
-* Pipeline event tracking
-* JSONL event stream + summary reports
+### `state/`
 
-### utils/
+Responsibilities:
+* Signal history tracking
+* Return windows and derived signal outcomes
+* Reproducible state updates across runs
 
-* Shared utilities only
-* No domain logic
+Must not:
+* Depend on live APIs
+* Hide non-reproducible side effects
 
-## Rules
+### `output/`
 
-* Never mix responsibilities across layers
-* Never bypass datastore abstraction
-* Never embed logic into GitHub Actions
+Responsibilities:
+* Markdown generation
+* JSON export for web and analytics views
+* Operational artifacts such as quality, routing, and cost logs
+
+Must not:
+* Fetch data
+* Recompute business logic that belongs in analyzer or decision
+
+### `datastore/`
+
+Responsibilities:
+* Unified persistence boundary
+* CSV and SQLite backends
+* Historical query surface for prices, signals, and run metadata
+
+Must not:
+* Leak backend-specific logic into other layers
+
+### `logging/`
+
+Responsibilities:
+* Step-level pipeline event tracking
+* Run summaries and operational diagnostics
+
+Must not:
+* Change pipeline outcomes
+* Expose secrets
+
+### `utils/`
+
+Responsibilities:
+* Shared helpers that do not own domain workflows
+
+Must not:
+* Become a hidden domain layer
+
+## Current End-To-End Shape
+
+The current production path is:
+* `collector` gathers normalized data
+* `analyzer` builds analyses through module orchestration and ensemble review
+* `decision` converts analyses into conviction-based actions
+* `state` updates signal history and derived outcomes
+* `output` writes Markdown and JSON payloads
+* `datastore` persists run metadata and historical records
+* `logging` records execution and derives operational reports
+
+## Boundary Rules
+
+* Never bypass datastore for persistence
+* Never move business rules into GitHub Actions or Vercel build scripts
+* Never let output formatting become the source of truth for analysis logic
+* Never let analyzer perform direct provider fetching
+* Keep optional features additive and non-destructive

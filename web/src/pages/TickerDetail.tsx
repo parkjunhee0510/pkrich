@@ -26,10 +26,10 @@ const HEADER_ENSEMBLE_BADGES: Record<string, { symbol: string; label: string; cl
 }
 
 const HEADER_SELECTION_REASON_LABELS: Record<string, string> = {
-  selected: 'Selected for second-pass review',
-  cap_exceeded: 'Skipped due to daily ensemble cap',
-  out_of_range: 'Outside ensemble trigger range',
-  disabled: 'Ensemble disabled',
+  selected: '2차 검토 대상으로 선택됨',
+  cap_exceeded: '하루 검토 제한 때문에 이번에는 보류됨',
+  out_of_range: '추가 검토 범위 밖이라 1차 판단만 사용',
+  disabled: '추가 검토 기능이 꺼져 있음',
 }
 
 const FILING_TABS = ['실적', '배당', '주주총회', '기타 공시'] as const
@@ -232,7 +232,7 @@ export function TickerDetail() {
           <span className="ticker-date">{analysis.date}</span>
           <div className="ticker-meta-row">
             <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
-              Tone: {analysis.news_tone?.label ?? 'neutral'}
+              뉴스 분위기: {formatNewsToneLabel(analysis.news_tone?.label)}
             </span>
             {typeof analysis.news_tone?.confidence === 'number' ? (
               <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
@@ -244,17 +244,17 @@ export function TickerDetail() {
                   <span className="metric-tooltip-copy">
                     {headerSelectionReason ? (
                       <>
-                        <strong>Selection</strong>
+                        <strong>선정 이유</strong>
                         <span>{headerSelectionReason}</span>
                       </>
                     ) : null}
                     {analysis.decision?.ensemble_agreement === 'conflict' ? (
                       <>
-                        <strong>Economy</strong>
+                        <strong>1차 판단</strong>
                         <span>
                           {analysis.analysis_consensus?.economy_action ?? 'watch'} - {analysis.analysis_consensus?.economy_reason ?? 'No reason'}
                         </span>
-                        <strong>Deep</strong>
+                        <strong>2차 판단</strong>
                         <span>
                           {analysis.analysis_consensus?.deep_action ?? analysis.decision?.action ?? 'watch'} - {analysis.analysis_consensus?.deep_reason ?? analysis.decision?.reason ?? 'No reason'}
                         </span>
@@ -328,7 +328,7 @@ export function TickerDetail() {
       <section className="earnings-hero-section">
         <div className="section-header-with-kicker">
           <div>
-            <h3>실적 셋업</h3>
+            <h3>실적 체크포인트</h3>
             <p className="section-kicker">트레이더가 먼저 보는 컨센서스 대비 체력과 다음 이벤트 타이밍</p>
           </div>
         </div>
@@ -512,10 +512,10 @@ export function TickerDetail() {
 
       <ResponsiveDetailSection title="실적 컨센서스 디테일">
         <div className="price-action-grid">
-          <DetailMetricCard label="Forward EPS" value={earningsSetup?.forward_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.forwardEps} />
-          <DetailMetricCard label="TTM EPS" value={earningsSetup?.ttm_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.ttmEps} />
-          <DetailMetricCard label="Forward vs TTM" value={formatDirectionalPriceAction(earningsSetup?.forward_vs_ttm)} tooltip={METRIC_TOOLTIPS.forwardVsTtm} />
-          <DetailMetricCard label="EPS Growth" value={earningsSetup?.earnings_growth ?? 'N/A'} tooltip={METRIC_TOOLTIPS.epsGrowth} />
+          <DetailMetricCard label="예상 EPS" value={earningsSetup?.forward_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.forwardEps} />
+          <DetailMetricCard label="최근 12개월 EPS" value={earningsSetup?.ttm_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.ttmEps} />
+          <DetailMetricCard label="예상치 vs 최근 실적" value={formatDirectionalPriceAction(earningsSetup?.forward_vs_ttm)} tooltip={METRIC_TOOLTIPS.forwardVsTtm} />
+          <DetailMetricCard label="이익 성장률" value={earningsSetup?.earnings_growth ?? 'N/A'} tooltip={METRIC_TOOLTIPS.epsGrowth} />
           <DetailMetricCard label="최근 분기 추정 EPS" value={earningsSetup?.latest_estimated_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.latestEstimatedEps} />
           <DetailMetricCard
             label="최근 분기 결과"
@@ -523,11 +523,11 @@ export function TickerDetail() {
             value={
               <strong className="earnings-setup-stack">
                 <span>{earningsSetup?.latest_surprise_pct ?? 'N/A'}</span>
-                <span className={`earnings-result-chip ${toBeatMissClassName(earningsSetup?.latest_beat_miss)}`}>{earningsSetup?.latest_beat_miss ?? 'N/A'}</span>
+                <span className={`earnings-result-chip ${toBeatMissClassName(earningsSetup?.latest_beat_miss)}`}>{formatBeatMissLabel(earningsSetup?.latest_beat_miss)}</span>
               </strong>
             }
           />
-          <DetailMetricCard label="다음 실적 체크포인트" value={earningsSetup?.next_earnings_event ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nextEarningsEvent} />
+          <DetailMetricCard label="다음 실적 일정" value={earningsSetup?.next_earnings_event ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nextEarningsEvent} />
         </div>
       </ResponsiveDetailSection>
       <ResponsiveDetailSection title="가격 행동 맥락">
@@ -538,7 +538,7 @@ export function TickerDetail() {
           <DetailMetricCard label="vs SMA50" value={formatDirectionalPriceAction(priceAction?.price_vs_sma50)} tooltip={METRIC_TOOLTIPS.vsSma50} />
           <DetailMetricCard label="vs SMA200" value={formatDirectionalPriceAction(priceAction?.price_vs_sma200)} tooltip={METRIC_TOOLTIPS.vsSma200} />
           <DetailMetricCard label="52주 위치" value={priceAction?.week52_position ?? 'N/A'} tooltip={METRIC_TOOLTIPS.week52Position} />
-          <DetailMetricCard label="RS vs SPY(30D)" value={priceAction?.rs_vs_spy ?? 'N/A'} tooltip={METRIC_TOOLTIPS.rsVsSpy} />
+          <DetailMetricCard label="시장 대비 강세(30일)" value={priceAction?.rs_vs_spy ?? 'N/A'} tooltip={METRIC_TOOLTIPS.rsVsSpy} />
         </div>
       </ResponsiveDetailSection>
 
@@ -600,7 +600,7 @@ export function TickerDetail() {
               <div key={row.label} className="price-action-card">
                 <span className="price-action-label">{row.label}</span>
                 <strong>{row.company}</strong>
-                <span className="price-action-subtext">Peer 평균 {row.peerAverage}</span>
+                <span className="price-action-subtext">비슷한 종목 평균 {row.peerAverage}</span>
                 {row.difference ? <span className="price-action-subtext">격차 {row.difference}</span> : null}
               </div>
             ))}
@@ -700,11 +700,11 @@ export function TickerDetail() {
       </ResponsiveDetailSection>
 
       <section className="signal-conclusion">
-        <h3>시그널 / 한줄 결론</h3>
+        <h3>한 줄 판단</h3>
         <p className="signal-text">{analysis.signal_or_takeaway}</p>
       </section>
 
-      <ResponsiveDetailSection title="시그널 검증 이력">
+      <ResponsiveDetailSection title="판단 신호 검증 이력">
         {signalHistory.length > 0 ? (
           <ul className="timeline-list">
             {signalHistory.map((row, index) => (
@@ -719,7 +719,7 @@ export function TickerDetail() {
             ))}
           </ul>
         ) : (
-          <p className="empty">아직 시그널 검증 이력이 없습니다.</p>
+          <p className="empty">아직 판단 신호 검증 이력이 없습니다.</p>
         )}
       </ResponsiveDetailSection>
     </div>
@@ -1089,6 +1089,12 @@ function formatBeatMissLabel(value?: string): string {
   if (value === 'miss') return 'MISS'
   if (value === 'in-line') return 'IN-LINE'
   return 'N/A'
+}
+
+function formatNewsToneLabel(value?: string): string {
+  if (value === 'bullish') return '긍정적'
+  if (value === 'bearish') return '부정적'
+  return '중립'
 }
 
 function classifyBeatMissTone(value?: string): EarningsCardTone {

@@ -7,6 +7,7 @@ from typing import Any
 
 from src.collector.finnhub import collect_finnhub_economic_calendar, is_finnhub_ready
 from src.collector.macro_events import collect_macro_shock_events
+from src.collector.macro_surprise import collect_macro_surprise
 from src.utils.network import can_open_tcp_connection
 
 logger = logging.getLogger(__name__)
@@ -127,6 +128,21 @@ def collect_macro_context(
     context["macro_events"] = collect_macro_shock_events(run_date)
     context.update(_collect_macro_market_series())
     context["spy_technicals"] = _collect_spy_technicals()
+    try:
+        context["surprise_score"] = collect_macro_surprise(
+            run_date,
+            upcoming_events=context.get("upcoming_macro_events", []),
+        )
+    except Exception:
+        logger.debug("surprise_score collection failed", exc_info=True)
+        context["surprise_score"] = {
+            "growth": {"score": 0.0, "samples": 0},
+            "inflation": {"score": 0.0, "samples": 0},
+            "labor": {"score": 0.0, "samples": 0},
+            "composite": 0.0,
+            "confidence": "low",
+            "window_days": 90,
+        }
     return context
 
 
@@ -195,7 +211,7 @@ def _safe_parse_date(date_str: str) -> date | None:
         return None
 
 
-def _collect_macro_market_series() -> dict[str, dict[str, str]]:
+def _collect_macro_market_series() -> dict[str, Any]:
     if not can_open_tcp_connection("query1.finance.yahoo.com", 443):
         return {}
 
@@ -206,10 +222,22 @@ def _collect_macro_market_series() -> dict[str, dict[str, str]]:
 
     symbol_map: dict[str, tuple[str, str]] = {
         "us10y": ("^TNX", "US 10Y"),
+        "us2y": ("^FVX", "US 5Y"),  # closest liquid proxy for short end via yfinance
+        "us3m": ("^IRX", "US 13W T-Bill"),
+        "us30y": ("^TYX", "US 30Y"),
+        "tips": ("TIP", "TIPS ETF"),
         "dxy": ("DX-Y.NYB", "Dollar Index"),
         "copper": ("HG=F", "Copper"),
+        "oil_wti": ("CL=F", "WTI Crude"),
+        "gold": ("GC=F", "Gold"),
+        "usdjpy": ("USDJPY=X", "USD/JPY"),
+        "usdcny": ("CNY=X", "USD/CNY"),
+        "btc": ("BTC-USD", "Bitcoin"),
+        "hyg": ("HYG", "HY Credit ETF"),
+        "lqd": ("LQD", "IG Credit ETF"),
     }
     result: dict[str, dict[str, str]] = {}
+    level_by_key: dict[str, float] = {}
     for key, (symbol, label) in symbol_map.items():
         try:
             ticker = yf.Ticker(symbol)
@@ -228,9 +256,53 @@ def _collect_macro_market_series() -> dict[str, dict[str, str]]:
                 "price": f"{latest:,.2f}",
                 "change": f"{change_pct:+.2f}%",
             }
+            level_by_key[key] = latest
         except Exception:
             continue
+
+    derived: dict[str, Any] = {}
+
+    us10y = level_by_key.get("us10y")
+    us2y = level_by_key.get("us2y")
+    us3m = level_by_key.get("us3m")
+    if us10y is not None and us2y is not None:
+        derived["yield_curve_10y_2y"] = {
+            "label": "10Y-2Y Spread",
+            "level": f"{us10y - us2y:+.2f}",
+            "spread_bps": f"{(us10y - us2y) * 100:+.0f}",
+            "status": _curve_status(us10y - us2y),
+        }
+    if us10y is not None and us3m is not None:
+        derived["yield_curve_10y_3m"] = {
+            "label": "10Y-3M Spread",
+            "level": f"{us10y - us3m:+.2f}",
+            "spread_bps": f"{(us10y - us3m) * 100:+.0f}",
+            "status": _curve_status(us10y - us3m),
+        }
+
+    hyg_level = level_by_key.get("hyg")
+    lqd_level = level_by_key.get("lqd")
+    if hyg_level is not None and lqd_level is not None and lqd_level > 0:
+        ratio = hyg_level / lqd_level
+        derived["credit_spread"] = {
+            "label": "HY/IG Ratio",
+            "level": f"{ratio:.3f}",
+            "hy_level": f"{hyg_level:.2f}",
+            "ig_level": f"{lqd_level:.2f}",
+        }
+
+    result.update(derived)
     return result
+
+
+def _curve_status(spread: float) -> str:
+    if spread < -0.10:
+        return "inverted"
+    if spread < 0.25:
+        return "flat"
+    if spread < 1.0:
+        return "normal"
+    return "steep"
 
 
 def _collect_spy_technicals() -> dict[str, str]:

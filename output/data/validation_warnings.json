@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "window_days": 14,
-  "generated_at": "2026-04-21",
+  "generated_at": "2026-04-22",
   "categories": [
     "schema_violation_count",
     "fact_warning_count",
@@ -11,23 +11,12 @@
   ],
   "totals": {
     "schema_violation_count": 0,
-    "fact_warning_count": 44,
-    "consistency_warning_count": 0,
-    "hallucination_warning_count": 23,
+    "fact_warning_count": 51,
+    "consistency_warning_count": 2,
+    "hallucination_warning_count": 38,
     "dropped_unsupported_count": 0
   },
   "series": [
-    {
-      "date": "2026-04-08",
-      "batch_count": 0,
-      "validated_ticker_count": 0,
-      "validation_failure_count": 0,
-      "schema_violation_count": 0,
-      "fact_warning_count": 0,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "dropped_unsupported_count": 0
-    },
     {
       "date": "2026-04-09",
       "batch_count": 0,
@@ -125,6 +114,17 @@
       "fact_warning_count": 20,
       "consistency_warning_count": 0,
       "hallucination_warning_count": 3,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-04-22",
+      "batch_count": 0,
+      "validated_ticker_count": 90,
+      "validation_failure_count": 13,
+      "schema_violation_count": 0,
+      "fact_warning_count": 7,
+      "consistency_warning_count": 2,
+      "hallucination_warning_count": 15,
       "dropped_unsupported_count": 0
     }
   ]

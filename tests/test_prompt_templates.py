@@ -136,6 +136,29 @@ class PromptTemplateTests(unittest.TestCase):
         }
         self.assertTrue(template.validate_response(valid))
 
+    def test_signal_template_includes_no_invention_guardrails(self) -> None:
+        template = get_prompt_template("research_v1", "signal_takeaway_module")
+        ctx = PromptContext(run_date=date(2026, 4, 16))
+
+        system_text = template.render_system(ctx)
+        user_text = template.render_user([{"ticker": "AAPL"}], ctx)
+
+        self.assertIn("Never invent numbers", system_text)
+        self.assertIn("데이터에 없는 숫자", user_text)
+        self.assertIn("'—' 또는 'N/A'", user_text)
+        self.assertIn("must_use_values", user_text)
+
+    def test_narrative_template_includes_no_invention_guardrails(self) -> None:
+        template = get_prompt_template("research_v2", "research_narrative_module")
+        ctx = PromptContext(run_date=date(2026, 4, 16))
+
+        system_text = template.render_system(ctx)
+        user_text = template.render_user([{"ticker": "AAPL"}], ctx)
+
+        self.assertIn("Never invent numbers", system_text)
+        self.assertIn("금지 예시", user_text)
+        self.assertIn("'—' 또는 'N/A'", user_text)
+
 
 if __name__ == "__main__":
     unittest.main()

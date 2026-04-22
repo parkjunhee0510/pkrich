@@ -2,34 +2,47 @@
 
 ## Scope
 
-### Core Output
+The output layer turns finalized pipeline results into stable artifacts.
 
-* Markdown generation
-* JSON export
+## Current Output Families
 
-### Optional Delivery
+### Markdown
 
-* Obsidian sync
-* Slack notification
+* daily note
+* weekly note and structured weekly summary rendering
+* per-ticker notes
 
-## Structure
+### JSON For Web And Analytics
 
-* output/daily/
-* output/tickers/
-* output/data/
+* `output/data/index.json`
+* `output/data/tickers/<TICKER>/latest.json`
+* `output/data/tickers/<TICKER>/history.json`
+* dashboard history, price history, ticker timelines
+* sector explorer payloads
+
+### Operational Reports
+
+* API status
+* analysis quality
+* cost log
+* routing outcome
+* A/B test results
 
 ## Requirements
 
-* Deterministic output format
+* Deterministic output structure
 * Stable file naming
-* Minimal Git diffs
+* Minimal unnecessary diffs
+* Backward-compatible schema extensions when possible
 
 ## Constraints
 
 * No data fetching
-* No analysis logic
+* No LLM calls
+* No decision recomputation
 
 ## Rules
 
-* Output must remain consistent across runs
-* Optional features must not break pipeline
+* Output formatting must consume finalized data only
+* Optional delivery paths such as Slack must not become the source of truth
+* Web payload shape should evolve additively unless a planned schema migration is documented

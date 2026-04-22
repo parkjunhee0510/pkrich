@@ -27,11 +27,19 @@ _DEFAULT_FACTORS = {
     "earnings_pattern": {"min": -10, "max": 10},
     "fundamentals": {"min": 0, "max": 10},
     "macro_event": {"min": -8, "max": 6},
+    "macro_regime": {"min": -6, "max": 8},
+    "peer_rank": {"min": -4, "max": 8},
     "portfolio_risk": {"min": -10, "max": 0},
 }
 _DEFAULT_THRESHOLDS = {"buy": 65, "buy_risk_off": 75, "avoid": 35}
 _DEFAULT_VALID_UNTIL = {"earnings_window_days": 30, "default_days": 7}
-_DEFAULT_REGIME_MULTIPLIERS = {"risk_on": {}, "risk_off": {}, "neutral": {}}
+_DEFAULT_REGIME_MULTIPLIERS = {
+    "risk_on": {},
+    "risk_off": {},
+    "neutral": {},
+    "reflation": {},
+    "defensive_bias": {},
+}
 
 
 def generate_decisions(

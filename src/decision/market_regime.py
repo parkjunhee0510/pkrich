@@ -19,6 +19,8 @@ _REGIME_LABELS: dict[str, str] = {
     "risk_on": "위험선호 구간: 공격적 진입 가능, 롱 바이어스 유지",
     "neutral": "중립 구간: 선별적 접근, 촉매 확인 후 진입",
     "risk_off": "위험회피 구간: 방어적 포지션, 현금 비중 확대 고려",
+    "reflation": "리플레이션 구간: 원자재·산업재·금융주 상대 강세 가능",
+    "defensive_bias": "방어적 편향: 실질금리 상승 + 하이일드 약세, 퀄리티/배당 우선",
 }
 
 
@@ -40,20 +42,28 @@ def detect_market_regime(
     scores["rates"] = _score_rates(macro_context)
     scores["breadth"] = _score_breadth(collected)
     scores["risk_assets"] = _score_risk_assets(macro_context)
+    scores["yield_curve"] = _score_yield_curve(macro_context)
+    scores["credit_spread"] = _score_credit_spread(macro_context)
+    scores["surprise"] = _score_surprise(macro_context)
 
     total = sum(scores.values())
 
+    base_regime: str
     if total >= 3:
-        regime = "risk_on"
+        base_regime = "risk_on"
     elif total <= -3:
-        regime = "risk_off"
+        base_regime = "risk_off"
     else:
-        regime = "neutral"
+        base_regime = "neutral"
 
-    max_possible = 7  # +2 +2 +1 +1 +1
+    sub_regime = _detect_sub_regime(macro_context, scores, base_regime)
+    regime = sub_regime or base_regime
+
+    max_possible = 10  # +2 +2 +1 +1 +1 +1 +1 +1
     confidence = min(100, int(abs(total) / max_possible * 100))
 
     drivers = _build_drivers(macro_context, collected, scores)
+    forward_signals = _build_forward_signals(macro_context, scores)
 
     return MarketRegime(
         regime=regime,  # type: ignore[arg-type]
@@ -61,6 +71,8 @@ def detect_market_regime(
         drivers=drivers,
         implication=_REGIME_LABELS.get(regime, ""),
         assessed_at=run_date.isoformat(),
+        sub_regime=sub_regime,
+        forward_signals=forward_signals,
     )
 
 
@@ -157,6 +169,119 @@ def _score_risk_assets(macro_context: dict[str, Any]) -> int:
         score -= 1
 
     return max(-1, min(1, score))
+
+
+def _score_yield_curve(macro_context: dict[str, Any]) -> int:
+    """Yield curve: inverted = -2, flat = -1, normal = +1, steep = 0 (late cycle risk)."""
+    curve = macro_context.get("yield_curve_10y_2y") or macro_context.get("yield_curve_10y_3m")
+    if not isinstance(curve, dict):
+        return 0
+    status = str(curve.get("status", "")).lower()
+    if status == "inverted":
+        return -2
+    if status == "flat":
+        return -1
+    if status == "normal":
+        return 1
+    if status == "steep":
+        return 0
+    return 0
+
+
+def _score_credit_spread(macro_context: dict[str, Any]) -> int:
+    """HY/IG ratio: falling (widening spread) = -1, rising (tightening) = +1.
+
+    Uses short-term change of HYG vs LQD as proxy.
+    """
+    hyg = macro_context.get("hyg", {})
+    lqd = macro_context.get("lqd", {})
+    hy_change = _parse_float(hyg.get("change"))
+    ig_change = _parse_float(lqd.get("change"))
+    if hy_change is None or ig_change is None:
+        return 0
+    relative = hy_change - ig_change
+    if relative <= -0.5:
+        return -1
+    if relative >= 0.5:
+        return 1
+    return 0
+
+
+def _score_surprise(macro_context: dict[str, Any]) -> int:
+    """Macro Surprise composite: bounded to +/- 1."""
+    surprise = macro_context.get("surprise_score", {})
+    if not isinstance(surprise, dict):
+        return 0
+    composite = surprise.get("composite")
+    try:
+        value = float(composite)
+    except (TypeError, ValueError):
+        return 0
+    if value >= 0.5:
+        return 1
+    if value <= -0.5:
+        return -1
+    return 0
+
+
+def _detect_sub_regime(
+    macro_context: dict[str, Any],
+    scores: dict[str, int],
+    base_regime: str,
+) -> str:
+    """Detect reflation / defensive_bias sub-regimes from joint signals."""
+    curve_score = scores.get("yield_curve", 0)
+    credit_score = scores.get("credit_spread", 0)
+    surprise = macro_context.get("surprise_score", {})
+    growth = 0.0
+    if isinstance(surprise, dict):
+        growth_block = surprise.get("growth", {})
+        if isinstance(growth_block, dict):
+            try:
+                growth = float(growth_block.get("score", 0.0))
+            except (TypeError, ValueError):
+                growth = 0.0
+
+    # Reflation: curve steepening or normal + positive growth surprise + risk_on base
+    if base_regime != "risk_off" and curve_score >= 1 and growth >= 0.3:
+        return "reflation"
+
+    # Defensive bias: risk-off-ish base + credit widening or rising real rates
+    tips = macro_context.get("tips", {})
+    tips_change = _parse_float(tips.get("change"))
+    real_rate_rising = tips_change is not None and tips_change <= -0.5
+    if base_regime != "risk_on" and (credit_score <= -1 or real_rate_rising):
+        return "defensive_bias"
+
+    return ""
+
+
+def _build_forward_signals(macro_context: dict[str, Any], scores: dict[str, int]) -> dict[str, str]:
+    curve_2s10s = macro_context.get("yield_curve_10y_2y", {})
+    curve_3m10y = macro_context.get("yield_curve_10y_3m", {})
+    credit = macro_context.get("credit_spread", {})
+    surprise = macro_context.get("surprise_score", {})
+
+    forward: dict[str, str] = {}
+    if isinstance(curve_2s10s, dict) and curve_2s10s.get("level"):
+        forward["yield_curve_10y_2y"] = (
+            f"{curve_2s10s.get('level')} ({curve_2s10s.get('status', 'n/a')}) "
+            f"[점수 {scores.get('yield_curve', 0):+d}]"
+        )
+    if isinstance(curve_3m10y, dict) and curve_3m10y.get("level"):
+        forward["yield_curve_10y_3m"] = (
+            f"{curve_3m10y.get('level')} ({curve_3m10y.get('status', 'n/a')})"
+        )
+    if isinstance(credit, dict) and credit.get("level"):
+        forward["credit_spread"] = (
+            f"HY/IG {credit.get('level')} [점수 {scores.get('credit_spread', 0):+d}]"
+        )
+    if isinstance(surprise, dict):
+        forward["surprise_composite"] = (
+            f"{surprise.get('composite', 0.0):+.2f} "
+            f"({surprise.get('confidence', 'low')}) [점수 {scores.get('surprise', 0):+d}]"
+        )
+    return forward
 
 
 def _build_drivers(

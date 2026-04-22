@@ -30,11 +30,20 @@
             "deep": {
               "__type__": "object",
               "keys": {
+                "cache_hit_ratio": {
+                  "__type__": "float"
+                },
+                "cached_input_tokens": {
+                  "__type__": "int"
+                },
                 "calls": {
                   "__type__": "int"
                 },
                 "cost_usd": {
                   "__type__": "float"
+                },
+                "input_tokens": {
+                  "__type__": "int"
                 },
                 "models": {
                   "__type__": "object",
@@ -46,17 +55,29 @@
                 },
                 "tokens": {
                   "__type__": "int"
+                },
+                "uncached_input_tokens": {
+                  "__type__": "int"
                 }
               }
             },
             "economy": {
               "__type__": "object",
               "keys": {
+                "cache_hit_ratio": {
+                  "__type__": "float"
+                },
+                "cached_input_tokens": {
+                  "__type__": "int"
+                },
                 "calls": {
                   "__type__": "int"
                 },
                 "cost_usd": {
                   "__type__": "float"
+                },
+                "input_tokens": {
+                  "__type__": "int"
                 },
                 "models": {
                   "__type__": "object",
@@ -67,6 +88,9 @@
                   }
                 },
                 "tokens": {
+                  "__type__": "int"
+                },
+                "uncached_input_tokens": {
                   "__type__": "int"
                 }
               }
@@ -135,11 +159,20 @@
               "deep": {
                 "__type__": "object",
                 "keys": {
+                  "cache_hit_ratio": {
+                    "__type__": "float"
+                  },
+                  "cached_input_tokens": {
+                    "__type__": "int"
+                  },
                   "calls": {
                     "__type__": "int"
                   },
                   "cost_usd": {
                     "__type__": "float"
+                  },
+                  "input_tokens": {
+                    "__type__": "int"
                   },
                   "models": {
                     "__type__": "object",
@@ -151,17 +184,29 @@
                   },
                   "tokens": {
                     "__type__": "int"
+                  },
+                  "uncached_input_tokens": {
+                    "__type__": "int"
                   }
                 }
               },
               "economy": {
                 "__type__": "object",
                 "keys": {
+                  "cache_hit_ratio": {
+                    "__type__": "float"
+                  },
+                  "cached_input_tokens": {
+                    "__type__": "int"
+                  },
                   "calls": {
                     "__type__": "int"
                   },
                   "cost_usd": {
                     "__type__": "float"
+                  },
+                  "input_tokens": {
+                    "__type__": "int"
                   },
                   "models": {
                     "__type__": "object",
@@ -172,6 +217,9 @@
                     }
                   },
                   "tokens": {
+                    "__type__": "int"
+                  },
+                  "uncached_input_tokens": {
                     "__type__": "int"
                   }
                 }

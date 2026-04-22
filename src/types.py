@@ -176,11 +176,13 @@ class PeerInfo:
 
 @dataclass(frozen=True)
 class MarketRegime:
-    regime: Literal['risk_on', 'neutral', 'risk_off'] = 'neutral'
+    regime: Literal['risk_on', 'neutral', 'risk_off', 'reflation', 'defensive_bias'] = 'neutral'
     confidence: int = 0
     drivers: dict[str, str] = field(default_factory=dict)
     implication: str = ''
     assessed_at: str = ''
+    sub_regime: str = ''
+    forward_signals: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

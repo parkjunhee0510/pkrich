@@ -178,7 +178,8 @@ class TestDecideTicker(unittest.TestCase):
         decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
         expected_keys = {
             "valuation", "momentum", "catalyst_recency", "signal_track_record",
-            "news_tone", "regime_adjustment", "earnings_pattern", "fundamentals", "macro_event", "peer_rank", "portfolio_risk",
+            "news_tone", "regime_adjustment", "earnings_pattern", "fundamentals",
+            "macro_event", "macro_regime", "peer_rank", "portfolio_risk",
         }
         self.assertEqual(set(decision.factors.keys()), expected_keys)
 

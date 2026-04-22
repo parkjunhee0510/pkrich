@@ -1,11 +1,11 @@
-import { signalLevel, type SignalDirection } from '../utils/format'
+﻿import { signalLevel, type SignalDirection } from '../utils/format'
 
 const LABELS: Record<string, string> = {
   'strong-up': '강한 상승',
   'up': '상승',
   'flat': '보합',
   'down': '하락',
-  'strong-down': '급락',
+  'strong-down': '강한 하락',
 }
 
 function signalLevelFromDirection(direction?: SignalDirection): string | undefined {

@@ -166,6 +166,24 @@ def run_pipeline(run_date: date | None = None) -> None:
             output_root=Path("output"),
         )
         market_regime = detect_market_regime(market_overview, macro_context, collected, effective_date)
+        # Expose regime to downstream prompt builders via macro_context.
+        if isinstance(macro_context, dict):
+            macro_context["market_regime"] = {
+                "regime": market_regime.regime,
+                "sub_regime": getattr(market_regime, "sub_regime", ""),
+                "confidence": market_regime.confidence,
+                "implication": market_regime.implication,
+                "drivers": dict(market_regime.drivers),
+                "forward_signals": dict(getattr(market_regime, "forward_signals", {}) or {}),
+            }
+            # Build a run-level macro narrative (LLM synthesis, cached 24h).
+            try:
+                from src.analyzer.macro_narrative import build_macro_narrative
+                macro_context["macro_narrative"] = build_macro_narrative(
+                    macro_context, market_regime, effective_date
+                )
+            except Exception:
+                record_pipeline_event("analyzer", "warning", "macro_narrative_failed")
         ensemble = _build_analysis_ensemble()
         ensemble_result = ensemble.analyze_with_consensus(
             watchlist,

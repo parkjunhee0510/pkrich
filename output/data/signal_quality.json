@@ -24,8 +24,14 @@
         "n": 15
       },
       "bull": {
-        "status": "insufficient_data",
-        "n": 19
+        "status": "ok",
+        "n": 30,
+        "hit_rate": 0.7,
+        "avg_win": 12.252,
+        "avg_loss": 3.194,
+        "payoff_ratio": 3.835,
+        "kelly_full": 0.622,
+        "kelly_half": 0.311
       },
       "bear": {
         "status": "insufficient_data",
@@ -35,8 +41,8 @@
   },
   "turnover": {
     "status": "ok",
-    "sample_size": 8,
-    "avg_turnover": 0.039,
+    "sample_size": 9,
+    "avg_turnover": 0.034,
     "points": [
       {
         "date": "2026-04-11",
@@ -70,6 +76,11 @@
       },
       {
         "date": "2026-04-20",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-21",
         "tickers": 11,
         "turnover": 0.0
       }
