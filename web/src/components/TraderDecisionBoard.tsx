@@ -110,7 +110,7 @@ export function TraderDecisionBoard({
     })
     .filter((entry) => entry.delta !== 0)
     .sort((left, right) => Math.abs(right.delta) - Math.abs(left.delta))
-  const counterSignals = buildCounterSignals(factorEntries)
+  const counterSignals = buildCounterSignals(factorEntries, decision?.factor_reasoning)
   const timelineEvents = buildTimelineEvents(upcomingEvents)
   const eventRules = buildEventRules(timelineEvents)
   const reevaluationTriggers = buildReevaluationTriggers({
@@ -408,10 +408,18 @@ function pickDowngradePrice(current: number, tradeFrame?: TradeFrame) {
   return null
 }
 
-function buildCounterSignals(factorEntries: Array<[string, number]>): CounterSignal[] {
+function buildCounterSignals(
+  factorEntries: Array<[string, number]>,
+  factorReasoning?: Record<string, string>,
+): CounterSignal[] {
   const weakestFirst = [...factorEntries].sort((left, right) => left[1] - right[1])
   const selected: CounterSignal[] = []
   const seen = new Set<string>()
+  const buildReason = (key: string): string => {
+    const base = COUNTER_SIGNAL_COPY[key] ?? '추가 확인이 필요한 약점 요소입니다.'
+    const detail = factorReasoning?.[key]?.trim()
+    return detail ? `${base} ${detail}` : base
+  }
 
   for (const [key, score] of weakestFirst) {
     if (seen.has(key)) continue
@@ -420,7 +428,7 @@ function buildCounterSignals(factorEntries: Array<[string, number]>): CounterSig
         key,
         label: FACTOR_LABELS[key] ?? key,
         score,
-        reason: COUNTER_SIGNAL_COPY[key] ?? '추가 확인이 필요한 약점 요소입니다.',
+        reason: buildReason(key),
       })
       seen.add(key)
     }
@@ -434,7 +442,7 @@ function buildCounterSignals(factorEntries: Array<[string, number]>): CounterSig
         key,
         label: FACTOR_LABELS[key] ?? key,
         score,
-        reason: COUNTER_SIGNAL_COPY[key] ?? '추가 확인이 필요한 약점 요소입니다.',
+        reason: buildReason(key),
       })
       seen.add(key)
       if (selected.length >= 3) break

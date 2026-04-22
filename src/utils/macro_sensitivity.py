@@ -31,13 +31,14 @@ def attach_portfolio_macro_sensitivity(
         return context
 
     watchlist_by_ticker = {item.ticker: item for item in watchlist or []}
-    portfolio_tickers = [position.ticker for position in portfolio_summary.positions]
+    portfolio_tickers = {position.ticker for position in portfolio_summary.positions}
+    all_tickers = list(collected.keys())
 
     event_rows: list[dict[str, Any]] = []
-    ticker_rows: dict[str, list[dict[str, str]]] = {ticker: [] for ticker in portfolio_tickers}
+    ticker_rows: dict[str, list[dict[str, str]]] = {ticker: [] for ticker in all_tickers}
     for event in events:
         sensitive_holdings = []
-        for ticker in portfolio_tickers:
+        for ticker in all_tickers:
             market = collected.get(ticker)
             if market is None:
                 continue
@@ -45,7 +46,8 @@ def attach_portfolio_macro_sensitivity(
             sensitivity = _score_ticker_sensitivity(event, market, watch_item)
             if sensitivity is None:
                 continue
-            sensitive_holdings.append(sensitivity)
+            if ticker in portfolio_tickers:
+                sensitive_holdings.append(sensitivity)
             ticker_rows.setdefault(ticker, []).append(
                 {
                     "event_code": str(event.get("event_code") or event.get("type") or ""),

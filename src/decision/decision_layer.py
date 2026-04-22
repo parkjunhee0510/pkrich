@@ -112,6 +112,11 @@ def _decide_ticker(
     reason = _build_reason(factor_scores_by_name, weighted_values)
     valid_until = _compute_valid_until(analysis, run_date, config)
 
+    factor_reasoning = {
+        name: score.reasoning
+        for name, score in factor_scores_by_name.items()
+        if score.reasoning
+    }
     return TickerDecision(
         ticker=analysis.ticker,
         action=action,
@@ -119,6 +124,7 @@ def _decide_ticker(
         reason=reason,
         valid_until=valid_until,
         factors=factors,
+        factor_reasoning=factor_reasoning,
     )
 
 

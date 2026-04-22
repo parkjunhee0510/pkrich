@@ -1,5 +1,5 @@
 /* ============================================================
-   COZY COTTAGECORE — pastel parchment skin
+   COZY COTTAGECORE ??pastel parchment skin
    Override layer on top of brutalist base. Keeps structure,
    swaps tokens, softens corners, warms the palette.
    ============================================================ */
@@ -7,7 +7,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap');
 
 :root {
-  /* ── pastel surface palette ───────────────────────────── */
+  /* ???? pastel surface palette ?????????????????????????????????????????????????????????? */
   --cozy-sky-1:   #e8f1ff;
   --cozy-sky-2:   #f6e7f0;
   --cozy-sky-3:   #fff4e6;
@@ -24,8 +24,20 @@
   --cozy-ink:     #5a3e1b;
   --cozy-ink-2:   #7a5a2e;
   --cozy-muted:   #a08969;
+  --cozy-surface-gradient: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%);
+  --cozy-banner-gradient: linear-gradient(180deg, #fff7e4 0%, #fceccb 100%);
+  --cozy-primary-gradient: linear-gradient(180deg, #ffe1a8 0%, #f3bf60 100%);
+  --cozy-primary-gradient-hover: linear-gradient(180deg, #ffd98a 0%, #e8ac47 100%);
+  --cozy-border: 1.5px solid var(--cozy-gold-soft);
+  --cozy-border-strong: 1.5px solid var(--cozy-gold);
+  --cozy-pill-radius: 999px;
+  --cozy-card-radius: 6px;
+  --cozy-input-radius: 14px;
+  --cozy-soft-panel-bg: rgba(255,253,245,0.7);
+  --cozy-inset-shadow: inset 0 1px 2px rgba(184,134,47,0.08);
+  --cozy-pill-shadow: 0 2px 0 rgba(184,134,47,0.12);
 
-  /* ── override brutalist tokens so all components pick up the cozy palette ── */
+  /* ???? override brutalist tokens so all components pick up the cozy palette ???? */
   --bone:        var(--cozy-cream);
   --bone-dim:    var(--cozy-cream-2);
   --paper:       #fffdf5;
@@ -62,7 +74,7 @@
   --tone-caution-border:  var(--cozy-gold-soft);
   --tone-caution-bg:      var(--cozy-peach);
 
-  /* ── soft shape tokens ────────────────────────────────── */
+  /* ???? soft shape tokens ???????????????????????????????????????????????????????????????????? */
   --radius:    14px;
   --radius-lg: 22px;
 
@@ -78,7 +90,7 @@
   --font-sans:   'Gowun Dodum', 'Inter', -apple-system, sans-serif;
 }
 
-/* ── body: sky + soft clouds gradient ─────────────────────── */
+/* ???? body: sky + soft clouds gradient ?????????????????????????????????????????????? */
 html { background: var(--cozy-sky-1); }
 
 body {
@@ -97,18 +109,18 @@ body {
 
 ::selection { background: var(--cozy-gold-soft); color: var(--cozy-ink); }
 
-/* ── typography: rounded, warm ────────────────────────────── */
+/* ???? typography: rounded, warm ???????????????????????????????????????????????????????????? */
 h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); letter-spacing: 0.01em; color: var(--cozy-ink); }
 h1 { font-weight: 700; }
 
 a { color: var(--cozy-gold-2); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { color: var(--cozy-ink); }
 
-/* ── header: parchment banner ─────────────────────────────── */
+/* ???? header: parchment banner ?????????????????????????????????????????????????????????????? */
 .dashboard-header,
 .header {
-  background: linear-gradient(180deg, #fff7e4 0%, #fceccb 100%);
-  border: 1.5px solid var(--cozy-gold-soft);
+  background: var(--cozy-banner-gradient);
+  border: var(--cozy-border);
   border-radius: 26px;
   box-shadow: var(--shadow-hard);
   padding: 18px 24px;
@@ -116,7 +128,7 @@ a:hover { color: var(--cozy-ink); }
 }
 .dashboard-header::before,
 .header::before {
-  content: "✦";
+  content: "?";
   position: absolute;
   left: 14px; top: 10px;
   color: var(--cozy-gold);
@@ -125,7 +137,7 @@ a:hover { color: var(--cozy-ink); }
 }
 .dashboard-header::after,
 .header::after {
-  content: "✿";
+  content: "?";
   position: absolute;
   right: 14px; bottom: 10px;
   color: var(--cozy-rose);
@@ -137,7 +149,7 @@ a:hover { color: var(--cozy-ink); }
 
 .header-nav { gap: 8px; }
 .nav-link {
-  border-radius: 999px;
+  border-radius: var(--cozy-pill-radius);
   padding: 6px 14px;
   background: rgba(255,255,255,0.55);
   border: 1px solid var(--cozy-gold-soft);
@@ -149,7 +161,7 @@ a:hover { color: var(--cozy-ink); }
 .nav-link.active    { background: var(--cozy-peach); color: var(--cozy-ink); border-color: var(--cozy-gold-2); font-weight: 700; }
 .nav-link.nav-active { background: var(--cozy-gold); color: var(--cozy-ink) !important; border-color: var(--cozy-gold-2); font-weight: 700; }
 
-/* ── generic card surfaces ────────────────────────────────── */
+/* ???? generic card surfaces ???????????????????????????????????????????????????????????????????? */
 .watchlist-card,
 .decision-card,
 .sector-card,
@@ -172,9 +184,9 @@ a:hover { color: var(--cozy-ink); }
 .price-action-card,
 .detail-note-card,
 .ticker-detail-section-shell {
-  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%);
-  border: 1.5px solid var(--cozy-gold-soft);
-  border-radius: 6px;
+  background: var(--cozy-surface-gradient);
+  border: var(--cozy-border);
+  border-radius: var(--cozy-card-radius);
   box-shadow: var(--shadow-hard);
   color: var(--cozy-ink);
 }
@@ -186,7 +198,7 @@ a:hover { color: var(--cozy-ink); }
 .watchlist-stat-card.stat-tone-caution,
 .watchlist-stat-card.stat-tone-neutral {
   border-radius: 6px !important;
-  border: 1.5px solid var(--cozy-gold-soft) !important;
+  border: var(--cozy-border) !important;
   padding: 0.6rem 0.75rem;
   box-shadow: none;
 }
@@ -199,7 +211,7 @@ a:hover { color: var(--cozy-ink); }
   box-shadow: var(--shadow-hard-lg);
 }
 
-/* ── buttons / filter chips ───────────────────────────────── */
+/* ???? buttons / filter chips ?????????????????????????????????????????????????????????????????? */
 button,
 .dashboard-filter-btn,
 .primary-action-button,
@@ -213,8 +225,8 @@ button,
 .watchlist-dnd-reset,
 .portfolio-add-lot-button,
 .portfolio-delete-lot-button {
-  border-radius: 999px;
-  border: 1.5px solid var(--cozy-gold-soft);
+  border-radius: var(--cozy-pill-radius);
+  border: var(--cozy-border);
   background: #fffdf5;
   color: var(--cozy-ink);
   font-family: var(--font-sans);
@@ -233,19 +245,19 @@ button:hover,
 button:active { transform: translateY(0); }
 
 .primary-action-button {
-  background: linear-gradient(180deg, #ffe1a8 0%, #f3bf60 100%);
+  background: var(--cozy-primary-gradient);
   border-color: var(--cozy-gold);
   color: var(--cozy-ink);
   font-weight: 700;
 }
-.primary-action-button:hover { background: linear-gradient(180deg, #ffd98a 0%, #e8ac47 100%); }
+.primary-action-button:hover { background: var(--cozy-primary-gradient-hover); }
 
 .dashboard-filter-btn.active,
 .preset-chip.active,
 .filing-tab.active,
 .catalyst-tab.active { background: var(--cozy-peach); border-color: var(--cozy-gold); color: var(--cozy-ink); font-weight: 700; }
 
-/* ── decision pills (STRONG BUY / WATCH / AVOID) ──────────── */
+/* ???? decision pills (STRONG BUY / WATCH / AVOID) ???????????????????????? */
 .watchlist-decision-pill,
 .decision-action-badge,
 [class*="decision-pill-"],
@@ -280,14 +292,14 @@ button:active { transform: translateY(0); }
 .calendar-day-badge,
 .period-badge,
 .macro-sensitive-chip {
-  border-radius: 999px;
+  border-radius: var(--cozy-pill-radius);
   padding: 3px 10px;
   font-weight: 700;
   font-family: var(--font-sans);
-  border: 1.5px solid var(--cozy-gold-soft);
+  border: var(--cozy-border);
   letter-spacing: 0;
   color: var(--cozy-ink);
-  box-shadow: 0 2px 0 rgba(184,134,47,0.12);
+  box-shadow: var(--cozy-pill-shadow);
 }
 
 .watchlist-decision-pill.buy,
@@ -308,20 +320,20 @@ button:active { transform: translateY(0); }
 .tone-badge.bear,
 .tone-negative { background: #f4a7a7; border-color: #d98585; }
 
-/* ── inputs ───────────────────────────────────────────────── */
+/* ???? inputs ?????????????????????????????????????????????????????????????????????????????????????????????????? */
 input, select, textarea,
 .dashboard-ticker-input,
 .dashboard-search,
 .filing-search,
 .date-select,
 .scenario-adjustment-input {
-  border-radius: 14px;
-  border: 1.5px solid var(--cozy-gold-soft);
+  border-radius: var(--cozy-input-radius);
+  border: var(--cozy-border);
   background: #fffdf5;
   color: var(--cozy-ink);
   font-family: var(--font-sans);
   padding: 7px 12px;
-  box-shadow: inset 0 1px 2px rgba(184,134,47,0.08);
+  box-shadow: var(--cozy-inset-shadow);
 }
 input:focus, select:focus, textarea:focus {
   outline: none;
@@ -329,14 +341,14 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(236,207,141,0.35);
 }
 
-/* ── tables: soft parchment ───────────────────────────────── */
+/* ???? tables: soft parchment ?????????????????????????????????????????????????????????????????? */
 .watchlist-table,
 .snapshot-table,
 .api-status-table,
 table {
   border-radius: var(--radius);
   overflow: hidden;
-  border: 1.5px solid var(--cozy-gold-soft);
+  border: var(--cozy-border);
   background: #fffdf5;
 }
 th {
@@ -350,37 +362,37 @@ td { border-bottom: 1px dashed var(--cozy-gold-soft); }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: rgba(252,236,203,0.45); }
 
-/* ── score badges ─────────────────────────────────────────── */
+/* ???? score badges ?????????????????????????????????????????????????????????????????????????????????????? */
 .watchlist-card-score,
 .setup-score-inline {
-  background: linear-gradient(180deg, #ffe1a8 0%, #f3bf60 100%);
-  border: 1.5px solid var(--cozy-gold);
-  border-radius: 14px;
+  background: var(--cozy-primary-gradient);
+  border: var(--cozy-border-strong);
+  border-radius: var(--cozy-input-radius);
   color: var(--cozy-ink);
   font-family: var(--font-display);
   box-shadow: var(--shadow-hard-sm);
   padding: 4px 12px;
 }
 
-/* ── conviction meter ─────────────────────────────────────── */
+/* ???? conviction meter ?????????????????????????????????????????????????????????????????????????????? */
 .decision-conviction-bar,
 .portfolio-risk-gauge-bar {
   background: rgba(184,134,47,0.18);
-  border-radius: 999px;
+  border-radius: var(--cozy-pill-radius);
   overflow: hidden;
   border: 1px solid var(--cozy-gold-soft);
 }
 .decision-conviction-fill,
 .portfolio-risk-gauge-fill {
   background: linear-gradient(90deg, var(--cozy-mint) 0%, var(--cozy-gold) 100%);
-  border-radius: 999px;
+  border-radius: var(--cozy-pill-radius);
 }
 
-/* ── toast / misc ─────────────────────────────────────────── */
+/* ???? toast / misc ?????????????????????????????????????????????????????????????????????????????????????? */
 .dashboard-toast,
 .dashboard-toast-stack > * {
   border-radius: 16px;
-  border: 1.5px solid var(--cozy-gold-soft);
+  border: var(--cozy-border);
   background: #fffdf5;
   box-shadow: var(--shadow-hard);
   color: var(--cozy-ink);
@@ -389,20 +401,20 @@ tr:hover td { background: rgba(252,236,203,0.45); }
 .market-regime-banner {
   border-radius: 20px;
   background: linear-gradient(90deg, #fff4e0 0%, #fde2e8 100%);
-  border: 1.5px solid var(--cozy-gold-soft);
+  border: var(--cozy-border);
   box-shadow: var(--shadow-hard-sm);
 }
 
-/* ── remove brutalist artifacts ──────────────────────────── */
+/* ???? remove brutalist artifacts ???????????????????????????????????????????????????????? */
 body::before, body::after { display: none !important; }
 
 /* hide "DATA // TERMINAL" watermark */
 .layout::before { display: none !important; }
 
-/* ── back-link (← DASHBOARD): rounded pill ────────────────── */
+/* ???? back-link (??DASHBOARD): rounded pill ???????????????????????????????????? */
 .back-link {
-  border-radius: 999px;
-  border: 1.5px solid var(--cozy-gold-soft);
+  border-radius: var(--cozy-pill-radius);
+  border: var(--cozy-border);
   background: #fffdf5;
   color: var(--cozy-ink);
   font-family: var(--font-sans);
@@ -416,10 +428,10 @@ body::before, body::after { display: none !important; }
   transform: translateY(-1px);
 }
 
-/* ── status pill (대기/완료/오류) ─────────────────────────── */
+/* ???? status pill (?????熬곣뫁?????댁쾼) ?????????????????????????????????????????????????????? */
 .status {
-  border-radius: 999px;
-  border: 1.5px solid var(--cozy-gold-soft);
+  border-radius: var(--cozy-pill-radius);
+  border: var(--cozy-border);
   background: var(--cozy-ink);
   color: var(--cozy-cream) !important;
   font-family: var(--font-sans);
@@ -427,12 +439,12 @@ body::before, body::after { display: none !important; }
 }
 .status.error { background: var(--neg); border-color: #b85555; color: #fff !important; }
 
-/* ── macro event cards: cozy parchment ────────────────────── */
+/* ???? macro event cards: cozy parchment ???????????????????????????????????????????? */
 .macro-event-card {
-  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%) !important;
-  border: 1.5px solid var(--cozy-gold-soft) !important;
+  background: var(--cozy-surface-gradient) !important;
+  border: var(--cozy-border) !important;
   border-top-width: 4px !important;
-  border-radius: 6px;
+  border-radius: var(--cozy-card-radius);
   box-shadow: var(--shadow-hard-sm);
   color: var(--cozy-ink);
 }
@@ -440,7 +452,7 @@ body::before, body::after { display: none !important; }
 .macro-event-card.impact-medium { border-top-color: var(--cozy-gold) !important; }
 .macro-event-card.impact-low    { border-top-color: var(--cozy-muted) !important; }
 
-/* macro calendar bias text block — was dark-on-dark */
+/* macro calendar bias text block ??was dark-on-dark */
 .macro-calendar-bias {
   background: var(--cozy-cream-2) !important;
   color: var(--cozy-ink) !important;
@@ -449,42 +461,42 @@ body::before, body::after { display: none !important; }
   font-size: 0.82rem;
 }
 
-/* ── header: hide underline on title link ────────────────── */
+/* ???? header: hide underline on title link ???????????????????????????????????? */
 .header-title { text-decoration: none; border-left: none !important; }
 .header-title:hover { text-decoration: none; }
 
 /* hide brutalist corner accent */
 .ticker-header::after { display: none !important; }
 
-/* ── ticker-header: cozy card, muted left stripe ─────────── */
+/* ???? ticker-header: cozy card, muted left stripe ?????????????????????? */
 .ticker-header {
-  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%) !important;
-  border: 1.5px solid var(--cozy-gold-soft) !important;
+  background: var(--cozy-surface-gradient) !important;
+  border: var(--cozy-border) !important;
   border-left: 6px solid var(--cozy-gold) !important;
-  border-radius: 6px;
+  border-radius: var(--cozy-card-radius);
   box-shadow: var(--shadow-hard);
 }
 
 .ticker-price-group {
-  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%);
-  border: 1.5px solid var(--cozy-gold);
+  background: var(--cozy-surface-gradient);
+  border: var(--cozy-border-strong);
   border-radius: 12px;
   box-shadow: var(--shadow-hard-sm);
 }
 
 .ticker-detail-primary-section {
-  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%);
-  border: 1.5px solid var(--cozy-gold);
-  border-radius: 6px;
+  background: var(--cozy-surface-gradient);
+  border: var(--cozy-border-strong);
+  border-radius: var(--cozy-card-radius);
   box-shadow: var(--shadow-hard-sm);
 }
 
 /* decision board price-action cards: replace hazard left bands with cozy palette */
 .decision-board-grid .price-action-card {
-  border: 1.5px solid var(--cozy-gold-soft) !important;
+  border: var(--cozy-border) !important;
   border-left: 6px solid var(--cozy-gold-soft) !important;
-  border-radius: 6px;
-  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%) !important;
+  border-radius: var(--cozy-card-radius);
+  background: var(--cozy-surface-gradient) !important;
 }
 .decision-board-grid .price-action-card:nth-child(6n+1) { border-left-color: var(--hazard) !important; }
 .decision-board-grid .price-action-card:nth-child(6n+2) { border-left-color: var(--cozy-gold) !important; }
@@ -493,7 +505,7 @@ body::before, body::after { display: none !important; }
 .decision-board-grid .price-action-card:nth-child(6n+5) { border-left-color: var(--cozy-mint) !important; }
 .decision-board-grid .price-action-card:nth-child(6n)   { border-left-color: var(--cozy-muted) !important; }
 
-/* ── skeleton loaders ─────────────────────────────────────── */
+/* ???? skeleton loaders ?????????????????????????????????????????????????????????????????????????????? */
 .skeleton, .skeleton-row {
   background: linear-gradient(90deg, #fceccb 0%, #fff7e4 50%, #fceccb 100%);
   background-size: 200% 100%;
@@ -505,26 +517,26 @@ body::before, body::after { display: none !important; }
   100% { background-position: -200% 0; }
 }
 
-/* ── scrollbar ────────────────────────────────────────────── */
+/* ???? scrollbar ???????????????????????????????????????????????????????????????????????????????????????????? */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: var(--cozy-gold-soft);
-  border-radius: 999px;
+  border-radius: var(--cozy-pill-radius);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--cozy-gold); background-clip: padding-box; border: 2px solid transparent; }
 
-/* ── dashboard controls bar ───────────────────────────────── */
+/* ???? dashboard controls bar ?????????????????????????????????????????????????????????????????? */
 .dashboard-controls,
 .dashboard-quick-bar,
 .filing-toolbar,
 .filing-controls,
 .price-chart-toolbar,
 .watchlist-dnd-toolbar {
-  background: rgba(255,253,245,0.7);
-  border: 1.5px solid var(--cozy-gold-soft);
+  background: var(--cozy-soft-panel-bg);
+  border: var(--cozy-border);
   border-radius: 18px;
   padding: 10px 14px;
   box-shadow: var(--shadow-hard-sm);
@@ -532,8 +544,8 @@ body::before, body::after { display: none !important; }
 }
 
 .dashboard-stat-chip {
-  border-radius: 999px;
-  border: 1.5px solid var(--cozy-gold-soft);
+  border-radius: var(--cozy-pill-radius);
+  border: var(--cozy-border);
   background: #fffdf5;
   color: var(--cozy-ink);
   font-family: var(--font-mono);
@@ -549,7 +561,7 @@ body::before, body::after { display: none !important; }
   text-transform: none;
 }
 
-/* ── section kicker / muted labels ────────────────────────── */
+/* ???? section kicker / muted labels ???????????????????????????????????????????????????? */
 .section-kicker,
 .dashboard-refresh-note,
 .muted,
@@ -559,7 +571,7 @@ body::before, body::after { display: none !important; }
   font-family: var(--font-sans);
 }
 
-/* ── recolor ALL brutalist dark-bg elements to a softer cozy surface with light text ──
+/* ???? recolor ALL brutalist dark-bg elements to a softer cozy surface with light text ????
    global.css uses `background: var(--ink)` in ~40 places. Because we overrode --ink
    to brown, the cozy pill catch-all (which forces color: var(--cozy-ink)) produced
    brown-on-brown. Target the actual classes and give them cozy-ink bg + cream text. */
@@ -596,9 +608,9 @@ body::before, body::after { display: none !important; }
 
 /* chart container: cozy shell + ensure lightweight-charts canvas fits */
 .chart-container {
-  background: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%) !important;
-  border: 1.5px solid var(--cozy-gold-soft) !important;
-  border-radius: 6px;
+  background: var(--cozy-surface-gradient) !important;
+  border: var(--cozy-border) !important;
+  border-radius: var(--cozy-card-radius);
   box-shadow: var(--shadow-hard-sm);
   padding: 0.5rem;
   overflow: hidden;
@@ -631,7 +643,7 @@ body::before, body::after { display: none !important; }
 .regime-driver-chip { background: var(--cozy-ink); border-color: var(--cozy-ink); }
 .options-chip.options-chip-bearish { background: #d98585; color: #fff; border-color: #b86464; }
 
-/* ── watchlist-card tone bands: thick left border with matched corner radius ── */
+/* ???? watchlist-card tone bands: thick left border with matched corner radius ???? */
 .watchlist-card.setup-tone-high,
 .watchlist-card.setup-tone-medium,
 .watchlist-card.setup-tone-light,
@@ -655,6 +667,6 @@ body::before, body::after { display: none !important; }
 .decision-card.decision-avoid { border-left-color: #f4a7a7; }
 
 
-/* ── links: don't flash dark brown on hover ── */
+/* ???? links: don't flash dark brown on hover ???? */
 a:hover { background: transparent; }
 .header-title:hover { background: transparent; color: var(--cozy-gold-2); }

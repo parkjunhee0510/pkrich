@@ -159,19 +159,26 @@ export function DecisionCard({ decision, analysisConsensus }: DecisionCardProps)
                 <span role="columnheader">요소</span>
                 <span role="columnheader">구분</span>
                 <span role="columnheader">점수</span>
+                <span role="columnheader">신뢰도가 낮은 이유</span>
               </div>
-              {factorEntries.map(([key, value]) => (
-                <div key={key} className="decision-breakdown-row" role="row">
-                  <span role="cell">{FACTOR_LABELS[key] ?? key}</span>
-                  <span role="cell">{FACTOR_CATEGORY_LABELS[key] ?? '기타'}</span>
-                  <span
-                    role="cell"
-                    className={`decision-breakdown-score ${value > 0 ? 'positive' : value < 0 ? 'negative' : 'neutral'}`}
-                  >
-                    {value > 0 ? '+' : ''}{value.toFixed(0)}
-                  </span>
-                </div>
-              ))}
+              {factorEntries.map(([key, value]) => {
+                const reasoning = decision.factor_reasoning?.[key]?.trim() ?? ''
+                return (
+                  <div key={key} className="decision-breakdown-row" role="row">
+                    <span role="cell">{FACTOR_LABELS[key] ?? key}</span>
+                    <span role="cell">{FACTOR_CATEGORY_LABELS[key] ?? '기타'}</span>
+                    <span
+                      role="cell"
+                      className={`decision-breakdown-score ${value > 0 ? 'positive' : value < 0 ? 'negative' : 'neutral'}`}
+                    >
+                      {value > 0 ? '+' : ''}{value.toFixed(0)}
+                    </span>
+                    <span role="cell" className="decision-breakdown-reasoning">
+                      {reasoning || '—'}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </>

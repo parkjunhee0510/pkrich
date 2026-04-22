@@ -34,6 +34,9 @@ const HEADER_SELECTION_REASON_LABELS: Record<string, string> = {
 
 const FILING_TABS = ['실적', '배당', '주주총회', '기타 공시'] as const
 
+const DETAIL_TABS = ['개요', '차트', '재무', '재료', '시나리오'] as const
+type DetailTab = (typeof DETAIL_TABS)[number]
+
 type FilingTab = (typeof FILING_TABS)[number]
 type FilingSort = 'latest' | 'oldest'
 type FilingImpactLevel = '높음' | '보통' | '낮음'
@@ -75,6 +78,7 @@ export function TickerDetail() {
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
   const [timelineWindow, setTimelineWindow] = useState<'30' | '90'>('30')
+  const [activeTab, setActiveTab] = useState<DetailTab>('개요')
   const [selectedFilingTab, setSelectedFilingTab] = useState<FilingTab>('실적')
   const [filingSort, setFilingSort] = useState<FilingSort>('latest')
   const [filingQuery, setFilingQuery] = useState('')
@@ -120,6 +124,24 @@ export function TickerDetail() {
         }
       })
   }, [latestDay?.macro_context?.ticker_macro_sensitivity, ticker])
+  const tickerMacroDetails = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10)
+    const macro = latestDay?.macro_context
+    const sensitivity = !ticker
+      ? []
+      : [...(macro?.ticker_macro_sensitivity?.[ticker] ?? [])]
+          .filter((item) => !item.date || item.date >= today)
+          .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
+    const beta = ticker ? macro?.ticker_macro_betas?.[ticker] ?? null : null
+    const tickerSector = String((summaryAnalysis ?? shardAnalysis)?.fundamentals?.Sector ?? '').trim().toLowerCase()
+    const sectorEvents = tickerSector
+      ? (macro?.upcoming_macro_events ?? []).filter((event) => {
+          const sectors = (event.affected_sectors ?? []).map((s) => String(s).trim().toLowerCase())
+          return sectors.includes(tickerSector)
+        })
+      : []
+    return { sensitivity, beta, sectorEvents }
+  }, [latestDay?.macro_context, ticker, summaryAnalysis, shardAnalysis])
   const newsReferences = analysis?.news_references ?? []
   const keyNews = analysis?.key_news ?? []
   const secFilings = useMemo(() => analysis?.sec_filings ?? [], [analysis?.sec_filings])
@@ -325,6 +347,29 @@ export function TickerDetail() {
         />
       )}
 
+      <section className="signal-conclusion">
+        <h3>한 줄 판단</h3>
+        <p className="signal-text">{analysis.signal_or_takeaway}</p>
+      </section>
+
+      <div className="ticker-detail-tabs" role="tablist" aria-label="종목 상세 섹션">
+        {DETAIL_TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab}
+            className={`ticker-detail-tab ${activeTab === tab ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <div className="ticker-detail-tab-panel" role="tabpanel">
+
+      {activeTab === '재무' && (<>
       <section className="earnings-hero-section">
         <div className="section-header-with-kicker">
           <div>
@@ -348,6 +393,9 @@ export function TickerDetail() {
           ))}
         </div>
       </section>
+      </>)}
+
+      {activeTab === '재료' && (<>
       {latestSecFiling && (
         <section className="latest-filing-card">
           <div className="latest-filing-head">
@@ -379,6 +427,9 @@ export function TickerDetail() {
         </section>
       )}
 
+      </>)}
+
+      {activeTab === '차트' && (<>
       <section className="ticker-detail-primary-section ticker-price-history-section">
         <h3>Price History</h3>
         {priceLoading ? (
@@ -390,6 +441,9 @@ export function TickerDetail() {
         )}
       </section>
 
+      </>)}
+
+      {activeTab === '개요' && (<>
       <section className="ticker-detail-primary-section ticker-summary-section">
         <h3>요약</h3>
         <p>{analysis.summary}</p>
@@ -425,6 +479,68 @@ export function TickerDetail() {
         )}
       </ResponsiveDetailSection>
 
+      </>)}
+
+      {activeTab === '재료' && (<>
+      {(tickerMacroDetails.sensitivity.length > 0 || tickerMacroDetails.beta || tickerMacroDetails.sectorEvents.length > 0) && (
+        <ResponsiveDetailSection title="거시경제 영향">
+          {tickerMacroDetails.beta?.snapshot && (
+            <p className="detail-section-summary">{tickerMacroDetails.beta.snapshot}</p>
+          )}
+          {tickerMacroDetails.beta && (
+            <div className="price-action-grid">
+              <DetailMetricCard
+                label="금리 민감도(β)"
+                value={formatBeta(tickerMacroDetails.beta.rates_beta)}
+                note="US10Y 수익률 변화 대비 탄력"
+              />
+              <DetailMetricCard
+                label="달러 민감도(β)"
+                value={formatBeta(tickerMacroDetails.beta.usd_beta)}
+                note="DXY 변화 대비 탄력"
+              />
+              <DetailMetricCard
+                label="원유 민감도(β)"
+                value={formatBeta(tickerMacroDetails.beta.oil_beta)}
+                note="WTI 변화 대비 탄력"
+              />
+              <DetailMetricCard
+                label="크레딧 민감도(β)"
+                value={formatBeta(tickerMacroDetails.beta.credit_beta)}
+                note="HY 스프레드 변화 대비 탄력"
+              />
+            </div>
+          )}
+          {tickerMacroDetails.sensitivity.length > 0 && (
+            <ul className="macro-sensitivity-list">
+              {tickerMacroDetails.sensitivity.map((row) => (
+                <li key={`${row.event_code}-${row.date}`}>
+                  <span className={`ticker-macro-badge sensitivity-${row.sensitivity}`}>
+                    <span className="ticker-macro-badge-code">{row.event_code}</span>
+                  </span>
+                  <strong>{row.label || row.event_code}</strong>
+                  {row.date && <span className="news-meta"> · {row.date}</span>}
+                  {row.reason && <p className="ticker-meta-explainer">{row.reason}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+          {tickerMacroDetails.sectorEvents.length > 0 && (
+            <>
+              <h4 className="detail-subsection-title">업종 관련 예정 이벤트</h4>
+              <ul className="macro-sensitivity-list">
+                {tickerMacroDetails.sectorEvents.slice(0, 6).map((event, index) => (
+                  <li key={`${event.event_code ?? event.type}-${event.date}-${index}`}>
+                    <strong>{event.label || event.event_code || event.type}</strong>
+                    <span className="news-meta"> · {event.date}{event.days_until ? ` (D-${event.days_until})` : ''}</span>
+                    {event.summary_ko && <p className="ticker-meta-explainer">{event.summary_ko}</p>}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </ResponsiveDetailSection>
+      )}
       <ResponsiveDetailSection title="주요 뉴스">
         {newsReferences.length > 0 ? (
           <ul className="news-list">
@@ -502,6 +618,9 @@ export function TickerDetail() {
         )}
       </ResponsiveDetailSection>
 
+      </>)}
+
+      {activeTab === '재무' && (<>
       <ResponsiveDetailSection title="재무 하이라이트">
         <ul>
           {financialHighlights.map((h, i) => (
@@ -530,6 +649,9 @@ export function TickerDetail() {
           <DetailMetricCard label="다음 실적 일정" value={earningsSetup?.next_earnings_event ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nextEarningsEvent} />
         </div>
       </ResponsiveDetailSection>
+      </>)}
+
+      {activeTab === '차트' && (<>
       <ResponsiveDetailSection title="가격 행동 맥락">
         <div className="price-action-grid">
           <DetailMetricCard label="ATR(14)" value={formatPriceActionPair(priceAction?.atr_14d, priceAction?.atr_percent)} tooltip={METRIC_TOOLTIPS.atr14} />
@@ -562,6 +684,9 @@ export function TickerDetail() {
         </ResponsiveDetailSection>
       )}
 
+      </>)}
+
+      {activeTab === '시나리오' && (<>
       <ResponsiveDetailSection title="포지션 사이징 참고">
         <div className="price-action-grid">
           <DetailMetricCard label="1% 리스크 기준" value={positionSizing.positionShares} note="10,000 USD 계좌 기준 예상 수량" tooltip={METRIC_TOOLTIPS.positionSizing1pct} />
@@ -570,6 +695,9 @@ export function TickerDetail() {
         </div>
       </ResponsiveDetailSection>
 
+      </>)}
+
+      {activeTab === '재무' && (<>
       {analysis.valuation_score?.score && (
         <ResponsiveDetailSection title="밸류에이션 점수">
           <div className="valuation-score-panel">
@@ -634,6 +762,9 @@ export function TickerDetail() {
         )}
       </ResponsiveDetailSection>
 
+      </>)}
+
+      {activeTab === '개요' && (<>
       <ResponsiveDetailSection title="리스크 / 체크포인트">
         <ul>
           {riskItems.map((r, i) => (
@@ -646,6 +777,9 @@ export function TickerDetail() {
         <DataSnapshot snapshot={analysis.data_snapshot} />
       </ResponsiveDetailSection>
 
+      </>)}
+
+      {activeTab === '시나리오' && (<>
       <ResponsiveDetailSection title="트레이드 프레임">
         <div className="trade-frame-grid">
           <div className="trade-frame-card bull"><span className="trade-frame-label">Bull</span><p>{tradeFrame?.bull_scenario ?? 'N/A'}</p></div>
@@ -664,6 +798,9 @@ export function TickerDetail() {
         </div>
       </ResponsiveDetailSection>
 
+      </>)}
+
+      {activeTab === '재료' && (<>
       <ResponsiveDetailSection title="종목 타임라인">
         <div className="timeline-header-row">
           <div />
@@ -699,11 +836,9 @@ export function TickerDetail() {
         )}
       </ResponsiveDetailSection>
 
-      <section className="signal-conclusion">
-        <h3>한 줄 판단</h3>
-        <p className="signal-text">{analysis.signal_or_takeaway}</p>
-      </section>
+      </>)}
 
+      {activeTab === '시나리오' && (<>
       <ResponsiveDetailSection title="판단 신호 검증 이력">
         {signalHistory.length > 0 ? (
           <ul className="timeline-list">
@@ -722,6 +857,9 @@ export function TickerDetail() {
           <p className="empty">아직 판단 신호 검증 이력이 없습니다.</p>
         )}
       </ResponsiveDetailSection>
+      </>)}
+
+      </div>
     </div>
   )
 }
@@ -1003,6 +1141,11 @@ function toImpactClassName(level: FilingImpactLevel): string {
   if (level === '높음') return 'high'
   if (level === '보통') return 'medium'
   return 'low'
+}
+
+function formatBeta(value?: number): string {
+  if (value === undefined || value === null || Number.isNaN(value)) return 'N/A'
+  return value.toFixed(2)
 }
 
 function formatPriceActionPair(primary?: string, secondary?: string): string {

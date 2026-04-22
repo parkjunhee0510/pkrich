@@ -383,6 +383,7 @@ def _serialize_decision(
         "reason": decision.reason,
         "valid_until": decision.valid_until,
         "factors": decision.factors,
+        "factor_reasoning": decision.factor_reasoning,
         "ensemble_agreement": ensemble_agreement,
         "final_consensus": final_consensus,
     }

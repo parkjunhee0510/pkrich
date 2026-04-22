@@ -152,6 +152,7 @@ export interface TickerDecisionData {
   reason: string
   valid_until: string
   factors: Record<string, number>
+  factor_reasoning?: Record<string, string>
   ensemble_agreement?: 'agree' | 'conflict' | 'single'
 }
 
