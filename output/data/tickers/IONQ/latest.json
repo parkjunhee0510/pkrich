@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-04-22",
+  "date": "2026-04-23",
   "ticker": "IONQ",
   "payload": {
     "ticker": "IONQ",
@@ -61,36 +61,36 @@
     ],
     "signal_or_takeaway": "매수 관찰 — [기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 44.20–50.52 | 손절 SMA50(34.00 USD) (R:R 0.4R)",
     "data_snapshot": {
-      "Price": "47.36 USD",
-      "Daily Change": "+2.33%",
-      "Market Cap": "17.41B",
+      "Price": "44.21 USD",
+      "Daily Change": "-6.65%",
+      "Market Cap": "16.21B",
       "Trailing P/E": "N/A",
       "EPS": "-1.82",
       "52W High": "84.64",
       "52W Low": "25.89",
-      "50D SMA": "34.00",
-      "200D SMA": "46.51",
-      "Volume": "31.64M",
-      "3M Avg Volume": "25.21M",
-      "Price/Book": "4.52",
+      "50D SMA": "34.23",
+      "200D SMA": "46.52",
+      "Volume": "17360113",
+      "3M Avg Volume": "25.54M",
+      "Price/Book": "4.22",
       "Dividend Yield": "N/A",
       "Sector": "Technology",
-      "Open": "47.26",
-      "High": "49.13",
-      "Low": "46.54",
-      "Close": "47.36",
+      "Open": "46.61",
+      "High": "47.83",
+      "Low": "43.70",
+      "Close": "44.21",
       "RS vs Sector ETF": "+28.72%"
     },
     "fundamentals": {
-      "market_cap": "17.41B",
+      "market_cap": "16.21B",
       "trailing_pe": "N/A",
       "eps": "-1.82",
       "forward_eps": "-0.90",
       "earnings_growth": "-1391.67% YoY",
-      "price_to_book": "4.52",
+      "price_to_book": "4.22",
       "dividend_yield": "N/A",
-      "volume": "31.64M",
-      "avg_volume_3m": "25.21M",
+      "volume": "17360113",
+      "avg_volume_3m": "25.54M",
       "52w_high": "84.64",
       "52w_low": "25.89",
       "short_float_pct": "22.32%",
@@ -99,7 +99,7 @@
       "analyst_recommendation": "Strong Buy",
       "analyst_count": "14명",
       "held_by_insiders": "2.55%",
-      "held_by_institutions": "53.70%",
+      "held_by_institutions": "53.67%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
@@ -129,15 +129,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 3개 분기 서프라이즈 추세 개선 · 평균 서프라이즈 +1.4%"
     },
     "price_action": {
-      "atr_14d": "3.16",
-      "atr_percent": "6.66%",
-      "relative_volume": "1.26x",
-      "gap_percent": "+2.12%",
-      "price_vs_sma50": "+39.31%",
-      "price_vs_sma200": "+1.82%",
-      "week52_position": "37%",
+      "atr_14d": "3.25",
+      "atr_percent": "7.36%",
+      "relative_volume": "0.68x",
+      "gap_percent": "-1.58%",
+      "price_vs_sma50": "+29.15%",
+      "price_vs_sma200": "-4.97%",
+      "week52_position": "31%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+28.72%"
+      "rs_vs_sector_etf": "+19.67%"
     },
     "quarterly_financials": [
       {
@@ -210,10 +210,10 @@
     },
     "options_summary": {
       "expiry": "2026-04-24",
-      "atm_call_iv": "115.2%",
-      "atm_put_iv": "116.4%",
-      "put_call_ratio": "1.58x",
-      "iv_percentile_30d": "10th",
+      "atm_call_iv": "103.9%",
+      "atm_put_iv": "66.5%",
+      "put_call_ratio": "1.57x",
+      "iv_percentile_30d": "14th",
       "tone": "neutral",
       "unusual_activity": "PUT $115, vol 1, OI 대비 50%",
       "oi_change": "콜 OI -0.0% / 풋 OI +0.0%"
@@ -375,8 +375,8 @@
       }
     },
     "period_changes": {
-      "7d": "+9.50%",
-      "30d": "+43.04%"
+      "7d": "-1.05%",
+      "30d": "+35.20%"
     },
     "sec_filing_tags": [
       "기타 공시"
@@ -438,5 +438,6 @@
         "confidence_gate": 0.7915
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-04-23T15:46:58"
 }
