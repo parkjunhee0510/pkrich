@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 import logging
+import os
 from datetime import date, timedelta
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 from src.decision.base import FactorScore
+from src.decision.confidence import calculate_final_conviction, evaluate_confidence_meta
 from src.decision.config import normalize_decision_config
 from src.decision.registry import build_factor_registry
 from src.decision.scorer import ConvictionScorer
@@ -49,6 +52,8 @@ def generate_decisions(
     signal_stats: dict[str, Any] | None,
     run_date: date,
     *,
+    analysis_consensus_by_ticker: dict[str, dict[str, Any]] | None = None,
+    quality_summary_by_ticker: dict[str, dict[str, Any]] | None = None,
     portfolio_risk: dict[str, Any] | None = None,
     macro_context: dict[str, Any] | None = None,
 ) -> list[TickerDecision]:
@@ -56,13 +61,26 @@ def generate_decisions(
         config = _load_weights()
         collected = collected or {}
         signal_stats = signal_stats or {}
+        analysis_consensus_by_ticker = analysis_consensus_by_ticker or {}
+        quality_summary_by_ticker = quality_summary_by_ticker or {}
         decision_context = {
             **signal_stats,
             "_portfolio_risk": portfolio_risk or {},
             "_macro_context": macro_context or {},
         }
         return [
-            _decide_ticker(analysis, collected.get(analysis.ticker), regime, decision_context, run_date, config)
+            _decide_ticker(
+                replace(
+                    analysis,
+                    analysis_consensus=analysis_consensus_by_ticker.get(analysis.ticker, analysis.analysis_consensus),
+                ),
+                collected.get(analysis.ticker),
+                regime,
+                decision_context,
+                run_date,
+                config,
+                quality_summary=quality_summary_by_ticker.get(analysis.ticker),
+            )
             for analysis in analyses
         ]
     except Exception:
@@ -77,6 +95,8 @@ def _decide_ticker(
     signal_stats: dict[str, Any],
     run_date: date,
     config: dict[str, Any],
+    *,
+    quality_summary: dict[str, Any] | None = None,
 ) -> TickerDecision:
     registry = config["_registry"]
     scorer = config["_scorer"]
@@ -96,7 +116,8 @@ def _decide_ticker(
         factors[factor.name] = float(final_score.value)
 
     weighted_values = scorer.weighted_values(factor_scores_by_name, regime.regime)
-    conviction = scorer.calculate(factor_scores_by_name, regime.regime)
+    raw_conviction = scorer.calculate(factor_scores_by_name, regime.regime)
+    conviction = raw_conviction
 
     thresholds = config.get("thresholds", {})
     buy_threshold = thresholds.get("buy_risk_off", 75) if regime.regime == "risk_off" else thresholds.get("buy", 65)
@@ -111,6 +132,26 @@ def _decide_ticker(
 
     reason = _build_reason(factor_scores_by_name, weighted_values)
     valid_until = _compute_valid_until(analysis, run_date, config)
+    confidence_meta: dict[str, float] = {}
+    if _shadow_confidence_enabled():
+        meta = evaluate_confidence_meta(
+            analysis=analysis,
+            regime=regime,
+            factor_scores_by_name=factor_scores_by_name,
+            macro_context=signal_stats.get("_macro_context"),
+            portfolio_risk=signal_stats.get("_portfolio_risk"),
+            analysis_consensus=analysis.analysis_consensus,
+            quality_summary=quality_summary,
+        )
+        confidence_meta = meta.to_dict()
+        shadow_final_conviction = calculate_final_conviction(raw_conviction, meta)
+        logger.debug(
+            "Decision confidence shadow: ticker=%s raw=%s shadow_final=%s gate=%.3f",
+            analysis.ticker,
+            raw_conviction,
+            shadow_final_conviction,
+            meta.confidence_gate,
+        )
 
     factor_reasoning = {
         name: score.reasoning
@@ -121,9 +162,11 @@ def _decide_ticker(
         ticker=analysis.ticker,
         action=action,
         conviction=conviction,
+        raw_conviction=raw_conviction,
         reason=reason,
         valid_until=valid_until,
         factors=factors,
+        confidence_meta=confidence_meta,
         factor_reasoning=factor_reasoning,
     )
 
@@ -185,3 +228,7 @@ def _load_weights() -> dict[str, Any]:
     normalized["_registry"] = registry
     normalized["_scorer"] = scorer
     return normalized
+
+
+def _shadow_confidence_enabled() -> bool:
+    return os.getenv("DECISION_CONFIDENCE_SHADOW_MODE", "1").strip().lower() not in {"0", "false", "off", "no"}

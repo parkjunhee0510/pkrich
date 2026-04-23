@@ -57,6 +57,7 @@ class _FakeOrchestrator:
         self.calls: list[dict[str, object]] = []
         self.diagnostics: dict[str, object] = {}
         self.portfolio_result: dict[str, object] = {"portfolio_risk": {"risk_grade": "B"}}
+        self.quality_summary_by_ticker: dict[str, dict[str, object]] = {}
 
     def analyze_all(self, watchlist, collected, news_map, run_date, **kwargs):
         del collected, news_map, run_date
@@ -88,27 +89,30 @@ class AnalysisEnsembleTests(unittest.TestCase):
         ensemble = AnalysisEnsemble(
             economy_orchestrator,
             deep_orchestrator,
+            None,
             EnsembleConfig(
                 enabled=True,
                 trigger_range=(25, 75),
                 second_model="deep",
                 second_prompt="research_v2",
+                third_model="deep",
+                third_prompt="research_v2",
                 max_daily_ensemble=1,
             ),
         )
         decisions_sequence = [
             [
-                TickerDecision(ticker="AAPL", action="buy", conviction=82, reason="economy 강세"),
-                TickerDecision(ticker="KO", action="watch", conviction=52, reason="economy 중립"),
-                TickerDecision(ticker="AMD", action="buy", conviction=67, reason="economy 긍정"),
+                TickerDecision(ticker="AAPL", action="buy", conviction=82, reason="economy strong"),
+                TickerDecision(ticker="KO", action="watch", conviction=52, reason="economy neutral"),
+                TickerDecision(ticker="AMD", action="buy", conviction=67, reason="economy positive"),
             ],
             [
-                TickerDecision(ticker="AMD", action="buy", conviction=70, reason="deep 긍정"),
+                TickerDecision(ticker="AMD", action="buy", conviction=70, reason="deep positive"),
             ],
             [
-                TickerDecision(ticker="AAPL", action="buy", conviction=82, reason="economy 강세"),
-                TickerDecision(ticker="KO", action="watch", conviction=52, reason="economy 중립"),
-                TickerDecision(ticker="AMD", action="buy", conviction=70, reason="deep 긍정"),
+                TickerDecision(ticker="AAPL", action="buy", conviction=82, reason="economy strong"),
+                TickerDecision(ticker="KO", action="watch", conviction=52, reason="economy neutral"),
+                TickerDecision(ticker="AMD", action="buy", conviction=70, reason="deep positive"),
             ],
         ]
 
@@ -133,8 +137,176 @@ class AnalysisEnsembleTests(unittest.TestCase):
         self.assertEqual(result.consensus_by_ticker["AAPL"]["selection_reason"], "out_of_range")
         self.assertEqual(result.consensus_by_ticker["KO"]["selection_reason"], "cap_exceeded")
         self.assertEqual(result.consensus_by_ticker["AMD"]["status"], "agreed")
+        self.assertEqual(result.quality_summary_by_ticker, {})
         final_amd = next(item for item in result.analyses if item.ticker == "AMD")
         self.assertEqual(final_amd.summary, "deep-amd")
+
+    def test_ensemble_passes_quality_and_consensus_maps_to_final_decision_generation(self) -> None:
+        economy_orchestrator = _FakeOrchestrator([_make_analysis("AAPL", summary="economy-aapl", signal="watch")])
+        economy_orchestrator.quality_summary_by_ticker = {
+            "AAPL": {"fact_warning_count": 1, "fallback_used": False}
+        }
+        deep_orchestrator = _FakeOrchestrator(
+            [],
+            llm_only_results=[_make_analysis("AAPL", summary="deep-aapl", signal="buy")],
+        )
+        deep_orchestrator.quality_summary_by_ticker = {
+            "AAPL": {"hallucination_warning_count": 1, "fallback_used": True}
+        }
+        ensemble = AnalysisEnsemble(
+            economy_orchestrator,
+            deep_orchestrator,
+            None,
+            EnsembleConfig(
+                enabled=True,
+                trigger_range=(25, 75),
+                second_model="deep",
+                second_prompt="research_v2",
+                third_model="deep",
+                third_prompt="research_v2",
+                max_daily_ensemble=5,
+            ),
+        )
+        captured: dict[str, object] = {"call_index": 0}
+
+        def _capture_generate_decisions(*args, **kwargs):
+            call_index = int(captured["call_index"])
+            captured["call_index"] = call_index + 1
+            if call_index == 2:
+                captured["analysis_consensus_by_ticker"] = kwargs.get("analysis_consensus_by_ticker")
+                captured["quality_summary_by_ticker"] = kwargs.get("quality_summary_by_ticker")
+            return [TickerDecision(ticker="AAPL", action="watch", conviction=50, reason="ok")]
+
+        with patch("src.analyzer.ensemble.generate_decisions", side_effect=_capture_generate_decisions):
+            ensemble.analyze_with_consensus(
+                [WatchlistItem(ticker="AAPL", name="Apple")],
+                {"AAPL": _make_collected("AAPL")},
+                {},
+                date(2026, 4, 16),
+                market_regime=MarketRegime(regime="neutral"),
+            )
+
+        self.assertEqual(
+            captured["analysis_consensus_by_ticker"],
+            {
+                "AAPL": {
+                    "status": "agreed",
+                    "economy_action": "watch",
+                    "economy_conviction": 50,
+                    "economy_reason": "ok",
+                    "deep_action": "watch",
+                    "deep_conviction": 50,
+                    "deep_reason": "ok",
+                    "tie_break_action": None,
+                    "tie_break_conviction": None,
+                    "tie_break_reason": "",
+                    "direction_agreement": True,
+                    "conflicted": False,
+                    "confidence_delta": 5,
+                    "selection_reason": "selected",
+                    "third_review_completed": False,
+                    "final_consensus": "agree",
+                    "final_action": "watch",
+                }
+            },
+        )
+        self.assertEqual(
+            captured["quality_summary_by_ticker"],
+            {"AAPL": {"hallucination_warning_count": 1, "fallback_used": True}},
+        )
+
+    def test_ensemble_quality_summary_uses_tie_break_then_deep_then_economy_precedence(self) -> None:
+        economy_orchestrator = _FakeOrchestrator(
+            [
+                _make_analysis("AAPL", summary="economy-aapl", signal="watch"),
+                _make_analysis("MSFT", summary="economy-msft", signal="watch"),
+                _make_analysis("NVDA", summary="economy-nvda", signal="watch"),
+            ]
+        )
+        economy_orchestrator.quality_summary_by_ticker = {
+            "AAPL": {"fact_warning_count": 1, "fallback_used": False},
+            "MSFT": {"fact_warning_count": 2, "fallback_used": False},
+            "NVDA": {"fact_warning_count": 3, "fallback_used": False},
+        }
+        deep_orchestrator = _FakeOrchestrator(
+            [],
+            llm_only_results=[
+                _make_analysis("AAPL", summary="deep-aapl", signal="avoid"),
+                _make_analysis("MSFT", summary="deep-msft", signal="buy"),
+            ],
+        )
+        deep_orchestrator.quality_summary_by_ticker = {
+            "AAPL": {"hallucination_warning_count": 1, "fallback_used": True},
+            "MSFT": {"hallucination_warning_count": 2, "fallback_used": False},
+        }
+        tie_break_orchestrator = _FakeOrchestrator(
+            [],
+            llm_only_results=[_make_analysis("AAPL", summary="tie-aapl", signal="watch")],
+        )
+        tie_break_orchestrator.quality_summary_by_ticker = {
+            "AAPL": {"consistency_warning_count": 1, "fallback_used": False}
+        }
+        ensemble = AnalysisEnsemble(
+            economy_orchestrator,
+            deep_orchestrator,
+            tie_break_orchestrator,
+            EnsembleConfig(
+                enabled=True,
+                trigger_range=(25, 75),
+                second_model="deep",
+                second_prompt="research_v2",
+                third_model="deep",
+                third_prompt="research_v2",
+                max_daily_ensemble=3,
+            ),
+        )
+
+        with patch(
+            "src.analyzer.ensemble.generate_decisions",
+            side_effect=[
+                [
+                    TickerDecision(ticker="AAPL", action="watch", conviction=50, reason="economy"),
+                    TickerDecision(ticker="MSFT", action="watch", conviction=50, reason="economy"),
+                    TickerDecision(ticker="NVDA", action="buy", conviction=80, reason="economy"),
+                ],
+                [
+                    TickerDecision(ticker="AAPL", action="avoid", conviction=40, reason="deep"),
+                    TickerDecision(ticker="MSFT", action="buy", conviction=70, reason="deep"),
+                ],
+                [
+                    TickerDecision(ticker="AAPL", action="watch", conviction=55, reason="tie-break"),
+                ],
+                [
+                    TickerDecision(ticker="AAPL", action="watch", conviction=55, reason="final"),
+                    TickerDecision(ticker="MSFT", action="buy", conviction=70, reason="final"),
+                    TickerDecision(ticker="NVDA", action="buy", conviction=80, reason="final"),
+                ],
+            ],
+        ):
+            result = ensemble.analyze_with_consensus(
+                [
+                    WatchlistItem(ticker="AAPL", name="Apple"),
+                    WatchlistItem(ticker="MSFT", name="Microsoft"),
+                    WatchlistItem(ticker="NVDA", name="NVIDIA"),
+                ],
+                {
+                    "AAPL": _make_collected("AAPL"),
+                    "MSFT": _make_collected("MSFT"),
+                    "NVDA": _make_collected("NVDA"),
+                },
+                {},
+                date(2026, 4, 16),
+                market_regime=MarketRegime(regime="neutral"),
+            )
+
+        self.assertEqual(
+            result.quality_summary_by_ticker,
+            {
+                "AAPL": {"consistency_warning_count": 1, "fallback_used": False},
+                "MSFT": {"hallucination_warning_count": 2, "fallback_used": False},
+                "NVDA": {"fact_warning_count": 3, "fallback_used": False},
+            },
+        )
 
     def test_ensemble_disabled_skips_deep_reanalysis(self) -> None:
         economy_orchestrator = _FakeOrchestrator([_make_analysis("AAPL", summary="economy-aapl", signal="watch")])
@@ -142,11 +314,14 @@ class AnalysisEnsembleTests(unittest.TestCase):
         ensemble = AnalysisEnsemble(
             economy_orchestrator,
             deep_orchestrator,
+            None,
             EnsembleConfig(
                 enabled=False,
                 trigger_range=(25, 75),
                 second_model="deep",
                 second_prompt="research_v2",
+                third_model="deep",
+                third_prompt="research_v2",
                 max_daily_ensemble=5,
             ),
         )
@@ -154,8 +329,8 @@ class AnalysisEnsembleTests(unittest.TestCase):
         with patch(
             "src.analyzer.ensemble.generate_decisions",
             side_effect=[
-                [TickerDecision(ticker="AAPL", action="watch", conviction=50, reason="economy 중립")],
-                [TickerDecision(ticker="AAPL", action="watch", conviction=50, reason="economy 중립")],
+                [TickerDecision(ticker="AAPL", action="watch", conviction=50, reason="economy neutral")],
+                [TickerDecision(ticker="AAPL", action="watch", conviction=50, reason="economy neutral")],
             ],
         ):
             result = ensemble.analyze_with_consensus(
@@ -171,19 +346,20 @@ class AnalysisEnsembleTests(unittest.TestCase):
         self.assertEqual(result.consensus_by_ticker["AAPL"]["selection_reason"], "disabled")
 
     def test_apply_consensus_to_decisions_appends_conflict_reason(self) -> None:
-        decisions = [TickerDecision(ticker="AAPL", action="avoid", conviction=32, reason="deep 보수")]
+        decisions = [TickerDecision(ticker="AAPL", action="avoid", conviction=32, reason="deep cautious")]
         updated = apply_consensus_to_decisions(
             decisions,
             {
                 "AAPL": {
                     "status": "conflicted",
                     "economy_action": "buy",
-                    "economy_reason": "economy 강세",
+                    "economy_reason": "economy strong",
                 }
             },
         )
-        self.assertIn("합의 불일치", updated[0].reason)
-        self.assertIn("economy는 buy 관점", updated[0].reason)
+
+        self.assertIn("Consensus conflict", updated[0].reason)
+        self.assertIn("economy=buy", updated[0].reason)
 
 
 if __name__ == "__main__":

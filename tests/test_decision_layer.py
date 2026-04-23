@@ -4,6 +4,7 @@ from __future__ import annotations
 import unittest
 from dataclasses import field
 from datetime import date
+from unittest.mock import patch
 
 from src.decision.decision_layer import generate_decisions, _decide_ticker, _load_weights
 from src.types import CollectedTickerData, MarketRegime, TickerAnalysis, TickerDecision
@@ -84,6 +85,34 @@ class TestGenerateDecisions(unittest.TestCase):
         self.assertIsInstance(decisions, list)
 
 
+    def test_consumes_provided_consensus_and_quality_summaries(self) -> None:
+        analysis = _make_analysis(ticker="AAPL", analysis_consensus={})
+        with patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}):
+            decisions = generate_decisions(
+                [analysis],
+                {},
+                MarketRegime(),
+                {},
+                date(2026, 4, 10),
+                analysis_consensus_by_ticker={
+                    "AAPL": {"status": "conflicted", "direction_agreement": False}
+                },
+                quality_summary_by_ticker={
+                    "AAPL": {
+                        "fact_warning_count": 2,
+                        "hallucination_warning_count": 1,
+                        "consistency_warning_count": 1,
+                        "fallback_used": True,
+                        "encoding_issue_detected": True,
+                    }
+                },
+            )
+
+        self.assertEqual(len(decisions), 1)
+        self.assertLess(decisions[0].confidence_meta.get("data_quality", 1.0), 1.0)
+        self.assertLess(decisions[0].confidence_meta.get("model_agreement", 1.0), 1.0)
+
+
 class TestDecideTicker(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -92,9 +121,27 @@ class TestDecideTicker(unittest.TestCase):
 
     def test_conviction_in_valid_range(self) -> None:
         analysis = _make_analysis()
-        decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+        with patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
         self.assertGreaterEqual(decision.conviction, 0)
         self.assertLessEqual(decision.conviction, 100)
+        self.assertEqual(decision.raw_conviction, decision.conviction)
+
+    def test_shadow_mode_populates_confidence_meta(self) -> None:
+        analysis = _make_analysis()
+        with patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        self.assertIn("confidence_gate", decision.confidence_meta)
+        self.assertEqual(decision.raw_conviction, decision.conviction)
+
+    def test_shadow_mode_off_leaves_confidence_meta_empty(self) -> None:
+        analysis = _make_analysis()
+        with patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "0"}):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        self.assertEqual(decision.confidence_meta, {})
+        self.assertEqual(decision.raw_conviction, decision.conviction)
 
     def test_action_is_valid(self) -> None:
         analysis = _make_analysis()

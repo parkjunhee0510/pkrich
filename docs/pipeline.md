@@ -29,9 +29,10 @@ Current responsibilities:
 * Collect ticker market data through the market-data orchestrator
 * Collect daily news through the news path selected by feature flags
 * Collect market overview and macro context
+* Collect macro v2 inputs: economic surprise (`macro_surprise.py`) and scheduled macro events (`macro_events.py`)
 * Detect actual market date from collected price history
 * Backfill missing prices from datastore history when the collector returns gaps
-* Load peer candidate sets for later analyzer modules
+* Load peer candidate sets for later analyzer modules (yfinance primary via `yfinance_peer_metrics.py`, FMP fallback)
 
 Rules:
 * External APIs are allowed only here
@@ -47,7 +48,9 @@ Current responsibilities:
 * Resolve module order with `ModuleRegistry`
 * Run non-LLM modules first, then LLM modules
 * Produce ticker-level analysis payloads plus portfolio-level results such as `portfolio_risk`
+* Produce macro narrative via `macro_narrative.py` and per-ticker macro sensitivity (all collected tickers, not just portfolio)
 * Run multi-model consensus through `AnalysisEnsemble`
+* Apply validator hallucination guards (price logic checks, fact warnings, pattern enforcement) via `validator.py` and `signal_levels.py`
 
 Current analyzer stack:
 * `AnalysisOrchestrator`
@@ -65,6 +68,20 @@ Rules:
 * No direct external data fetching
 * LLM outputs must remain structured and deterministic
 * Fallbacks must preserve downstream schema stability
+
+### 3b. Decide
+
+Owned by `decision/`.
+
+Current responsibilities:
+* Classify market regime and sub-regime (`market_regime.py`)
+* Run registered factors including `macro_regime_factor` and `macro_event_factor`
+* Score conviction and generate buy/watch/avoid actions
+* Surface `factor_reasoning` for downstream output consumption
+
+Rules:
+* No external data fetching
+* No output formatting
 
 ### 4. State
 

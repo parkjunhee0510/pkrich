@@ -118,7 +118,13 @@ class AnalysisOrchestratorTests(unittest.TestCase):
 
         captured: dict[str, str] = {}
 
-        def _fake_run(module: StructuredLLMModule, ctx: AnalysisContext) -> ModuleResult:
+        def _fake_run(
+            module: StructuredLLMModule,
+            ctx: AnalysisContext,
+            *,
+            capture_validation_details: bool = False,
+        ) -> ModuleResult:
+            del capture_validation_details
             captured["prompt_version"] = ctx.model_profile.prompt_version
             return ModuleResult(results_by_ticker={"AAPL": {"signal_or_takeaway": "중립 관찰 — 테스트"}})
 
@@ -162,7 +168,13 @@ class AnalysisOrchestratorTests(unittest.TestCase):
 
         captured: dict[str, object] = {}
 
-        def _fake_run(module: StructuredLLMModule, ctx: AnalysisContext) -> ModuleResult:
+        def _fake_run(
+            module: StructuredLLMModule,
+            ctx: AnalysisContext,
+            *,
+            capture_validation_details: bool = False,
+        ) -> ModuleResult:
+            del capture_validation_details
             captured["valuation_score"] = ctx.intermediate_results["AAPL"]["valuation_score"]
             return ModuleResult(results_by_ticker={"AAPL": {"signal_or_takeaway": "deep 재검토"}})
 
@@ -206,6 +218,56 @@ class AnalysisOrchestratorTests(unittest.TestCase):
         self.assertEqual(orchestrator.diagnostics["execution_mode"], "llm_only")
         self.assertEqual(orchestrator.diagnostics["executed_modules"], ["signal_takeaway_module"])
         self.assertEqual(analyses[0].signal_or_takeaway, "deep 재검토")
+
+    def test_orchestrator_aggregates_quality_summary_by_ticker_from_validation_details(self) -> None:
+        registry = ModuleRegistry()
+        registry.register(_LLMModule())
+        orchestrator = AnalysisOrchestrator(registry, model_profile=load_model_profile(profile_name="deep"))
+
+        def _fake_run(
+            module: StructuredLLMModule,
+            ctx: AnalysisContext,
+            *,
+            capture_validation_details: bool = False,
+        ) -> ModuleResult:
+            self.assertTrue(capture_validation_details)
+            del module, ctx
+            return ModuleResult(
+                results_by_ticker={"AAPL": {"signal_or_takeaway": "deep 재검토"}},
+                diagnostics={
+                    "validation_details": {
+                        "AAPL": {
+                            "counts": {
+                                "fact_warning": 1,
+                                "hallucination_warning": 1,
+                                "consistency_warning": 2,
+                            },
+                            "warnings": [
+                                {"category": "schema_violation", "field": "summary", "message": "encoding issue detected"},
+                            ],
+                        }
+                    }
+                },
+            )
+
+        with patch("src.analyzer.orchestrator.run_structured_llm_module", side_effect=_fake_run):
+            orchestrator.analyze_all(
+                [WatchlistItem(ticker="AAPL", name="Apple Inc.")],
+                {"AAPL": _make_collected()},
+                {},
+                date(2026, 4, 16),
+            )
+
+        self.assertEqual(
+            orchestrator.quality_summary_by_ticker["AAPL"],
+            {
+                "fact_warning_count": 1,
+                "hallucination_warning_count": 1,
+                "consistency_warning_count": 2,
+                "fallback_used": False,
+                "encoding_issue_detected": True,
+            },
+        )
 
 
 if __name__ == "__main__":

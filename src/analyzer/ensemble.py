@@ -6,6 +6,7 @@ from typing import Any
 
 from src.analyzer.orchestrator import AnalysisOrchestrator
 from src.analyzer.payloads import payloads_from_analyses
+from src.analyzer.quality_summary import select_quality_summary_by_source
 from src.decision.decision_layer import generate_decisions
 from src.types import (
     CollectedTickerData,
@@ -25,6 +26,7 @@ class EnsembleResult:
     economy_analyses_by_ticker: dict[str, TickerAnalysis]
     deep_analyses_by_ticker: dict[str, TickerAnalysis]
     consensus_by_ticker: dict[str, dict[str, Any]]
+    quality_summary_by_ticker: dict[str, dict[str, Any]]
     portfolio_result: dict[str, Any]
     diagnostics: dict[str, Any]
     final_decisions: list[TickerDecision]
@@ -115,6 +117,9 @@ class AnalysisEnsemble:
             "third_review_tickers": [],
         }
         portfolio_result = dict(self.economy_orchestrator.portfolio_result)
+        economy_quality_summary_by_ticker = dict(getattr(self.economy_orchestrator, "quality_summary_by_ticker", {}))
+        deep_quality_summary_by_ticker: dict[str, dict[str, Any]] = {}
+        tie_break_quality_summary_by_ticker: dict[str, dict[str, Any]] = {}
 
         if target_tickers:
             target_watchlist = [item for item in watchlist if item.ticker in target_tickers]
@@ -159,6 +164,7 @@ class AnalysisEnsemble:
                 portfolio_risk=effective_portfolio_risk,
                 macro_context=macro_context,
             )
+            deep_quality_summary_by_ticker = dict(getattr(self.deep_orchestrator, "quality_summary_by_ticker", {}))
             deep_decision_map = {decision.ticker: decision for decision in deep_decisions}
 
             conflicted_tickers = [
@@ -209,9 +215,13 @@ class AnalysisEnsemble:
                     portfolio_risk=effective_portfolio_risk,
                     macro_context=macro_context,
                 )
+                tie_break_quality_summary_by_ticker = dict(
+                    getattr(self.tie_break_orchestrator, "quality_summary_by_ticker", {})
+                )
                 tie_break_decision_map = {decision.ticker: decision for decision in tie_break_decisions}
 
         consensus_by_ticker: dict[str, dict[str, Any]] = {}
+        selected_source_by_ticker: dict[str, str] = {}
         final_analyses: list[TickerAnalysis] = []
         for item in watchlist:
             ticker = item.ticker
@@ -232,9 +242,23 @@ class AnalysisEnsemble:
             )
             consensus_by_ticker[ticker] = consensus
             source_analysis = tie_break_analysis or deep_analysis or economy_analysis
+            if tie_break_analysis is not None:
+                selected_source_by_ticker[ticker] = "tie_break"
+            elif deep_analysis is not None:
+                selected_source_by_ticker[ticker] = "deep"
+            else:
+                selected_source_by_ticker[ticker] = "economy"
             if source_analysis is None:
                 continue
             final_analyses.append(replace(source_analysis, analysis_consensus=consensus))
+
+        quality_summary_by_ticker = select_quality_summary_by_source(
+            tickers=[item.ticker for item in watchlist],
+            economy_summary_by_ticker=economy_quality_summary_by_ticker,
+            deep_summary_by_ticker=deep_quality_summary_by_ticker,
+            tie_break_summary_by_ticker=tie_break_quality_summary_by_ticker,
+            selected_source_by_ticker=selected_source_by_ticker,
+        )
 
         final_decisions = generate_decisions(
             final_analyses,
@@ -242,6 +266,8 @@ class AnalysisEnsemble:
             market_regime,
             signal_stats,
             run_date,
+            analysis_consensus_by_ticker=consensus_by_ticker,
+            quality_summary_by_ticker=quality_summary_by_ticker,
             portfolio_risk=effective_portfolio_risk,
             macro_context=macro_context,
         )
@@ -252,6 +278,7 @@ class AnalysisEnsemble:
             economy_analyses_by_ticker=economy_map,
             deep_analyses_by_ticker=deep_map,
             consensus_by_ticker=consensus_by_ticker,
+            quality_summary_by_ticker=quality_summary_by_ticker,
             portfolio_result=portfolio_result,
             diagnostics=diagnostics,
             final_decisions=final_decisions,

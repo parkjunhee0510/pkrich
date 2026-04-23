@@ -58,7 +58,20 @@ Structured LLM modules:
 * research narrative
 * risk assessment
 * signal takeaway
+* macro narrative (`macro_narrative.py`)
 * weekly insight generation on weekly summary paths
+
+## Validator Guards
+
+`validator.py` enforces hallucination guards on LLM output:
+* Price logic checks (supports/resistances vs current price)
+* Fact warnings for unverifiable claims
+* Pattern enforcement via `signal_levels.py`
+
+## Model Profiles And Runtime
+
+* Per-module model profile and batch-size selection in `src/utils/model_config.py`
+* `llm_runtime.py` enforces a missing-ticker retry budget so partial batches are recovered without runaway cost
 
 ## Rules
 

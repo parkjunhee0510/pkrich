@@ -237,6 +237,8 @@ def run_pipeline(run_date: date | None = None) -> None:
                     market_regime,
                     signal_stats,
                     effective_date,
+                    analysis_consensus_by_ticker=ensemble_result.consensus_by_ticker,
+                    quality_summary_by_ticker=ensemble_result.quality_summary_by_ticker,
                     portfolio_risk=portfolio_risk,
                     macro_context=macro_context,
                 ),
@@ -251,7 +253,7 @@ def run_pipeline(run_date: date | None = None) -> None:
                 ensemble_eligible_count=len(ensemble_result.diagnostics.get("eligible_tickers", [])),
                 ensemble_selected_count=len(ensemble_result.diagnostics.get("selected_tickers", [])),
                 ensemble_skipped_due_to_cap=len(ensemble_result.diagnostics.get("skipped_due_to_cap", [])),
-                ensemble_conflicted_count=len(ensemble_result.diagnostics.get("conflicted_tickers", [])),
+                ensemble_conflicted_count=len(ensemble_result.diagnostics.get("third_review_tickers", [])),
             )
         except Exception:
             market_regime = MarketRegime()

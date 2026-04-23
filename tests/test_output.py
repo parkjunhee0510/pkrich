@@ -207,7 +207,8 @@ class OutputTests(unittest.TestCase):
         serialized = _serialize_analysis(
             analysis,
             {},
-            decision=SimpleNamespace(
+            decision=TickerDecision(
+                ticker='AAPL',
                 action='watch',
                 conviction=55,
                 reason='테스트',
@@ -216,6 +217,94 @@ class OutputTests(unittest.TestCase):
             ),
         )
         self.assertEqual(serialized['decision']['ensemble_agreement'], 'conflict')
+
+    def test_serialize_analysis_includes_decision_confidence_shadow_fields(self) -> None:
+        analysis = _sample_analysis()
+        serialized = _serialize_analysis(
+            analysis,
+            {},
+            decision=TickerDecision(
+                ticker='AAPL',
+                action='buy',
+                conviction=74,
+                raw_conviction=81,
+                reason='테스트',
+                valid_until='2026-04-15',
+                factors={},
+                confidence_meta={'confidence_gate': 0.75, 'data_quality': 0.9},
+            ),
+        )
+
+        self.assertEqual(serialized['decision']['raw_conviction'], 81)
+        self.assertEqual(
+            serialized['decision']['confidence_meta'],
+            {'confidence_gate': 0.75, 'data_quality': 0.9},
+        )
+
+    def test_serialize_analysis_omits_confidence_shadow_fields_when_empty(self) -> None:
+        analysis = _sample_analysis()
+        serialized = _serialize_analysis(
+            analysis,
+            {},
+            decision=TickerDecision(
+                ticker='AAPL',
+                action='buy',
+                conviction=74,
+                raw_conviction=81,
+                reason='테스트',
+                valid_until='2026-04-15',
+                factors={},
+            ),
+        )
+
+        self.assertNotIn('raw_conviction', serialized['decision'])
+        self.assertNotIn('confidence_meta', serialized['decision'])
+
+    def test_write_json_outputs_preserves_decision_confidence_shadow_fields_in_dashboard_history(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            temp_path = Path(temp_dir)
+            output_root = temp_path / 'output'
+            (output_root / 'data').mkdir(parents=True, exist_ok=True)
+
+            write_json_outputs(
+                [_sample_analysis()],
+                date(2026, 4, 8),
+                output_root=output_root,
+                decisions=[
+                    TickerDecision(
+                        ticker='AAPL',
+                        action='buy',
+                        conviction=74,
+                        raw_conviction=81,
+                        reason='confidence shadow',
+                        valid_until='2026-04-15',
+                        factors={'momentum': 12.0},
+                        confidence_meta={
+                            'confidence_gate': 0.75,
+                            'data_quality': 0.9,
+                            'evidence_coverage': 0.8,
+                            'evidence_consistency': 0.7,
+                            'model_agreement': 0.85,
+                        },
+                    )
+                ],
+            )
+
+            payload = json.loads((output_root / 'data' / 'dashboard_history.json').read_text(encoding='utf-8'))
+            decision = payload['days'][0]['tickers'][0]['decision']
+
+            self.assertEqual(decision['conviction'], 74)
+            self.assertEqual(decision['raw_conviction'], 81)
+            self.assertEqual(
+                decision['confidence_meta'],
+                {
+                    'confidence_gate': 0.75,
+                    'data_quality': 0.9,
+                    'evidence_coverage': 0.8,
+                    'evidence_consistency': 0.7,
+                    'model_agreement': 0.85,
+                },
+            )
 
     def test_render_ticker_markdown_includes_period_quarterly_events_and_timeline(self) -> None:
         content = render_ticker_markdown(

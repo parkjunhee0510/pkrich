@@ -51,9 +51,10 @@ Responsibilities:
 
 Key components:
 * `DecisionFactor`
-* factor registry under `src/decision/factors/`
+* factor registry under `src/decision/factors/` (includes `macro_regime_factor`, `macro_event_factor`)
+* `MarketRegime` with sub-regime classification in `src/decision/market_regime.py`
 * `ConvictionScorer`
-* `generate_decisions(...)`
+* `generate_decisions(...)` in `src/decision/decision_layer.py` (surfaces `factor_reasoning`)
 
 Must not:
 * Fetch external data
@@ -105,6 +106,10 @@ Must not:
 
 Responsibilities:
 * Shared helpers that do not own domain workflows
+* Macro sensitivity computation (`macro_sensitivity.py`) applied to all collected tickers
+* Ticker macro beta estimation (`ticker_macro_beta.py`)
+* Macro event matching helpers (`macro_event_match.py`) used by macro v2 factors
+* Module-specific model profiles and batch sizes (`model_config.py`)
 
 Must not:
 * Become a hidden domain layer

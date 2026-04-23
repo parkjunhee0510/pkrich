@@ -22,6 +22,11 @@ Maintain reproducible derived state across pipeline runs.
 * Compute portfolio summary inputs for analysis and output
 * Support portfolio-risk-aware decision adjustments
 
+### Peer Selection Cache
+
+* `peer_selection_cache` persists peer candidate sets across runs
+* Poisoning guards reject stale or corrupt fallback (FMP) entries so a bad fallback cannot overwrite a good yfinance primary result
+
 ## Source Of Truth
 
 State must come from:

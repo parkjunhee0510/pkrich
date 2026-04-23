@@ -5,13 +5,14 @@ import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 from src.output.analysis_quality import write_analysis_quality_output
 from src.output.api_status import build_api_status_payload
 from src.output.cost_log import write_cost_log_output
 from src.output.json_export import write_json_outputs
 from src.output.schema import SCHEMA_VERSION
-from src.types import WatchlistItem
+from src.types import TickerDecision, WatchlistItem
 from tests.helpers.output_snapshot import load_snapshot_fixture, normalize_json_shape
 from tests.test_output import _sample_analysis
 
@@ -27,6 +28,39 @@ class OutputSchemaTests(unittest.TestCase):
 
         self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
         expected = load_snapshot_fixture(_FIXTURE_DIR / "index.shape.json")
+        self.assertEqual(normalize_json_shape(payload), expected)
+
+    def test_dashboard_history_matches_shadow_decision_snapshot_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "output"
+            with patch.dict("os.environ", {"EMIT_LEGACY_DASHBOARD": "0"}, clear=False):
+                write_json_outputs(
+                    [_sample_analysis()],
+                    date(2026, 4, 8),
+                    output_root=output_root,
+                    decisions=[
+                        TickerDecision(
+                            ticker="AAPL",
+                            action="buy",
+                            conviction=74,
+                            raw_conviction=81,
+                            reason="confidence shadow",
+                            valid_until="2026-04-15",
+                            factors={"momentum": 12.0},
+                            confidence_meta={
+                                "confidence_gate": 0.75,
+                                "data_quality": 0.9,
+                                "evidence_coverage": 0.8,
+                                "evidence_consistency": 0.7,
+                                "model_agreement": 0.85,
+                            },
+                        )
+                    ],
+                )
+            payload = json.loads((output_root / "data" / "dashboard_history.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
+        expected = load_snapshot_fixture(_FIXTURE_DIR / "dashboard_with_confidence.shape.json")
         self.assertEqual(normalize_json_shape(payload), expected)
 
     def test_api_status_json_matches_snapshot_shape(self) -> None:

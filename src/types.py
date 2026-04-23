@@ -190,8 +190,10 @@ class TickerDecision:
     ticker: str = ''
     action: Literal['buy', 'watch', 'avoid'] = 'watch'
     conviction: int = 0
+    raw_conviction: int = 0
     reason: str = ''
     valid_until: str = ''
     factors: dict[str, float] = field(default_factory=dict)
+    confidence_meta: dict[str, float] = field(default_factory=dict)
     factor_reasoning: dict[str, str] = field(default_factory=dict)
     final_consensus: Literal['single', 'agree', 'resolved', 'conflict'] = 'single'

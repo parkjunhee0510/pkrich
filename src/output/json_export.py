@@ -377,7 +377,7 @@ def _serialize_decision(
         ensemble_agreement = "agree"
     elif status == "conflicted" or final_consensus == "conflict":
         ensemble_agreement = "conflict"
-    return {
+    result = {
         "action": decision.action,
         "conviction": decision.conviction,
         "reason": decision.reason,
@@ -387,6 +387,11 @@ def _serialize_decision(
         "ensemble_agreement": ensemble_agreement,
         "final_consensus": final_consensus,
     }
+    confidence_meta = getattr(decision, "confidence_meta", {})
+    if confidence_meta:
+        result["raw_conviction"] = getattr(decision, "raw_conviction", decision.conviction)
+        result["confidence_meta"] = confidence_meta
+    return result
 
 
 def _snapshot_currency(snapshot: dict[str, str]) -> str:

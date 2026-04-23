@@ -33,10 +33,12 @@ Strict layered system:
 
 * collector → external data
 * analyzer → LLM logic
+* decision → factor scoring & conviction
 * state → portfolio & signals
 * output → formatting
 * datastore → persistence abstraction
 * logging → pipeline tracking
+* utils → shared helpers (macro sensitivity, ticker macro beta, macro event matching, model config)
 
 See:
 

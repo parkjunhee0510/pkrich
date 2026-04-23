@@ -2,6 +2,63 @@
   "schema_version": 1,
   "runs": [
     {
+      "run_date": "2026-04-23",
+      "success": true,
+      "total_cost_usd": 0.09589715,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.0542421,
+          "tokens": 38040,
+          "input_tokens": 34283,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 34283,
+          "cache_hit_ratio": 0.0,
+          "calls": 4,
+          "models": {
+            "gpt-5.4-mini": 4
+          }
+        },
+        "economy": {
+          "cost_usd": 0.05825285,
+          "tokens": 153403,
+          "input_tokens": 141405,
+          "cached_input_tokens": 4864,
+          "uncached_input_tokens": 136541,
+          "cache_hit_ratio": 0.0344,
+          "calls": 18,
+          "models": {
+            "gpt-5.4-mini": 18
+          }
+        },
+        "standard": {
+          "cost_usd": 0.13720375,
+          "tokens": 87111,
+          "input_tokens": 83875,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 83875,
+          "cache_hit_ratio": 0.0,
+          "calls": 22,
+          "models": {
+            "gpt-5.4-mini": 22
+          }
+        }
+      },
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 11,
+        "selected_count": 5,
+        "skipped_due_to_cap_count": 6,
+        "conflicted_count": 0
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.0542421,
+        "selected_ticker_count": 5,
+        "cost_per_selected_ticker_usd": 0.010848,
+        "share_of_total_cost": 0.5656,
+        "worth_it_hint": "efficient"
+      }
+    },
+    {
       "run_date": "2026-04-22",
       "success": true,
       "total_cost_usd": 0.16555355,
@@ -423,44 +480,44 @@
     }
   ],
   "latest": {
-    "run_date": "2026-04-22",
+    "run_date": "2026-04-23",
     "success": true,
-    "total_cost_usd": 0.16555355,
+    "total_cost_usd": 0.09589715,
     "profiles": {
       "deep": {
-        "cost_usd": 0.0487168,
-        "tokens": 35096,
-        "input_tokens": 32032,
+        "cost_usd": 0.0542421,
+        "tokens": 38040,
+        "input_tokens": 34283,
         "cached_input_tokens": 0,
-        "uncached_input_tokens": 32032,
+        "uncached_input_tokens": 34283,
         "cache_hit_ratio": 0.0,
-        "calls": 5,
+        "calls": 4,
         "models": {
-          "gpt-5.4-mini": 5
+          "gpt-5.4-mini": 4
         }
       },
       "economy": {
-        "cost_usd": 0.04046925,
-        "tokens": 105030,
-        "input_tokens": 96909,
-        "cached_input_tokens": 0,
-        "uncached_input_tokens": 96909,
-        "cache_hit_ratio": 0.0,
-        "calls": 21,
+        "cost_usd": 0.05825285,
+        "tokens": 153403,
+        "input_tokens": 141405,
+        "cached_input_tokens": 4864,
+        "uncached_input_tokens": 136541,
+        "cache_hit_ratio": 0.0344,
+        "calls": 18,
         "models": {
-          "gpt-5.4-mini": 21
+          "gpt-5.4-mini": 18
         }
       },
       "standard": {
-        "cost_usd": 0.0763675,
-        "tokens": 48886,
-        "input_tokens": 47142,
+        "cost_usd": 0.13720375,
+        "tokens": 87111,
+        "input_tokens": 83875,
         "cached_input_tokens": 0,
-        "uncached_input_tokens": 47142,
+        "uncached_input_tokens": 83875,
         "cache_hit_ratio": 0.0,
-        "calls": 12,
+        "calls": 22,
         "models": {
-          "gpt-5.4-mini": 12
+          "gpt-5.4-mini": 22
         }
       }
     },
@@ -472,10 +529,10 @@
       "conflicted_count": 0
     },
     "deep_pass_value": {
-      "deep_cost_usd": 0.0487168,
+      "deep_cost_usd": 0.0542421,
       "selected_ticker_count": 5,
-      "cost_per_selected_ticker_usd": 0.009743,
-      "share_of_total_cost": 0.2943,
+      "cost_per_selected_ticker_usd": 0.010848,
+      "share_of_total_cost": 0.5656,
       "worth_it_hint": "efficient"
     }
   }

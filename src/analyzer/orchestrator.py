@@ -7,6 +7,7 @@ from typing import Any
 from src.analyzer.base import AnalysisContext, AnalysisModule, StructuredLLMModule
 from src.analyzer.llm_runtime import run_structured_llm_module
 from src.analyzer.payloads import analyses_from_payloads, build_fallback_payloads, build_raw_payloads
+from src.analyzer.quality_summary import build_quality_summary, merge_quality_summary_maps
 from src.analyzer.registry import ModuleRegistry
 from src.types import CollectedTickerData, NewsItem, PortfolioSummary, TickerAnalysis, WatchlistItem
 from src.utils.model_config import ModelProfile, load_model_profile
@@ -24,6 +25,7 @@ class AnalysisOrchestrator:
         self.logger = logger
         self.diagnostics: dict[str, Any] = {}
         self.portfolio_result: dict[str, Any] = {}
+        self.quality_summary_by_ticker: dict[str, dict[str, Any]] = {}
 
     def analyze_all(
         self,
@@ -110,12 +112,20 @@ class AnalysisOrchestrator:
             "module_diagnostics": {},
         }
         portfolio_result: dict[str, Any] = {}
+        quality_summary_by_ticker: dict[str, dict[str, Any]] = {}
 
         for module in modules_to_run:
             module_ctx = replace(ctx, intermediate_results=merged)
             result = self._run_module(module, module_ctx)
             diagnostics["executed_modules"].append(module.name)
             diagnostics["module_diagnostics"][module.name] = result.diagnostics
+            quality_summary_by_ticker = merge_quality_summary_maps(
+                quality_summary_by_ticker,
+                build_quality_summary(
+                    result.diagnostics,
+                    tickers=list(result.results_by_ticker.keys()),
+                ),
+            )
             for ticker, payload in result.results_by_ticker.items():
                 merged.setdefault(ticker, {}).update(payload)
             if result.portfolio_result:
@@ -123,9 +133,10 @@ class AnalysisOrchestrator:
 
         self.diagnostics = diagnostics
         self.portfolio_result = portfolio_result
+        self.quality_summary_by_ticker = quality_summary_by_ticker
         return analyses_from_payloads(watchlist, merged)
 
     def _run_module(self, module: AnalysisModule, ctx: AnalysisContext):
         if isinstance(module, StructuredLLMModule):
-            return run_structured_llm_module(module, ctx)
+            return run_structured_llm_module(module, ctx, capture_validation_details=True)
         return module.analyze(ctx)

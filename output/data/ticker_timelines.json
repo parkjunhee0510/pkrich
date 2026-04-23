@@ -1,6 +1,28 @@
 {
   "AAPL": [
     {
+      "date": "2026-04-22",
+      "price": "273.17 USD",
+      "daily_change": "+2.63%",
+      "signal_or_takeaway": "매수 관찰 — [실적] Apple Inc., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 266.69–279.65 | 손절 SMA50(260.27 USD) (R:R 0.8R)",
+      "top_news_summary": "Apple CEO forecasts holiday quarter iPhone sales that top Wall Street estimates - Reuters",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/aapl-20251227.htm",
+      "news_tone": {
+        "label": "긍정",
+        "confidence": 3,
+        "reasoning": "실적 기대와 iPhone 수요/매출 성장 관련 보도가 상방 촉매이나, 후임 이슈와 8-K 공시가 혼재해 톤은 과도하게 강하지 않음."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "7",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-21",
       "price": "266.17 USD",
       "daily_change": "-2.52%",
@@ -235,6 +257,28 @@
     }
   ],
   "CAT": [
+    {
+      "date": "2026-04-22",
+      "price": "808.87 USD",
+      "daily_change": "+1.05%",
+      "signal_or_takeaway": "매수 관찰 — 실적 D-7 강세와 30일간 +13.09% 상승 모멘텀 | 진입 트리거 820.20 상향 돌파 | 목표 820.20/842.83달러 | 손절 737.50달러",
+      "top_news_summary": "SEC에 8-K 중요 사항 보고서 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/18230/000110465926042621/tm2611571d2_8k.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 3,
+        "reasoning": "목표주가 상승과 실적 기대가 긍정적으로 언급되지만, 경기 사이클 위험도 함께 제시되어 톤은 혼합적입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-30",
+          "days_until": "7",
+          "timing": "BMO"
+        }
+      ]
+    },
     {
       "date": "2026-04-21",
       "price": "800.45 USD",
@@ -486,6 +530,28 @@
   ],
   "XOM": [
     {
+      "date": "2026-04-22",
+      "price": "149.50 USD",
+      "daily_change": "+0.77%",
+      "signal_or_takeaway": "중립 관찰 — 실적 전 변동성 속 약세 추세와 에너지 섹터 민감도 혼재 | 진입 트리거 149.50 회복 | 목표 154.73달러/157.16달러 | 손절 154.73달러",
+      "top_news_summary": "빅오일 실적이 소폭 개선될 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "실적 전망과 장기 성장 목표는 긍정적이지만, 지정학과 LNG 노출 이슈가 함께 언급되어 중립적입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-01",
+          "days_until": "8",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
       "date": "2026-04-21",
       "price": "148.36 USD",
       "daily_change": "+0.46%",
@@ -686,6 +752,28 @@
     }
   ],
   "AMD": [
+    {
+      "date": "2026-04-22",
+      "price": "303.46 USD",
+      "daily_change": "+6.67%",
+      "signal_or_takeaway": "매수 관찰 — [기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 292.01–314.91 | 손절 SMA50(215.30 USD) (R:R 0.2R)",
+      "top_news_summary": "2030년까지 이익이 세 배로 늘 전망",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 5,
+        "reasoning": "AI 칩 수요와 장기 실적 성장 전망이 뚜렷하게 긍정적으로 제시되었습니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "12",
+          "timing": "AMC"
+        }
+      ]
+    },
     {
       "date": "2026-04-21",
       "price": "284.49 USD",
@@ -888,6 +976,28 @@
   ],
   "KO": [
     {
+      "date": "2026-04-22",
+      "price": "74.63 USD",
+      "daily_change": "-0.09%",
+      "signal_or_takeaway": "중립 관찰 — 실적 D-5를 앞둔 방어적 흐름과 제한적 변동성 | 진입 트리거 74.63 지지 확인 | 목표 76.47/77.39달러 | 손절 71.66달러",
+      "top_news_summary": "펩시코가 턴어라운드 성과 압박을 받는다는 보도",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+      "news_tone": {
+        "label": "neutral",
+        "confidence": 3,
+        "reasoning": "혁신 기대는 있지만 소비 트렌드 변화와 경쟁 압박도 함께 보여 전체적으로 중립적입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-04-28",
+          "days_until": "5",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
       "date": "2026-04-21",
       "price": "74.70 USD",
       "daily_change": "-1.03%",
@@ -1088,6 +1198,28 @@
     }
   ],
   "T": [
+    {
+      "date": "2026-04-22",
+      "price": "25.98 USD",
+      "daily_change": "+0.39%",
+      "signal_or_takeaway": "중립 관찰 — [기타 공시] AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 25.29–26.67 | 손절 SMA50(27.81 USD)",
+      "top_news_summary": "배당 지급일 5/1 예정",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000203/t-20260422.htm",
+      "news_tone": {
+        "label": "긍정",
+        "confidence": 3,
+        "reasoning": "무선 가입자 호조 보도와 옵션 수급이 우호적이며, 배당 일정도 방어적 지지 요인. 다만 기술적 흐름은 약해 톤은 중립에 가까움."
+      },
+      "upcoming_events": [
+        {
+          "type": "dividend",
+          "label": "배당 지급일",
+          "date": "2026-05-01",
+          "days_until": "8",
+          "timing": ""
+        }
+      ]
+    },
     {
       "date": "2026-04-21",
       "price": "25.88 USD",
@@ -1318,6 +1450,28 @@
   ],
   "IONQ": [
     {
+      "date": "2026-04-22",
+      "price": "47.36 USD",
+      "daily_change": "+2.33%",
+      "signal_or_takeaway": "매수 관찰 — [기타 공시] IonQ, Inc., 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 44.20–50.52 | 손절 SMA50(34.00 USD) (R:R 0.4R)",
+      "top_news_summary": "실적 D-13, 5/6 발표 예정",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1824920/000119312526124402/ionq-20260319.htm",
+      "news_tone": {
+        "label": "긍정",
+        "confidence": 3,
+        "reasoning": "실적 임박과 8-K 공시가 핵심이며, 양자 섹터 모멘텀 관련 기사들이 보조 촉매로 작용. 다만 과열 신호가 있어 확신도는 제한적."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "13",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-21",
       "price": "46.28 USD",
       "daily_change": "-4.22%",
@@ -1519,6 +1673,28 @@
   ],
   "OXY": [
     {
+      "date": "2026-04-22",
+      "price": "57.05 USD",
+      "daily_change": "+1.28%",
+      "signal_or_takeaway": "매수 관찰 — [기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 54.63–59.47 | 손절 SMA50(55.86 USD) (R:R 3.1R)",
+      "top_news_summary": "실적 D-12, 5/5 발표 예정",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm",
+      "news_tone": {
+        "label": "중립",
+        "confidence": 3,
+        "reasoning": "유가와 탄소포집 관련 호재가 있으나, 옵션은 PUT 우위로 방어심리가 섞여 있음. 실적 전까지는 방향성 확정이 약함."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "12",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-21",
       "price": "56.33 USD",
       "daily_change": "+3.40%",
@@ -1669,6 +1845,28 @@
   ],
   "ORA": [
     {
+      "date": "2026-04-22",
+      "price": "107.00 USD",
+      "daily_change": "-1.06%",
+      "signal_or_takeaway": "중립 경계 — 실적 D-13 앞둔 방향성 혼재와 단기 약세 | 진입 트리거 107.00 지지 확인 | 목표 111.72달러/112.58달러 | 손절 105.86달러",
+      "top_news_summary": "[기타 공시] ORMAT TECHNOLOGIES, INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1296445/000129644526000006/ora-20251231.htm",
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 3,
+        "reasoning": "지열과 저장 확장 계획이 부각되어 성장 기대가 우세하지만, 기사 전반은 아직 평가 단계입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-06",
+          "days_until": "13",
+          "timing": "AMC"
+        }
+      ]
+    },
+    {
       "date": "2026-04-21",
       "price": "108.15 USD",
       "daily_change": "-3.18%",
@@ -1805,6 +2003,28 @@
   ],
   "SPIR": [
     {
+      "date": "2026-04-22",
+      "price": "18.27 USD",
+      "daily_change": "-2.51%",
+      "signal_or_takeaway": "중립 경계 — 2026-05-13 실적 발표 D-20과 변동성 확대 | 진입 트리거 18.27 지지 확인 | 목표 22.19/23.59달러 | 손절 12.78달러",
+      "top_news_summary": "SEC에 8-K 중요 사항 보고서 제출",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1816017/000119312526116169/spir-20251231.htm",
+      "news_tone": {
+        "label": "bearish",
+        "confidence": 4,
+        "reasoning": "지속적 손실과 가이던스 악화가 핵심으로 언급되어 전반적인 톤이 약세입니다."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-13",
+          "days_until": "20",
+          "timing": "BMO"
+        }
+      ]
+    },
+    {
       "date": "2026-04-21",
       "price": "18.74 USD",
       "daily_change": "+3.25%",
@@ -1940,6 +2160,28 @@
     }
   ],
   "PLUG": [
+    {
+      "date": "2026-04-22",
+      "price": "3.19 USD",
+      "daily_change": "+3.57%",
+      "signal_or_takeaway": "매수 관찰 — [실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 2.95–3.43 | 손절 SMA50(2.29 USD) (R:R 0.4R)",
+      "top_news_summary": "실적 D-18, 5/11 발표 예정",
+      "top_news_link": "https://www.sec.gov/Archives/edgar/data/1093691/000110465926022286/plug-20251231x10k.htm",
+      "news_tone": {
+        "label": "중립",
+        "confidence": 2,
+        "reasoning": "실적 전 공시와 옵션 활동은 활발하지만, 뉴스 자체의 방향성은 약함. 주가와 모멘텀은 강하나 근거 뉴스는 제한적."
+      },
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-11",
+          "days_until": "18",
+          "timing": "AMC"
+        }
+      ]
+    },
     {
       "date": "2026-04-21",
       "price": "3.08 USD",

@@ -20,6 +20,10 @@ The output layer turns finalized pipeline results into stable artifacts.
 * dashboard history, price history, ticker timelines
 * sector explorer payloads
 
+Per-ticker payloads now include:
+* `factor_reasoning` — surfaced from `decision/decision_layer.py` and `types.py`, written by `json_export.py`
+* `ticker_macro_sensitivity` — computed for all collected tickers (not portfolio-only)
+
 ### Operational Reports
 
 * API status

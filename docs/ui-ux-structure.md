@@ -100,7 +100,7 @@
 
 ### 4.2 TickerDetail `/ticker/:ticker` — 종목 상세
 단일 종목 깊이 있는 분석.
-- **섹션**: 가격 차트(`PriceChart`), 결정 카드(`DecisionCard` / `TraderDecisionBoard`), 펀더멘털 스냅샷(`DataSnapshot`), EPS 서프라이즈(`EpsSurpriseChart`), 52주 배지(`FiftyTwoWeekBadge`), SEC 공시(`SecFilingBadges`), 뉴스(`NewsItem`), 매크로 컨텍스트, 타임라인
+- **섹션**: 가격 차트(`PriceChart`), 결정 카드(`DecisionCard` / `TraderDecisionBoard`), 펀더멘털 스냅샷(`DataSnapshot`), EPS 서프라이즈(`EpsSurpriseChart`), 52주 배지(`FiftyTwoWeekBadge`), SEC 공시(`SecFilingBadges`), 뉴스(`NewsItem`), 거시경제 영향(티커별 macro sensitivity), 매크로 컨텍스트, 타임라인
 - **인터랙션**: 차트 모드 전환 (캔들↔라인), 이벤트 타임라인 기간 토글
 
 ### 4.3 PriceHistory `/prices` — 시세
@@ -164,8 +164,8 @@ AI 기반 종목 질의.
 ### 5.2 의사결정 & 신호
 | 컴포넌트 | 설명 |
 |---|---|
-| `DecisionCard` | buy/watch/avoid 카드 + 요인 기여도 |
-| `TraderDecisionBoard` | 앙상블 합의도 + 요인별 스코어 |
+| `DecisionCard` | buy/watch/avoid 카드 + 요인 기여도, 신뢰도 낮은 이유 열 (factor reasoning) |
+| `TraderDecisionBoard` | 앙상블 합의도 + 요인별 스코어, 발목 잡는 요소(매크로 충격 포함) |
 | `TraderDashboardPanels` | TodaySetup · Earnings · Catalyst · SignalPerformance 보드 묶음 |
 | `SignalBadge` | bull/bear/neutral 배지 |
 | `SignalQualityPanel` | 모델 품질 지표 (Admin) |
