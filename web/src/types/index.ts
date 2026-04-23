@@ -166,6 +166,27 @@ export interface AnalysisConsensusData {
   selection_reason?: string
 }
 
+export interface CommitteeRoleData {
+  role?: string
+  round?: string
+  profile?: string
+  stance?: string
+  action?: string
+  confidence?: number
+  strong_objection?: boolean
+  summary?: string
+  valid?: boolean
+  invalid_reason?: string
+}
+
+export interface CommitteeAnalysisData {
+  status?: string
+  agreement_status?: string
+  deep_review_triggered?: boolean
+  deep_review_reasons?: string[]
+  roles?: Record<string, CommitteeRoleData>
+}
+
 export interface TickerAnalysisData {
   ticker: string
   name: string
@@ -194,6 +215,7 @@ export interface TickerAnalysisData {
   valuation_score?: ValuationScore
   decision?: TickerDecisionData
   analysis_consensus?: AnalysisConsensusData
+  committee_analysis?: CommitteeAnalysisData
 }
 
 export interface ValuationScore {

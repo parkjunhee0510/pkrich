@@ -1,5 +1,11 @@
 # Analyzer
 
+## Codex Routing
+
+- Read when the task changes `src/analyzer/`, prompts, batching, or structured LLM output.
+- Pair with `docs/cost.md` for model, token, or batching decisions.
+- Then inspect `src/analyzer/` and `config/models.yaml`.
+
 ## Purpose
 
 Transform normalized collected data into structured research outputs.
@@ -45,6 +51,18 @@ Core pieces:
 * Conflicts may trigger a third review
 * Final analysis payload remains schema-compatible with the rest of the pipeline
 
+### Committee Flow
+
+* After ensemble analysis, every ticker receives a role-based committee pass
+* Roles are `growth_analyst`, `value_skeptic`, `risk_manager`, `macro_strategist`, and `pm`
+* Round 1 uses the configured committee economy profile for all roles
+* Low PM confidence or strong Risk/Macro objections trigger selective deep reruns for `risk_manager`, `macro_strategist`, and `pm`
+* Committee output is stored on `TickerAnalysis.committee_analysis` for downstream output only
+* Committee role calls use a per-role strict JSON schema on the Responses API
+* Parser fallback also accepts common alias fields such as `recommendation`/`rationale`/`confidence_score` and fenced JSON text when the model output shape drifts
+* Validation marks each role with `valid` and `invalid_reason` instead of silently dropping malformed outputs
+* Committee JSON keys remain English, but role `summary` values must be Korean; only ticker names, metrics, and source names may remain as-is
+
 ## Current Module Families
 
 Deterministic modules:
@@ -80,3 +98,4 @@ Structured LLM modules:
 * No storage writes except through explicit output/state flows outside analyzer
 * Output must remain deterministic enough for regression testing
 * Fallbacks must preserve downstream payload shape
+* Committee output must not replace the rule-based decision layer as the official action source

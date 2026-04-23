@@ -118,8 +118,32 @@ def _decide_ticker(
     weighted_values = scorer.weighted_values(factor_scores_by_name, regime.regime)
     raw_conviction = scorer.calculate(factor_scores_by_name, regime.regime)
     conviction = raw_conviction
+    confidence_meta: dict[str, float] = {}
+    confidence_note = ""
 
     thresholds = config.get("thresholds", {})
+    if not _force_raw_confidence():
+        meta = evaluate_confidence_meta(
+            analysis=analysis,
+            regime=regime,
+            factor_scores_by_name=factor_scores_by_name,
+            macro_context=signal_stats.get("_macro_context"),
+            portfolio_risk=signal_stats.get("_portfolio_risk"),
+            analysis_consensus=analysis.analysis_consensus,
+            quality_summary=quality_summary,
+        )
+        confidence_meta = meta.to_dict()
+        conviction = calculate_final_conviction(raw_conviction, meta)
+        if _confidence_adjustment_is_material(raw_conviction, conviction):
+            confidence_note = _build_confidence_note(raw_conviction, conviction)
+        logger.debug(
+            "Decision confidence applied: ticker=%s raw=%s final=%s gate=%.3f",
+            analysis.ticker,
+            raw_conviction,
+            conviction,
+            meta.confidence_gate,
+        )
+
     buy_threshold = thresholds.get("buy_risk_off", 75) if regime.regime == "risk_off" else thresholds.get("buy", 65)
     avoid_threshold = thresholds.get("avoid", 35)
 
@@ -131,27 +155,9 @@ def _decide_ticker(
         action = "watch"
 
     reason = _build_reason(factor_scores_by_name, weighted_values)
+    if confidence_note:
+        reason = f"{reason} / {confidence_note}"
     valid_until = _compute_valid_until(analysis, run_date, config)
-    confidence_meta: dict[str, float] = {}
-    if _shadow_confidence_enabled():
-        meta = evaluate_confidence_meta(
-            analysis=analysis,
-            regime=regime,
-            factor_scores_by_name=factor_scores_by_name,
-            macro_context=signal_stats.get("_macro_context"),
-            portfolio_risk=signal_stats.get("_portfolio_risk"),
-            analysis_consensus=analysis.analysis_consensus,
-            quality_summary=quality_summary,
-        )
-        confidence_meta = meta.to_dict()
-        shadow_final_conviction = calculate_final_conviction(raw_conviction, meta)
-        logger.debug(
-            "Decision confidence shadow: ticker=%s raw=%s shadow_final=%s gate=%.3f",
-            analysis.ticker,
-            raw_conviction,
-            shadow_final_conviction,
-            meta.confidence_gate,
-        )
 
     factor_reasoning = {
         name: score.reasoning
@@ -183,6 +189,17 @@ def _build_reason(factor_scores_by_name: dict[str, FactorScore], weighted_values
         if abs(weighted_values.get(factor_name, score.value)) >= 1 and score.reasoning
     ]
     return " / ".join(parts) if parts else "판단 근거 부족"
+
+
+def _build_confidence_note(raw_conviction: int, final_conviction: int) -> str:
+    return (
+        f"데이터 품질과 모델 판단 차이를 반영해 "
+        f"{raw_conviction}점에서 {final_conviction}점으로 보수 조정"
+    )
+
+
+def _confidence_adjustment_is_material(raw_conviction: int, final_conviction: int) -> bool:
+    return abs(raw_conviction - final_conviction) >= 5
 
 
 def _compute_valid_until(analysis: TickerAnalysis, run_date: date, config: dict[str, Any]) -> str:
@@ -230,5 +247,7 @@ def _load_weights() -> dict[str, Any]:
     return normalized
 
 
-def _shadow_confidence_enabled() -> bool:
-    return os.getenv("DECISION_CONFIDENCE_SHADOW_MODE", "1").strip().lower() not in {"0", "false", "off", "no"}
+def _force_raw_confidence() -> bool:
+    force_raw = os.getenv("DECISION_CONFIDENCE_FORCE_RAW", "0").strip().lower() in {"1", "true", "on", "yes"}
+    legacy_shadow_off = os.getenv("DECISION_CONFIDENCE_SHADOW_MODE", "1").strip().lower() in {"0", "false", "off", "no"}
+    return force_raw or legacy_shadow_off

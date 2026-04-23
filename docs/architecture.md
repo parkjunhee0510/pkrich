@@ -1,5 +1,11 @@
 # Architecture
 
+## Codex Routing
+
+- Read first only when the task is about layer boundaries or deciding which architecture doc to open.
+- For decision logic, go to `docs/decision.md`.
+- For shared helper behavior, go to `docs/utils.md`.
+
 ## Principles
 
 * Batch-first design
@@ -8,111 +14,22 @@
 * Cost-aware execution
 * One storage boundary through datastore
 
-## Layers
+## Document Map
 
-### `collector/`
+- `docs/decision.md`: factor scoring, conviction, regime-aware decision rules
+- `docs/utils.md`: shared helpers that support multiple layers without owning workflows
+- `docs/pipeline.md`: choose the right pipeline-level doc before reading runtime details
 
-Responsibilities:
-* External data fetching only
-* Provider fallback chains
-* Data normalization before handoff
+## Layer Overview
 
-Must not:
-* Perform LLM analysis
-* Format user-facing output
-* Write storage directly outside datastore utilities
-
-### `analyzer/`
-
-Responsibilities:
-* Structured analysis from collected inputs
-* Module DAG orchestration
-* Prompt rendering, validation, and deterministic fallback
-* Multi-model consensus for selected tickers
-
-Key components:
-* `ModuleRegistry`
-* `AnalysisOrchestrator`
-* `AnalysisEnsemble`
-* `PromptTemplate` registry
-* Modules under `src/analyzer/modules/`
-
-Must not:
-* Call external market/news APIs directly
-* Own output formatting
-* Bypass model-profile or prompt-version configuration
-
-### `decision/`
-
-Responsibilities:
-* Plugin-based factor scoring
-* Regime-aware weighting and normalization
-* Final `buy/watch/avoid` decision generation
-
-Key components:
-* `DecisionFactor`
-* factor registry under `src/decision/factors/` (includes `macro_regime_factor`, `macro_event_factor`)
-* `MarketRegime` with sub-regime classification in `src/decision/market_regime.py`
-* `ConvictionScorer`
-* `generate_decisions(...)` in `src/decision/decision_layer.py` (surfaces `factor_reasoning`)
-
-Must not:
-* Fetch external data
-* Write output files
-
-### `state/`
-
-Responsibilities:
-* Signal history tracking
-* Return windows and derived signal outcomes
-* Reproducible state updates across runs
-
-Must not:
-* Depend on live APIs
-* Hide non-reproducible side effects
-
-### `output/`
-
-Responsibilities:
-* Markdown generation
-* JSON export for web and analytics views
-* Operational artifacts such as quality, routing, and cost logs
-
-Must not:
-* Fetch data
-* Recompute business logic that belongs in analyzer or decision
-
-### `datastore/`
-
-Responsibilities:
-* Unified persistence boundary
-* CSV and SQLite backends
-* Historical query surface for prices, signals, and run metadata
-
-Must not:
-* Leak backend-specific logic into other layers
-
-### `logging/`
-
-Responsibilities:
-* Step-level pipeline event tracking
-* Run summaries and operational diagnostics
-
-Must not:
-* Change pipeline outcomes
-* Expose secrets
-
-### `utils/`
-
-Responsibilities:
-* Shared helpers that do not own domain workflows
-* Macro sensitivity computation (`macro_sensitivity.py`) applied to all collected tickers
-* Ticker macro beta estimation (`ticker_macro_beta.py`)
-* Macro event matching helpers (`macro_event_match.py`) used by macro v2 factors
-* Module-specific model profiles and batch sizes (`model_config.py`)
-
-Must not:
-* Become a hidden domain layer
+- `collector/`: external data fetching, fallback chains, normalized handoff
+- `analyzer/`: structured LLM analysis, module orchestration, deterministic fallback
+- `decision/`: rule-based conviction scoring and final action generation
+- `state/`: reproducible signal history and derived outcomes
+- `output/`: deterministic Markdown and JSON artifacts
+- `datastore/`: single persistence boundary across CSV and SQLite
+- `logging/`: step-level execution and operational diagnostics
+- `utils/`: shared helpers that support layers without becoming a hidden workflow layer
 
 ## Current End-To-End Shape
 

@@ -114,6 +114,7 @@ class TickerAnalysis:
     peer_rank: dict[str, object] = field(default_factory=dict)
     valuation_score: dict[str, object] = field(default_factory=dict)
     analysis_consensus: dict[str, object] = field(default_factory=dict)
+    committee_analysis: dict[str, object] = field(default_factory=dict)
     historical_prices: list[dict[str, str]] = field(default_factory=list)
 
 

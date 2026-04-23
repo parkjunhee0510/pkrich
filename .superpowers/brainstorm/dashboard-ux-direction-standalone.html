@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard UX Direction</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f0e4;
+      color: #111;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .subtitle {
+      margin: 0 0 24px;
+      color: #555;
+      font-size: 15px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .card {
+      border: 2px solid #111;
+      background: #fffaf0;
+      box-shadow: 4px 4px 0 #111;
+      padding: 14px;
+    }
+    .mock-header {
+      border: 2px solid #111;
+      background: #111;
+      color: #fff;
+      padding: 8px 10px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .mock-body {
+      border: 2px solid #111;
+      border-top: 0;
+      background: #fdf9ee;
+      padding: 12px;
+      min-height: 265px;
+    }
+    .nav,
+    .placeholder {
+      border: 1px solid #111;
+      background: #ece7d8;
+      padding: 10px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #333;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    h2 {
+      margin: 14px 0 6px;
+      font-size: 20px;
+    }
+    p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .pick {
+      margin-top: 12px;
+      font-weight: 700;
+      color: #0a5b2a;
+    }
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Dashboard UX upgrade direction</h1>
+    <p class="subtitle">대시보드 첫 화면이 무엇을 가장 잘해야 하는지 고르는 선택지입니다.</p>
+
+    <section class="cards">
+      <article class="card">
+        <div class="mock-header">1. Command Center</div>
+        <div class="mock-body">
+          <div class="nav">Market regime | Daily change | Alerts | Run status</div>
+          <div class="grid-2">
+            <div class="placeholder" style="height:150px">Top 3 decisions with why-now reasons</div>
+            <div class="placeholder" style="height:150px">Risk, earnings, and catalyst queue</div>
+          </div>
+          <div class="placeholder" style="height:68px;margin-top:10px">Watchlist starts below the decision summary</div>
+        </div>
+        <h2>Command Center</h2>
+        <p>첫 화면이 “오늘 무엇을 봐야 하지?”에 바로 답합니다. 요약, 이벤트, 리스크, 우선 검토 종목을 먼저 보여주고 상세 카드 목록은 그 아래로 둡니다.</p>
+        <p class="pick">답변: 1</p>
+      </article>
+
+      <article class="card">
+        <div class="mock-header">2. Dense Watchlist Workbench</div>
+        <div class="mock-body">
+          <div class="nav">Search | Filters | Sort | Density | Account size</div>
+          <div class="grid-3">
+            <div class="placeholder" style="height:130px">Ticker card</div>
+            <div class="placeholder" style="height:130px">Ticker card</div>
+            <div class="placeholder" style="height:130px">Ticker card</div>
+          </div>
+          <div class="placeholder" style="height:88px;margin-top:10px">Committee, sizing, and action details stay compact</div>
+        </div>
+        <h2>Dense Workbench</h2>
+        <p>많은 종목을 빠르게 비교하는 데 집중합니다. 상단 장식과 설명을 줄이고, 카드의 정렬/필터/밀도를 더 강하게 다듬습니다.</p>
+        <p class="pick">답변: 2</p>
+      </article>
+
+      <article class="card">
+        <div class="mock-header">3. Decision Review Flow</div>
+        <div class="mock-body">
+          <div class="nav">Inbox: changed decisions | conflicts | stale data</div>
+          <div class="grid-2" style="grid-template-columns:.8fr 1.2fr">
+            <div class="placeholder" style="height:170px">Review queue</div>
+            <div class="placeholder" style="height:170px">Selected ticker: decision, committee, evidence</div>
+          </div>
+          <div class="placeholder" style="height:48px;margin-top:10px">Mark reviewed / open detail / compare yesterday</div>
+        </div>
+        <h2>Decision Review Flow</h2>
+        <p>대시보드를 매일 검토해야 할 항목의 큐로 만듭니다. 판단 변경, 위원회 충돌, 데이터 품질 문제를 먼저 처리하게 합니다.</p>
+        <p class="pick">답변: 3</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

@@ -16,9 +16,8 @@ from src.analyzer.modules import (
     ValuationModule,
 )
 from src.analyzer.ab_test import build_weekly_ab_test_payload
+from src.analyzer.committee import default_committee_analysis, run_committee_analysis
 from src.analyzer.prompts import get_prompt_template
-from dataclasses import replace
-
 from src.analyzer.ensemble import AnalysisEnsemble
 from src.analyzer.ensemble import apply_consensus_to_decisions
 from src.analyzer.orchestrator import AnalysisOrchestrator
@@ -52,6 +51,7 @@ from src.utils.config import load_portfolio, load_sectors, load_watchlist
 from src.utils.datastore import get_datastore
 from src.utils.env import is_env_flag_enabled, load_dotenv
 from src.utils.macro_sensitivity import attach_portfolio_macro_sensitivity
+from src.utils.model_config import load_committee_config
 from src.utils.portfolio import calculate_portfolio_summary
 from src.utils.pipeline_logging import finalize_pipeline_logging, get_pipeline_logger, record_pipeline_event, start_pipeline_logging
 from src.output.json_export import _write_validation_warnings_json
@@ -200,6 +200,17 @@ def run_pipeline(run_date: date | None = None) -> None:
             peer_candidates_by_ticker=peer_candidates_by_ticker,
         )
         analyses = ensemble_result.analyses
+        committee_analyses_by_ticker = _run_committee_flow(analyses)
+        analyses = [
+            replace(
+                analysis,
+                committee_analysis=committee_analyses_by_ticker.get(
+                    analysis.ticker,
+                    default_committee_analysis(),
+                ),
+            )
+            for analysis in analyses
+        ]
         portfolio_risk: dict[str, object] = ensemble_result.portfolio_result.get("portfolio_risk", {})
         persist_peer_selections(ensemble.economy_orchestrator.diagnostics, effective_date, output_root=Path("output"))
         _persist_routing_log(ensemble.config, ensemble_result.diagnostics, Path("output"))
@@ -594,3 +605,41 @@ def _run_sector_scan(watchlist, effective_date) -> None:
             error_type=type(exc).__name__,
             error_message=str(exc)[:200],
         )
+
+
+def _run_committee_flow(analyses):
+    if not analyses:
+        return {}
+
+    committee_config = load_committee_config()
+    committee_results: dict[str, dict[str, object]] = {}
+    for analysis in analyses:
+        try:
+            committee_result = run_committee_analysis(analysis, committee_config=committee_config)
+        except Exception as exc:
+            record_pipeline_event(
+                "analyzer",
+                "warning",
+                "committee_analysis_failed",
+                ticker=getattr(analysis, "ticker", ""),
+                error_type=type(exc).__name__,
+                error_message=str(exc)[:200],
+            )
+            committee_result = default_committee_analysis()
+        if not _is_valid_committee_payload(committee_result):
+            record_pipeline_event(
+                "analyzer",
+                "warning",
+                "committee_payload_invalid",
+                ticker=getattr(analysis, "ticker", ""),
+            )
+            committee_result = default_committee_analysis()
+        committee_results[getattr(analysis, "ticker", "")] = committee_result
+    return committee_results
+
+
+def _is_valid_committee_payload(payload) -> bool:
+    if not isinstance(payload, dict):
+        return False
+    required_keys = {"status", "agreement_status", "deep_review_triggered", "deep_review_reasons", "roles"}
+    return required_keys.issubset(payload.keys())

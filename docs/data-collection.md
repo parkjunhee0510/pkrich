@@ -1,5 +1,11 @@
 # Data Collection
 
+## Codex Routing
+
+- Read when the task changes external data sources, provider fallback chains, or normalization before analysis.
+- Pair with `docs/pipeline.md` only if collect-stage handoff or runtime order changes.
+- Then inspect `src/collector/` and related provider config.
+
 ## Sources
 
 ### Primary

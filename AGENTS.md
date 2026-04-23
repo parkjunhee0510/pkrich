@@ -1,143 +1,45 @@
 # AGENTS.md
 
-## Purpose
+Navigation index for agents. Detailed knowledge lives in `docs/`, not here.
 
-This file is the navigation index for agents.
-Do not store detailed knowledge here.
+## Agent entrypoints
 
----
+- Codex: read `docs/codex/index.md` after this file. Use it as the only navigation hub before opening layer docs.
+- Claude: use `CLAUDE.md`.
 
-## System Overview
+## System
 
-Batch-based stock research automation system.
+Batch stock research automation. Daily GitHub Actions run → structured data → LLM analysis → Markdown/JSON output. Cost-constrained (< $5/month).
 
-* Daily execution (GitHub Actions)
-* Structured data → LLM analysis → Markdown/JSON output
-* Cost-constrained (< $5/month)
+## Pipeline (invariant)
 
----
+`collect → analyze → state → output → store → log` — see `docs/pipeline.md`.
 
-## Pipeline (Invariant)
+## Layers & constraints
 
-collect → analyze → state → output → store → log
+| Layer | Role | Constraints | Docs |
+|-------|------|-------------|------|
+| collector | External data | Approved sources, fallback chains | `docs/data-collection.md` |
+| analyzer  | LLM logic | Deterministic prompts, structured output, minimize/batch calls | `docs/analyzer.md`, `docs/cost.md` |
+| decision  | Factor scoring & conviction | — | `docs/decision.md`, `docs/architecture.md` |
+| state     | Portfolio & signals | Reproducible, no external deps | `docs/state.md` |
+| output    | Formatting | Deterministic, minimal diffs | `docs/output.md` |
+| datastore | Persistence abstraction | All storage goes through it | `docs/datastore.md` |
+| logging   | Pipeline tracking | Record all pipeline events | `docs/logging.md` |
+| utils     | Shared helpers (macro sensitivity/beta, event matching, model config) | — | `docs/utils.md`, `docs/architecture.md` |
 
-See:
+## Workflow
 
-* docs/pipeline.md
+1. Read AGENTS.md.
+2. If you are Codex, read `docs/codex/index.md` next and follow its routing rules.
+3. Open only the matching layer docs for the current task.
+4. Never read all docs blindly or break layer boundaries.
+5. When code changes behavior, contracts, routing, or outputs, update the relevant docs in the same task.
 
----
+## Non-goals
 
-## Architecture
+No real-time systems, no trading automation, no complex infra.
 
-Strict layered system:
+## Done when
 
-* collector → external data
-* analyzer → LLM logic
-* decision → factor scoring & conviction
-* state → portfolio & signals
-* output → formatting
-* datastore → persistence abstraction
-* logging → pipeline tracking
-* utils → shared helpers (macro sensitivity, ticker macro beta, macro event matching, model config)
-
-See:
-
-* docs/architecture.md
-
----
-
-## Key Constraints
-
-### Cost
-
-* Minimize LLM usage
-* Prefer batching
-
-See:
-
-* docs/cost.md
-
-### Data Collection
-
-* Use approved sources only
-* Must implement fallback chains
-
-See:
-
-* docs/data-collection.md
-
-### Analyzer
-
-* Deterministic prompts
-* Structured output only
-
-See:
-
-* docs/analyzer.md
-
-### State
-
-* Must be reproducible
-* No external dependency
-
-See:
-
-* docs/state.md
-
-### Output
-
-* Deterministic
-* Minimal diffs
-
-See:
-
-* docs/output.md
-
-### Storage
-
-* Must go through datastore abstraction
-
-See:
-
-* docs/datastore.md
-
-### Logging
-
-* Record all pipeline events
-
-See:
-
-* docs/logging.md
-
----
-
-## Workflow for Agents
-
-When solving tasks:
-
-1. Read AGENTS.md
-2. Identify relevant layer
-3. Open corresponding docs/*
-4. Execute within constraints
-
-Never:
-
-* Read entire docs blindly
-* Break layer boundaries
-
----
-
-## Non-Goals
-
-* No real-time systems
-* No trading automation
-* No complex infrastructure
-
----
-
-## Completion Criteria
-
-* Pipeline runs end-to-end
-* Outputs valid
-* Architecture preserved
-* Cost unchanged
+Pipeline runs end-to-end, outputs valid, architecture preserved, related docs are updated, cost unchanged.

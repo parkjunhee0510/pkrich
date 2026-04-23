@@ -9,10 +9,12 @@ from unittest.mock import patch
 
 from src.utils.cost_tracker import calculate_response_cost
 from src.utils.model_config import (
+    load_committee_config,
     load_ensemble_config,
     load_model_profile,
     response_temperature_kwargs,
     resolve_module_model_profile,
+    resolve_module_batch_size,
     safe_input_token_budget,
 )
 
@@ -238,6 +240,157 @@ class ModelConfigTests(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 load_ensemble_config(str(config_path))
+
+    def test_load_committee_config_reads_defaults(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_path = Path(temp_dir) / 'models.yaml'
+            config_path.write_text(
+                '\n'.join(
+                    [
+                        'default_profile: economy',
+                        'committee:',
+                        'profiles:',
+                        '  economy:',
+                        '    model: gpt-5.4-mini',
+                        '    prompt_version: research_v1',
+                        '    temperature:',
+                        '    context_window: 400000',
+                        '    max_output_tokens: 32000',
+                        '    monthly_cost_estimate_usd: 0.31',
+                        '    input_cost_per_1m_tokens: 0.25',
+                        '    cached_input_cost_per_1m_tokens: 0.025',
+                        '    output_cost_per_1m_tokens: 2.0',
+                        '  deep:',
+                        '    model: o3-mini',
+                        '    prompt_version: research_v2',
+                        '    temperature:',
+                        '    context_window: 200000',
+                        '    max_output_tokens: 100000',
+                        '    monthly_cost_estimate_usd: 8.0',
+                        '    input_cost_per_1m_tokens: 1.10',
+                        '    cached_input_cost_per_1m_tokens: 0.55',
+                        '    output_cost_per_1m_tokens: 4.40',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            committee = load_committee_config(str(config_path))
+
+        self.assertTrue(committee.enabled)
+        self.assertEqual(committee.economy_model, 'economy')
+        self.assertEqual(committee.deep_model, 'deep')
+        self.assertEqual(committee.pm_low_confidence_threshold, 0.55)
+        self.assertEqual(committee.max_summary_sentences_per_role, 2)
+        self.assertEqual(committee.max_summary_sentences_for_pm, 3)
+
+    def test_load_committee_config_rejects_missing_profile_reference(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_path = Path(temp_dir) / 'models.yaml'
+            config_path.write_text(
+                '\n'.join(
+                    [
+                        'default_profile: economy',
+                        'committee:',
+                        '  economy_model: missing',
+                        'profiles:',
+                        '  economy:',
+                        '    model: gpt-5.4-mini',
+                        '    prompt_version: research_v1',
+                        '    temperature:',
+                        '    context_window: 400000',
+                        '    max_output_tokens: 32000',
+                        '    monthly_cost_estimate_usd: 0.31',
+                        '    input_cost_per_1m_tokens: 0.25',
+                        '    cached_input_cost_per_1m_tokens: 0.025',
+                        '    output_cost_per_1m_tokens: 2.0',
+                        '  deep:',
+                        '    model: o3-mini',
+                        '    prompt_version: research_v2',
+                        '    temperature:',
+                        '    context_window: 200000',
+                        '    max_output_tokens: 100000',
+                        '    monthly_cost_estimate_usd: 8.0',
+                        '    input_cost_per_1m_tokens: 1.10',
+                        '    cached_input_cost_per_1m_tokens: 0.55',
+                        '    output_cost_per_1m_tokens: 4.40',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            with self.assertRaises(ValueError):
+                load_committee_config(str(config_path))
+
+    def test_load_committee_config_rejects_invalid_threshold_and_sentence_limits(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_path = Path(temp_dir) / 'models.yaml'
+            config_path.write_text(
+                '\n'.join(
+                    [
+                        'default_profile: economy',
+                        'committee:',
+                        '  pm_low_confidence_threshold: 1.7',
+                        '  max_summary_sentences_per_role: 0',
+                        '  max_summary_sentences_for_pm: -1',
+                        'profiles:',
+                        '  economy:',
+                        '    model: gpt-5.4-mini',
+                        '    prompt_version: research_v1',
+                        '    temperature:',
+                        '    context_window: 400000',
+                        '    max_output_tokens: 32000',
+                        '    monthly_cost_estimate_usd: 0.31',
+                        '    input_cost_per_1m_tokens: 0.25',
+                        '    cached_input_cost_per_1m_tokens: 0.025',
+                        '    output_cost_per_1m_tokens: 2.0',
+                        '  deep:',
+                        '    model: o3-mini',
+                        '    prompt_version: research_v2',
+                        '    temperature:',
+                        '    context_window: 200000',
+                        '    max_output_tokens: 100000',
+                        '    monthly_cost_estimate_usd: 8.0',
+                        '    input_cost_per_1m_tokens: 1.10',
+                        '    cached_input_cost_per_1m_tokens: 0.55',
+                        '    output_cost_per_1m_tokens: 4.40',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            with self.assertRaises(ValueError):
+                load_committee_config(str(config_path))
+
+    def test_resolve_module_batch_size_reads_valid_override(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_path = Path(temp_dir) / 'models.yaml'
+            config_path.write_text(
+                '\n'.join(
+                    [
+                        'module_batch_size_overrides:',
+                        '  signal_takeaway_module: 7',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            self.assertEqual(resolve_module_batch_size('signal_takeaway_module', str(config_path)), 7)
+
+    def test_resolve_module_batch_size_falls_back_on_invalid_override(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            config_path = Path(temp_dir) / 'models.yaml'
+            config_path.write_text(
+                '\n'.join(
+                    [
+                        'module_batch_size_overrides:',
+                        '  signal_takeaway_module: bad',
+                    ]
+                ),
+                encoding='utf-8',
+            )
+
+            self.assertIsNone(resolve_module_batch_size('signal_takeaway_module', str(config_path)))
 
     def test_response_temperature_kwargs_omits_reasoning_models(self) -> None:
         profile = load_model_profile(profile_name='deep')

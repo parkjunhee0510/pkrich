@@ -22,6 +22,7 @@ import { parseNumericChange, changeColor, extractSignalDirection } from '../util
 import { SignalBadge } from './SignalBadge'
 import { SecFilingBadges } from './SecFilingBadges'
 import { InfoTooltip } from './InfoTooltip'
+import { CommitteeSummaryStrip } from './CommitteeSummaryStrip'
 import {
   buildOptionsSignalTags,
   buildPositioningGrid,
@@ -375,6 +376,8 @@ function SortableWatchlistCard({
           <p>{sizingSummary.riskReward}</p>
         </section>
       </div>
+
+      <CommitteeSummaryStrip committee={ticker.committee_analysis} />
     </article>
   )
 }

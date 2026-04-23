@@ -1,5 +1,11 @@
 # Configuration
 
+## Codex Routing
+
+- Read when the task changes YAML config structure, config loading, or environment-driven behavior.
+- Pair with the relevant layer doc instead of using this file alone for business logic changes.
+- Then inspect `config/` files and `src/utils/config.py`.
+
 ## Watchlist
 
 * Location: `config/watchlist.yaml`

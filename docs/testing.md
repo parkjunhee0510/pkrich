@@ -1,5 +1,11 @@
 # Testing and Validation
 
+## Codex Routing
+
+- Read when choosing verification scope or adding tests for a touched layer.
+- Pair with the layer doc for the code under change.
+- Then inspect `tests/` and run the smallest useful command before broader validation.
+
 ## Core Requirement
 
 Pipeline must run end-to-end.
@@ -43,6 +49,7 @@ Pipeline must run end-to-end.
 
 * Prefer integration testing
 * Validate real pipeline behavior
+* When implementation changes behavior or contracts, update related docs in the same change set
 
 ## Notable Test Modules
 

@@ -1,0 +1,85 @@
+<h2>Dashboard Committee Layout</h2>
+<p class="subtitle">Which dashboard placement feels easier to scan every day?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Inside Each Watchlist Card</div>
+        <div class="mockup-body">
+          <div style="display:grid; gap:12px;">
+            <div style="border:1px solid #d8d2c4; border-radius:16px; padding:14px; background:#fffaf1;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <strong>AAPL</strong>
+                <span style="padding:4px 8px; border-radius:999px; background:#d9f3de;">BUY</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:10px;">
+                <div class="placeholder" style="min-height:42px;">Price</div>
+                <div class="placeholder" style="min-height:42px;">Change</div>
+                <div class="placeholder" style="min-height:42px;">7D/30D</div>
+                <div class="placeholder" style="min-height:42px;">Next Earnings</div>
+              </div>
+              <div style="border-top:1px dashed #d8d2c4; padding-top:10px; display:grid; gap:6px;">
+                <div style="font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:#7c6f58;">Committee</div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <span style="padding:3px 8px; border-radius:999px; background:#efe7d6;">Mixed</span>
+                  <span style="padding:3px 8px; border-radius:999px; background:#f9d9d9;">Deep Review</span>
+                </div>
+                <div style="font-size:13px;">Growth: upside intact</div>
+                <div style="font-size:13px;">Value: valuation stretched</div>
+                <div style="font-size:13px;">Risk: event risk elevated</div>
+                <div style="font-size:13px;">Macro: rates still hostile</div>
+                <div style="font-size:13px; font-weight:600;">PM: buy, but size carefully</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Card-Embedded</h3>
+      <p>Roles are visible where the user already scans actions, price, and setup.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Separate Committee Strip</div>
+        <div class="mockup-body">
+          <div style="display:grid; gap:12px;">
+            <div style="border:1px solid #d8d2c4; border-radius:16px; padding:14px; background:#fffaf1;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong>AAPL</strong>
+                <span style="padding:4px 8px; border-radius:999px; background:#d9f3de;">BUY</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px;">
+                <div class="placeholder" style="min-height:42px;">Price</div>
+                <div class="placeholder" style="min-height:42px;">Change</div>
+                <div class="placeholder" style="min-height:42px;">7D/30D</div>
+                <div class="placeholder" style="min-height:42px;">Next Earnings</div>
+              </div>
+            </div>
+            <div style="border:1px solid #d8d2c4; border-radius:16px; padding:14px; background:#f6efe3;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong>Committee Snapshot</strong>
+                <span style="padding:3px 8px; border-radius:999px; background:#efe7d6;">AAPL · Mixed</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
+                <div class="placeholder" style="min-height:56px;">Growth</div>
+                <div class="placeholder" style="min-height:56px;">Value</div>
+                <div class="placeholder" style="min-height:56px;">Risk</div>
+                <div class="placeholder" style="min-height:56px;">Macro</div>
+                <div class="placeholder" style="min-height:56px;">PM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Separate Strip</h3>
+      <p>Decision card stays cleaner, and committee detail gets its own dedicated visual block.</p>
+    </div>
+  </div>
+</div>

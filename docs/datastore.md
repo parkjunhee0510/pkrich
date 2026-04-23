@@ -1,5 +1,11 @@
 # Datastore
 
+## Codex Routing
+
+- Read when the task changes persistence shape, storage timing, or backend behavior.
+- Pair with `docs/state.md` for signal history and derived-state updates.
+- Then inspect `src/utils/datastore.py` and related persistence callers.
+
 ## Purpose
 
 Provide the single persistence boundary for structured pipeline data.

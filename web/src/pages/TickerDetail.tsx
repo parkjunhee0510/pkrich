@@ -12,6 +12,7 @@ import { SignalBadge } from '../components/SignalBadge'
 import { InfoTooltip } from '../components/InfoTooltip'
 import { DecisionCard } from '../components/DecisionCard'
 import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
+import { CommitteeDetailPanel } from '../components/CommitteeDetailPanel'
 import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
 import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../types'
@@ -34,7 +35,7 @@ const HEADER_SELECTION_REASON_LABELS: Record<string, string> = {
 
 const FILING_TABS = ['실적', '배당', '주주총회', '기타 공시'] as const
 
-const DETAIL_TABS = ['개요', '차트', '재무', '재료', '시나리오'] as const
+const DETAIL_TABS = ['개요', '차트', '재무', '재료', '시나리오', '위원회'] as const
 type DetailTab = (typeof DETAIL_TABS)[number]
 
 type FilingTab = (typeof FILING_TABS)[number]
@@ -368,6 +369,10 @@ export function TickerDetail() {
       </div>
 
       <div className="ticker-detail-tab-panel" role="tabpanel">
+
+      {activeTab === '위원회' && (
+        <CommitteeDetailPanel committee={analysis.committee_analysis} />
+      )}
 
       {activeTab === '재무' && (<>
       <section className="earnings-hero-section">

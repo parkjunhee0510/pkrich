@@ -3109,6 +3109,217 @@ hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }
 
 .watchlist-card.dragging { opacity: 0.55; transform: rotate(-0.5deg); }
 
+/* ========== Committee UI ========== */
+.committee-summary-strip {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--ink-soft);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.committee-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.committee-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.65rem;
+  padding: 0.18rem 0.58rem;
+  background: var(--bone);
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.committee-badge-positive {
+  background: var(--pos-block);
+  color: var(--on-pos-block);
+}
+
+.committee-badge-caution {
+  background: var(--caution-block);
+  color: var(--on-caution-block);
+}
+
+.committee-badge-deep {
+  background: var(--neg-block);
+  color: var(--on-neg-block);
+}
+
+.committee-badge-muted {
+  background: var(--bone);
+}
+
+.committee-badge-reason {
+  background: var(--paper);
+}
+
+.committee-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.committee-summary-cell,
+.committee-pm-summary,
+.committee-pm-card {
+  padding: 0.8rem 0.9rem;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.committee-summary-cell,
+.committee-pm-summary {
+  min-width: 0;
+}
+
+.committee-summary-label {
+  display: inline-block;
+  margin-bottom: 0.32rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
+
+.committee-summary-cell p,
+.committee-pm-summary p,
+.committee-role-body p,
+.committee-pm-card p {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.committee-pm-summary,
+.committee-pm-card {
+  background: color-mix(in srgb, var(--caution-block) 16%, var(--paper-raised));
+}
+
+.committee-pm-card {
+  display: grid;
+  gap: 0.45rem;
+  border-width: 2px;
+  box-shadow: var(--shadow-hard);
+}
+
+.committee-pm-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.committee-pm-header strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.committee-pm-confidence {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.48rem;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1.5px solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.committee-detail-panel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.committee-role-accordions {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.committee-role-accordion {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.committee-role-accordion summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  list-style: none;
+  cursor: pointer;
+  padding: 0.85rem 0.95rem;
+  background: var(--paper-raised);
+  border-bottom: 1.5px solid transparent;
+}
+
+.committee-role-accordion[open] summary {
+  border-bottom-color: var(--ink);
+}
+
+.committee-role-accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.committee-role-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.committee-role-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.committee-role-stance,
+.committee-role-objection {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.16rem 0.45rem;
+  border: 1px solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.committee-role-stance {
+  background: var(--bone);
+}
+
+.committee-role-objection {
+  background: var(--neg-block);
+  color: var(--on-neg-block);
+}
+
+.committee-role-body {
+  padding: 0.9rem 0.95rem 1rem;
+  background: var(--paper);
+}
+
 /* ========== EPS Surprise & Valuation ========== */
 .eps-surprise-wrapper { padding: 0.6rem 0; }
 .eps-surprise-legend { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
@@ -4085,6 +4296,18 @@ input:focus, select:focus, textarea:focus {
   .dashboard-accordion-copy { flex-direction: column; align-items: flex-start; }
   .admin-cost-grid { grid-template-columns: 1fr; }
   .admin-cost-chart { grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); min-height: 220px; }
+  .committee-summary-grid { grid-template-columns: 1fr; }
+  .committee-badge-row { gap: 0.3rem; }
+  .committee-role-accordion summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .committee-role-meta {
+    justify-content: flex-start;
+  }
+  .committee-pm-card {
+    padding: 0.85rem;
+  }
 }
 
 /* Sector explorer */

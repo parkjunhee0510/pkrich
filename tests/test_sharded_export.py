@@ -20,6 +20,19 @@ def _ticker_payload(ticker: str, date: str, price: str) -> dict:
         "signal_or_takeaway": "관찰",
         "earnings_setup": {},
         "news_references": [],
+        "committee_analysis": {
+            "status": "economy_only",
+            "agreement_status": "aligned",
+            "deep_review_triggered": False,
+            "deep_review_reasons": [],
+            "roles": {
+                "pm": {
+                    "stance": "watch",
+                    "summary": "위원회 요약",
+                    "valid": True,
+                }
+            },
+        },
     }
 
 
@@ -60,6 +73,8 @@ class ShardedExportTests(unittest.TestCase):
             self.assertIn("data_snapshot", summary)
             self.assertIn("news_references", summary)
             self.assertIn("earnings_setup", summary)
+            self.assertIn("committee_analysis", summary)
+            self.assertEqual(summary["committee_analysis"]["roles"]["pm"]["summary"], "위원회 요약")
             self.assertNotIn("quarterly_financials", summary)
 
     def test_per_ticker_latest_and_history_emitted(self) -> None:

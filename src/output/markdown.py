@@ -54,6 +54,20 @@ _DEFAULT_SECTOR_DISPLAY_ORDER = [
     "Materials",
 ]
 _MAX_DISPLAY_NEWS_AGE_DAYS = 180
+_COMMITTEE_ROLE_ORDER = (
+    "growth_analyst",
+    "value_skeptic",
+    "risk_manager",
+    "macro_strategist",
+    "pm",
+)
+_COMMITTEE_ROLE_LABELS = {
+    "growth_analyst": "Growth Analyst",
+    "value_skeptic": "Value Skeptic",
+    "risk_manager": "Risk Manager",
+    "macro_strategist": "Macro Strategist",
+    "pm": "PM",
+}
 
 
 def write_outputs(
@@ -328,12 +342,15 @@ def render_ticker_markdown(
     recent_timeline: list[dict[str, Any]] | None = None,
 ) -> str:
     snapshot_rows = _render_snapshot_rows(analysis.data_snapshot, analysis)
+    committee_section = _render_committee_section(getattr(analysis, "committee_analysis", None))
     return "\n".join(
         [
             f"# {analysis.ticker} - {analysis.date}",
             "",
             "## 요약",
             analysis.summary or "요약이 없습니다.",
+            "",
+            committee_section,
             "",
             "## 실적 셋업 요약",
             _render_earnings_setup_summary(analysis),
@@ -390,6 +407,40 @@ def render_ticker_markdown(
             "",
         ]
     )
+
+
+def _render_committee_section(committee_analysis: Any) -> str:
+    payload = committee_analysis if isinstance(committee_analysis, dict) else {}
+    agreement_status = str(payload.get("agreement_status", "N/A") or "N/A")
+    deep_review_triggered = bool(payload.get("deep_review_triggered", False))
+    deep_review_reasons = payload.get("deep_review_reasons", [])
+    if isinstance(deep_review_reasons, list):
+        reason_text = ", ".join(str(reason).strip() for reason in deep_review_reasons if str(reason).strip())
+    else:
+        reason_text = ""
+    roles = payload.get("roles", {})
+    role_lines = []
+    if isinstance(roles, dict):
+        for role in _COMMITTEE_ROLE_ORDER:
+            role_payload = roles.get(role)
+            if not isinstance(role_payload, dict):
+                continue
+            summary = str(role_payload.get("summary", "")).strip() or "요약이 없습니다."
+            stance = str(role_payload.get("stance", "")).strip() or "N/A"
+            label = _COMMITTEE_ROLE_LABELS.get(role, role)
+            role_lines.append(f"- {label}: {summary} [{stance}]")
+
+    lines = [
+        "## 위원회 분석",
+        f"- 합의 상태: {agreement_status}",
+        f"- 딥 리뷰: {'triggered' if deep_review_triggered else '없음'}"
+        + (f" · {reason_text}" if deep_review_triggered and reason_text else ""),
+    ]
+    if role_lines:
+        lines.extend(role_lines)
+    else:
+        lines.append("- 역할 요약: 데이터 없음")
+    return "\n".join(lines)
 
 
 def render_weekly_markdown(summary: WeeklySummaryData, macro_context: dict[str, Any] | None = None) -> str:

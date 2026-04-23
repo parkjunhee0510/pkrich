@@ -1994,13 +1994,13 @@
       "date": "2026-04-22",
       "ticker": "OXY",
       "name": "Occidental Petroleum Corporation",
-      "summary": "Occidental Petroleum Corporation(OXY)는 57.05 USD (+1.28%)에 거래 중이며, 52주 범위 64% 위치, SMA50 55.86 USD 수준입니다. 주요 헤드라인: [기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "summary": "주가 57.05달러로 30일 -6.86% 하락했지만 SMA50(55.86)과 SMA200(46.59) 위에 있고, 52주 고점 67.45달러 대비 64% 구간에 있습니다. 다음 촉매는 2026-05-05 실적 발표(D-12)이며, 그 전까지는 55.86달러 지지와 60.68달러 1차 목표 구간이 동시에 중요합니다.",
       "key_news": [
-        "실적 D-12, 5/5 발표 예정",
-        "4/10 8-K 제출",
-        "주주총회 위임장 제출",
-        "유가 강세와 밸류에이션 재평가 보도",
-        "탄소포집 관련 개발 보도"
+        "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+        "[주주총회] OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+        "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance",
+        "Assessing Occidental Petroleum (OXY) Valuation After Recent Share Price Momentum And Carbon Capture Developments - Yahoo Finance",
+        "Occidental Petroleum (OXY) Stock Outlook December 6, 2025: Q3 Beat, Berkshire Deal and Wall Street Forecasts - TechStock²"
       ],
       "news_references": [
         {
@@ -2035,16 +2035,19 @@
         }
       ],
       "financial_highlights": [
-        "PER 42.26배 (EPS 1.35)",
-        "Forward EPS 3.57, 성장률 +78.12% YoY",
-        "시가총액 56.58B / 배당 1.85%",
-        "52주 범위 64% 위치, SMA50 55.86 USD",
-        "애널리스트 Hold (목표 63.12 USD) / 기관 51.84%"
+        "현재가 57.05달러, 30D -6.86%, 일간 +1.28%",
+        "SMA50 55.86달러, SMA200 46.59달러, 현재가 대비 +2.13% / +22.45%",
+        "52주 고점 67.45달러, 52주 위치 64%",
+        "ATR(14) 2.42달러(4.24%), RVOL 0.55x",
+        "Forward EPS 3.57, TTM EPS 1.35, EPS 성장률 +78.12% YoY"
       ],
       "risks_or_watchpoints": [
-        "PER 42.3배로 밸류에이션 부담. 실적 miss 시 급락 리스크."
+        "2026-05-05 실적 발표 전까지 55.86 USD(SMA50) 하회 시 약세 시나리오 확인.",
+        "57.05 USD 부근에서 반등이 꺾이고 60.68 USD(1.5×ATR) 돌파 실패 시 추세 약화 가능.",
+        "옵션에서 PUT $68, PUT $85, PUT $62 이상 거래가 유지되는지 감시.",
+        "MACD -0.45/0.39(약세) 상태가 지속되면 단기 하방 압력 강화 가능."
       ],
-      "signal_or_takeaway": "매수 관찰 — [기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 54.63–59.47 | 손절 SMA50(55.86 USD) (R:R 3.1R)",
+      "signal_or_takeaway": "중립 관찰 — 2026-05-05 실적 발표 전까지 55.86 지지와 60.68 저항이 핵심 | 진입 트리거 55.86 유지 또는 60.68 상향 돌파 확인 | 목표 60.68달러/63.12달러 | 손절 55.86달러",
       "data_snapshot": {
         "Price": "57.05 USD",
         "Daily Change": "+1.28%",
@@ -2176,9 +2179,9 @@
         }
       ],
       "news_tone": {
-        "label": "중립",
+        "label": "약세",
         "confidence": 3,
-        "reasoning": "유가와 탄소포집 관련 호재가 있으나, 옵션은 PUT 우위로 방어심리가 섞여 있음. 실적 전까지는 방향성 확정이 약함."
+        "reasoning": "주가와 실적 모멘텀 자체는 존재하지만, 옵션에서 풋 쏠림이 강하고 최근 30일 수익률도 부진해 경계심이 우세함."
       },
       "trade_frame": {
         "entry_price": "현재가 57.05 또는 눌림 시 54.63 USD",
@@ -2205,6 +2208,13 @@
       },
       "signal_history": [
         {
+          "date": "2026-04-22",
+          "direction": "bear",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "57.05 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
           "date": "2026-04-21",
           "direction": "bull",
           "catalyst": "기타 공시",
@@ -2229,15 +2239,8 @@
           "date": "2026-04-15",
           "direction": "bear",
           "catalyst": "기타 공시",
-          "return_5d": "N/A",
+          "return_5d": "+2.19%",
           "note": "55.83 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-        },
-        {
-          "date": "2026-04-14",
-          "direction": "bull",
-          "catalyst": "기타 공시",
-          "return_5d": "+1.72%",
-          "note": "실적 전까지 54.86-57.20 USD 범위의 제한적 횡보 가능성이 높습니다."
         }
       ],
       "sector_comparison": {
@@ -2276,11 +2279,11 @@
       "analysis_consensus": {
         "status": "agreed",
         "economy_action": "buy",
-        "economy_conviction": 69,
-        "economy_reason": "섹터 대비 +0.2% / SMA50·SMA200 위 / 실적 D-12 / 리스크온 환경의 중립 업종",
+        "economy_conviction": 68,
+        "economy_reason": "섹터 대비 +0.2% / SMA50·SMA200 위 / 실적 D-12 / 최근 시그널 승률 67% (2/3)",
         "deep_action": "buy",
-        "deep_conviction": 67,
-        "deep_reason": "섹터 대비 +0.2% / SMA50·SMA200 위 / 실적 D-12 / 리스크온 환경의 중립 업종",
+        "deep_conviction": 65,
+        "deep_reason": "섹터 대비 +0.2% / SMA50·SMA200 위 / 실적 D-12 / 최근 시그널 승률 67% (2/3)",
         "tie_break_action": null,
         "tie_break_conviction": null,
         "tie_break_reason": "",
@@ -2291,6 +2294,74 @@
         "third_review_completed": false,
         "final_consensus": "agree",
         "final_action": "buy"
+      },
+      "committee_analysis": {
+        "status": "economy_only",
+        "agreement_status": "mixed",
+        "deep_review_triggered": false,
+        "deep_review_reasons": [],
+        "roles": {
+          "growth_analyst": {
+            "role": "growth_analyst",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "buy",
+            "action": "buy",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "EPS 성장률이 +78.12% YoY로 강하고, 2025-Q1~Q4 연속 서프라이즈와 2026-05-05 실적(D-12) 이벤트가 단기 촉매를 제공합니다. 다만 30일 -6.86% 조정과 옵션 포지셔닝의 경계심이 있어, SMA50(55.86) 위 유지 및 60.68 돌파 확인이 필요합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "value_skeptic": {
+            "role": "value_skeptic",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "",
+            "valid": false,
+            "invalid_reason": "missing_summary"
+          },
+          "risk_manager": {
+            "role": "risk_manager",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "상승 추세와 실적 모멘텀은 유지되지만, 현재가가 55.86 아래로 밀리면 핵심 추세가 훼손됩니다. 실적 D-12 전후 변동성 확대와 옵션 포지셔닝의 약세가 있어, 60.68 돌파 실패 시에는 보수적으로 봐야 합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "macro_strategist": {
+            "role": "macro_strategist",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "에너지 업종이라 금리 민감도는 중립적이지만, 유가와 경기 사이클에 따른 교차자산 변동성이 커서 단기 추격매수는 조심스럽습니다. 주가는 SMA50·SMA200 위에 있고 실적 기대도 양호하나, 55.86 지지와 60.68 저항, 그리고 실적 전 D-12 구간이라 확인 후 대응이 더 적절합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "pm": {
+            "role": "pm",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "buy",
+            "action": "buy",
+            "confidence": 0.69,
+            "strong_objection": false,
+            "summary": "SMA50·SMA200 상단에 있고 최근 실적 모멘텀과 유가 우호 환경이 유지되어 기본 방향은 매수에 우세합니다. 다만 30일 약세, 옵션 시장의 PUT 우세, 55.86 지지선 이탈 시 시나리오 훼손 가능성 때문에 강한 확신보다는 보수적 매수로 판단합니다. 실적 D-12 구간이라 포지션은 유지하되 55.86과 60.68 돌파 여부를 우선 감시하는 것이 적절합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          }
+        }
       },
       "period_changes": {
         "7d": "+2.19%",
@@ -2325,9 +2396,9 @@
         }
       ],
       "decision": {
-        "action": "buy",
-        "conviction": 69,
-        "reason": "섹터 대비 +0.2% / SMA50·SMA200 위 / 실적 D-12 / 최근 시그널 승률 67% (2/3)",
+        "action": "watch",
+        "conviction": 64,
+        "reason": "섹터 대비 +0.2% / SMA50·SMA200 위 / 실적 D-12 / 최근 시그널 승률 67% (2/3) / 데이터 품질과 모델 판단 차이를 반영해 69점에서 64점으로 보수 조정",
         "valid_until": "2026-05-05",
         "factors": {
           "catalyst_recency": 10.0,
@@ -2361,11 +2432,11 @@
         "final_consensus": "agree",
         "raw_conviction": 69,
         "confidence_meta": {
-          "data_quality": 0.92,
+          "data_quality": 0.82,
           "evidence_coverage": 1.0,
           "evidence_consistency": 0.54,
           "model_agreement": 0.9,
-          "confidence_gate": 0.861
+          "confidence_gate": 0.821
         }
       }
     }

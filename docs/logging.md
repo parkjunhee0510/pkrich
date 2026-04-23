@@ -1,5 +1,11 @@
 # Logging
 
+## Codex Routing
+
+- Read when the task changes pipeline events, run status reporting, or derived operational reports.
+- Pair with `docs/pipeline.md` only if stage timing or event boundaries are affected.
+- Then inspect `src/utils/pipeline_logging.py` and event call sites.
+
 ## Purpose
 
 Track pipeline execution, failures, warnings, and derived operational metrics.

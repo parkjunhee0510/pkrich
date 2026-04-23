@@ -140,6 +140,77 @@ def _sample_analysis() -> TickerAnalysis:
     )
 
 
+def _sample_committee_analysis() -> dict[str, object]:
+    return {
+        'status': 'deep_reviewed',
+        'agreement_status': 'mixed',
+        'deep_review_triggered': True,
+        'deep_review_reasons': ['pm_low_confidence', 'risk_strong_objection'],
+        'roles': {
+            'growth_analyst': {
+                'role': 'growth_analyst',
+                'round': 'economy',
+                'profile': 'economy',
+                'stance': 'buy',
+                'action': 'buy',
+                'confidence': 0.62,
+                'strong_objection': False,
+                'summary': 'Growth remains healthy.',
+                'valid': True,
+                'invalid_reason': '',
+            },
+            'value_skeptic': {
+                'role': 'value_skeptic',
+                'round': 'economy',
+                'profile': 'economy',
+                'stance': 'watch',
+                'action': 'watch',
+                'confidence': 0.58,
+                'strong_objection': False,
+                'summary': 'Valuation still looks stretched.',
+                'valid': True,
+                'invalid_reason': '',
+            },
+            'risk_manager': {
+                'role': 'risk_manager',
+                'round': 'deep',
+                'profile': 'deep',
+                'stance': 'reduce',
+                'action': 'avoid',
+                'confidence': 0.74,
+                'strong_objection': True,
+                'summary': 'Risk remains elevated around the event window.',
+                'valid': True,
+                'invalid_reason': '',
+            },
+            'macro_strategist': {
+                'role': 'macro_strategist',
+                'round': 'deep',
+                'profile': 'deep',
+                'stance': 'avoid',
+                'action': 'avoid',
+                'confidence': 0.77,
+                'strong_objection': False,
+                'summary': 'Macro backdrop is still fragile.',
+                'valid': True,
+                'invalid_reason': '',
+            },
+            'pm': {
+                'role': 'pm',
+                'round': 'deep',
+                'profile': 'deep',
+                'stance': 'buy',
+                'action': 'buy',
+                'confidence': 0.68,
+                'strong_objection': False,
+                'summary': 'Net view remains constructive with risk controls.',
+                'valid': True,
+                'invalid_reason': '',
+            },
+        },
+    }
+
+
 class OutputTests(unittest.TestCase):
     def test_render_daily_markdown_includes_key_sections_and_schedule(self) -> None:
         content = render_daily_markdown(
@@ -195,11 +266,22 @@ class OutputTests(unittest.TestCase):
         self.assertIn('earnings_pattern', serialized)
         self.assertIn('peer_rank', serialized)
         self.assertIn('analysis_consensus', serialized)
+        self.assertIn('committee_analysis', serialized)
         self.assertEqual(serialized['earnings_pattern']['beat_streak'], 1)
         self.assertEqual(serialized['earnings_pattern']['surprise_trend'], 'improving')
         self.assertEqual(serialized['earnings_pattern']['avg_surprise_pct'], '-1.7%')
         self.assertEqual(serialized['options_summary']['tone'], 'bullish')
         self.assertIn('CALL $270', serialized['options_summary']['unusual_activity'])
+
+    def test_serialize_analysis_includes_committee_analysis_payload(self) -> None:
+        analysis = TickerAnalysis(**{**_sample_analysis().__dict__, 'committee_analysis': _sample_committee_analysis()})
+
+        serialized = _serialize_analysis(analysis, {})
+
+        self.assertEqual(serialized['committee_analysis']['status'], 'deep_reviewed')
+        self.assertEqual(serialized['committee_analysis']['agreement_status'], 'mixed')
+        self.assertEqual(serialized['committee_analysis']['deep_review_reasons'], ['pm_low_confidence', 'risk_strong_objection'])
+        self.assertEqual(serialized['committee_analysis']['roles']['pm']['summary'], 'Net view remains constructive with risk controls.')
 
     def test_serialize_analysis_maps_decision_ensemble_agreement(self) -> None:
         analysis = _sample_analysis()
@@ -308,7 +390,7 @@ class OutputTests(unittest.TestCase):
 
     def test_render_ticker_markdown_includes_period_quarterly_events_and_timeline(self) -> None:
         content = render_ticker_markdown(
-            _sample_analysis(),
+            TickerAnalysis(**{**_sample_analysis().__dict__, 'committee_analysis': _sample_committee_analysis()}),
             period_changes={'7d': '+3.25%', '30d': '+8.10%'},
             recent_timeline=[
                 {
@@ -345,6 +427,12 @@ class OutputTests(unittest.TestCase):
         self.assertIn('- 다음 실적 체크포인트: 2026-04-14 실적 발표 (D-6 · AMC)', content)
         self.assertIn('## 최근 4분기 재무', content)
         self.assertIn('| 2025-Q4 | 120.00B USD (+20.0% YoY) | 35.00B USD (+16.7% YoY) | 2.10 USD/share (+16.7% YoY) | 2.00 USD/share | +5.00% | ✅ beat |', content)
+        self.assertIn('## 위원회 분석', content)
+        self.assertIn('- 합의 상태: mixed', content)
+        self.assertIn('- 딥 리뷰: triggered · pm_low_confidence, risk_strong_objection', content)
+        self.assertIn('- Growth Analyst: Growth remains healthy. [buy]', content)
+        self.assertIn('- Risk Manager: Risk remains elevated around the event window. [reduce]', content)
+        self.assertIn('- PM: Net view remains constructive with risk controls. [buy]', content)
         self.assertIn('## 다가오는 일정', content)
         self.assertIn('실적 발표: 2026-04-14 (D-6 · AMC)', content)
         self.assertIn('## 최근 타임라인', content)
@@ -373,6 +461,14 @@ class OutputTests(unittest.TestCase):
 
         self.assertIn('- 요약만 남는 뉴스입니다.', content)
         self.assertNotIn('<summary>원문 보기</summary>', content)
+
+    def test_render_ticker_markdown_shows_committee_section_when_missing_payload(self) -> None:
+        content = render_ticker_markdown(_sample_analysis())
+
+        self.assertIn('## 위원회 분석', content)
+        self.assertIn('- 합의 상태: N/A', content)
+        self.assertIn('- 딥 리뷰: 없음', content)
+        self.assertIn('- 역할 요약: 데이터 없음', content)
 
     def test_append_price_history_replaces_same_day_rows(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

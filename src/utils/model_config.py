@@ -13,6 +13,14 @@ _DEFAULT_CONFIG: dict[str, Any] = {
     'module_profile_overrides': {
         'signal_takeaway_module': 'standard',
     },
+    'committee': {
+        'enabled': True,
+        'economy_model': 'economy',
+        'deep_model': 'deep',
+        'pm_low_confidence_threshold': 0.55,
+        'max_summary_sentences_per_role': 2,
+        'max_summary_sentences_for_pm': 3,
+    },
     'ensemble': {
         'enabled': True,
         'trigger_range': [25, 75],
@@ -85,6 +93,16 @@ class EnsembleConfig:
     max_daily_ensemble: int
 
 
+@dataclass(frozen=True)
+class CommitteeConfig:
+    enabled: bool
+    economy_model: str
+    deep_model: str
+    pm_low_confidence_threshold: float
+    max_summary_sentences_per_role: int
+    max_summary_sentences_for_pm: int
+
+
 def resolve_module_batch_size(
     module_name: str,
     path: str = 'config/models.yaml',
@@ -149,10 +167,17 @@ def load_model_profile(path: str = 'config/models.yaml', *, profile_name: str | 
     profiles = config.get('profiles', {})
     default_profile_name = str(config.get('default_profile', 'economy'))
     requested_profile_name = profile_name or os.getenv('OPENAI_MODEL_PROFILE', '').strip() or default_profile_name
-    raw_profile = profiles.get(requested_profile_name) or profiles.get(default_profile_name) or next(iter(profiles.values()), {})
+    resolved_profile_name = requested_profile_name
+    raw_profile = profiles.get(requested_profile_name)
+    if raw_profile is None:
+        raw_profile = profiles.get(default_profile_name)
+        if raw_profile is not None:
+            resolved_profile_name = default_profile_name
+        else:
+            resolved_profile_name, raw_profile = next(iter(profiles.items()), (default_profile_name, {}))
 
     profile = ModelProfile(
-        name=requested_profile_name if requested_profile_name in profiles else default_profile_name,
+        name=resolved_profile_name,
         model=str(raw_profile.get('model', 'gpt-5.4-mini')),
         prompt_version=str(raw_profile.get('prompt_version', 'research_v1')),
         temperature=_coerce_temperature(
@@ -221,6 +246,41 @@ def load_ensemble_config(path: str = 'config/models.yaml') -> EnsembleConfig:
     )
 
 
+def load_committee_config(path: str = 'config/models.yaml') -> CommitteeConfig:
+    config = _load_model_config(path)
+    committee = config.get('committee', {}) or {}
+    profiles = config.get('profiles', {}) or {}
+
+    economy_model = str(committee.get('economy_model', 'economy')).strip() or 'economy'
+    if economy_model not in profiles:
+        raise ValueError(f'committee.economy_model must reference a configured profile: {economy_model}')
+
+    deep_model = str(committee.get('deep_model', 'deep')).strip() or 'deep'
+    if deep_model not in profiles:
+        raise ValueError(f'committee.deep_model must reference a configured profile: {deep_model}')
+
+    pm_low_confidence_threshold = _coerce_committee_threshold(
+        committee.get('pm_low_confidence_threshold', 0.55)
+    )
+    max_summary_sentences_per_role = _coerce_positive_int(
+        committee.get('max_summary_sentences_per_role', 2),
+        field_name='committee.max_summary_sentences_per_role',
+    )
+    max_summary_sentences_for_pm = _coerce_positive_int(
+        committee.get('max_summary_sentences_for_pm', 3),
+        field_name='committee.max_summary_sentences_for_pm',
+    )
+
+    return CommitteeConfig(
+        enabled=bool(committee.get('enabled', True)),
+        economy_model=economy_model,
+        deep_model=deep_model,
+        pm_low_confidence_threshold=pm_low_confidence_threshold,
+        max_summary_sentences_per_role=max_summary_sentences_per_role,
+        max_summary_sentences_for_pm=max_summary_sentences_for_pm,
+    )
+
+
 def safe_input_token_budget(profile: ModelProfile) -> int:
     usable_window = int(profile.context_window * 0.8)
     return max(1024, usable_window - profile.max_output_tokens)
@@ -258,3 +318,32 @@ def _coerce_temperature(value: Any, *, default: float | None) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return default
+
+
+def _coerce_committee_threshold(value: Any) -> float:
+    if isinstance(value, bool):
+        raise ValueError('committee.pm_low_confidence_threshold must be a number between 0 and 1')
+    try:
+        threshold = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError('committee.pm_low_confidence_threshold must be a number between 0 and 1') from exc
+    if threshold < 0.0 or threshold > 1.0:
+        raise ValueError('committee.pm_low_confidence_threshold must be between 0 and 1')
+    return threshold
+
+
+def _coerce_positive_int(value: Any, *, field_name: str) -> int:
+    if isinstance(value, bool):
+        raise ValueError(f'{field_name} must be a positive integer')
+    if isinstance(value, int):
+        result = value
+    elif isinstance(value, str):
+        stripped = value.strip()
+        if not stripped or not stripped.isdigit():
+            raise ValueError(f'{field_name} must be a positive integer')
+        result = int(stripped)
+    else:
+        raise ValueError(f'{field_name} must be a positive integer')
+    if result <= 0:
+        raise ValueError(f'{field_name} must be a positive integer')
+    return result

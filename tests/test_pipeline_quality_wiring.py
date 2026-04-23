@@ -6,8 +6,10 @@ from datetime import date
 from unittest.mock import patch
 
 from src.analyzer.ensemble import EnsembleResult
-from src.pipeline import run_pipeline
+from src.analyzer.committee import default_committee_analysis
+from src.pipeline import _run_committee_flow, run_pipeline
 from src.types import CollectedTickerData, MarketRegime, TickerAnalysis, TickerDecision, WatchlistItem
+from src.utils.model_config import CommitteeConfig
 
 
 def _analysis(ticker: str) -> TickerAnalysis:
@@ -125,6 +127,161 @@ class PipelineQualityWiringTests(unittest.TestCase):
 
         self.assertEqual(captured["analysis_consensus_by_ticker"], consensus_by_ticker)
         self.assertEqual(captured["quality_summary_by_ticker"], quality_summary_by_ticker)
+
+    def test_run_pipeline_attaches_committee_analysis_before_serialization(self) -> None:
+        watchlist = [WatchlistItem(ticker="AAPL", name="Apple"), WatchlistItem(ticker="MSFT", name="Microsoft")]
+        collected = {
+            "AAPL": CollectedTickerData(
+                ticker="AAPL",
+                name="Apple",
+                sector="Technology",
+                price=100.0,
+                change_percent=1.0,
+                currency="USD",
+                market_cap="1T",
+                pe_ratio="20",
+                summary_note="",
+            ),
+            "MSFT": CollectedTickerData(
+                ticker="MSFT",
+                name="Microsoft",
+                sector="Technology",
+                price=200.0,
+                change_percent=1.0,
+                currency="USD",
+                market_cap="2T",
+                pe_ratio="30",
+                summary_note="",
+            ),
+        }
+        analyses = [_analysis("AAPL"), _analysis("MSFT")]
+        ensemble_result = EnsembleResult(
+            analyses=analyses,
+            economy_analyses_by_ticker={"AAPL": _analysis("AAPL"), "MSFT": _analysis("MSFT")},
+            deep_analyses_by_ticker={},
+            consensus_by_ticker={},
+            quality_summary_by_ticker={},
+            portfolio_result={"portfolio_risk": {}},
+            diagnostics={},
+            final_decisions=[_decision("AAPL"), _decision("MSFT")],
+        )
+        captured: dict[str, object] = {}
+
+        def _capture_generate_decisions(*args, **kwargs):
+            captured["decision_analyses"] = list(args[0])
+            return [_decision("AAPL"), _decision("MSFT")]
+
+        def _capture_write_outputs(analyses_arg, *args, **kwargs):
+            captured["output_analyses"] = list(analyses_arg)
+            return {}
+
+        committee_config = CommitteeConfig(
+            enabled=True,
+            economy_model="economy",
+            deep_model="deep",
+            pm_low_confidence_threshold=0.55,
+            max_summary_sentences_per_role=2,
+            max_summary_sentences_for_pm=3,
+        )
+
+        def _committee_runner(analysis, *, committee_config=None, path="config/models.yaml", run_role=None):
+            if analysis.ticker == "AAPL":
+                return {
+                    "status": "deep_reviewed",
+                    "agreement_status": "aligned",
+                    "deep_review_triggered": True,
+                    "deep_review_reasons": ["pm_low_confidence"],
+                    "roles": {"pm": {"role": "pm", "round": "deep", "profile": "deep", "stance": "buy", "action": "buy", "confidence": 0.42, "strong_objection": False, "summary": "pm"}},
+                }
+            raise RuntimeError("committee unavailable")
+
+        with ExitStack() as stack:
+            stack.enter_context(patch("src.pipeline.load_dotenv"))
+            stack.enter_context(patch("src.pipeline.start_pipeline_logging"))
+            stack.enter_context(patch("src.pipeline.record_pipeline_event"))
+            stack.enter_context(patch("src.pipeline.finalize_pipeline_logging"))
+            stack.enter_context(patch("src.pipeline.load_watchlist", return_value=watchlist))
+            stack.enter_context(patch("src.pipeline.load_portfolio", return_value=[]))
+            mock_datastore_factory = stack.enter_context(patch("src.pipeline.get_datastore"))
+            stack.enter_context(
+                patch("src.pipeline._collect_market_context", return_value=(collected, date(2026, 4, 23), [], [], {}))
+            )
+            stack.enter_context(patch("src.pipeline.collect_news_for_watchlist", return_value={}))
+            stack.enter_context(patch("src.pipeline.calculate_portfolio_summary", return_value=None))
+            stack.enter_context(
+                patch("src.pipeline.attach_portfolio_macro_sensitivity", side_effect=lambda macro, *_args: macro)
+            )
+            stack.enter_context(patch("src.pipeline.load_peer_candidates", return_value={}))
+            stack.enter_context(patch("src.pipeline.detect_market_regime", return_value=MarketRegime()))
+            mock_build_ensemble = stack.enter_context(patch("src.pipeline._build_analysis_ensemble"))
+            stack.enter_context(patch("src.pipeline.persist_peer_selections"))
+            stack.enter_context(patch("src.pipeline._persist_routing_log"))
+            stack.enter_context(patch("src.pipeline.write_outputs", side_effect=_capture_write_outputs))
+            stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
+            stack.enter_context(patch("src.pipeline.write_ab_test_results"))
+            stack.enter_context(patch("src.pipeline._run_sector_scan"))
+            stack.enter_context(patch("src.pipeline.send_daily_summary"))
+            stack.enter_context(patch("src.pipeline.evaluate_alert_rules", return_value=[]))
+            stack.enter_context(patch("src.pipeline.send_signal_alerts"))
+            stack.enter_context(patch("src.pipeline.write_analysis_quality_output"))
+            stack.enter_context(patch("src.pipeline.write_cost_log_output"))
+            stack.enter_context(patch("src.pipeline.write_routing_outcome_output"))
+            stack.enter_context(patch("src.pipeline.write_api_status_outputs"))
+            stack.enter_context(patch("src.pipeline._write_validation_warnings_json"))
+            stack.enter_context(patch("src.pipeline.generate_decisions", side_effect=_capture_generate_decisions))
+            stack.enter_context(
+                patch("src.pipeline.apply_consensus_to_decisions", side_effect=lambda decisions, _consensus: decisions)
+            )
+            stack.enter_context(patch("src.pipeline.load_committee_config", return_value=committee_config))
+            stack.enter_context(patch("src.pipeline.run_committee_analysis", side_effect=_committee_runner))
+            datastore = mock_datastore_factory.return_value
+            datastore.load_recent_signals_data.return_value = []
+            datastore.load_signal_stats_data.return_value = {}
+            datastore.update_signal_returns.return_value = 0
+            datastore.record_signals.return_value = None
+            datastore.record_analysis_run.return_value = None
+            mock_build_ensemble.return_value.analyze_with_consensus.return_value = ensemble_result
+
+            run_pipeline(run_date=date(2026, 4, 23))
+
+        committee_aapl = next(item for item in captured["output_analyses"] if item.ticker == "AAPL")
+        committee_msft = next(item for item in captured["output_analyses"] if item.ticker == "MSFT")
+        self.assertEqual(committee_aapl.committee_analysis["status"], "deep_reviewed")
+        self.assertEqual(committee_msft.committee_analysis["status"], "economy_only")
+        self.assertEqual(committee_msft.committee_analysis["roles"], {})
+        self.assertEqual(captured["decision_analyses"][0].committee_analysis["status"], "deep_reviewed")
+        self.assertEqual(captured["decision_analyses"][1].committee_analysis["status"], "economy_only")
+
+    def test_run_committee_flow_falls_back_on_malformed_payload(self) -> None:
+        analysis = _analysis("AAPL")
+
+        with ExitStack() as stack:
+            stack.enter_context(patch("src.pipeline.load_committee_config", return_value=CommitteeConfig(
+                enabled=True,
+                economy_model="economy",
+                deep_model="deep",
+                pm_low_confidence_threshold=0.55,
+                max_summary_sentences_per_role=2,
+                max_summary_sentences_for_pm=3,
+            )))
+            stack.enter_context(patch("src.pipeline.record_pipeline_event"))
+            stack.enter_context(
+                patch(
+                    "src.pipeline.run_committee_analysis",
+                    return_value={"status": "deep_reviewed", "agreement_status": "aligned"},
+                )
+            )
+
+            result = _run_committee_flow([analysis])
+
+        self.assertEqual(result["AAPL"], default_committee_analysis())
+
+    def test_run_committee_flow_skips_empty_inputs_before_config_load(self) -> None:
+        with patch("src.pipeline.load_committee_config") as load_committee_config:
+            result = _run_committee_flow([])
+
+        self.assertEqual(result, {})
+        load_committee_config.assert_not_called()
 
 
 if __name__ == "__main__":

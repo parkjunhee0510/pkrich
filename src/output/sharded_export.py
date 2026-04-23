@@ -44,6 +44,7 @@ _SUMMARY_KEYS = (
     "peer_rank",
     "decision",
     "analysis_consensus",
+    "committee_analysis",
 )
 
 

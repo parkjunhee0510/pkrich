@@ -1,0 +1,65 @@
+<h2>Dashboard UX upgrade direction</h2>
+<p class="subtitle">Which first-screen experience should the dashboard optimize for?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Command Center</div>
+        <div class="mockup-body">
+          <div class="mock-nav">Market regime | Daily change | Alerts | Run status</div>
+          <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:12px;margin-top:12px">
+            <div class="placeholder" style="height:150px">Top 3 decisions with why-now reasons</div>
+            <div class="placeholder" style="height:150px">Risk, earnings, and catalyst queue</div>
+          </div>
+          <div class="placeholder" style="height:74px;margin-top:12px">Watchlist starts below the decision summary</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Command Center</h3>
+      <p>Best when you want the first viewport to answer: what should I look at today?</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Dense Watchlist Workbench</div>
+        <div class="mockup-body">
+          <div class="mock-nav">Search | Filters | Sort | Density | Account size</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px">
+            <div class="placeholder" style="height:130px">Ticker card</div>
+            <div class="placeholder" style="height:130px">Ticker card</div>
+            <div class="placeholder" style="height:130px">Ticker card</div>
+          </div>
+          <div class="placeholder" style="height:92px;margin-top:12px">Committee, sizing, and action details stay compact</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Dense Workbench</h3>
+      <p>Best when you scan many tickers and want less page chrome, more comparable cards.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">C. Decision Review Flow</div>
+        <div class="mockup-body">
+          <div class="mock-nav">Inbox: changed decisions | conflicts | stale data</div>
+          <div style="display:grid;grid-template-columns:.8fr 1.2fr;gap:12px;margin-top:12px">
+            <div class="placeholder" style="height:170px">Review queue</div>
+            <div class="placeholder" style="height:170px">Selected ticker: decision, committee, evidence</div>
+          </div>
+          <div class="placeholder" style="height:52px;margin-top:12px">Mark reviewed / open detail / compare yesterday</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Review Flow</h3>
+      <p>Best when you want the dashboard to guide a daily check process from exception to action.</p>
+    </div>
+  </div>
+</div>

@@ -3,6 +3,13 @@ module_profile_overrides:
   signal_takeaway_module: standard
 module_batch_size_overrides:
   signal_takeaway_module: 3
+committee:
+  enabled: true
+  economy_model: economy
+  deep_model: deep
+  pm_low_confidence_threshold: 0.55
+  max_summary_sentences_per_role: 2
+  max_summary_sentences_for_pm: 3
 ensemble:
   enabled: true
   trigger_range: [25, 75]

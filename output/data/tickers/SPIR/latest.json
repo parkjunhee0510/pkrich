@@ -6,13 +6,13 @@
     "ticker": "SPIR",
     "name": "Spire Global, Inc.",
     "date": "2026-04-22",
-    "summary": "현재 주가는 18.27달러로 30일간 +42.51% 상승했고, SMA50·SMA200 대비 각각 +42.91%·+68.64%로 강한 상승 추세입니다. 다음 촉매는 2026-05-13 실적 발표(D-20)이며, 변동성이 큰 소형주 특성상 실적 전까지 수급과 옵션 흐름이 방향성을 좌우할 수 있습니다.",
+    "summary": "현재 주가는 18.27달러로 30일간 +42.51% 상승했고, SMA50 대비 +42.91%, SMA200 대비 +68.64%로 기술적 추세는 강하지만 MACD는 bearish이며 최근 뉴스 톤은 bearish입니다. 다음 촉매는 2026-05-13 실적 발표이며, 실적과 거래량이 붙을 경우 상단 저항 재시험 가능성이 있습니다.",
     "key_news": [
-      "SEC에 8-K 중요 사항 보고서 제출",
+      "SEC에 8-K 주요 사항 공시 제출",
       "SEC에 10-K 연간 보고서 제출",
-      "지속적 손실 가이던스로 주가 급락 후 평가",
-      "2026년 1분기 실적 가이던스 업데이트",
-      "주가 정보와 뉴스 요약 노출"
+      "ERCOT AI 확장 속 계속된 손실 가이던스",
+      "애널리스트 수정과 새 가이던스 후 서사가 변화",
+      "2026년 1분기 실적 가이던스 업데이트"
     ],
     "news_references": [
       {
@@ -28,16 +28,16 @@
         "link": "https://www.sec.gov/Archives/edgar/data/1816017/000119312526151231/spir-20260408.htm"
       },
       {
-        "title": "Spire Global, Inc. (SPIR) Stock Price, News, Quote & History - Yahoo Finance",
-        "source": "Yahoo Finance",
-        "published_at": "Mon, 20 Apr 2026 23:55:40 GMT",
-        "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE5Qb3N2QkZ6SDBxb3BROThCdkVPUFA3bWRXTHhWc0I0SlZ5WTA4d0N5c0dPOWZkSXhySFRDMGtReDVlWXN4WTBqSnozcnplUQ?oc=5"
-      },
-      {
         "title": "Spire Global (SPIR) Is Down 29.5% After Guiding To Ongoing Losses Amid ERCOT AI Expansion – Has The Bull Case Changed? - Yahoo Finance",
         "source": "Yahoo Finance",
         "published_at": "Thu, 18 Dec 2025 08:00:00 GMT",
         "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9vNGcwY24wbUExS2VYZ1Eta3RPN245Zi14Yi13UXNuTlpaaTEwYWZVYUVuSDhXdlBwa05BRHJjUEhPTExHX1RYdUVocW8tT2FvS2pUUEdEMDdVTmM3bWtKVVo2YkJnWjdzTFpSc3dxOW5oek94NWdXTXJTVQ?oc=5"
+      },
+      {
+        "title": "Why The Narrative Around Spire Global Is Shifting After Analyst Revisions And New Guidance - Yahoo Finance",
+        "source": "Yahoo Finance",
+        "published_at": "Sat, 20 Dec 2025 08:00:00 GMT",
+        "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQb012SmVQZHJWS3VQeXVxQTZhREtVdkJDNU5EQlhPUUVMYjdRZ1JGUEtyc3M1NXQ0aklwVE9xRWNXWk1HX01ubEpSQW5KaFNzOHR1RFM3LVNDN0I2RHNpcjBTbUFENXBrUUdGSENKdGtoNW5hT0RjSFRidGpMUnVVUDRYRnhoUQ?oc=5"
       },
       {
         "title": "Spire Global (NYSE:SPIR) Updates Q1 2026 Earnings Guidance - MarketBeat",
@@ -48,18 +48,18 @@
     ],
     "financial_highlights": [
       "PER 12.3x, peer PER 상위 20%",
-      "RS vs Sector ETF +26.40%",
-      "Forward EPS -0.57, TTM EPS 1.49",
-      "Short Float 11.66% / 5.00일",
-      "52W 고점 대비 69% 위치"
+      "RS vs Sector ETF: +26.40%",
+      "RSI(14): 55.8 (neutral)",
+      "ATR(14): 2.61, RVOL 1.66x",
+      "Analyst: Strong Buy (5명), target 17.00 USD"
     ],
     "risks_or_watchpoints": [
-      "2026-05-13 실적 발표 전후에 18.27달러 지지 여부와 22.19달러(1.5×ATR) 돌파 여부 점검",
-      "RSI(14) 55.8과 MACD 2.00/2.21( bearish )가 혼재되어 있어 2026-05-15 옵션 만기까지 방향성 불안정 리스크 점검",
-      "2026-05-15 만기 전까지 주가가 12.78달러(SMA50) 아래로 밀리면 추세 훼손 여부 점검",
-      "PUT $13, PUT $27 비정상 거래가 2026-05-15 만기까지 계속 늘면 하방 헤지 수요 증가로 점검"
+      "2026-05-13 실적 발표 전까지 주가가 12.78 USD(SMA50) 아래로 하락하면 약세 시나리오 확인",
+      "현재가 18.27 USD가 15.66 USD(눌림 시 진입가) 아래로 내려가면 추가 조정 위험",
+      "2026-05-15 만기 옵션에서 PUT $15의 OI 대비 거래량 비중이 46%로 나타난 이상 PUT 흐름이 확대되면 하방 압력 가능",
+      "RSI(14) 55.8이 50 아래로 하락하고 동시에 MACD 2.00/2.21의 bearish 신호가 지속되면 단기 모멘텀 둔화"
     ],
-    "signal_or_takeaway": "중립 경계 — 2026-05-13 실적 발표 D-20과 변동성 확대 | 진입 트리거 18.27 지지 확인 | 목표 22.19/23.59달러 | 손절 12.78달러",
+    "signal_or_takeaway": "중립 경계 — 실적 직전 변동성과 MACD 약세 신호 지속 | 진입 트리거 18.27 지지 확인 | 목표 22.19/23.59달러 | 손절 12.78달러",
     "data_snapshot": {
       "Price": "18.27 USD",
       "Daily Change": "-2.51%",
@@ -192,8 +192,8 @@
     ],
     "news_tone": {
       "label": "bearish",
-      "confidence": 4,
-      "reasoning": "지속적 손실과 가이던스 악화가 핵심으로 언급되어 전반적인 톤이 약세입니다."
+      "confidence": 1,
+      "reasoning": "계속된 손실 가이던스와 서사 변화 보도가 부담으로 작용해 톤은 약세입니다."
     },
     "trade_frame": {
       "entry_price": "현재가 18.27 또는 눌림 시 15.66 USD",
@@ -220,6 +220,13 @@
     },
     "signal_history": [
       {
+        "date": "2026-04-22",
+        "direction": "bear",
+        "catalyst": "실적",
+        "return_5d": "N/A",
+        "note": "18.27 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
+      {
         "date": "2026-04-21",
         "direction": "bull",
         "catalyst": "실적",
@@ -244,15 +251,8 @@
         "date": "2026-04-15",
         "direction": "bull",
         "catalyst": "실적",
-        "return_5d": "N/A",
+        "return_5d": "-11.05%",
         "note": "20.54 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-14",
-        "direction": "bull",
-        "catalyst": "실적",
-        "return_5d": "-9.64%",
-        "note": "실적 전까지 18.42-22.57 USD의 고변동 박스권 등락이 예상됩니다."
       }
     ],
     "sector_comparison": {
@@ -294,6 +294,76 @@
       "third_review_completed": false,
       "final_consensus": "single"
     },
+    "committee_analysis": {
+      "status": "deep_reviewed",
+      "agreement_status": "mixed",
+      "deep_review_triggered": true,
+      "deep_review_reasons": [
+        "pm_low_confidence"
+      ],
+      "roles": {
+        "growth_analyst": {
+          "role": "growth_analyst",
+          "round": "economy",
+          "profile": "economy",
+          "stance": "watch",
+          "action": "watch",
+          "confidence": 0.0,
+          "strong_objection": false,
+          "summary": "",
+          "valid": false,
+          "invalid_reason": "missing_summary"
+        },
+        "value_skeptic": {
+          "role": "value_skeptic",
+          "round": "economy",
+          "profile": "economy",
+          "stance": "watch",
+          "action": "watch",
+          "confidence": 0.0,
+          "strong_objection": false,
+          "summary": "PER 12.3x는 겉보기엔 무난하지만 EPS 성장률 -22% YoY와 forward EPS -0.57로 이익의 질과 지속성이 약해, 현재 주가 18.27에서 상방보다 하방 비대칭이 더 큽니다. 다만 강한 상대강도와 최근 모멘텀은 유지되고 있어, 실적(2026-05-13) 전까지는 추세 훼손 여부를 확인하는 관망이 적절합니다.",
+          "valid": true,
+          "invalid_reason": ""
+        },
+        "risk_manager": {
+          "role": "risk_manager",
+          "round": "deep",
+          "profile": "deep",
+          "stance": "watch",
+          "action": "watch",
+          "confidence": 0.0,
+          "strong_objection": false,
+          "summary": "기술적으로는 30일 급등 후 변동성이 커졌지만, 50일선 12.78과 200일선 10.83 위에 있어 추세가 아직 완전히 깨지진 않았습니다. 다만 2026-05-13 실적 전까지 12.78 아래로 밀리면 약세 시나리오가 유효하고, EPS 둔화와 forward EPS -0.57, 최근 bearish 뉴스 톤은 명확한 반대 요인입니다.",
+          "valid": true,
+          "invalid_reason": ""
+        },
+        "macro_strategist": {
+          "role": "macro_strategist",
+          "round": "deep",
+          "profile": "deep",
+          "stance": "reduce",
+          "action": "avoid",
+          "confidence": 0.0,
+          "strong_objection": false,
+          "summary": "금리와 유동성에 민감한 중소형 산업재로, 최근 급등 이후 변동성이 확대된 가운데 실적 전후로 리스크가 커지는 국면입니다. 매크로 측면에서 고금리와 위험자산 압력이 이어지면 멀티플 방어가 약해질 수 있어 비중 축소가 적절합니다.",
+          "valid": true,
+          "invalid_reason": ""
+        },
+        "pm": {
+          "role": "pm",
+          "round": "deep",
+          "profile": "deep",
+          "stance": "watch",
+          "action": "watch",
+          "confidence": 0.84,
+          "strong_objection": false,
+          "summary": "기술적 강세와 상대강도는 유지되지만, 최근 급등 이후 변동성이 매우 크고 뉴스 톤이 약세이며 EPS/forward EPS 악화가 부담입니다. 밸류에이션은 과도하지 않지만 애널리스트 목표가가 현 주가보다 낮고, 2026-05-13 실적 전까지는 방향성 확인 전 관망이 적절합니다. 12.78 아래 이탈 시 약세 시나리오가 더 유효해질 수 있어 추적 모니터링을 권합니다.",
+          "valid": true,
+          "invalid_reason": ""
+        }
+      }
+    },
     "period_changes": {
       "7d": "-11.05%",
       "30d": "+42.51%"
@@ -328,7 +398,7 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 54,
+      "conviction": 50,
       "reason": "섹터 대비 +26.4% / SMA50·SMA200 위 / 상대 거래량 1.66배 / 실적 D-20 / 하드 촉매 2026-03-19 / 최근 시그널 승률 0% (0/3)",
       "valid_until": "2026-05-13",
       "factors": {

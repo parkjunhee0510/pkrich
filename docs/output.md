@@ -1,5 +1,11 @@
 # Output
 
+## Codex Routing
+
+- Read when the task changes exported markdown, JSON schema, frontend payloads, or output stability rules.
+- Pair with `docs/datastore.md` only if output depends on stored shape or backfilled history.
+- Then inspect `src/output/` and `web/src/` only when the frontend consumes changed data.
+
 ## Scope
 
 The output layer turns finalized pipeline results into stable artifacts.
@@ -21,8 +27,10 @@ The output layer turns finalized pipeline results into stable artifacts.
 * sector explorer payloads
 
 Per-ticker payloads now include:
-* `factor_reasoning` — surfaced from `decision/decision_layer.py` and `types.py`, written by `json_export.py`
-* `ticker_macro_sensitivity` — computed for all collected tickers (not portfolio-only)
+* `factor_reasoning` surfaced from `decision/decision_layer.py` and `types.py`, written by `json_export.py`
+* `ticker_macro_sensitivity` computed for all collected tickers, not portfolio-only
+* `committee_analysis` for always-visible committee debate summaries plus PM conclusions
+* the web dashboard and ticker detail UI consume `committee_analysis` as a presentation-layer debate record, separate from the official `decision`
 
 ### Operational Reports
 
@@ -50,3 +58,4 @@ Per-ticker payloads now include:
 * Output formatting must consume finalized data only
 * Optional delivery paths such as Slack must not become the source of truth
 * Web payload shape should evolve additively unless a planned schema migration is documented
+* Committee output is presentation data and must not override rule-based `buy/watch/avoid`

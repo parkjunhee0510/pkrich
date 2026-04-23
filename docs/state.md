@@ -1,5 +1,11 @@
 # State Management
 
+## Codex Routing
+
+- Read when the task changes signal tracking, portfolio-derived state, or reproducible derived data across runs.
+- Pair with `docs/datastore.md` when persistence and state updates move together.
+- Then inspect `src/utils/signal_tracker.py` and related stateful utilities.
+
 ## Purpose
 
 Maintain reproducible derived state across pipeline runs.

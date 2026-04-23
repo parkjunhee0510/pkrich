@@ -343,6 +343,7 @@ def _serialize_analysis(
         "peer_rank": getattr(analysis, "peer_rank", {}),
         "valuation_score": getattr(analysis, "valuation_score", {}),
         "analysis_consensus": getattr(analysis, "analysis_consensus", {}),
+        "committee_analysis": _serialize_committee_analysis(getattr(analysis, "committee_analysis", {})),
         "period_changes": period_changes,
         "sec_filing_tags": ticker_derivations["sec_filing_tags"],
         "sec_filings": ticker_derivations["sec_filings"],
@@ -392,6 +393,12 @@ def _serialize_decision(
         result["raw_conviction"] = getattr(decision, "raw_conviction", decision.conviction)
         result["confidence_meta"] = confidence_meta
     return result
+
+
+def _serialize_committee_analysis(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    return dict(value)
 
 
 def _snapshot_currency(snapshot: dict[str, str]) -> str:

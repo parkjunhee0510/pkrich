@@ -4,6 +4,7 @@ from __future__ import annotations
 import unittest
 from dataclasses import field
 from datetime import date
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from src.decision.decision_layer import generate_decisions, _decide_ticker, _load_weights
@@ -54,6 +55,17 @@ def _make_analysis(**overrides: object) -> TickerAnalysis:
     }
     defaults.update(overrides)
     return TickerAnalysis(**defaults)  # type: ignore[arg-type]
+
+
+def _fake_shadow_meta() -> SimpleNamespace:
+    payload = {
+        "data_quality": 0.25,
+        "evidence_coverage": 0.25,
+        "evidence_consistency": 0.25,
+        "model_agreement": 0.25,
+        "confidence_gate": 0.25,
+    }
+    return SimpleNamespace(confidence_gate=0.25, to_dict=lambda: payload)
 
 
 class TestGenerateDecisions(unittest.TestCase):
@@ -125,7 +137,7 @@ class TestDecideTicker(unittest.TestCase):
             decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
         self.assertGreaterEqual(decision.conviction, 0)
         self.assertLessEqual(decision.conviction, 100)
-        self.assertEqual(decision.raw_conviction, decision.conviction)
+        self.assertGreaterEqual(decision.raw_conviction, 0)
 
     def test_shadow_mode_populates_confidence_meta(self) -> None:
         analysis = _make_analysis()
@@ -133,15 +145,91 @@ class TestDecideTicker(unittest.TestCase):
             decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
 
         self.assertIn("confidence_gate", decision.confidence_meta)
-        self.assertEqual(decision.raw_conviction, decision.conviction)
+        self.assertLessEqual(decision.conviction, decision.raw_conviction)
 
-    def test_shadow_mode_off_leaves_confidence_meta_empty(self) -> None:
+    def test_shadow_mode_off_restores_raw_behavior_for_compatibility(self) -> None:
         analysis = _make_analysis()
-        with patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "0"}):
+        mock_meta = patch("src.decision.decision_layer.evaluate_confidence_meta")
+        mock_final = patch("src.decision.decision_layer.calculate_final_conviction")
+        with (
+            patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "0"}),
+            mock_meta as evaluate_meta,
+            mock_final as calculate_final,
+        ):
             decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
 
+        evaluate_meta.assert_not_called()
+        calculate_final.assert_not_called()
         self.assertEqual(decision.confidence_meta, {})
-        self.assertEqual(decision.raw_conviction, decision.conviction)
+        self.assertEqual(decision.conviction, decision.raw_conviction)
+        self.assertNotIn("\uc2e0\ub8b0\ub3c4 \ubcf4\uc815", decision.reason)
+
+    def test_final_conviction_becomes_ticker_conviction(self) -> None:
+        analysis = _make_analysis()
+        with (
+            patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}),
+            patch("src.decision.decision_layer.evaluate_confidence_meta", return_value=_fake_shadow_meta()),
+            patch("src.decision.scorer.ConvictionScorer.calculate", return_value=84),
+            patch("src.decision.decision_layer.calculate_final_conviction", return_value=52),
+        ):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        self.assertEqual(decision.raw_conviction, 84)
+        self.assertEqual(decision.conviction, 52)
+
+    def test_final_conviction_controls_action_thresholds(self) -> None:
+        analysis = _make_analysis()
+        with (
+            patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}),
+            patch("src.decision.decision_layer.evaluate_confidence_meta", return_value=_fake_shadow_meta()),
+            patch("src.decision.scorer.ConvictionScorer.calculate", return_value=84),
+            patch("src.decision.decision_layer.calculate_final_conviction", return_value=52),
+        ):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        self.assertEqual(decision.action, "watch")
+
+    def test_reason_mentions_confidence_adjustment(self) -> None:
+        analysis = _make_analysis()
+        with (
+            patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}),
+            patch("src.decision.decision_layer.evaluate_confidence_meta", return_value=_fake_shadow_meta()),
+            patch("src.decision.scorer.ConvictionScorer.calculate", return_value=84),
+            patch("src.decision.decision_layer.calculate_final_conviction", return_value=52),
+        ):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        self.assertIn(
+            "\ub370\uc774\ud130 \ud488\uc9c8\uacfc \ubaa8\ub378 \ud310\ub2e8 \ucc28\uc774\ub97c \ubc18\uc601\ud574",
+            decision.reason,
+        )
+        self.assertTrue("84" in decision.reason and "52" in decision.reason, decision.reason)
+
+    def test_force_raw_env_restores_old_behavior(self) -> None:
+        analysis = _make_analysis()
+        mock_meta = patch("src.decision.decision_layer.evaluate_confidence_meta")
+        mock_final = patch("src.decision.decision_layer.calculate_final_conviction")
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "DECISION_CONFIDENCE_SHADOW_MODE": "1",
+                    "DECISION_CONFIDENCE_FORCE_RAW": "1",
+                },
+            ),
+            mock_meta as evaluate_meta,
+            patch("src.decision.scorer.ConvictionScorer.calculate", return_value=84),
+            mock_final as calculate_final,
+        ):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        evaluate_meta.assert_not_called()
+        calculate_final.assert_not_called()
+        self.assertEqual(decision.raw_conviction, 84)
+        self.assertEqual(decision.conviction, 84)
+        self.assertEqual(decision.action, "buy")
+        self.assertEqual(decision.confidence_meta, {})
+        self.assertNotIn("\uc2e0\ub8b0\ub3c4 \ubcf4\uc815", decision.reason)
 
     def test_action_is_valid(self) -> None:
         analysis = _make_analysis()
