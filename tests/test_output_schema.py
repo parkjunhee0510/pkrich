@@ -161,8 +161,26 @@ class OutputSchemaTests(unittest.TestCase):
                 )
             payload = json.loads((output_root / "data" / "dashboard_history.json").read_text(encoding="utf-8"))
 
+        pm_view = payload["days"][0]["pm_view"]
+        self.assertEqual(
+            set(pm_view.keys()),
+            {"as_of", "swap_candidates", "event_exposure_items", "today_priority_queue", "empty_states"},
+        )
+        self.assertEqual(pm_view["swap_candidates"][0]["held_ticker"], "AAPL")
+        self.assertEqual(pm_view["swap_candidates"][0]["candidate_ticker"], "MSFT")
+        self.assertEqual(pm_view["event_exposure_items"][0]["ticker"], "AAPL")
+        self.assertTrue(all(item["destination"] == "portfolio" for item in pm_view["today_priority_queue"]))
+        self.assertIn(
+            ("swap_review", "MSFT"),
+            {(item["priority_type"], item["related_ticker"]) for item in pm_view["today_priority_queue"]},
+        )
+        self.assertIn(
+            ("event_review", None),
+            {(item["priority_type"], item["related_ticker"]) for item in pm_view["today_priority_queue"]},
+        )
+
         expected = load_snapshot_fixture(_FIXTURE_DIR / "pm_view.shape.json")
-        self.assertEqual(normalize_json_shape(payload["days"][0]["pm_view"]), expected)
+        self.assertEqual(normalize_json_shape(pm_view), expected)
 
     def test_sharded_index_pm_view_matches_populated_snapshot_shape(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

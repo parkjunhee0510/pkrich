@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { EquityCurveChart } from '../components/EquityCurveChart'
 import { ErrorState } from '../components/ErrorState'
+import { PortfolioActionsReview } from '../components/PortfolioActionsReview'
 import { PortfolioRiskPanel } from '../components/PortfolioRiskPanel'
 import { TablePageSkeleton } from '../components/Skeleton'
 import { useDashboardData } from '../hooks/useDashboardData'
@@ -70,7 +71,7 @@ export function Portfolio() {
   const latestDay: DailyEntry =
     data && data.days.length > 0
       ? data.days[data.days.length - 1]
-      : { date: '', market_overview: [], tickers: [], portfolio_summary: null, portfolio_risk: null }
+      : { date: '', market_overview: [], tickers: [], portfolio_summary: null, portfolio_risk: null, pm_view: null }
   const portfolio = latestDay.portfolio_summary as PortfolioSummaryData | null | undefined
   const aggregatedDraft = useMemo(() => aggregateHoldings(draftHoldings), [draftHoldings])
   const sortedPositions = useMemo(
@@ -184,6 +185,8 @@ export function Portfolio() {
               </div>
 
               <EquityCurveChart days={data.days} />
+
+              <PortfolioActionsReview pmView={latestDay.pm_view} />
 
               <PortfolioRiskPanel risk={latestDay.portfolio_risk} />
 

@@ -31,6 +31,16 @@ Per-ticker payloads now include:
 * `ticker_macro_sensitivity` computed for all collected tickers, not portfolio-only
 * `committee_analysis` for always-visible committee debate summaries plus PM conclusions
 * the web dashboard and ticker detail UI consume `committee_analysis` as a presentation-layer debate record, separate from the official `decision`
+* `pm_view` on the latest index payload and each `dashboard_history.days[]` entry for additive PM review context on held names
+
+`pm_view` is a review-oriented payload for the web UI. It is additive and must not override the official rule-based `buy` / `watch` / `avoid` decision.
+
+Current `pm_view` fields:
+* `as_of`
+* `swap_candidates[]` with `held_ticker`, `candidate_ticker`, `swap_candidate_score`, `summary`, `reasons`, `overlap_context`, `review_points`
+* `event_exposure_items[]` with `ticker`, `event_risk_score`, `event_label`, `event_date`, `days_until`, `summary`, `reasons`, `review_points`
+* `today_priority_queue[]` with `priority_type`, `ticker`, `related_ticker`, `today_priority_score`, `summary`, `reasons`, `destination`
+* `empty_states` for empty-safe frontend rendering
 
 ### Operational Reports
 
@@ -59,3 +69,4 @@ Per-ticker payloads now include:
 * Optional delivery paths such as Slack must not become the source of truth
 * Web payload shape should evolve additively unless a planned schema migration is documented
 * Committee output is presentation data and must not override rule-based `buy/watch/avoid`
+* `pm_view` is presentation data for portfolio review surfaces and must not reinterpret or replace official `buy/watch/avoid`
