@@ -50,7 +50,11 @@ def _build_swap_candidates(
             continue
         peer_matches = [
             candidate for candidate in candidate_analyses
-            if _sector(candidate) and _sector(candidate) == held_sector and _decision_for(candidate, decision_map) is not None
+            if (
+                _sector(candidate)
+                and _sector(candidate) == held_sector
+                and _is_buy_candidate(candidate, decision_map)
+            )
         ]
         if not peer_matches:
             continue
@@ -235,6 +239,13 @@ def _swap_score(held: Any, candidate: Any, weights: dict[str, float], decision_m
     weight_pressure = round(weights.get(str(getattr(held, "ticker", "")), 0.0) * 100)
     action_penalty = 10 if str(getattr(held_decision, "action", "")).strip() != "buy" else 0
     return conviction_gap + weight_pressure + action_penalty
+
+
+def _is_buy_candidate(analysis: Any, decision_map: dict[str, Any]) -> bool:
+    decision = _decision_for(analysis, decision_map)
+    if decision is None:
+        return False
+    return str(getattr(decision, "action", "")).strip().lower() == "buy"
 
 
 def _risk_grade_bonus(risk_grade: str) -> int:

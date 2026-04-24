@@ -126,6 +126,20 @@ class PMViewTests(unittest.TestCase):
         self.assertNotIn('sell', queue_text)
         self.assertNotIn('rotate now', queue_text)
 
+    def test_build_pm_view_excludes_same_sector_watch_and_avoid_swap_candidates(self) -> None:
+        pm_view = build_pm_view(
+            [
+                _analysis('NVDA', sector='Technology', action='watch', conviction=58),
+                _analysis('AMD', sector='Technology', action='watch', conviction=91),
+                _analysis('INTC', sector='Technology', action='avoid', conviction=95),
+            ],
+            as_of='2026-04-24',
+            portfolio_summary=_portfolio_summary('NVDA'),
+            portfolio_risk={},
+        )
+
+        self.assertEqual(pm_view['swap_candidates'], [])
+
 
 if __name__ == '__main__':
     unittest.main()
