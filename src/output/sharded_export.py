@@ -80,6 +80,7 @@ def _write_index(
         "market_overview": latest_day.get("market_overview", []),
         "macro_context": latest_day.get("macro_context", {}),
         "market_regime": latest_day.get("market_regime", {}),
+        "pm_view": latest_day.get("pm_view", {}),
         "portfolio_summary": latest_day.get("portfolio_summary"),
         "portfolio_risk": latest_day.get("portfolio_risk", {}),
         "signal_stats": signal_stats or {},

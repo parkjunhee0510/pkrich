@@ -88,8 +88,8 @@ def _build_swap_candidates(
             ),
             "reasons": [
                 (
-                    f"{candidate_ticker} conviction is {int(getattr(candidate_decision, 'conviction', 0))}, "
-                    f"above {held_ticker} at {int(getattr(held_decision, 'conviction', 0))}."
+                    f"{candidate_ticker} conviction is {candidate_decision.conviction}, "
+                    f"above {held_ticker} at {held_decision.conviction}."
                 ),
                 f"Same sector match keeps the comparison explainable: {held_sector or 'N/A'}.",
                 (
@@ -123,7 +123,7 @@ def _build_event_exposure_items(
             continue
         event = _nearest_event(events)
         decision = _decision_for(analysis, decision_map)
-        conviction = int(getattr(decision, "conviction", 0)) if decision is not None else 0
+        conviction = decision.conviction if decision is not None else 0
         days_until = _days_until_value(event)
         weight = weights.get(str(getattr(analysis, "ticker", "")), 0.0)
         score = (
@@ -250,11 +250,11 @@ def _swap_score(
     candidate_decision = _decision_for(candidate, decision_map)
     if held_decision is None or candidate_decision is None:
         return 0
-    held_conviction = int(getattr(held_decision, "conviction", 0))
-    candidate_conviction = int(getattr(candidate_decision, "conviction", 0))
+    held_conviction = held_decision.conviction
+    candidate_conviction = candidate_decision.conviction
     conviction_gap = max(0, candidate_conviction - held_conviction)
     weight_pressure = round(weights.get(str(getattr(held, "ticker", "")), 0.0) * 100)
-    action_penalty = SWAP_ACTION_PENALTY if str(getattr(held_decision, "action", "")).strip() != "buy" else 0
+    action_penalty = SWAP_ACTION_PENALTY if held_decision.action != "buy" else 0
     return conviction_gap + weight_pressure + action_penalty
 
 
@@ -262,7 +262,7 @@ def _is_buy_candidate(analysis: Any, decision_map: Mapping[str, TickerDecision])
     decision = _decision_for(analysis, decision_map)
     if decision is None:
         return False
-    return str(getattr(decision, "action", "")).strip().lower() == "buy"
+    return decision.action == "buy"
 
 
 def _risk_grade_bonus(risk_grade: str) -> int:

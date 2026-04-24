@@ -1,0 +1,127 @@
+{
+  "__type__": "object",
+  "keys": {
+    "as_of": {
+      "__type__": "str"
+    },
+    "empty_states": {
+      "__type__": "object",
+      "keys": {
+        "event_exposure_items": {
+          "__type__": "str"
+        },
+        "swap_candidates": {
+          "__type__": "str"
+        },
+        "today_priority_queue": {
+          "__type__": "str"
+        }
+      }
+    },
+    "event_exposure_items": {
+      "__type__": "array",
+      "item": {
+        "__type__": "object",
+        "keys": {
+          "days_until": {
+            "__type__": "int"
+          },
+          "event_date": {
+            "__type__": "str"
+          },
+          "event_label": {
+            "__type__": "str"
+          },
+          "event_risk_score": {
+            "__type__": "int"
+          },
+          "reasons": {
+            "__type__": "array",
+            "item": {
+              "__type__": "str"
+            }
+          },
+          "review_points": {
+            "__type__": "array",
+            "item": {
+              "__type__": "str"
+            }
+          },
+          "summary": {
+            "__type__": "str"
+          },
+          "ticker": {
+            "__type__": "str"
+          }
+        }
+      }
+    },
+    "swap_candidates": {
+      "__type__": "array",
+      "item": {
+        "__type__": "object",
+        "keys": {
+          "candidate_ticker": {
+            "__type__": "str"
+          },
+          "held_ticker": {
+            "__type__": "str"
+          },
+          "overlap_context": {
+            "__type__": "str"
+          },
+          "reasons": {
+            "__type__": "array",
+            "item": {
+              "__type__": "str"
+            }
+          },
+          "review_points": {
+            "__type__": "array",
+            "item": {
+              "__type__": "str"
+            }
+          },
+          "summary": {
+            "__type__": "str"
+          },
+          "swap_candidate_score": {
+            "__type__": "int"
+          }
+        }
+      }
+    },
+    "today_priority_queue": {
+      "__type__": "array",
+      "item": {
+        "__type__": "object",
+        "keys": {
+          "destination": {
+            "__type__": "str"
+          },
+          "priority_type": {
+            "__type__": "str"
+          },
+          "reasons": {
+            "__type__": "array",
+            "item": {
+              "__type__": "str"
+            }
+          },
+          "related_ticker": {
+            "__type__": "null"
+          },
+          "summary": {
+            "__type__": "str"
+          },
+          "ticker": {
+            "__type__": "str"
+          },
+          "today_priority_score": {
+            "__type__": "int"
+          }
+        }
+      }
+    }
+  }
+}

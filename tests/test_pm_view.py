@@ -4,6 +4,7 @@ import unittest
 from types import SimpleNamespace
 
 from src.output.pm_view import build_pm_view
+from src.types import TickerDecision
 
 
 def _analysis(
@@ -28,11 +29,14 @@ def _portfolio_summary(*tickers: str) -> SimpleNamespace:
     )
 
 
-def _decision(action: str, conviction: int) -> SimpleNamespace:
-    return SimpleNamespace(
+def _decision(action: str, conviction: int) -> TickerDecision:
+    return TickerDecision(
+        ticker='',
         action=action,
         conviction=conviction,
         reason=f'{action} decision reason',
+        valid_until='2026-04-30',
+        factors={},
     )
 
 

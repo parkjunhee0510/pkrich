@@ -12,11 +12,69 @@ from src.output.api_status import build_api_status_payload
 from src.output.cost_log import write_cost_log_output
 from src.output.json_export import write_json_outputs
 from src.output.schema import SCHEMA_VERSION
-from src.types import TickerDecision, WatchlistItem
+from src.types import PortfolioPosition, PortfolioSummary, TickerAnalysis, TickerDecision, WatchlistItem
 from tests.helpers.output_snapshot import load_snapshot_fixture, normalize_json_shape
 from tests.test_output import _sample_analysis
 
 _FIXTURE_DIR = Path(__file__).parent / "fixtures" / "output_schemas"
+
+
+def _pm_schema_analyses() -> list[TickerAnalysis]:
+    held = _sample_analysis()
+    candidate = TickerAnalysis(
+        **{
+            **held.__dict__,
+            "ticker": "MSFT",
+            "name": "Microsoft Corp.",
+            "summary": "MSFT summary",
+            "signal_or_takeaway": "monitor",
+            "upcoming_events": [],
+        }
+    )
+    return [held, candidate]
+
+
+def _pm_schema_decisions() -> list[TickerDecision]:
+    return [
+        TickerDecision(
+            ticker="AAPL",
+            action="watch",
+            conviction=58,
+            reason="held under review",
+            valid_until="2026-04-15",
+            factors={},
+        ),
+        TickerDecision(
+            ticker="MSFT",
+            action="buy",
+            conviction=82,
+            reason="candidate buy",
+            valid_until="2026-04-15",
+            factors={},
+        ),
+    ]
+
+
+def _pm_schema_portfolio() -> PortfolioSummary:
+    return PortfolioSummary(
+        positions=[
+            PortfolioPosition(
+                ticker="AAPL",
+                shares=10,
+                avg_cost=90.0,
+                currency="USD",
+                market_price=100.0,
+                market_value=1000.0,
+                cost_basis=900.0,
+                unrealized_pnl=100.0,
+                unrealized_return_pct=11.11,
+            )
+        ],
+        total_market_value=1000.0,
+        total_cost_basis=900.0,
+        total_unrealized_pnl=100.0,
+        total_unrealized_return_pct=11.11,
+    )
 
 
 class OutputSchemaTests(unittest.TestCase):
@@ -87,6 +145,41 @@ class OutputSchemaTests(unittest.TestCase):
         self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
         expected = load_snapshot_fixture(_FIXTURE_DIR / "dashboard_with_confidence.shape.json")
         self.assertEqual(normalize_json_shape(payload), expected)
+
+    def test_dashboard_history_pm_view_matches_populated_snapshot_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "output"
+            with patch.dict("os.environ", {"EMIT_LEGACY_DASHBOARD": "0"}, clear=False):
+                write_json_outputs(
+                    _pm_schema_analyses(),
+                    date(2026, 4, 8),
+                    output_root=output_root,
+                    portfolio_summary=_pm_schema_portfolio(),
+                    portfolio_risk={"risk_grade": "C", "positions_by_weight": [{"ticker": "AAPL", "weight": 0.42}]},
+                    decisions=_pm_schema_decisions(),
+                )
+            payload = json.loads((output_root / "data" / "dashboard_history.json").read_text(encoding="utf-8"))
+
+        expected = load_snapshot_fixture(_FIXTURE_DIR / "pm_view.shape.json")
+        self.assertEqual(normalize_json_shape(payload["days"][0]["pm_view"]), expected)
+
+    def test_sharded_index_pm_view_matches_populated_snapshot_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir) / "data"
+            data_dir.mkdir(parents=True, exist_ok=True)
+            output_root = Path(temp_dir) / "output"
+            write_json_outputs(
+                _pm_schema_analyses(),
+                date(2026, 4, 8),
+                output_root=output_root,
+                portfolio_summary=_pm_schema_portfolio(),
+                portfolio_risk={"risk_grade": "C", "positions_by_weight": [{"ticker": "AAPL", "weight": 0.42}]},
+                decisions=_pm_schema_decisions(),
+            )
+            index_payload = json.loads((output_root / "data" / "index.json").read_text(encoding="utf-8"))
+
+        expected = load_snapshot_fixture(_FIXTURE_DIR / "pm_view.shape.json")
+        self.assertEqual(normalize_json_shape(index_payload["pm_view"]), expected)
 
     def test_api_status_json_matches_snapshot_shape(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

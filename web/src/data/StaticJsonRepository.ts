@@ -25,6 +25,7 @@ interface DashboardIndexPayload {
   market_overview: DashboardData['days'][number]['market_overview']
   macro_context?: DashboardData['days'][number]['macro_context']
   market_regime?: DashboardData['days'][number]['market_regime']
+  pm_view?: DashboardData['days'][number]['pm_view']
   portfolio_summary?: DashboardData['days'][number]['portfolio_summary']
   portfolio_risk?: DashboardData['days'][number]['portfolio_risk']
   signal_stats?: DashboardData['signal_stats']
@@ -60,6 +61,7 @@ export class StaticJsonRepository implements DashboardRepository {
         market_overview: Array.isArray(latestIndex.market_overview) ? latestIndex.market_overview : [],
         macro_context: latestIndex.macro_context ?? null,
         market_regime: latestIndex.market_regime ?? null,
+        pm_view: latestIndex.pm_view ?? null,
         portfolio_summary: latestIndex.portfolio_summary ?? null,
         portfolio_risk: latestIndex.portfolio_risk ?? null,
         tickers: Array.isArray(latestIndex.tickers) ? latestIndex.tickers : [],

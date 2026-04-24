@@ -392,11 +392,51 @@ export interface PortfolioRisk {
   recommendations?: string[]
 }
 
+export interface PMSwapCandidate {
+  held_ticker: string
+  candidate_ticker: string
+  swap_candidate_score: number
+  summary: string
+  reasons: string[]
+  overlap_context: string
+  review_points: string[]
+}
+
+export interface PMEventExposureItem {
+  ticker: string
+  event_risk_score: number
+  event_label: string
+  event_date: string
+  days_until: number
+  summary: string
+  reasons: string[]
+  review_points: string[]
+}
+
+export interface PMPriorityQueueItem {
+  priority_type: string
+  ticker: string
+  related_ticker?: string | null
+  today_priority_score: number
+  summary: string
+  reasons: string[]
+  destination: string
+}
+
+export interface PMViewData {
+  as_of: string
+  swap_candidates: PMSwapCandidate[]
+  event_exposure_items: PMEventExposureItem[]
+  today_priority_queue: PMPriorityQueueItem[]
+  empty_states: Record<string, string>
+}
+
 export interface DailyEntry {
   date: string
   market_overview: MarketOverviewEntry[]
   macro_context?: MacroContext | null
   market_regime?: MarketRegimeData | null
+  pm_view?: PMViewData | null
   portfolio_risk?: PortfolioRisk | null
   portfolio_summary?: PortfolioSummaryData | null
   tickers: TickerAnalysisData[]
