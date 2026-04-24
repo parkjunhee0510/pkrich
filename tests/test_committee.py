@@ -443,5 +443,160 @@ class CommitteeAnalysisTests(unittest.TestCase):
         self.assertEqual(result["status"], "economy_only")
 
 
+class CommitteeRetryAndSlimTests(unittest.TestCase):
+    def test_default_runner_retries_on_rate_limit_then_succeeds(self) -> None:
+        class _RateLimitError(Exception):
+            status_code = 429
+
+            def __init__(self) -> None:
+                super().__init__("Error code: 429 - Rate limit reached (TPM)")
+
+        _RateLimitError.__name__ = "RateLimitError"
+
+        class _FakeResponse:
+            def __init__(self, payload: dict[str, object]) -> None:
+                import json
+
+                self.output_text = json.dumps(payload)
+                self.usage = SimpleNamespace(
+                    input_tokens=10,
+                    output_tokens=5,
+                    total_tokens=15,
+                    input_tokens_details=SimpleNamespace(cached_tokens=0),
+                )
+
+        payloads = [
+            {"stance": "buy", "summary": "growth view"},
+            {"stance": "watch", "summary": "value view"},
+            {"stance": "watch", "summary": "risk view", "strong_objection": False},
+            {"stance": "watch", "summary": "macro view", "strong_objection": False},
+            {"stance": "buy", "summary": "pm view", "confidence": 0.82},
+        ]
+
+        class _FakeResponsesApi:
+            def __init__(self) -> None:
+                self.calls: list[dict[str, object]] = []
+                self._fail_first_call = True
+
+            def create(self, **kwargs):
+                self.calls.append(kwargs)
+                if self._fail_first_call and len(self.calls) == 1:
+                    self._fail_first_call = False
+                    raise _RateLimitError()
+                return _FakeResponse(payloads.pop(0))
+
+        class _FakeOpenAIClient:
+            def __init__(self) -> None:
+                self.responses = _FakeResponsesApi()
+
+        fake_client = _FakeOpenAIClient()
+        fake_openai = types.ModuleType("openai")
+        fake_openai.OpenAI = lambda api_key=None: fake_client
+
+        with (
+            patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False),
+            patch.dict(sys.modules, {"openai": fake_openai}),
+            patch("src.analyzer.committee.record_pipeline_event"),
+            patch("src.analyzer.committee.time.sleep"),
+        ):
+            result = run_committee_analysis(_analysis())
+
+        self.assertEqual(len(fake_client.responses.calls), 6)
+        self.assertEqual(result["roles"]["growth_analyst"]["summary"], "growth view")
+        self.assertTrue(result["roles"]["pm"]["valid"])
+
+    def test_default_runner_falls_back_after_retry_budget_exhausted(self) -> None:
+        class _RateLimitError(Exception):
+            status_code = 429
+
+            def __init__(self) -> None:
+                super().__init__("Error code: 429 - TPM exceeded")
+
+        _RateLimitError.__name__ = "RateLimitError"
+
+        class _AlwaysFailsResponsesApi:
+            def __init__(self) -> None:
+                self.calls: list[dict[str, object]] = []
+
+            def create(self, **kwargs):
+                self.calls.append(kwargs)
+                raise _RateLimitError()
+
+        class _FakeOpenAIClient:
+            def __init__(self) -> None:
+                self.responses = _AlwaysFailsResponsesApi()
+
+        fake_client = _FakeOpenAIClient()
+        fake_openai = types.ModuleType("openai")
+        fake_openai.OpenAI = lambda api_key=None: fake_client
+
+        with (
+            patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False),
+            patch.dict(sys.modules, {"openai": fake_openai}),
+            patch("src.analyzer.committee.record_pipeline_event"),
+            patch("src.analyzer.committee.time.sleep"),
+        ):
+            result = run_committee_analysis(_analysis())
+
+        from src.analyzer.committee import _RATE_LIMIT_MAX_ATTEMPTS
+
+        self.assertGreaterEqual(len(fake_client.responses.calls), _RATE_LIMIT_MAX_ATTEMPTS * 5)
+        for role in ("growth_analyst", "value_skeptic", "risk_manager", "macro_strategist", "pm"):
+            payload = result["roles"][role]
+            self.assertFalse(payload["valid"])
+            self.assertIn("missing_summary", payload["invalid_reason"])
+
+    def test_slim_payload_per_role_drops_historical_prices(self) -> None:
+        from src.analyzer.committee_prompt import _slim_payload_for_role
+
+        payload = {
+            "ticker": "AAPL",
+            "name": "Apple",
+            "date": "2026-04-23",
+            "summary": "s",
+            "fundamentals": {"per": 34.6},
+            "price_action": {"sma50": 260.27},
+            "historical_prices": [{"date": "2026-04-22", "close": 270}] * 100,
+        }
+        for role in ("growth_analyst", "value_skeptic", "risk_manager", "macro_strategist", "pm"):
+            slim = _slim_payload_for_role(payload, role)
+            self.assertNotIn("historical_prices", slim)
+            self.assertIn("ticker", slim)
+
+    def test_slim_payload_whitelists_value_skeptic_to_valuation_fields(self) -> None:
+        from src.analyzer.committee_prompt import _slim_payload_for_role
+
+        payload = {
+            "ticker": "AAPL",
+            "name": "Apple",
+            "date": "2026-04-23",
+            "summary": "s",
+            "fundamentals": {"per": 34.6},
+            "valuation_score": 0.4,
+            "price_action": {"sma50": 260.27},
+            "options_summary": {"iv": 0.3},
+            "historical_prices": [1, 2, 3],
+        }
+        slim = _slim_payload_for_role(payload, "value_skeptic")
+        self.assertIn("fundamentals", slim)
+        self.assertIn("valuation_score", slim)
+        self.assertNotIn("price_action", slim)
+        self.assertNotIn("options_summary", slim)
+
+    def test_role_persona_and_stance_policy_appear_in_system_prompt(self) -> None:
+        from src.analyzer.committee_prompt import build_value_skeptic_prompt
+
+        prompt = build_value_skeptic_prompt(
+            _analysis(),
+            round_name="economy",
+            profile_name="economy",
+            max_summary_sentences=2,
+            role_outputs={},
+        )
+        self.assertIn("가치 회의론자", prompt["system"])
+        self.assertIn("Allowed stances for this role:", prompt["system"])
+        self.assertNotIn("strong_buy", prompt["system"].split("Allowed stances for this role:", 1)[1].split(". ")[0])
+
+
 if __name__ == "__main__":
     unittest.main()

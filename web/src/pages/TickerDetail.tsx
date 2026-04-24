@@ -1,14 +1,11 @@
-import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
+﻿import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
-import { useTickerAnalysis } from '../hooks/useTickerAnalysis'
-import { useTickerHistory } from '../hooks/useTickerHistory'
 import { usePriceHistory } from '../hooks/usePriceHistory'
 import { useTickerTimeline } from '../hooks/useTickerTimeline'
 import { DataSnapshot } from '../components/DataSnapshot'
 import { NewsItem } from '../components/NewsItem'
 import { SecFilingBadges } from '../components/SecFilingBadges'
-import { SignalBadge } from '../components/SignalBadge'
 import { InfoTooltip } from '../components/InfoTooltip'
 import { DecisionCard } from '../components/DecisionCard'
 import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
@@ -16,28 +13,39 @@ import { CommitteeDetailPanel } from '../components/CommitteeDetailPanel'
 import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
 import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../types'
-import { parseNumericChange, extractSignalDirection } from '../utils/format'
+import { parseNumericChange, changeColor } from '../utils/format'
 import { EpsSurpriseChart } from '../components/EpsSurpriseChart'
 import { buildPositionSizingSummary, buildPriceActionTags, extractActionPlan, getLatestCatalystItem } from '../utils/trader'
 
 const HEADER_ENSEMBLE_BADGES: Record<string, { symbol: string; label: string; className: string }> = {
-  agree: { symbol: '✓✓', label: 'Consensus', className: 'ticker-ensemble-badge-agree' },
-  conflict: { symbol: '✓✗', label: 'Conflict', className: 'ticker-ensemble-badge-conflict' },
-  single: { symbol: '•', label: 'Single', className: 'ticker-ensemble-badge-single' },
+  agree: { symbol: '✓✓', label: '합의 일치', className: 'ticker-ensemble-badge-agree' },
+  conflict: { symbol: '✓✗', label: '합의 불일치', className: 'ticker-ensemble-badge-conflict' },
+  single: { symbol: '•', label: '단일 판단', className: 'ticker-ensemble-badge-single' },
 }
 
 const HEADER_SELECTION_REASON_LABELS: Record<string, string> = {
-  selected: '2차 검토 대상으로 선택됨',
-  cap_exceeded: '하루 검토 제한 때문에 이번에는 보류됨',
-  out_of_range: '추가 검토 범위 밖이라 1차 판단만 사용',
-  disabled: '추가 검토 기능이 꺼져 있음',
+  selected: '2차 검토 완료',
+  cap_exceeded: '2차 검토 대기',
+  out_of_range: '재검토 범위 밖',
+  disabled: '앙상블 비활성화',
+}
+
+const NEWS_TONE_LABELS: Record<string, string> = {
+  bullish: '강세',
+  bearish: '약세',
+  neutral: '중립',
+}
+
+const DECISION_ACTION_LABELS: Record<string, string> = {
+  buy: '매수',
+  watch: '관찰',
+  avoid: '회피',
 }
 
 const FILING_TABS = ['실적', '배당', '주주총회', '기타 공시'] as const
+const DETAIL_TABS = ['개요', '차트', '재무', '재료', '시나리오', 'AI 위원회'] as const
 
-const DETAIL_TABS = ['개요', '차트', '재무', '재료', '시나리오', '위원회'] as const
 type DetailTab = (typeof DETAIL_TABS)[number]
-
 type FilingTab = (typeof FILING_TABS)[number]
 type FilingSort = 'latest' | 'oldest'
 type FilingImpactLevel = '높음' | '보통' | '낮음'
@@ -74,8 +82,6 @@ const PriceChart = lazy(() =>
 export function TickerDetail() {
   const { ticker } = useParams<{ ticker: string }>()
   const { data, loading, error } = useDashboardData()
-  const { analysis: shardAnalysis, missing: shardMissing } = useTickerAnalysis(ticker)
-  const { history: tickerHistory } = useTickerHistory(ticker)
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
   const [timelineWindow, setTimelineWindow] = useState<'30' | '90'>('30')
@@ -86,63 +92,14 @@ export function TickerDetail() {
   const [selectedFormType, setSelectedFormType] = useState('ALL')
 
   const latestDay = data?.days[data.days.length - 1]
-  const summaryAnalysis = latestDay?.tickers.find((t) => t.ticker === ticker)
-  const analysis = shardAnalysis ?? summaryAnalysis
+  const analysis = latestDay?.tickers.find((t) => t.ticker === ticker)
   const fallbackSignalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
   const pct = parseNumericChange(analysis?.data_snapshot['Daily Change'] ?? '0')
-  const dailyChangeTone = pct > 0 ? 'positive' : pct < 0 ? 'negative' : 'neutral'
-  const signalDirection = extractSignalDirection(analysis?.signal_or_takeaway)
   const visibleTimeline = useMemo(() => {
     const limit = timelineWindow === '30' ? 30 : 90
     return timelineEntries.slice(0, limit)
   }, [timelineEntries, timelineWindow])
   const upcomingEvents = analysis?.upcoming_events ?? []
-  const tickerMacroBadges = useMemo(() => {
-    if (!ticker) return []
-    const raw = latestDay?.macro_context?.ticker_macro_sensitivity?.[ticker] ?? []
-    const today = new Date().toISOString().slice(0, 10)
-    const rank: Record<string, number> = { high: 0, medium: 1, low: 2 }
-    return [...raw]
-      .filter((item) => !item.date || item.date >= today)
-      .sort((a, b) => {
-        const ra = rank[a.sensitivity] ?? 3
-        const rb = rank[b.sensitivity] ?? 3
-        if (ra !== rb) return ra - rb
-        return (a.date ?? '').localeCompare(b.date ?? '')
-      })
-      .slice(0, 4)
-      .map((item) => {
-        const days = item.date ? Math.round((new Date(item.date).getTime() - new Date(today).getTime()) / 86_400_000) : null
-        const dday = days === null ? '' : days <= 0 ? 'D-0' : `D-${days}`
-        return {
-          key: `${item.event_code}-${item.date}`,
-          code: item.event_code,
-          label: item.label,
-          dday,
-          sensitivity: item.sensitivity,
-          reason: item.reason,
-          date: item.date,
-        }
-      })
-  }, [latestDay?.macro_context?.ticker_macro_sensitivity, ticker])
-  const tickerMacroDetails = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10)
-    const macro = latestDay?.macro_context
-    const sensitivity = !ticker
-      ? []
-      : [...(macro?.ticker_macro_sensitivity?.[ticker] ?? [])]
-          .filter((item) => !item.date || item.date >= today)
-          .sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''))
-    const beta = ticker ? macro?.ticker_macro_betas?.[ticker] ?? null : null
-    const tickerSector = String((summaryAnalysis ?? shardAnalysis)?.fundamentals?.Sector ?? '').trim().toLowerCase()
-    const sectorEvents = tickerSector
-      ? (macro?.upcoming_macro_events ?? []).filter((event) => {
-          const sectors = (event.affected_sectors ?? []).map((s) => String(s).trim().toLowerCase())
-          return sectors.includes(tickerSector)
-        })
-      : []
-    return { sensitivity, beta, sectorEvents }
-  }, [latestDay?.macro_context, ticker, summaryAnalysis, shardAnalysis])
   const newsReferences = analysis?.news_references ?? []
   const keyNews = analysis?.key_news ?? []
   const secFilings = useMemo(() => analysis?.sec_filings ?? [], [analysis?.sec_filings])
@@ -156,16 +113,6 @@ export function TickerDetail() {
     () => normalizeSignalHistory(analysis?.signal_history, fallbackSignalHistory),
     [analysis?.signal_history, fallbackSignalHistory],
   )
-  const previousDecision = useMemo(() => {
-    if (!analysis) {
-      return null
-    }
-    const candidates = tickerHistory
-      .filter((day) => day.date < analysis.date)
-      .map((day) => day.tickers[0]?.decision ?? null)
-      .filter((decision): decision is NonNullable<typeof analysis.decision> => Boolean(decision))
-    return candidates.length > 0 ? candidates[candidates.length - 1] : null
-  }, [analysis, tickerHistory])
   const sectorComparisonRows = useMemo(
     () => buildSectorComparisonRows(analysis?.sector_comparison),
     [analysis?.sector_comparison],
@@ -237,9 +184,7 @@ export function TickerDetail() {
   if (loading) return <TickerDetailSkeleton />
   if (error) return <ErrorState message={error} />
   if (!data || !ticker) return <p className="status">No data available.</p>
-  if (!analysis && shardMissing) return <p className="status">Ticker {ticker} not found.</p>
-  if (!analysis) return <TickerDetailSkeleton />
-
+  if (!analysis) return <p className="status">Ticker {ticker} not found.</p>
   const headerEnsemble = HEADER_ENSEMBLE_BADGES[analysis.decision?.ensemble_agreement ?? 'single'] ?? HEADER_ENSEMBLE_BADGES.single
   const headerSelectionReason = analysis.analysis_consensus?.selection_reason
     ? HEADER_SELECTION_REASON_LABELS[analysis.analysis_consensus.selection_reason] ?? analysis.analysis_consensus.selection_reason
@@ -250,12 +195,12 @@ export function TickerDetail() {
       <Link to="/" className="back-link">&larr; Dashboard</Link>
 
       <div className="ticker-header">
-        <div className="ticker-header-main">
+        <div>
           <h2>{analysis.ticker} · {analysis.name}</h2>
           <span className="ticker-date">{analysis.date}</span>
           <div className="ticker-meta-row">
             <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
-              뉴스 분위기: {formatNewsToneLabel(analysis.news_tone?.label)}
+              뉴스 톤: {NEWS_TONE_LABELS[analysis.news_tone?.label ?? 'neutral'] ?? '중립'}
             </span>
             {typeof analysis.news_tone?.confidence === 'number' ? (
               <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
@@ -267,24 +212,20 @@ export function TickerDetail() {
                   <span className="metric-tooltip-copy">
                     {headerSelectionReason ? (
                       <>
-                        <strong>선정 이유</strong>
+                        <strong>선정 사유</strong>
                         <span>{headerSelectionReason}</span>
                       </>
                     ) : null}
                     {analysis.decision?.ensemble_agreement === 'conflict' ? (
                       <>
                         <strong>1차 판단</strong>
-                        <span>
-                          {analysis.analysis_consensus?.economy_action ?? 'watch'} - {analysis.analysis_consensus?.economy_reason ?? 'No reason'}
-                        </span>
+                        <span>{DECISION_ACTION_LABELS[analysis.analysis_consensus?.economy_action ?? 'watch'] ?? '관찰'} - {analysis.analysis_consensus?.economy_reason ?? '사유 없음'}</span>
                         <strong>2차 판단</strong>
-                        <span>
-                          {analysis.analysis_consensus?.deep_action ?? analysis.decision?.action ?? 'watch'} - {analysis.analysis_consensus?.deep_reason ?? analysis.decision?.reason ?? 'No reason'}
-                        </span>
+                        <span>{DECISION_ACTION_LABELS[analysis.analysis_consensus?.deep_action ?? analysis.decision?.action ?? 'watch'] ?? '관찰'} - {analysis.analysis_consensus?.deep_reason ?? analysis.decision?.reason ?? '사유 없음'}</span>
                       </>
                     ) : (
                       <>
-                        <strong>Status</strong>
+                        <strong>합의 상태</strong>
                         <span>{headerEnsemble.label}</span>
                       </>
                     )}
@@ -299,20 +240,6 @@ export function TickerDetail() {
             <p className="ticker-meta-explainer">{analysis.news_tone.reasoning}</p>
           ) : null}
           <SecFilingBadges tags={analysis.sec_filing_tags ?? []} />
-          {tickerMacroBadges.length > 0 && (
-            <div className="ticker-macro-badge-row" aria-label="종목 직접 매칭 거시 이벤트">
-              {tickerMacroBadges.map((badge) => (
-                <span
-                  key={badge.key}
-                  className={`ticker-macro-badge sensitivity-${badge.sensitivity}`}
-                  title={`${badge.label} · ${badge.date}${badge.reason ? `\n${badge.reason}` : ''}`}
-                >
-                  <span className="ticker-macro-badge-code">{badge.code}</span>
-                  {badge.dday && <span className="ticker-macro-badge-dday">{badge.dday}</span>}
-                </span>
-              ))}
-            </div>
-          )}
           {priceActionTags.length > 0 && (
             <div className="watchlist-chip-row">
               {priceActionTags.map((tag) => (
@@ -323,10 +250,9 @@ export function TickerDetail() {
         </div>
         <div className="ticker-price-group">
           <span className="ticker-price">{analysis.data_snapshot['Price']}</span>
-          <span className={`ticker-daily-change ${dailyChangeTone}`}>
+          <span style={{ color: changeColor(pct), fontWeight: 600, fontSize: '1.1rem' }}>
             {analysis.data_snapshot['Daily Change']}
           </span>
-          <SignalBadge changePercent={pct} signalDirection={signalDirection} />
         </div>
       </div>
 
@@ -341,17 +267,8 @@ export function TickerDetail() {
           dashboardSizing={dashboardSizing}
           targetPrice={analysis.fundamentals?.analyst_target_price}
           tradeFrame={tradeFrame}
-          decision={analysis.decision}
-          previousDecision={previousDecision}
-          upcomingEvents={analysis.upcoming_events}
-          currentPrice={analysis.data_snapshot['Price']}
         />
       )}
-
-      <section className="signal-conclusion">
-        <h3>한 줄 판단</h3>
-        <p className="signal-text">{analysis.signal_or_takeaway}</p>
-      </section>
 
       <div className="ticker-detail-tabs" role="tablist" aria-label="종목 상세 섹션">
         {DETAIL_TABS.map((tab) => (
@@ -369,501 +286,437 @@ export function TickerDetail() {
       </div>
 
       <div className="ticker-detail-tab-panel" role="tabpanel">
-
-      {activeTab === '위원회' && (
-        <CommitteeDetailPanel committee={analysis.committee_analysis} />
-      )}
-
-      {activeTab === '재무' && (<>
-      <section className="earnings-hero-section">
-        <div className="section-header-with-kicker">
-          <div>
-            <h3>실적 체크포인트</h3>
-            <p className="section-kicker">트레이더가 먼저 보는 컨센서스 대비 체력과 다음 이벤트 타이밍</p>
-          </div>
-        </div>
-        <div className="earnings-hero-grid">
-          {earningsSummaryCards.map((card) => (
-            <div key={card.label} className={`earnings-hero-card ${card.tone}`}>
-              <span className="earnings-hero-label earnings-hero-label-row">
-                <span>{card.label}</span>
-                {card.tooltip ? <InfoTooltip content={card.tooltip} /> : null}
-              </span>
-              <strong className="earnings-hero-value">{card.value}</strong>
-              {card.chip && (
-                <span className={`earnings-result-chip ${toBeatMissClassName(card.chipValue ?? card.chip)}`}>{card.chip}</span>
-              )}
-              <p className="earnings-hero-note">{card.note}</p>
+        {activeTab === '재무' && (
+          <section className="earnings-hero-section">
+            <div className="section-header-with-kicker">
+              <div>
+                <h3>실적 셋업</h3>
+                <p className="section-kicker">트레이더가 먼저 보는 컨센서스 대비 체력과 다음 이벤트 타이밍</p>
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
-      </>)}
-
-      {activeTab === '재료' && (<>
-      {latestSecFiling && (
-        <section className="latest-filing-card">
-          <div className="latest-filing-head">
-            <div>
-              <h3>최신 공시</h3>
-              <SecFilingBadges tags={latestSecFiling.tag ? [latestSecFiling.tag] : []} />
-              {latestSecFiling.catalyst_type && (
-                <span className={`filing-catalyst-badge catalyst-${latestSecFiling.catalyst_type}`}>
-                  {latestSecFiling.catalyst_type} catalyst
-                </span>
-              )}
-              {latestFilingImpactLevel && (
-                <span className={`filing-impact-badge impact-${toImpactClassName(latestFilingImpactLevel)}`}>
-                  예상 영향도 {latestFilingImpactLevel}
-                </span>
-              )}
-            </div>
-            <span className="news-meta">
-              {latestSecFiling.source && `${latestSecFiling.source} · `}
-              {latestSecFiling.form_type && `${latestSecFiling.form_type}${latestSecFiling.item_number ? ` Item ${latestSecFiling.item_number}` : ''} · `}
-              {latestSecFiling.published_at}
-            </span>
-          </div>
-          <p className="latest-filing-title">{latestSecFiling.title}</p>
-          <p className="latest-filing-summary">{buildFilingImpactSummary(latestSecFiling.tag, latestSecFiling.title)}</p>
-          {latestSecFiling.link && (
-            <a href={latestSecFiling.link} target="_blank" rel="noopener noreferrer">공시 원문 보기</a>
-          )}
-        </section>
-      )}
-
-      </>)}
-
-      {activeTab === '차트' && (<>
-      <section className="ticker-detail-primary-section ticker-price-history-section">
-        <h3>Price History</h3>
-        {priceLoading ? (
-          <p>Loading chart...</p>
-        ) : (
-          <Suspense fallback={<p>Loading chart...</p>}>
-            <PriceChart rows={priceRows} />
-          </Suspense>
-        )}
-      </section>
-
-      </>)}
-
-      {activeTab === '개요' && (<>
-      <section className="ticker-detail-primary-section ticker-summary-section">
-        <h3>요약</h3>
-        <p>{analysis.summary}</p>
-      </section>
-
-      {(analysis.news_tone?.reasoning || typeof analysis.news_tone?.confidence === 'number') && (
-        <ResponsiveDetailSection title="뉴스 톤 / 해석">
-          <div className="detail-note-card">
-            <div className="detail-note-row">
-              <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
-                {analysis.news_tone?.label ?? 'neutral'}
-              </span>
-              {typeof analysis.news_tone?.confidence === 'number' ? (
-                <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
-              ) : null}
-            </div>
-            {analysis.news_tone?.reasoning ? <p>{analysis.news_tone.reasoning}</p> : null}
-          </div>
-        </ResponsiveDetailSection>
-      )}
-
-      <ResponsiveDetailSection title="다가오는 일정" defaultOpen>
-        {upcomingEvents.length > 0 ? (
-          <div className="event-badges">
-            {upcomingEvents.map((event) => (
-              <span key={`${event.type}-${event.date}`} className="event-badge">
-                {event.label} {event.date} (D-{event.days_until}{event.timing ? ` · ${event.timing}` : ''})
-              </span>
-            ))}
-          </div>
-        ) : (
-          <p className="empty">예정된 일정이 없습니다.</p>
-        )}
-      </ResponsiveDetailSection>
-
-      </>)}
-
-      {activeTab === '재료' && (<>
-      {(tickerMacroDetails.sensitivity.length > 0 || tickerMacroDetails.beta || tickerMacroDetails.sectorEvents.length > 0) && (
-        <ResponsiveDetailSection title="거시경제 영향">
-          {tickerMacroDetails.beta?.snapshot && (
-            <p className="detail-section-summary">{tickerMacroDetails.beta.snapshot}</p>
-          )}
-          {tickerMacroDetails.beta && (
-            <div className="price-action-grid">
-              <DetailMetricCard
-                label="금리 민감도(β)"
-                value={formatBeta(tickerMacroDetails.beta.rates_beta)}
-                note="US10Y 수익률 변화 대비 탄력"
-              />
-              <DetailMetricCard
-                label="달러 민감도(β)"
-                value={formatBeta(tickerMacroDetails.beta.usd_beta)}
-                note="DXY 변화 대비 탄력"
-              />
-              <DetailMetricCard
-                label="원유 민감도(β)"
-                value={formatBeta(tickerMacroDetails.beta.oil_beta)}
-                note="WTI 변화 대비 탄력"
-              />
-              <DetailMetricCard
-                label="크레딧 민감도(β)"
-                value={formatBeta(tickerMacroDetails.beta.credit_beta)}
-                note="HY 스프레드 변화 대비 탄력"
-              />
-            </div>
-          )}
-          {tickerMacroDetails.sensitivity.length > 0 && (
-            <ul className="macro-sensitivity-list">
-              {tickerMacroDetails.sensitivity.map((row) => (
-                <li key={`${row.event_code}-${row.date}`}>
-                  <span className={`ticker-macro-badge sensitivity-${row.sensitivity}`}>
-                    <span className="ticker-macro-badge-code">{row.event_code}</span>
+            <div className="earnings-hero-grid">
+              {earningsSummaryCards.map((card) => (
+                <div key={card.label} className={`earnings-hero-card ${card.tone}`}>
+                  <span className="earnings-hero-label earnings-hero-label-row">
+                    <span>{card.label}</span>
+                    {card.tooltip ? <InfoTooltip content={card.tooltip} /> : null}
                   </span>
-                  <strong>{row.label || row.event_code}</strong>
-                  {row.date && <span className="news-meta"> · {row.date}</span>}
-                  {row.reason && <p className="ticker-meta-explainer">{row.reason}</p>}
-                </li>
+                  <strong className="earnings-hero-value">{card.value}</strong>
+                  {card.chip && (
+                    <span className={`earnings-result-chip ${toBeatMissClassName(card.chipValue ?? card.chip)}`}>{card.chip}</span>
+                  )}
+                  <p className="earnings-hero-note">{card.note}</p>
+                </div>
               ))}
-            </ul>
-          )}
-          {tickerMacroDetails.sectorEvents.length > 0 && (
-            <>
-              <h4 className="detail-subsection-title">업종 관련 예정 이벤트</h4>
-              <ul className="macro-sensitivity-list">
-                {tickerMacroDetails.sectorEvents.slice(0, 6).map((event, index) => (
-                  <li key={`${event.event_code ?? event.type}-${event.date}-${index}`}>
-                    <strong>{event.label || event.event_code || event.type}</strong>
-                    <span className="news-meta"> · {event.date}{event.days_until ? ` (D-${event.days_until})` : ''}</span>
-                    {event.summary_ko && <p className="ticker-meta-explainer">{event.summary_ko}</p>}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </ResponsiveDetailSection>
-      )}
-      <ResponsiveDetailSection title="주요 뉴스">
-        {newsReferences.length > 0 ? (
-          <ul className="news-list">
-            {newsReferences.map((ref, i) => (
-              <NewsItem key={i} item={ref} summary={keyNews[i]} />
-            ))}
-          </ul>
-        ) : (
-          <p className="empty">수집된 뉴스가 없습니다.</p>
-        )}
-      </ResponsiveDetailSection>
-
-      <ResponsiveDetailSection title="공시자료">
-        {secFilings.length > 0 ? (
-          <>
-            <div className="filing-toolbar">
-              <div className="filing-tabs" role="tablist" aria-label="SEC filings">
-                {availableFilingTabs.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeFilingTab === tag}
-                    className={`filing-tab ${activeFilingTab === tag ? 'active' : ''}`}
-                    onClick={() => setSelectedFilingTab(tag)}
-                  >
-                    {tag}
-                    <span className="filing-tab-count">{filingCounts[tag]}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="filing-controls">
-                <input
-                  type="search"
-                  className="filing-search"
-                  placeholder="공시 제목 또는 폼 검색"
-                  value={filingQuery}
-                  onChange={(event) => setFilingQuery(event.target.value)}
-                />
-                <select className="filing-form-filter" value={activeFormType} onChange={(event) => setSelectedFormType(event.target.value)}>
-                  <option value="ALL">전체 폼</option>
-                  {availableFormTypes.map((formType) => (
-                    <option key={formType} value={formType}>{formType}</option>
-                  ))}
-                </select>
-                <div className="filing-sort-toggle" role="group" aria-label="filing sort">
-                  <button type="button" className={filingSort === 'latest' ? 'active' : ''} onClick={() => setFilingSort('latest')}>최신순</button>
-                  <button type="button" className={filingSort === 'oldest' ? 'active' : ''} onClick={() => setFilingSort('oldest')}>날짜순</button>
-                </div>
-              </div>
             </div>
-            {visibleSecFilings.length > 0 ? (
-              <ul className="news-list">
-                {visibleSecFilings.map((filing, index) => (
-                  <li key={`${filing.published_at}-${filing.title}-${index}`} className="news-item">
-                    <SecFilingBadges tags={filing.tag ? [filing.tag] : []} />
-                    {filing.catalyst_type && <span className={`filing-catalyst-badge catalyst-${filing.catalyst_type}`}>{filing.catalyst_type} catalyst</span>}
-                    {filing.form_type && <span className="filing-form-chip">{filing.form_type}</span>}
-                    {filing.item_number && <span className="filing-form-chip">Item {filing.item_number}</span>}
-                    {filing.link ? (
-                      <a href={filing.link} target="_blank" rel="noopener noreferrer">{filing.title}</a>
-                    ) : (
-                      <span>{filing.title}</span>
-                    )}
-                    <span className="news-meta">{filing.source && ` · ${filing.source}`}{filing.published_at && ` (${filing.published_at})`}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="empty">조건에 맞는 공시자료가 없습니다.</p>
-            )}
-          </>
-        ) : (
-          <p className="empty">표시할 공시자료가 없습니다.</p>
+          </section>
         )}
-      </ResponsiveDetailSection>
 
-      </>)}
-
-      {activeTab === '재무' && (<>
-      <ResponsiveDetailSection title="재무 하이라이트">
-        <ul>
-          {financialHighlights.map((h, i) => (
-            <li key={i}>{h}</li>
-          ))}
-        </ul>
-      </ResponsiveDetailSection>
-
-      <ResponsiveDetailSection title="실적 컨센서스 디테일">
-        <div className="price-action-grid">
-          <DetailMetricCard label="예상 EPS" value={earningsSetup?.forward_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.forwardEps} />
-          <DetailMetricCard label="최근 12개월 EPS" value={earningsSetup?.ttm_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.ttmEps} />
-          <DetailMetricCard label="예상치 vs 최근 실적" value={formatDirectionalPriceAction(earningsSetup?.forward_vs_ttm)} tooltip={METRIC_TOOLTIPS.forwardVsTtm} />
-          <DetailMetricCard label="이익 성장률" value={earningsSetup?.earnings_growth ?? 'N/A'} tooltip={METRIC_TOOLTIPS.epsGrowth} />
-          <DetailMetricCard label="최근 분기 추정 EPS" value={earningsSetup?.latest_estimated_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.latestEstimatedEps} />
-          <DetailMetricCard
-            label="최근 분기 결과"
-            tooltip={METRIC_TOOLTIPS.latestQuarterResult}
-            value={
-              <strong className="earnings-setup-stack">
-                <span>{earningsSetup?.latest_surprise_pct ?? 'N/A'}</span>
-                <span className={`earnings-result-chip ${toBeatMissClassName(earningsSetup?.latest_beat_miss)}`}>{formatBeatMissLabel(earningsSetup?.latest_beat_miss)}</span>
-              </strong>
-            }
-          />
-          <DetailMetricCard label="다음 실적 일정" value={earningsSetup?.next_earnings_event ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nextEarningsEvent} />
-        </div>
-      </ResponsiveDetailSection>
-      </>)}
-
-      {activeTab === '차트' && (<>
-      <ResponsiveDetailSection title="가격 행동 맥락">
-        <div className="price-action-grid">
-          <DetailMetricCard label="ATR(14)" value={formatPriceActionPair(priceAction?.atr_14d, priceAction?.atr_percent)} tooltip={METRIC_TOOLTIPS.atr14} />
-          <DetailMetricCard label="Relative Volume" value={priceAction?.relative_volume ?? 'N/A'} tooltip={METRIC_TOOLTIPS.relativeVolume} />
-          <DetailMetricCard label="Gap" value={priceAction?.gap_percent ?? 'N/A'} tooltip={METRIC_TOOLTIPS.gapPercent} />
-          <DetailMetricCard label="vs SMA50" value={formatDirectionalPriceAction(priceAction?.price_vs_sma50)} tooltip={METRIC_TOOLTIPS.vsSma50} />
-          <DetailMetricCard label="vs SMA200" value={formatDirectionalPriceAction(priceAction?.price_vs_sma200)} tooltip={METRIC_TOOLTIPS.vsSma200} />
-          <DetailMetricCard label="52주 위치" value={priceAction?.week52_position ?? 'N/A'} tooltip={METRIC_TOOLTIPS.week52Position} />
-          <DetailMetricCard label="시장 대비 강세(30일)" value={priceAction?.rs_vs_spy ?? 'N/A'} tooltip={METRIC_TOOLTIPS.rsVsSpy} />
-        </div>
-      </ResponsiveDetailSection>
-
-      <ResponsiveDetailSection title="포지셔닝 데이터">
-        <div className="price-action-grid">
-          {positioningCards.map((card) => (
-            <DetailMetricCard key={card.label} label={card.label} value={card.value} note={card.note} tooltip={card.tooltip} />
-          ))}
-        </div>
-      </ResponsiveDetailSection>
-
-      {analysis.options_summary && Object.keys(analysis.options_summary).length > 0 && (
-        <ResponsiveDetailSection title="옵션 요약">
-          <div className="price-action-grid">
-            <DetailMetricCard label="가장 가까운 만기" value={analysis.options_summary.expiry ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nearestExpiry} />
-            <DetailMetricCard label="ATM Call IV" value={analysis.options_summary.atm_call_iv ?? 'N/A'} tooltip={METRIC_TOOLTIPS.atmCallIv} />
-            <DetailMetricCard label="ATM Put IV" value={analysis.options_summary.atm_put_iv ?? 'N/A'} tooltip={METRIC_TOOLTIPS.atmPutIv} />
-            <DetailMetricCard label="Put/Call Ratio" value={analysis.options_summary.put_call_ratio ?? 'N/A'} tooltip={METRIC_TOOLTIPS.putCallRatio} />
-            <DetailMetricCard label="30D IV Percentile" value={analysis.options_summary.iv_percentile_30d ?? 'N/A'} tooltip={METRIC_TOOLTIPS.ivPercentile30d} />
-          </div>
-        </ResponsiveDetailSection>
-      )}
-
-      </>)}
-
-      {activeTab === '시나리오' && (<>
-      <ResponsiveDetailSection title="포지션 사이징 참고">
-        <div className="price-action-grid">
-          <DetailMetricCard label="1% 리스크 기준" value={positionSizing.positionShares} note="10,000 USD 계좌 기준 예상 수량" tooltip={METRIC_TOOLTIPS.positionSizing1pct} />
-          <DetailMetricCard label="2ATR 스탑" value={positionSizing.stopPrice} note={positionSizing.stopNote} tooltip={METRIC_TOOLTIPS.stopByAtr} />
-          <DetailMetricCard label="리스크/리워드" value={positionSizing.riskReward} note="애널리스트 목표가 기준" tooltip={METRIC_TOOLTIPS.riskReward} />
-        </div>
-      </ResponsiveDetailSection>
-
-      </>)}
-
-      {activeTab === '재무' && (<>
-      {analysis.valuation_score?.score && (
-        <ResponsiveDetailSection title="밸류에이션 점수">
-          <div className="valuation-score-panel">
-            <div className="valuation-score-header">
-              <span className={`valuation-score-badge ${getValuationScoreClass(analysis.valuation_score.score)}`}>
-                {analysis.valuation_score.score}
-              </span>
-              <span className="valuation-score-label">{getValuationLabel(analysis.valuation_score.score)}</span>
-            </div>
-            {analysis.valuation_score.factors?.length > 0 && (
-              <ul className="valuation-factors">
-                {analysis.valuation_score.factors.map((factor, i) => (
-                  <li key={i}>{factor}</li>
-                ))}
-              </ul>
-            )}
-            {analysis.valuation_score.assessment && (
-              <p className="detail-section-summary">{analysis.valuation_score.assessment}</p>
-            )}
-          </div>
-        </ResponsiveDetailSection>
-      )}
-
-      {sectorComparisonRows.length > 0 && (
-        <ResponsiveDetailSection title="피어 비교">
-          <div className="price-action-grid">
-            {sectorComparisonRows.map((row) => (
-              <div key={row.label} className="price-action-card">
-                <span className="price-action-label">{row.label}</span>
-                <strong>{row.company}</strong>
-                <span className="price-action-subtext">비슷한 종목 평균 {row.peerAverage}</span>
-                {row.difference ? <span className="price-action-subtext">격차 {row.difference}</span> : null}
-              </div>
-            ))}
-          </div>
-          {analysis.sector_comparison?.summary ? <p className="detail-section-summary">{analysis.sector_comparison.summary}</p> : null}
-        </ResponsiveDetailSection>
-      )}
-
-      <ResponsiveDetailSection title="최근 4분기 재무">
-        {quarterlyFinancials.length > 0 ? (
-          <>
-            <EpsSurpriseChart quarters={quarterlyFinancials} />
-            <table className="snapshot-table">
-              <thead>
-                <tr>
-                  <th>Quarter</th><th>Revenue</th><th>Operating Income</th><th>EPS</th><th>EPS 추정</th><th>서프라이즈</th><th>결과</th>
-                </tr>
-              </thead>
-              <tbody>
-                {quarterlyFinancials.map((row) => (
-                  <tr key={row.quarter}>
-                    <td>{row.quarter}</td><td>{row.revenue}</td><td>{row.operating_income}</td><td>{row.eps}</td><td>{row.estimated_eps ?? 'N/A'}</td><td>{row.surprise_pct ?? 'N/A'}</td>
-                    <td><span className={`earnings-result-chip ${toBeatMissClassName(row.beat_miss)}`}>{row.beat_miss ?? 'N/A'}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        ) : (
-          <p className="empty">분기 재무 데이터가 없습니다.</p>
-        )}
-      </ResponsiveDetailSection>
-
-      </>)}
-
-      {activeTab === '개요' && (<>
-      <ResponsiveDetailSection title="리스크 / 체크포인트">
-        <ul>
-          {riskItems.map((r, i) => (
-            <li key={i}>{r}</li>
-          ))}
-        </ul>
-      </ResponsiveDetailSection>
-
-      <ResponsiveDetailSection title="데이터 스냅샷">
-        <DataSnapshot snapshot={analysis.data_snapshot} />
-      </ResponsiveDetailSection>
-
-      </>)}
-
-      {activeTab === '시나리오' && (<>
-      <ResponsiveDetailSection title="트레이드 프레임">
-        <div className="trade-frame-grid">
-          <div className="trade-frame-card bull"><span className="trade-frame-label">Bull</span><p>{tradeFrame?.bull_scenario ?? 'N/A'}</p></div>
-          <div className="trade-frame-card base"><span className="trade-frame-label">Base</span><p>{tradeFrame?.base_scenario ?? 'N/A'}</p></div>
-          <div className="trade-frame-card bear"><span className="trade-frame-label">Bear</span><p>{tradeFrame?.bear_scenario ?? 'N/A'}</p></div>
-        </div>
-        <div className="trade-frame-detail-grid">
-          <DetailMetricCard label="진입가" value={tradeFrame?.entry_price ?? actionPlan?.entry ?? 'N/A'} tooltip={METRIC_TOOLTIPS.entryPrice} />
-          <DetailMetricCard label="손절가" value={tradeFrame?.stop_loss ?? tradeFrame?.invalidation_price ?? 'N/A'} tooltip={METRIC_TOOLTIPS.stopLoss} />
-          <DetailMetricCard label="목표가" value={[tradeFrame?.target_1, tradeFrame?.target_2].filter(Boolean).join(' / ') || 'N/A'} tooltip={METRIC_TOOLTIPS.targetPrice} />
-          <DetailMetricCard label="R / R" value={tradeFrame?.risk_reward_ratio ?? dashboardSizing.riskReward} note={tradeFrame?.position_size_note ?? dashboardSizing.positionShares} tooltip={METRIC_TOOLTIPS.riskReward} />
-        </div>
-        <div className="trade-frame-footer">
-          <span><strong>무효화:</strong> {tradeFrame?.invalidation_price ?? 'N/A'}</span>
-          <span><strong>관찰 기간:</strong> {tradeFrame?.watch_period ?? 'N/A'}</span>
-        </div>
-      </ResponsiveDetailSection>
-
-      </>)}
-
-      {activeTab === '재료' && (<>
-      <ResponsiveDetailSection title="종목 타임라인">
-        <div className="timeline-header-row">
-          <div />
-          <div className="timeline-window-toggle">
-            <button type="button" className={timelineWindow === '30' ? 'active' : ''} onClick={() => setTimelineWindow('30')}>30D</button>
-            <button type="button" className={timelineWindow === '90' ? 'active' : ''} onClick={() => setTimelineWindow('90')}>90D</button>
-          </div>
-        </div>
-        {timelineLoading ? (
-          <p>Loading timeline...</p>
-        ) : visibleTimeline.length > 0 ? (
-          <ul className="timeline-list">
-            {visibleTimeline.map((entry) => (
-              <li key={`${entry.date}-${entry.price}`} className="timeline-item">
-                <div className="timeline-item-head"><strong>{entry.date}</strong><span>{entry.price} / {entry.daily_change}</span></div>
-                <div className="timeline-item-meta">
-                  <span className={`tone-badge tone-${entry.news_tone?.label ?? 'neutral'}`}>{entry.news_tone?.label ?? 'neutral'}</span>
-                  {entry.upcoming_events?.[0] && <span className="event-badge">{entry.upcoming_events[0].label} D-{entry.upcoming_events[0].days_until}</span>}
-                </div>
-                <p>{entry.signal_or_takeaway}</p>
-                {entry.top_news_summary && (
-                  entry.top_news_link ? (
-                    <a href={entry.top_news_link} target="_blank" rel="noopener noreferrer">{entry.top_news_summary}</a>
-                  ) : (
-                    <p>{entry.top_news_summary}</p>
-                  )
+        {activeTab === '재료' && latestSecFiling && (
+          <section className="latest-filing-card">
+            <div className="latest-filing-head">
+              <div>
+                <h3>최신 공시</h3>
+                <SecFilingBadges tags={latestSecFiling.tag ? [latestSecFiling.tag] : []} />
+                {latestSecFiling.catalyst_type && (
+                  <span className={`filing-catalyst-badge catalyst-${latestSecFiling.catalyst_type}`}>
+                    {latestSecFiling.catalyst_type} catalyst
+                  </span>
                 )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="empty">타임라인 데이터가 없습니다.</p>
+                {latestFilingImpactLevel && (
+                  <span className={`filing-impact-badge impact-${toImpactClassName(latestFilingImpactLevel)}`}>
+                    예상 영향도 {latestFilingImpactLevel}
+                  </span>
+                )}
+              </div>
+              <span className="news-meta">
+                {latestSecFiling.source && `${latestSecFiling.source} · `}
+                {latestSecFiling.form_type && `${latestSecFiling.form_type}${latestSecFiling.item_number ? ` Item ${latestSecFiling.item_number}` : ''} · `}
+                {latestSecFiling.published_at}
+              </span>
+            </div>
+            <p className="latest-filing-title">{latestSecFiling.title}</p>
+            <p className="latest-filing-summary">{buildFilingImpactSummary(latestSecFiling.tag, latestSecFiling.title)}</p>
+            {latestSecFiling.link && (
+              <a href={latestSecFiling.link} target="_blank" rel="noopener noreferrer">공시 원문 보기</a>
+            )}
+          </section>
         )}
-      </ResponsiveDetailSection>
 
-      </>)}
+        {activeTab === '차트' && (
+          <section>
+            <h3>Price History</h3>
+            {priceLoading ? (
+              <p>Loading chart...</p>
+            ) : (
+              <Suspense fallback={<p>Loading chart...</p>}>
+                <PriceChart rows={priceRows} />
+              </Suspense>
+            )}
+          </section>
+        )}
 
-      {activeTab === '시나리오' && (<>
-      <ResponsiveDetailSection title="판단 신호 검증 이력">
-        {signalHistory.length > 0 ? (
-          <ul className="timeline-list">
-            {signalHistory.map((row, index) => (
-              <li key={`${row.date}-${row.direction}-${index}`} className="timeline-item">
-                <div className="timeline-item-head"><strong>{row.date}</strong><span>{row.direction}</span></div>
-                <div className="timeline-item-meta">
-                  <span className="filing-form-chip">{row.catalyst}</span>
-                  {row.return5d ? <span className="period-badge">5D {row.return5d}</span> : null}
+        {activeTab === '개요' && (
+          <>
+            <section>
+              <h3>요약</h3>
+              <p>{analysis.summary}</p>
+            </section>
+
+            {(analysis.news_tone?.reasoning || typeof analysis.news_tone?.confidence === 'number') && (
+              <ResponsiveDetailSection title="뉴스 톤 / 해석">
+                <div className="detail-note-card">
+                  <div className="detail-note-row">
+                    <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
+                      {NEWS_TONE_LABELS[analysis.news_tone?.label ?? 'neutral'] ?? '중립'}
+                    </span>
+                    {typeof analysis.news_tone?.confidence === 'number' ? (
+                      <span className="period-badge">{formatNewsToneConfidence(analysis.news_tone.confidence)}</span>
+                    ) : null}
+                  </div>
+                  {analysis.news_tone?.reasoning ? <p>{analysis.news_tone.reasoning}</p> : null}
                 </div>
-                {row.note ? <p>{row.note}</p> : null}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="empty">아직 판단 신호 검증 이력이 없습니다.</p>
-        )}
-      </ResponsiveDetailSection>
-      </>)}
+              </ResponsiveDetailSection>
+            )}
 
+            <ResponsiveDetailSection title="다가오는 일정" defaultOpen>
+              {upcomingEvents.length > 0 ? (
+                <div className="event-badges">
+                  {upcomingEvents.map((event) => (
+                    <span key={`${event.type}-${event.date}`} className="event-badge">
+                      {event.label} {event.date} (D-{event.days_until}{event.timing ? ` · ${event.timing}` : ''})
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="empty">예정된 일정이 없습니다.</p>
+              )}
+            </ResponsiveDetailSection>
+
+            <ResponsiveDetailSection title="리스크 / 체크포인트">
+              <ul>
+                {riskItems.map((r, i) => (
+                  <li key={i}>{r}</li>
+                ))}
+              </ul>
+            </ResponsiveDetailSection>
+
+            <ResponsiveDetailSection title="데이터 스냅샷">
+              <DataSnapshot snapshot={analysis.data_snapshot} />
+            </ResponsiveDetailSection>
+          </>
+        )}
+
+        {activeTab === '재료' && (
+          <>
+            <ResponsiveDetailSection title="주요 뉴스">
+              {newsReferences.length > 0 ? (
+                <ul className="news-list">
+                  {newsReferences.map((ref, i) => (
+                    <NewsItem key={i} item={ref} summary={keyNews[i]} />
+                  ))}
+                </ul>
+              ) : (
+                <p className="empty">수집된 뉴스가 없습니다.</p>
+              )}
+            </ResponsiveDetailSection>
+
+            <ResponsiveDetailSection title="공시자료">
+              {secFilings.length > 0 ? (
+                <>
+                  <div className="filing-toolbar">
+                    <div className="filing-tabs" role="tablist" aria-label="SEC filings">
+                      {availableFilingTabs.map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          role="tab"
+                          aria-selected={activeFilingTab === tag}
+                          className={`filing-tab ${activeFilingTab === tag ? 'active' : ''}`}
+                          onClick={() => setSelectedFilingTab(tag)}
+                        >
+                          {tag}
+                          <span className="filing-tab-count">{filingCounts[tag]}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="filing-controls">
+                      <input
+                        type="search"
+                        className="filing-search"
+                        placeholder="공시 제목 또는 폼 검색"
+                        value={filingQuery}
+                        onChange={(event) => setFilingQuery(event.target.value)}
+                      />
+                      <select className="filing-form-filter" value={activeFormType} onChange={(event) => setSelectedFormType(event.target.value)}>
+                        <option value="ALL">전체 폼</option>
+                        {availableFormTypes.map((formType) => (
+                          <option key={formType} value={formType}>{formType}</option>
+                        ))}
+                      </select>
+                      <div className="filing-sort-toggle" role="group" aria-label="filing sort">
+                        <button type="button" className={filingSort === 'latest' ? 'active' : ''} onClick={() => setFilingSort('latest')}>최신순</button>
+                        <button type="button" className={filingSort === 'oldest' ? 'active' : ''} onClick={() => setFilingSort('oldest')}>날짜순</button>
+                      </div>
+                    </div>
+                  </div>
+                  {visibleSecFilings.length > 0 ? (
+                    <ul className="news-list">
+                      {visibleSecFilings.map((filing, index) => (
+                        <li key={`${filing.published_at}-${filing.title}-${index}`} className="news-item">
+                          <SecFilingBadges tags={filing.tag ? [filing.tag] : []} />
+                          {filing.catalyst_type && <span className={`filing-catalyst-badge catalyst-${filing.catalyst_type}`}>{filing.catalyst_type} catalyst</span>}
+                          {filing.form_type && <span className="filing-form-chip">{filing.form_type}</span>}
+                          {filing.item_number && <span className="filing-form-chip">Item {filing.item_number}</span>}
+                          {filing.link ? (
+                            <a href={filing.link} target="_blank" rel="noopener noreferrer">{filing.title}</a>
+                          ) : (
+                            <span>{filing.title}</span>
+                          )}
+                          <span className="news-meta">{filing.source && ` · ${filing.source}`}{filing.published_at && ` (${filing.published_at})`}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="empty">조건에 맞는 공시자료가 없습니다.</p>
+                  )}
+                </>
+              ) : (
+                <p className="empty">표시할 공시자료가 없습니다.</p>
+              )}
+            </ResponsiveDetailSection>
+
+            <ResponsiveDetailSection title="종목 타임라인">
+              <div className="timeline-header-row">
+                <div />
+                <div className="timeline-window-toggle">
+                  <button type="button" className={timelineWindow === '30' ? 'active' : ''} onClick={() => setTimelineWindow('30')}>30D</button>
+                  <button type="button" className={timelineWindow === '90' ? 'active' : ''} onClick={() => setTimelineWindow('90')}>90D</button>
+                </div>
+              </div>
+              {timelineLoading ? (
+                <p>Loading timeline...</p>
+              ) : visibleTimeline.length > 0 ? (
+                <ul className="timeline-list">
+                  {visibleTimeline.map((entry) => (
+                    <li key={`${entry.date}-${entry.price}`} className="timeline-item">
+                      <div className="timeline-item-head"><strong>{entry.date}</strong><span>{entry.price} / {entry.daily_change}</span></div>
+                      <div className="timeline-item-meta">
+                        <span className={`tone-badge tone-${entry.news_tone?.label ?? 'neutral'}`}>{NEWS_TONE_LABELS[entry.news_tone?.label ?? 'neutral'] ?? '중립'}</span>
+                        {entry.upcoming_events?.[0] && <span className="event-badge">{entry.upcoming_events[0].label} D-{entry.upcoming_events[0].days_until}</span>}
+                      </div>
+                      <p>{entry.signal_or_takeaway}</p>
+                      {entry.top_news_summary && (
+                        entry.top_news_link ? (
+                          <a href={entry.top_news_link} target="_blank" rel="noopener noreferrer">{entry.top_news_summary}</a>
+                        ) : (
+                          <p>{entry.top_news_summary}</p>
+                        )
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="empty">타임라인 데이터가 없습니다.</p>
+              )}
+            </ResponsiveDetailSection>
+          </>
+        )}
+
+        {activeTab === '재무' && (
+          <>
+            <ResponsiveDetailSection title="재무 하이라이트">
+              <ul>
+                {financialHighlights.map((h, i) => (
+                  <li key={i}>{h}</li>
+                ))}
+              </ul>
+            </ResponsiveDetailSection>
+
+            <ResponsiveDetailSection title="실적 컨센서스 디테일">
+              <div className="price-action-grid">
+                <DetailMetricCard label="Forward EPS" value={earningsSetup?.forward_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.forwardEps} />
+                <DetailMetricCard label="TTM EPS" value={earningsSetup?.ttm_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.ttmEps} />
+                <DetailMetricCard label="Forward vs TTM" value={formatDirectionalPriceAction(earningsSetup?.forward_vs_ttm)} tooltip={METRIC_TOOLTIPS.forwardVsTtm} />
+                <DetailMetricCard label="EPS Growth" value={earningsSetup?.earnings_growth ?? 'N/A'} tooltip={METRIC_TOOLTIPS.epsGrowth} />
+                <DetailMetricCard label="최근 분기 추정 EPS" value={earningsSetup?.latest_estimated_eps ?? 'N/A'} tooltip={METRIC_TOOLTIPS.latestEstimatedEps} />
+                <DetailMetricCard
+                  label="최근 분기 결과"
+                  tooltip={METRIC_TOOLTIPS.latestQuarterResult}
+                  value={
+                    <strong className="earnings-setup-stack">
+                      <span>{earningsSetup?.latest_surprise_pct ?? 'N/A'}</span>
+                      <span className={`earnings-result-chip ${toBeatMissClassName(earningsSetup?.latest_beat_miss)}`}>{earningsSetup?.latest_beat_miss ?? 'N/A'}</span>
+                    </strong>
+                  }
+                />
+                <DetailMetricCard label="다음 실적 체크포인트" value={earningsSetup?.next_earnings_event ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nextEarningsEvent} />
+              </div>
+            </ResponsiveDetailSection>
+
+            {analysis.valuation_score?.score && (
+              <ResponsiveDetailSection title="밸류에이션 점수">
+                <div className="valuation-score-panel">
+                  <div className="valuation-score-header">
+                    <span className={`valuation-score-badge ${getValuationScoreClass(analysis.valuation_score.score)}`}>
+                      {analysis.valuation_score.score}
+                    </span>
+                    <span className="valuation-score-label">{getValuationLabel(analysis.valuation_score.score)}</span>
+                  </div>
+                  {analysis.valuation_score.factors?.length > 0 && (
+                    <ul className="valuation-factors">
+                      {analysis.valuation_score.factors.map((factor, i) => (
+                        <li key={i}>{factor}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {analysis.valuation_score.assessment && (
+                    <p className="detail-section-summary">{analysis.valuation_score.assessment}</p>
+                  )}
+                </div>
+              </ResponsiveDetailSection>
+            )}
+
+            {sectorComparisonRows.length > 0 && (
+              <ResponsiveDetailSection title="피어 비교">
+                <div className="price-action-grid">
+                  {sectorComparisonRows.map((row) => (
+                    <div key={row.label} className="price-action-card">
+                      <span className="price-action-label">{row.label}</span>
+                      <strong>{row.company}</strong>
+                      <span className="price-action-subtext">Peer 평균 {row.peerAverage}</span>
+                      {row.difference ? <span className="price-action-subtext">격차 {row.difference}</span> : null}
+                    </div>
+                  ))}
+                </div>
+                {analysis.sector_comparison?.summary ? <p className="detail-section-summary">{analysis.sector_comparison.summary}</p> : null}
+              </ResponsiveDetailSection>
+            )}
+
+            <ResponsiveDetailSection title="최근 4분기 재무">
+              {quarterlyFinancials.length > 0 ? (
+                <>
+                  <EpsSurpriseChart quarters={quarterlyFinancials} />
+                  <table className="snapshot-table">
+                    <thead>
+                      <tr>
+                        <th>Quarter</th><th>Revenue</th><th>Operating Income</th><th>EPS</th><th>EPS 추정</th><th>서프라이즈</th><th>결과</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {quarterlyFinancials.map((row) => (
+                        <tr key={row.quarter}>
+                          <td>{row.quarter}</td><td>{row.revenue}</td><td>{row.operating_income}</td><td>{row.eps}</td><td>{row.estimated_eps ?? 'N/A'}</td><td>{row.surprise_pct ?? 'N/A'}</td>
+                          <td><span className={`earnings-result-chip ${toBeatMissClassName(row.beat_miss)}`}>{row.beat_miss ?? 'N/A'}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              ) : (
+                <p className="empty">분기 재무 데이터가 없습니다.</p>
+              )}
+            </ResponsiveDetailSection>
+          </>
+        )}
+
+        {activeTab === '차트' && (
+          <>
+            <ResponsiveDetailSection title="가격 행동 맥락">
+              <div className="price-action-grid">
+                <DetailMetricCard label="ATR(14)" value={formatPriceActionPair(priceAction?.atr_14d, priceAction?.atr_percent)} tooltip={METRIC_TOOLTIPS.atr14} />
+                <DetailMetricCard label="Relative Volume" value={priceAction?.relative_volume ?? 'N/A'} tooltip={METRIC_TOOLTIPS.relativeVolume} />
+                <DetailMetricCard label="Gap" value={priceAction?.gap_percent ?? 'N/A'} tooltip={METRIC_TOOLTIPS.gapPercent} />
+                <DetailMetricCard label="vs SMA50" value={formatDirectionalPriceAction(priceAction?.price_vs_sma50)} tooltip={METRIC_TOOLTIPS.vsSma50} />
+                <DetailMetricCard label="vs SMA200" value={formatDirectionalPriceAction(priceAction?.price_vs_sma200)} tooltip={METRIC_TOOLTIPS.vsSma200} />
+                <DetailMetricCard label="52주 위치" value={priceAction?.week52_position ?? 'N/A'} tooltip={METRIC_TOOLTIPS.week52Position} />
+                <DetailMetricCard label="RS vs SPY(30D)" value={priceAction?.rs_vs_spy ?? 'N/A'} tooltip={METRIC_TOOLTIPS.rsVsSpy} />
+              </div>
+            </ResponsiveDetailSection>
+
+            <ResponsiveDetailSection title="포지셔닝 데이터">
+              <div className="price-action-grid">
+                {positioningCards.map((card) => (
+                  <DetailMetricCard key={card.label} label={card.label} value={card.value} note={card.note} tooltip={card.tooltip} />
+                ))}
+              </div>
+            </ResponsiveDetailSection>
+
+            {analysis.options_summary && Object.keys(analysis.options_summary).length > 0 && (
+              <ResponsiveDetailSection title="옵션 요약">
+                <div className="price-action-grid">
+                  <DetailMetricCard label="가장 가까운 만기" value={analysis.options_summary.expiry ?? 'N/A'} tooltip={METRIC_TOOLTIPS.nearestExpiry} />
+                  <DetailMetricCard label="ATM Call IV" value={analysis.options_summary.atm_call_iv ?? 'N/A'} tooltip={METRIC_TOOLTIPS.atmCallIv} />
+                  <DetailMetricCard label="ATM Put IV" value={analysis.options_summary.atm_put_iv ?? 'N/A'} tooltip={METRIC_TOOLTIPS.atmPutIv} />
+                  <DetailMetricCard label="Put/Call Ratio" value={analysis.options_summary.put_call_ratio ?? 'N/A'} tooltip={METRIC_TOOLTIPS.putCallRatio} />
+                  <DetailMetricCard label="30D IV Percentile" value={analysis.options_summary.iv_percentile_30d ?? 'N/A'} tooltip={METRIC_TOOLTIPS.ivPercentile30d} />
+                </div>
+              </ResponsiveDetailSection>
+            )}
+          </>
+        )}
+
+        {activeTab === '시나리오' && (
+          <>
+            <ResponsiveDetailSection title="포지션 사이징 참고">
+              <div className="price-action-grid">
+                <DetailMetricCard label="1% 리스크 기준" value={positionSizing.positionShares} note="10,000 USD 계좌 기준 예상 수량" tooltip={METRIC_TOOLTIPS.positionSizing1pct} />
+                <DetailMetricCard label="2ATR 스탑" value={positionSizing.stopPrice} note={positionSizing.stopNote} tooltip={METRIC_TOOLTIPS.stopByAtr} />
+                <DetailMetricCard label="리스크/리워드" value={positionSizing.riskReward} note="애널리스트 목표가 기준" tooltip={METRIC_TOOLTIPS.riskReward} />
+              </div>
+            </ResponsiveDetailSection>
+
+            <ResponsiveDetailSection title="트레이드 프레임">
+              <div className="trade-frame-grid">
+                <div className="trade-frame-card bull"><span className="trade-frame-label">Bull</span><p>{tradeFrame?.bull_scenario ?? 'N/A'}</p></div>
+                <div className="trade-frame-card base"><span className="trade-frame-label">Base</span><p>{tradeFrame?.base_scenario ?? 'N/A'}</p></div>
+                <div className="trade-frame-card bear"><span className="trade-frame-label">Bear</span><p>{tradeFrame?.bear_scenario ?? 'N/A'}</p></div>
+              </div>
+              <div className="trade-frame-detail-grid">
+                <DetailMetricCard label="진입가" value={tradeFrame?.entry_price ?? actionPlan?.entry ?? 'N/A'} tooltip={METRIC_TOOLTIPS.entryPrice} />
+                <DetailMetricCard label="손절가" value={tradeFrame?.stop_loss ?? tradeFrame?.invalidation_price ?? 'N/A'} tooltip={METRIC_TOOLTIPS.stopLoss} />
+                <DetailMetricCard label="목표가" value={[tradeFrame?.target_1, tradeFrame?.target_2].filter(Boolean).join(' / ') || 'N/A'} tooltip={METRIC_TOOLTIPS.targetPrice} />
+                <DetailMetricCard label="R / R" value={tradeFrame?.risk_reward_ratio ?? dashboardSizing.riskReward} note={tradeFrame?.position_size_note ?? dashboardSizing.positionShares} tooltip={METRIC_TOOLTIPS.riskReward} />
+              </div>
+              <div className="trade-frame-footer">
+                <span><strong>무효화:</strong> {tradeFrame?.invalidation_price ?? 'N/A'}</span>
+                <span><strong>관찰 기간:</strong> {tradeFrame?.watch_period ?? 'N/A'}</span>
+              </div>
+            </ResponsiveDetailSection>
+
+            <section className="signal-conclusion">
+              <h3>시그널 / 한줄 결론</h3>
+              <p className="signal-text">{analysis.signal_or_takeaway}</p>
+            </section>
+
+            <ResponsiveDetailSection title="시그널 검증 이력">
+              {signalHistory.length > 0 ? (
+                <ul className="timeline-list">
+                  {signalHistory.map((row, index) => (
+                    <li key={`${row.date}-${row.direction}-${index}`} className="timeline-item">
+                      <div className="timeline-item-head"><strong>{row.date}</strong><span>{row.direction}</span></div>
+                      <div className="timeline-item-meta">
+                        <span className="filing-form-chip">{row.catalyst}</span>
+                        {row.return5d ? <span className="period-badge">5D {row.return5d}</span> : null}
+                      </div>
+                      {row.note ? <p>{row.note}</p> : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="empty">아직 시그널 검증 이력이 없습니다.</p>
+              )}
+            </ResponsiveDetailSection>
+          </>
+        )}
+
+        {activeTab === 'AI 위원회' && (
+          analysis.committee_analysis ? (
+            <CommitteeDetailPanel committee={analysis.committee_analysis} />
+          ) : (
+            <p className="empty">위원회 데이터가 없습니다.</p>
+          )
+        )}
       </div>
     </div>
   )
@@ -916,7 +769,7 @@ function DetailMetricCard({
   value: ReactNode
   note?: string
   tooltip?: ReactNode
-}) {
+}) {  
   return (
     <div className="price-action-card">
       <span className="price-action-label price-action-label-row">
@@ -1148,11 +1001,6 @@ function toImpactClassName(level: FilingImpactLevel): string {
   return 'low'
 }
 
-function formatBeta(value?: number): string {
-  if (value === undefined || value === null || Number.isNaN(value)) return 'N/A'
-  return value.toFixed(2)
-}
-
 function formatPriceActionPair(primary?: string, secondary?: string): string {
   const base = primary?.trim() || 'N/A'
   const pct = secondary?.trim() || 'N/A'
@@ -1239,12 +1087,6 @@ function formatBeatMissLabel(value?: string): string {
   return 'N/A'
 }
 
-function formatNewsToneLabel(value?: string): string {
-  if (value === 'bullish') return '긍정적'
-  if (value === 'bearish') return '부정적'
-  return '중립'
-}
-
 function classifyBeatMissTone(value?: string): EarningsCardTone {
   if (value === 'beat') return 'positive'
   if (value === 'miss') return 'negative'
@@ -1292,7 +1134,7 @@ function formatNewsToneConfidence(confidence: number): string {
     4: '매우 높음',
     5: '매우 높음',
   }
-  return `톤 확신도 ${levelMap[normalized]} (${percentage}%)`
+  return `신뢰도 ${levelMap[normalized]} (${percentage}%)`
 }
 
 function extractCurrency(value?: string): string {

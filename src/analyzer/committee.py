@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from collections import Counter
 from typing import Any, Callable
 
@@ -26,6 +27,10 @@ from src.utils.pipeline_logging import record_pipeline_event
 COMMITTEE_ROLES = ("growth_analyst", "value_skeptic", "risk_manager", "macro_strategist", "pm")
 PRE_PM_ROLES = ("growth_analyst", "value_skeptic", "risk_manager", "macro_strategist")
 DEEP_REVIEW_ROLES = ("risk_manager", "macro_strategist")
+
+_RATE_LIMIT_MAX_ATTEMPTS = 4
+_RATE_LIMIT_BASE_BACKOFF_SEC = 3.0
+_RATE_LIMIT_MAX_BACKOFF_SEC = 30.0
 
 _ROLE_PROMPT_BUILDERS: dict[str, Callable[..., dict[str, Any]]] = {
     "growth_analyst": build_growth_analyst_prompt,
@@ -312,32 +317,66 @@ def _default_committee_role_runner(role: str, profile_name: str, prompt: dict[st
         )
         return _committee_role_fallback(role)
 
-    try:
-        response = client.responses.create(
-            model=model_profile.model,
-            max_output_tokens=model_profile.max_output_tokens,
-            input=[
-                {
-                    "role": "system",
-                    "content": [{"type": "input_text", "text": str(prompt.get("system", ""))}],
+    ticker = ""
+    ctx = prompt.get("context") if isinstance(prompt, dict) else None
+    if isinstance(ctx, dict):
+        ticker_payload = ctx.get("ticker")
+        if isinstance(ticker_payload, dict):
+            ticker = str(ticker_payload.get("ticker", "") or "")
+    cache_key = f"committee:{role}:{profile_name}:{ticker}" if ticker else f"committee:{role}:{profile_name}"
+
+    response = None
+    last_exc: Exception | None = None
+    for attempt in range(1, _RATE_LIMIT_MAX_ATTEMPTS + 1):
+        try:
+            response = client.responses.create(
+                model=model_profile.model,
+                max_output_tokens=model_profile.max_output_tokens,
+                input=[
+                    {
+                        "role": "system",
+                        "content": [{"type": "input_text", "text": str(prompt.get("system", ""))}],
+                    },
+                    {
+                        "role": "user",
+                        "content": [{"type": "input_text", "text": str(prompt.get("user", ""))}],
+                    },
+                ],
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": f"committee_{role}",
+                        "schema": _committee_role_schema(role),
+                        "strict": True,
+                    }
                 },
-                {
-                    "role": "user",
-                    "content": [{"type": "input_text", "text": str(prompt.get("user", ""))}],
-                },
-            ],
-            text={
-                "format": {
-                    "type": "json_schema",
-                    "name": f"committee_{role}",
-                    "schema": _committee_role_schema(role),
-                    "strict": True,
-                }
-            },
-            prompt_cache_key=f"committee:{role}:{profile_name}",
-            **response_temperature_kwargs(model_profile),
-        )
-    except Exception as exc:
+                prompt_cache_key=cache_key,
+                **response_temperature_kwargs(model_profile),
+            )
+            last_exc = None
+            break
+        except Exception as exc:
+            last_exc = exc
+            if attempt >= _RATE_LIMIT_MAX_ATTEMPTS or not _is_rate_limit_exception(exc):
+                break
+            backoff = min(
+                _RATE_LIMIT_BASE_BACKOFF_SEC * (2 ** (attempt - 1)),
+                _RATE_LIMIT_MAX_BACKOFF_SEC,
+            )
+            record_pipeline_event(
+                "analyzer",
+                "info",
+                "committee_role_rate_limited",
+                role=role,
+                model=model_profile.model,
+                model_profile=profile_name,
+                attempt=attempt,
+                backoff_seconds=backoff,
+                ticker=ticker,
+            )
+            time.sleep(backoff)
+
+    if last_exc is not None:
         record_pipeline_event(
             "analyzer",
             "warning",
@@ -345,8 +384,9 @@ def _default_committee_role_runner(role: str, profile_name: str, prompt: dict[st
             role=role,
             model=model_profile.model,
             model_profile=profile_name,
-            error_type=type(exc).__name__,
-            error_message=str(exc)[:200],
+            error_type=type(last_exc).__name__,
+            error_message=str(last_exc)[:200],
+            attempts=attempt,
         )
         return _committee_role_fallback(role)
 
@@ -385,6 +425,16 @@ def _default_committee_role_runner(role: str, profile_name: str, prompt: dict[st
         ticker_count=1,
     )
     return response_text
+
+
+def _is_rate_limit_exception(exc: BaseException) -> bool:
+    if type(exc).__name__ == "RateLimitError":
+        return True
+    status = getattr(exc, "status_code", None) or getattr(exc, "http_status", None)
+    if status == 429:
+        return True
+    message = str(exc).lower()
+    return "rate limit" in message or " 429" in message or "tpm" in message
 
 
 def _coerce_float(value: Any, *, default: float) -> float:
