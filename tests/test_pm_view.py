@@ -84,10 +84,13 @@ class PMViewTests(unittest.TestCase):
         self.assertIn('empty_states', pm_view)
         self.assertEqual(pm_view['swap_candidates'][0]['held_ticker'], 'NVDA')
         self.assertEqual(pm_view['swap_candidates'][0]['candidate_ticker'], 'AVGO')
-        self.assertEqual(pm_view['swap_candidates'][0]['overlap_context'], 'Same sector: Technology')
-        self.assertIn('conviction', ' '.join(pm_view['swap_candidates'][0]['reasons']).lower())
+        self.assertEqual(pm_view['swap_candidates'][0]['overlap_context'], '동일 섹터: Technology')
+        self.assertIn('확신도', ' '.join(pm_view['swap_candidates'][0]['reasons']))
         self.assertEqual(pm_view['event_exposure_items'][0]['ticker'], 'NVDA')
-        self.assertEqual(pm_view['event_exposure_items'][0]['event_label'], 'Earnings')
+        self.assertEqual(pm_view['event_exposure_items'][0]['event_label'], '실적 발표')
+        self.assertIn('교체', pm_view['swap_candidates'][0]['summary'])
+        self.assertIn('이벤트', pm_view['event_exposure_items'][0]['summary'])
+        self.assertIn('5일', ' '.join(pm_view['event_exposure_items'][0]['reasons']))
         self.assertEqual(pm_view['today_priority_queue'][0]['today_priority_score'], max(
             item['today_priority_score'] for item in pm_view['today_priority_queue']
         ))
@@ -112,9 +115,9 @@ class PMViewTests(unittest.TestCase):
         self.assertEqual(pm_view['swap_candidates'], [])
         self.assertEqual(pm_view['event_exposure_items'], [])
         self.assertEqual(pm_view['today_priority_queue'], [])
-        self.assertIn('portfolio', pm_view['empty_states']['swap_candidates'].lower())
-        self.assertIn('portfolio', pm_view['empty_states']['event_exposure_items'].lower())
-        self.assertIn('portfolio', pm_view['empty_states']['today_priority_queue'].lower())
+        self.assertIn('포트폴리오', pm_view['empty_states']['swap_candidates'])
+        self.assertIn('포트폴리오', pm_view['empty_states']['event_exposure_items'])
+        self.assertIn('포트폴리오', pm_view['empty_states']['today_priority_queue'])
 
     def test_build_pm_view_is_additive_and_never_changes_official_actions(self) -> None:
         nvda = _analysis('NVDA', sector='Technology')
@@ -180,8 +183,32 @@ class PMViewTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(pm_view['event_exposure_items'][0]['event_label'], 'Earnings')
+        self.assertEqual(pm_view['event_exposure_items'][0]['event_label'], '실적 발표')
         self.assertEqual(pm_view['event_exposure_items'][0]['days_until'], 2)
+
+    def test_build_pm_view_uses_korean_fallback_for_unknown_event_labels(self) -> None:
+        pm_view = build_pm_view(
+            [
+                _analysis(
+                    'NVDA',
+                    sector='Technology',
+                    upcoming_events=[
+                        {'type': 'roadshow', 'label': 'Capital Markets Day', 'date': '2026-04-26', 'days_until': '2'},
+                    ],
+                ),
+                _analysis('AVGO', sector='Technology'),
+            ],
+            as_of='2026-04-24',
+            portfolio_summary=_portfolio_summary('NVDA'),
+            portfolio_risk={},
+            decision_map={
+                'NVDA': _decision('watch', 58),
+                'AVGO': _decision('buy', 82),
+            },
+        )
+
+        self.assertEqual(pm_view['event_exposure_items'][0]['event_label'], '주요 일정')
+        self.assertNotIn('Capital Markets Day', pm_view['event_exposure_items'][0]['summary'])
 
 
 if __name__ == '__main__':
