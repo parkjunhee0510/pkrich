@@ -6,6 +6,7 @@ import { MacroContextBar } from '../components/MacroContextBar'
 import { MacroNarrativePanel } from '../components/MacroNarrativePanel'
 import { MarketOverview } from '../components/MarketOverview'
 import { MarketRegimeBanner } from '../components/MarketRegimeBanner'
+import { PmDailyQueue } from '../components/PmDailyQueue'
 import { SectorSummary } from '../components/SectorSummary'
 import { DashboardSkeleton } from '../components/Skeleton'
 import {
@@ -503,6 +504,8 @@ export function Dashboard() {
       </div>
 
       {refreshing && <p className="dashboard-refresh-note">최신 output을 다시 불러오는 중입니다.</p>}
+
+      <PmDailyQueue pmView={day.pm_view} />
 
       <section className="dashboard-priority-section">
         <div className="section-header-with-kicker">
