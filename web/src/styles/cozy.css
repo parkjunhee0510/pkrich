@@ -90,6 +90,58 @@
   --font-sans:   'Gowun Dodum', 'Inter', -apple-system, sans-serif;
 }
 
+/* ============================================================
+   COZY PREMIUM REFRESH — 2026-04-24
+   A+B hybrid: editorial serif + modern warm.
+   Spec: docs/superpowers/specs/2026-04-24-cozy-premium-theme-refresh-design.md
+
+   Placed AFTER the legacy :root so these token values win the
+   CSS cascade (same specificity, later declaration).
+
+   Note on --cozy-border: the legacy skin defines this name as a
+   border shorthand. We add --cozy-border-color for the color only
+   and keep --cozy-border shorthand untouched for backward compat.
+   ============================================================ */
+
+:root {
+  /* Refresh color palette (overrides warmer/lighter legacy cream + gold) */
+  --cozy-cream:      #fbf6ec;
+  --cozy-cream-2:    #f4ebd6;
+  --cozy-paper:      #fdf9ef;
+  --cozy-paper-2:    #f5ecd4;
+
+  --cozy-ink:        #2a1f10;
+  --cozy-ink-soft:   #4a3b22;
+  --cozy-muted:      #8a7655;
+  --cozy-border-color: #e8dcc0;
+
+  --cozy-gold:       #b8893a;
+  --cozy-gold-2:     #c9a14a;
+  --cozy-gold-soft:  #e8d8a8;
+
+  --cozy-good:       #3fa96b;
+  --cozy-bad:        #c25a4e;
+  --cozy-warn:       #d99a3a;
+
+  /* Typography */
+  --font-sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+
+  /* Shape */
+  --radius-card: 16px;
+  --radius-chip: 8px;
+  --radius-pill: 999px;
+
+  /* Space */
+  --space-card-gap: 20px;
+  --space-card-pad: 22px;
+
+  /* Shadow scale */
+  --shadow-sm: 0 1px 2px rgba(80,60,30,.04);
+  --shadow:    0 1px 2px rgba(80,60,30,.04), 0 8px 24px -12px rgba(80,60,30,.14);
+  --shadow-lg: 0 2px 4px rgba(80,60,30,.06), 0 20px 40px -20px rgba(80,60,30,.2);
+}
+
 /* ???? body: sky + soft clouds gradient ?????????????????????????????????????????????? */
 html { background: var(--cozy-sky-1); }
 
