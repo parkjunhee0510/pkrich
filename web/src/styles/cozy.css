@@ -867,6 +867,11 @@ a:hover { background: transparent; }
   flex-wrap: wrap;
   gap: 6px;
 }
+.market-regime-banner.cozy-premium-banner .cozy-chip.regime-driver-chip {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--cozy-border-color);
+  color: var(--cozy-ink);
+}
 
 /* ============================================================
    COZY PREMIUM — Top Navigation
