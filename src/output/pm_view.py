@@ -1,20 +1,24 @@
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from typing import Any
+
+from src.types import TickerDecision
 
 SWAP_ACTION_PENALTY = 10
 EVENT_BASE_URGENCY = 60
 EVENT_MAX_DAYS_WINDOW = 30
 EVENT_CONVICTION_BASELINE = 70
+INVALID_DAYS_UNTIL = EVENT_MAX_DAYS_WINDOW + 365
 
 
 def build_pm_view(
-    analyses: list[Any],
+    analyses: Sequence[Any],
     *,
     as_of: str,
     portfolio_summary: Any | None,
     portfolio_risk: dict[str, Any] | None,
-    decision_map: dict[str, Any],
+    decision_map: Mapping[str, TickerDecision],
 ) -> dict[str, Any]:
     risk = portfolio_risk if isinstance(portfolio_risk, dict) else {}
     held_tickers = _held_tickers(portfolio_summary)
@@ -40,10 +44,10 @@ def build_pm_view(
 
 
 def _build_swap_candidates(
-    held_analyses: list[Any],
-    candidate_analyses: list[Any],
+    held_analyses: Sequence[Any],
+    candidate_analyses: Sequence[Any],
     portfolio_risk: dict[str, Any],
-    decision_map: dict[str, Any],
+    decision_map: Mapping[str, TickerDecision],
 ) -> list[dict[str, Any]]:
     weights = _positions_by_weight(portfolio_risk)
     candidates: list[dict[str, Any]] = []
@@ -107,9 +111,9 @@ def _build_swap_candidates(
 
 
 def _build_event_exposure_items(
-    held_analyses: list[Any],
+    held_analyses: Sequence[Any],
     portfolio_risk: dict[str, Any],
-    decision_map: dict[str, Any],
+    decision_map: Mapping[str, TickerDecision],
 ) -> list[dict[str, Any]]:
     weights = _positions_by_weight(portfolio_risk)
     items: list[dict[str, Any]] = []
@@ -120,7 +124,7 @@ def _build_event_exposure_items(
         event = _nearest_event(events)
         decision = _decision_for(analysis, decision_map)
         conviction = int(getattr(decision, "conviction", 0)) if decision is not None else 0
-        days_until = _int_value(event.get("days_until"))
+        days_until = _days_until_value(event)
         weight = weights.get(str(getattr(analysis, "ticker", "")), 0.0)
         score = (
             max(0, EVENT_BASE_URGENCY - min(days_until, EVENT_MAX_DAYS_WINDOW))
@@ -229,14 +233,19 @@ def _sector(analysis: Any) -> str:
     return ""
 
 
-def _decision_for(analysis: Any, decision_map: dict[str, Any]) -> Any | None:
+def _decision_for(analysis: Any, decision_map: Mapping[str, TickerDecision]) -> TickerDecision | None:
     ticker = str(getattr(analysis, "ticker", "")).strip()
     if not ticker:
         return None
     return decision_map.get(ticker)
 
 
-def _swap_score(held: Any, candidate: Any, weights: dict[str, float], decision_map: dict[str, Any]) -> int:
+def _swap_score(
+    held: Any,
+    candidate: Any,
+    weights: dict[str, float],
+    decision_map: Mapping[str, TickerDecision],
+) -> int:
     held_decision = _decision_for(held, decision_map)
     candidate_decision = _decision_for(candidate, decision_map)
     if held_decision is None or candidate_decision is None:
@@ -249,7 +258,7 @@ def _swap_score(held: Any, candidate: Any, weights: dict[str, float], decision_m
     return conviction_gap + weight_pressure + action_penalty
 
 
-def _is_buy_candidate(analysis: Any, decision_map: dict[str, Any]) -> bool:
+def _is_buy_candidate(analysis: Any, decision_map: Mapping[str, TickerDecision]) -> bool:
     decision = _decision_for(analysis, decision_map)
     if decision is None:
         return False
@@ -271,14 +280,18 @@ def _int_value(value: Any) -> int:
     try:
         return int(str(value).strip())
     except (TypeError, ValueError):
-        return 0
+        return INVALID_DAYS_UNTIL
+
+
+def _days_until_value(event: Mapping[str, Any]) -> int:
+    return _int_value(event.get("days_until"))
 
 
 def _nearest_event(events: list[dict[str, Any]]) -> dict[str, Any]:
     return min(
         events,
         key=lambda event: (
-            _int_value(event.get("days_until")),
+            _days_until_value(event),
             str(event.get("date", "")),
             str(event.get("label") or event.get("type") or ""),
         ),

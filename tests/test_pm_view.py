@@ -160,9 +160,9 @@ class PMViewTests(unittest.TestCase):
                     'NVDA',
                     sector='Technology',
                     upcoming_events=[
-                        {'type': 'conference', 'label': 'Developer Conference', 'date': '2026-05-10', 'days_until': '16'},
+                        {'type': 'conference', 'label': 'Developer Conference', 'date': '2026-05-10', 'days_until': 'N/A'},
                         {'type': 'earnings', 'label': 'Earnings', 'date': '2026-04-26', 'days_until': '2'},
-                        {'type': 'macro', 'label': 'Fed Meeting', 'date': '2026-05-01', 'days_until': '7'},
+                        {'type': 'macro', 'label': 'Fed Meeting', 'date': '2026-05-01'},
                     ],
                 ),
                 _analysis('AVGO', sector='Technology'),

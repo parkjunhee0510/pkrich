@@ -20,6 +20,31 @@ _FIXTURE_DIR = Path(__file__).parent / "fixtures" / "output_schemas"
 
 
 class OutputSchemaTests(unittest.TestCase):
+    def test_dashboard_legacy_matches_snapshot_shape_with_pm_view(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "output"
+            with patch.dict("os.environ", {"EMIT_LEGACY_DASHBOARD": "1"}, clear=False):
+                write_json_outputs(
+                    [_sample_analysis()],
+                    date(2026, 4, 8),
+                    output_root=output_root,
+                    decisions=[
+                        TickerDecision(
+                            ticker="AAPL",
+                            action="watch",
+                            conviction=74,
+                            reason="pm decision path",
+                            valid_until="2026-04-15",
+                            factors={},
+                        )
+                    ],
+                )
+            payload = json.loads((output_root / "data" / "dashboard.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
+        expected = load_snapshot_fixture(_FIXTURE_DIR / "dashboard.shape.json")
+        self.assertEqual(normalize_json_shape(payload), expected)
+
     def test_dashboard_index_matches_snapshot_shape(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_root = Path(temp_dir) / "output"
@@ -41,7 +66,7 @@ class OutputSchemaTests(unittest.TestCase):
                     decisions=[
                         TickerDecision(
                             ticker="AAPL",
-                            action="buy",
+                            action="watch",
                             conviction=74,
                             raw_conviction=81,
                             reason="confidence shadow",

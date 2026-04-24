@@ -23,6 +23,46 @@
             "__type__": "object",
             "keys": {}
           },
+          "pm_view": {
+            "__type__": "object",
+            "keys": {
+              "as_of": {
+                "__type__": "str"
+              },
+              "empty_states": {
+                "__type__": "object",
+                "keys": {
+                  "event_exposure_items": {
+                    "__type__": "str"
+                  },
+                  "swap_candidates": {
+                    "__type__": "str"
+                  },
+                  "today_priority_queue": {
+                    "__type__": "str"
+                  }
+                }
+              },
+              "event_exposure_items": {
+                "__type__": "array",
+                "item": {
+                  "__type__": "empty"
+                }
+              },
+              "swap_candidates": {
+                "__type__": "array",
+                "item": {
+                  "__type__": "empty"
+                }
+              },
+              "today_priority_queue": {
+                "__type__": "array",
+                "item": {
+                  "__type__": "empty"
+                }
+              }
+            }
+          },
           "portfolio_risk": {
             "__type__": "object",
             "keys": {}
@@ -36,6 +76,10 @@
               "__type__": "object",
               "keys": {
                 "analysis_consensus": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "committee_analysis": {
                   "__type__": "object",
                   "keys": {}
                 },
