@@ -6,29 +6,41 @@ type PmDailyQueueProps = {
 }
 
 const DEFAULT_EMPTY_STATES = {
-  swap_candidates: 'No swap review candidates today. Current holdings remain relatively stable on conviction and event calendar.',
-  event_exposure_items: 'No urgent event exposure reviews today.',
-  today_priority_queue: 'No priority review queue today. Portfolio review can stay with the standard dashboard sections below.',
+  swap_candidates: '오늘은 교체 검토 후보가 없습니다. 현재 보유 종목의 확신도와 이벤트 일정이 비교적 안정적입니다.',
+  event_exposure_items: '오늘은 별도로 점검할 이벤트 노출이 없습니다.',
+  today_priority_queue: '오늘 바로 확인할 PM 검토 항목이 없습니다. 아래 대시보드 섹션을 순서대로 확인하면 됩니다.',
 } as const
 
+const MAX_DISPLAYABLE_DAYS = 30
+
 export function PmDailyQueue({ pmView }: PmDailyQueueProps) {
-  const swapCandidates = pmView?.swap_candidates ?? []
-  const eventExposureItems = pmView?.event_exposure_items ?? []
-  const todayPriorityQueue = pmView?.today_priority_queue ?? []
+  if (!pmView) {
+    return null
+  }
+
+  const swapCandidates = pmView.swap_candidates ?? []
+  const eventExposureItems = pmView.event_exposure_items ?? []
+  const todayPriorityQueue = pmView.today_priority_queue ?? []
+  const hasRealData = swapCandidates.length > 0 || eventExposureItems.length > 0 || todayPriorityQueue.length > 0
+
+  if (!hasRealData) {
+    return null
+  }
+
   const emptyStates = {
-    swap_candidates: pmView?.empty_states?.swap_candidates || DEFAULT_EMPTY_STATES.swap_candidates,
-    event_exposure_items: pmView?.empty_states?.event_exposure_items || DEFAULT_EMPTY_STATES.event_exposure_items,
-    today_priority_queue: pmView?.empty_states?.today_priority_queue || DEFAULT_EMPTY_STATES.today_priority_queue,
+    swap_candidates: pmView.empty_states?.swap_candidates || DEFAULT_EMPTY_STATES.swap_candidates,
+    event_exposure_items: pmView.empty_states?.event_exposure_items || DEFAULT_EMPTY_STATES.event_exposure_items,
+    today_priority_queue: pmView.empty_states?.today_priority_queue || DEFAULT_EMPTY_STATES.today_priority_queue,
   }
 
   return (
     <section className="dashboard-priority-section">
       <div className="section-header-with-kicker">
         <div>
-          <h3>PM Daily Queue</h3>
+          <h3>PM 검토 큐</h3>
           <p className="section-kicker">
-            포트폴리오 실행 지시가 아니라 오늘 먼저 검토할 항목을 빠르게 훑는 PM 검토 큐입니다.
-            {pmView?.as_of ? ` 기준 시각 ${pmView.as_of}` : ''}
+            포트폴리오에서 오늘 먼저 확인할 검토 항목만 위에 모았습니다.
+            {pmView.as_of ? ` 기준일 ${pmView.as_of}` : ''}
           </p>
         </div>
       </div>
@@ -52,8 +64,8 @@ function SwapReviewCard({
   return (
     <article className="dashboard-priority-card">
       <div className="dashboard-priority-head">
-        <span className="dashboard-priority-kicker">{items.length > 0 ? `TOP ${Math.min(items.length, 5)}` : 'Stable'}</span>
-        <strong>Swap Review Candidates</strong>
+        <span className="dashboard-priority-kicker">{items.length > 0 ? `TOP ${Math.min(items.length, 5)}` : '안정'}</span>
+        <strong>교체 검토 후보</strong>
       </div>
 
       {items.length > 0 ? (
@@ -66,12 +78,12 @@ function SwapReviewCard({
               </div>
               <div className="dashboard-priority-badges">
                 <span className="dashboard-priority-badge priority-tone-neutral">{item.overlap_context}</span>
-                <span className="dashboard-priority-badge priority-tone-neutral">검토 {item.review_points.length}개</span>
+                <span className="dashboard-priority-badge priority-tone-neutral">검토 포인트 {item.review_points.length}개</span>
               </div>
               <p>{item.summary}</p>
               <p>{compactText(item.reasons, 2)}</p>
-              <p>검토: {compactText(item.review_points, 2)}</p>
-              <Link to="/portfolio" className="ticker-link">포트폴리오 검토로 이동</Link>
+              <p>확인할 점: {compactText(item.review_points, 2)}</p>
+              <Link to="/portfolio" className="ticker-link">포트폴리오에서 이어서 보기</Link>
             </li>
           ))}
         </ul>
@@ -92,8 +104,8 @@ function EventExposureCard({
   return (
     <article className="dashboard-priority-card">
       <div className="dashboard-priority-head">
-        <span className="dashboard-priority-kicker">{items.length > 0 ? `${items.length}건` : 'Clear'}</span>
-        <strong>Event Exposure Review</strong>
+        <span className="dashboard-priority-kicker">{items.length > 0 ? `${items.length}건` : '안정'}</span>
+        <strong>이벤트 노출 점검</strong>
       </div>
 
       {items.length > 0 ? (
@@ -102,15 +114,15 @@ function EventExposureCard({
             <li key={`${item.ticker}-${item.event_label}-${item.event_date}`} className="priority-tone-down">
               <div className="dashboard-priority-label-row priority-tone-down">
                 <span>{item.ticker}</span>
-                <strong>{item.event_label} · D-{item.days_until}</strong>
+                <strong>{item.event_label} · {formatDaysUntil(item.days_until)}</strong>
               </div>
               <div className="dashboard-priority-badges">
                 <span className="dashboard-priority-badge priority-tone-down">리스크 {item.event_risk_score}</span>
-                <span className="dashboard-priority-badge priority-tone-neutral">{item.event_date}</span>
+                <span className="dashboard-priority-badge priority-tone-neutral">{item.event_date || '일정 확인 필요'}</span>
               </div>
               <p>{item.summary}</p>
               <p>{compactText(item.reasons, 2)}</p>
-              <p>검토: {compactText(item.review_points, 2)}</p>
+              <p>확인할 점: {compactText(item.review_points, 2)}</p>
               <Link to={`/ticker/${item.ticker}`} className="ticker-link">{item.ticker} 상세 보기</Link>
             </li>
           ))}
@@ -132,8 +144,8 @@ function TodayPriorityQueueCard({
   return (
     <article className="dashboard-priority-card">
       <div className="dashboard-priority-head">
-        <span className="dashboard-priority-kicker">{items.length > 0 ? `TOP ${Math.min(items.length, 6)}` : 'Idle'}</span>
-        <strong>Today Priority Queue</strong>
+        <span className="dashboard-priority-kicker">{items.length > 0 ? `TOP ${Math.min(items.length, 6)}` : '비어 있음'}</span>
+        <strong>오늘 우선 검토 큐</strong>
       </div>
 
       {items.length > 0 ? (
@@ -146,7 +158,10 @@ function TodayPriorityQueueCard({
               </div>
               <div className="dashboard-priority-badges">
                 <span className={`dashboard-priority-badge ${queueTone(item.priority_type)}`}>{item.today_priority_score}점</span>
-                <span className="dashboard-priority-badge priority-tone-neutral">{item.ticker}{item.related_ticker ? ` · ${item.related_ticker}` : ''}</span>
+                <span className="dashboard-priority-badge priority-tone-neutral">
+                  {item.ticker}
+                  {item.related_ticker ? ` · ${item.related_ticker}` : ''}
+                </span>
               </div>
               <p>{item.summary}</p>
               <p>{compactText(item.reasons, 2)}</p>
@@ -165,12 +180,22 @@ function compactText(lines: string[], limit: number): string {
   return lines.filter(Boolean).slice(0, limit).join(' · ')
 }
 
+function formatDaysUntil(value: number): string {
+  if (!Number.isFinite(value) || value < 0) {
+    return '일정 확인 필요'
+  }
+  if (value <= MAX_DISPLAYABLE_DAYS) {
+    return `D-${value}`
+  }
+  return '일정 여유'
+}
+
 function priorityLabel(priorityType: string): string {
-  if (priorityType === 'swap_review') return 'Swap Review'
-  if (priorityType === 'event_review') return 'Event Review'
-  if (priorityType === 'decision_change') return 'Decision Change'
-  if (priorityType === 'risk_warning') return 'Risk Warning'
-  return 'Review'
+  if (priorityType === 'swap_review') return '교체 검토'
+  if (priorityType === 'event_review') return '이벤트 점검'
+  if (priorityType === 'decision_change') return '판단 변화'
+  if (priorityType === 'risk_warning') return '리스크 점검'
+  return '검토'
 }
 
 function formatQueueValue(item: PMPriorityQueueItem): string {
@@ -193,6 +218,6 @@ function queueDestination(item: PMPriorityQueueItem): string {
 }
 
 function queueLinkLabel(item: PMPriorityQueueItem): string {
-  if (item.destination === 'portfolio') return '포트폴리오 검토로 이동'
+  if (item.destination === 'portfolio') return '포트폴리오에서 이어서 보기'
   return `${item.ticker} 상세 보기`
 }
