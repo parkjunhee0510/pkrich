@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-04-23",
+  "date": "2026-04-24",
   "ticker": "AMD",
   "payload": {
     "ticker": "AMD",
@@ -59,37 +59,37 @@
     ],
     "signal_or_takeaway": "중립 관찰 — [기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 294.35–316.31 | 손절 SMA50(218.89 USD) (R:R 0.2R)",
     "data_snapshot": {
-      "Price": "305.33 USD",
-      "Daily Change": "+0.62%",
-      "Market Cap": "497.81B",
-      "Trailing P/E": "117.43",
+      "Price": "346.53 USD",
+      "Daily Change": "+13.49%",
+      "Market Cap": "564.95B",
+      "Trailing P/E": "133.27",
       "EPS": "2.60",
-      "52W High": "310.22",
+      "52W High": "349.55",
       "52W Low": "91.87",
       "50D SMA": "218.89",
       "200D SMA": "205.55",
-      "Volume": "41.58M",
+      "Volume": "38778978",
       "3M Avg Volume": "37.16M",
-      "Price/Book": "7.90",
+      "Price/Book": "8.97",
       "Dividend Yield": "N/A",
       "Sector": "Technology",
-      "Open": "302.01",
-      "High": "310.22",
-      "Low": "299.76",
-      "Close": "305.33",
+      "Open": "336.83",
+      "High": "349.55",
+      "Low": "334.54",
+      "Close": "346.53",
       "RS vs Sector ETF": "+24.67%"
     },
     "fundamentals": {
-      "market_cap": "497.81B",
-      "trailing_pe": "117.43",
+      "market_cap": "564.95B",
+      "trailing_pe": "133.27",
       "eps": "2.60",
       "forward_eps": "10.98",
       "earnings_growth": "+2.17% YoY",
-      "price_to_book": "7.90",
+      "price_to_book": "8.97",
       "dividend_yield": "N/A",
-      "volume": "41.58M",
+      "volume": "38778978",
       "avg_volume_3m": "37.16M",
-      "52w_high": "310.22",
+      "52w_high": "349.55",
       "52w_low": "91.87",
       "short_float_pct": "2.24%",
       "short_ratio": "1.13일",
@@ -97,7 +97,7 @@
       "analyst_recommendation": "Buy",
       "analyst_count": "46명",
       "held_by_insiders": "0.43%",
-      "held_by_institutions": "72.23%",
+      "held_by_institutions": "72.55%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
@@ -127,15 +127,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "10.98",
-      "atr_percent": "3.60%",
-      "relative_volume": "1.12x",
-      "gap_percent": "-0.48%",
-      "price_vs_sma50": "+39.49%",
-      "price_vs_sma200": "+48.54%",
-      "week52_position": "98%",
+      "atr_14d": "13.51",
+      "atr_percent": "3.90%",
+      "relative_volume": "1.04x",
+      "gap_percent": "+10.32%",
+      "price_vs_sma50": "+58.31%",
+      "price_vs_sma200": "+68.59%",
+      "week52_position": "99%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+24.67%"
+      "rs_vs_sector_etf": "+40.66%"
     },
     "quarterly_financials": [
       {
@@ -208,10 +208,10 @@
     },
     "options_summary": {
       "expiry": "2026-04-24",
-      "atm_call_iv": "70.8%",
-      "atm_put_iv": "70.4%",
-      "put_call_ratio": "1.21x",
-      "iv_percentile_30d": "4th",
+      "atm_call_iv": "0.0%",
+      "atm_put_iv": "59.8%",
+      "put_call_ratio": "1.29x",
+      "iv_percentile_30d": "34th",
       "tone": "neutral",
       "unusual_activity": "PUT $330, vol 183, OI 대비 290% ; PUT $300, vol 201, OI 대비 86% ; PUT $450, vol 92, OI 대비 1022%",
       "oi_change": "콜 OI N/A / 풋 OI -13.1%"
@@ -376,8 +376,8 @@
       }
     },
     "period_changes": {
-      "7d": "+9.73%",
-      "30d": "+48.67%"
+      "7d": "+24.48%",
+      "30d": "+57.32%"
     },
     "sec_filing_tags": [
       "기타 공시",
@@ -451,5 +451,6 @@
         "confidence_gate": 0.829
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-04-24T15:03:46"
 }
