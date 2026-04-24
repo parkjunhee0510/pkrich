@@ -538,11 +538,11 @@ class OutputTests(unittest.TestCase):
                         total_unrealized_pnl=100.0,
                         total_unrealized_return_pct=11.11,
                     ),
-                    weekly_summary=SimpleNamespace(
-                        iso_year=2026,
-                        iso_week=15,
-                        start_date='2026-04-06',
-                        end_date='2026-04-08',
+                weekly_summary=SimpleNamespace(
+                    iso_year=2026,
+                    iso_week=15,
+                    start_date='2026-04-06',
+                    end_date='2026-04-08',
                         trading_days=3,
                         weekly_insight='주간 요약',
                         weekly_report={
@@ -556,6 +556,16 @@ class OutputTests(unittest.TestCase):
                             'portfolio_suggestions': {'summary': '포트폴리오 제안', 'items': []},
                         },
                     ),
+                    decisions=[
+                        TickerDecision(
+                            ticker='AAPL',
+                            action='watch',
+                            conviction=74,
+                            reason='pm explicit decision path',
+                            valid_until='2026-04-14',
+                            factors={},
+                        )
+                    ],
                 )
             finally:
                 if original_emit_legacy is None:
@@ -577,6 +587,7 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(dashboard['days'][0]['pm_view']['as_of'], '2026-04-08')
             self.assertEqual(dashboard['days'][0]['pm_view']['swap_candidates'], [])
             self.assertEqual(dashboard['days'][0]['pm_view']['event_exposure_items'][0]['ticker'], 'AAPL')
+            self.assertIn('conviction is only 74', dashboard['days'][0]['pm_view']['event_exposure_items'][0]['reasons'][1])
             self.assertGreaterEqual(
                 dashboard['days'][0]['pm_view']['today_priority_queue'][0]['today_priority_score'],
                 dashboard['days'][0]['pm_view']['today_priority_queue'][-1]['today_priority_score'],

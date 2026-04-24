@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from typing import Any
 
+SWAP_ACTION_PENALTY = 10
+EVENT_BASE_URGENCY = 60
+EVENT_MAX_DAYS_WINDOW = 30
+EVENT_CONVICTION_BASELINE = 70
+
 
 def build_pm_view(
     analyses: list[Any],
@@ -9,16 +14,15 @@ def build_pm_view(
     as_of: str,
     portfolio_summary: Any | None,
     portfolio_risk: dict[str, Any] | None,
-    decision_map: dict[str, Any] | None = None,
+    decision_map: dict[str, Any],
 ) -> dict[str, Any]:
     risk = portfolio_risk if isinstance(portfolio_risk, dict) else {}
-    decisions = decision_map or {}
     held_tickers = _held_tickers(portfolio_summary)
     held_analyses = [analysis for analysis in analyses if getattr(analysis, "ticker", "") in held_tickers]
     candidate_analyses = [analysis for analysis in analyses if getattr(analysis, "ticker", "") not in held_tickers]
 
-    swap_candidates = _build_swap_candidates(held_analyses, candidate_analyses, risk, decisions)
-    event_exposure_items = _build_event_exposure_items(held_analyses, risk, decisions)
+    swap_candidates = _build_swap_candidates(held_analyses, candidate_analyses, risk, decision_map)
+    event_exposure_items = _build_event_exposure_items(held_analyses, risk, decision_map)
     today_priority_queue = _build_today_priority_queue(swap_candidates, event_exposure_items, risk)
 
     empty_states = {
@@ -113,12 +117,16 @@ def _build_event_exposure_items(
         events = getattr(analysis, "upcoming_events", []) or []
         if not events:
             continue
-        event = events[0]
+        event = _nearest_event(events)
         decision = _decision_for(analysis, decision_map)
         conviction = int(getattr(decision, "conviction", 0)) if decision is not None else 0
         days_until = _int_value(event.get("days_until"))
         weight = weights.get(str(getattr(analysis, "ticker", "")), 0.0)
-        score = max(0, 60 - min(days_until, 30)) + max(0, round(weight * 100)) + max(0, 70 - conviction)
+        score = (
+            max(0, EVENT_BASE_URGENCY - min(days_until, EVENT_MAX_DAYS_WINDOW))
+            + max(0, round(weight * 100))
+            + max(0, EVENT_CONVICTION_BASELINE - conviction)
+        )
         ticker = str(getattr(analysis, "ticker", ""))
         label = str(event.get("label") or event.get("type") or "Upcoming event")
         items.append({
@@ -223,9 +231,9 @@ def _sector(analysis: Any) -> str:
 
 def _decision_for(analysis: Any, decision_map: dict[str, Any]) -> Any | None:
     ticker = str(getattr(analysis, "ticker", "")).strip()
-    if ticker and ticker in decision_map:
-        return decision_map[ticker]
-    return getattr(analysis, "decision", None)
+    if not ticker:
+        return None
+    return decision_map.get(ticker)
 
 
 def _swap_score(held: Any, candidate: Any, weights: dict[str, float], decision_map: dict[str, Any]) -> int:
@@ -237,7 +245,7 @@ def _swap_score(held: Any, candidate: Any, weights: dict[str, float], decision_m
     candidate_conviction = int(getattr(candidate_decision, "conviction", 0))
     conviction_gap = max(0, candidate_conviction - held_conviction)
     weight_pressure = round(weights.get(str(getattr(held, "ticker", "")), 0.0) * 100)
-    action_penalty = 10 if str(getattr(held_decision, "action", "")).strip() != "buy" else 0
+    action_penalty = SWAP_ACTION_PENALTY if str(getattr(held_decision, "action", "")).strip() != "buy" else 0
     return conviction_gap + weight_pressure + action_penalty
 
 
@@ -264,6 +272,17 @@ def _int_value(value: Any) -> int:
         return int(str(value).strip())
     except (TypeError, ValueError):
         return 0
+
+
+def _nearest_event(events: list[dict[str, Any]]) -> dict[str, Any]:
+    return min(
+        events,
+        key=lambda event: (
+            _int_value(event.get("days_until")),
+            str(event.get("date", "")),
+            str(event.get("label") or event.get("type") or ""),
+        ),
+    )
 
 
 def _swap_empty_state(held_tickers: set[str], items: list[dict[str, Any]]) -> str:
