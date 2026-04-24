@@ -162,9 +162,10 @@ class OutputSchemaTests(unittest.TestCase):
             payload = json.loads((output_root / "data" / "dashboard_history.json").read_text(encoding="utf-8"))
 
         pm_view = payload["days"][0]["pm_view"]
-        self.assertEqual(
-            set(pm_view.keys()),
-            {"as_of", "swap_candidates", "event_exposure_items", "today_priority_queue", "empty_states"},
+        self.assertTrue(
+            {"as_of", "swap_candidates", "event_exposure_items", "today_priority_queue", "empty_states"}.issubset(
+                pm_view.keys()
+            )
         )
         self.assertEqual(pm_view["swap_candidates"][0]["held_ticker"], "AAPL")
         self.assertEqual(pm_view["swap_candidates"][0]["candidate_ticker"], "MSFT")

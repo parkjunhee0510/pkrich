@@ -10,6 +10,8 @@ const DEFAULT_EMPTY_STATES = {
   event_exposure_items: 'No near-term event exposure reviews today. Held names do not show immediate event pressure.',
 } as const
 
+const MAX_DISPLAYABLE_DAYS = 30
+
 export function PortfolioActionsReview({ pmView }: PortfolioActionsReviewProps) {
   if (!pmView) {
     return null
@@ -17,6 +19,12 @@ export function PortfolioActionsReview({ pmView }: PortfolioActionsReviewProps) 
 
   const swapCandidates = pmView.swap_candidates ?? []
   const eventExposureItems = pmView.event_exposure_items ?? []
+  const hasRealData = swapCandidates.length > 0 || eventExposureItems.length > 0 || (pmView.today_priority_queue?.length ?? 0) > 0
+
+  if (!hasRealData) {
+    return null
+  }
+
   const emptyStates = {
     swap_candidates: pmView.empty_states?.swap_candidates || DEFAULT_EMPTY_STATES.swap_candidates,
     event_exposure_items: pmView.empty_states?.event_exposure_items || DEFAULT_EMPTY_STATES.event_exposure_items,
@@ -142,5 +150,8 @@ function formatDaysUntil(value: number): string {
   if (!Number.isFinite(value) || value < 0) {
     return 'Schedule check'
   }
-  return `D-${value}`
+  if (value <= MAX_DISPLAYABLE_DAYS) {
+    return `D-${value}`
+  }
+  return 'Scheduled later'
 }
