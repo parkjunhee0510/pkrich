@@ -102,6 +102,11 @@ class Datastore(ABC):
 
         return load_signal_stats(self.signal_csv_path)
 
+    def load_signal_rows_data(self) -> list[dict[str, str]]:
+        from src.utils.signal_tracker import load_signal_rows
+
+        return load_signal_rows(self.signal_csv_path)
+
     def get_peer_selection_cache(self, ticker: str, month_key: str) -> dict[str, Any] | None:
         return None
 

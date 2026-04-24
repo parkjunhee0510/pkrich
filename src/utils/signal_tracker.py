@@ -14,6 +14,7 @@ FIELDNAMES = [
     "ticker",
     "signal_type",
     "signal_direction",
+    "llm_direction",
     "signal_price",
     "catalyst_tag",
     "news_tone",
@@ -49,6 +50,7 @@ def record_signals(
         signal_price = price_lookup.get(analysis.ticker)
         if signal_price is None:
             continue
+        signal_direction = _classify_signal_direction(analysis)
         filings = collect_sec_filings(analysis.news_references)
         primary_filing = filings[0] if filings else {}
         retained.append(
@@ -56,7 +58,8 @@ def record_signals(
                 "signal_date": run_date.isoformat(),
                 "ticker": analysis.ticker,
                 "signal_type": str(primary_filing.get("form_type", "") or "takeaway"),
-                "signal_direction": _classify_signal_direction(analysis),
+                "signal_direction": signal_direction,
+                "llm_direction": signal_direction,
                 "signal_price": f"{signal_price:.2f}",
                 "catalyst_tag": str(primary_filing.get("tag", "") or "일반 이슈"),
                 "news_tone": str(analysis.news_tone.get("label", "neutral")),
@@ -259,6 +262,7 @@ def load_recent_signals(csv_path: Path, ticker: str, limit: int = 5) -> list[dic
             {
                 "date": str(row.get("signal_date", "")).strip(),
                 "direction": str(row.get("signal_direction", "neutral")).strip() or "neutral",
+                "llm_direction": str(row.get("llm_direction", "neutral")).strip() or "neutral",
                 "catalyst": str(row.get("catalyst_tag", "")).strip(),
                 "return_5d": str(row.get("return_5d", "N/A")).strip() or "N/A",
                 "note": str(row.get("trade_frame_scenario", "")).strip(),
