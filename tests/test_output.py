@@ -2,6 +2,7 @@
 
 import csv
 import json
+import os
 import sqlite3
 import tempfile
 import unittest
@@ -499,60 +500,68 @@ class OutputTests(unittest.TestCase):
                 encoding='utf-8',
             )
 
-            timelines = write_json_outputs(
-                [_sample_analysis()],
-                date(2026, 4, 8),
-                market_overview=[{'label': 'S&P 500', 'symbol': '^GSPC', 'price': '5,234.18', 'change': '+0.45%'}],
-                output_root=output_root,
-                period_changes_by_ticker={'AAPL': {'7d': '+3.25%', '30d': 'N/A'}},
-                portfolio_risk={
-                    'hhi': 2550.0,
-                    'portfolio_beta': 1.18,
-                    'correlation_matrix': {'AAPL': {'AAPL': 1.0}},
-                    'mdd_20d': 6.2,
-                    'var_95': 2.4,
-                    'risk_grade': 'C',
-                    'recommendations': ['기술 섹터 비중을 점검하세요.'],
-                    'positions_by_weight': [],
-                },
-                portfolio_summary=PortfolioSummary(
-                    positions=[
-                        PortfolioPosition(
-                            ticker='AAPL',
-                            shares=10,
-                            avg_cost=90.0,
-                            currency='USD',
-                            market_price=100.0,
-                            market_value=1000.0,
-                            cost_basis=900.0,
-                            unrealized_pnl=100.0,
-                            unrealized_return_pct=11.11,
-                        )
-                    ],
-                    total_market_value=1000.0,
-                    total_cost_basis=900.0,
-                    total_unrealized_pnl=100.0,
-                    total_unrealized_return_pct=11.11,
-                ),
-                weekly_summary=SimpleNamespace(
-                    iso_year=2026,
-                    iso_week=15,
-                    start_date='2026-04-06',
-                    end_date='2026-04-08',
-                    trading_days=3,
-                    weekly_insight='주간 요약',
-                    weekly_report={
-                        'headline': '2026-W15 주간 리포트',
-                        'summary': '구조화된 주간 리포트입니다.',
-                        'market_environment': {'summary': '중립', 'details': ['VIX 안정']},
-                        'top_movers': {'summary': '핵심 이동 종목', 'items': []},
-                        'signal_review': {'summary': '시그널 리뷰', 'details': []},
-                        'risk_points': {'summary': '리스크', 'items': []},
-                        'next_week_action_plan': {'summary': '액션 플랜', 'items': []},
-                        'portfolio_suggestions': {'summary': '포트폴리오 제안', 'items': []},
+            original_emit_legacy = os.environ.get('EMIT_LEGACY_DASHBOARD')
+            os.environ['EMIT_LEGACY_DASHBOARD'] = '1'
+            try:
+                timelines = write_json_outputs(
+                    [_sample_analysis()],
+                    date(2026, 4, 8),
+                    market_overview=[{'label': 'S&P 500', 'symbol': '^GSPC', 'price': '5,234.18', 'change': '+0.45%'}],
+                    output_root=output_root,
+                    period_changes_by_ticker={'AAPL': {'7d': '+3.25%', '30d': 'N/A'}},
+                    portfolio_risk={
+                        'hhi': 2550.0,
+                        'portfolio_beta': 1.18,
+                        'correlation_matrix': {'AAPL': {'AAPL': 1.0}},
+                        'mdd_20d': 6.2,
+                        'var_95': 2.4,
+                        'risk_grade': 'C',
+                        'recommendations': ['기술 섹터 비중을 점검하세요.'],
+                        'positions_by_weight': [],
                     },
-                ),
-            )
+                    portfolio_summary=PortfolioSummary(
+                        positions=[
+                            PortfolioPosition(
+                                ticker='AAPL',
+                                shares=10,
+                                avg_cost=90.0,
+                                currency='USD',
+                                market_price=100.0,
+                                market_value=1000.0,
+                                cost_basis=900.0,
+                                unrealized_pnl=100.0,
+                                unrealized_return_pct=11.11,
+                            )
+                        ],
+                        total_market_value=1000.0,
+                        total_cost_basis=900.0,
+                        total_unrealized_pnl=100.0,
+                        total_unrealized_return_pct=11.11,
+                    ),
+                    weekly_summary=SimpleNamespace(
+                        iso_year=2026,
+                        iso_week=15,
+                        start_date='2026-04-06',
+                        end_date='2026-04-08',
+                        trading_days=3,
+                        weekly_insight='주간 요약',
+                        weekly_report={
+                            'headline': '2026-W15 주간 리포트',
+                            'summary': '구조화된 주간 리포트입니다.',
+                            'market_environment': {'summary': '중립', 'details': ['VIX 안정']},
+                            'top_movers': {'summary': '핵심 이동 종목', 'items': []},
+                            'signal_review': {'summary': '시그널 리뷰', 'details': []},
+                            'risk_points': {'summary': '리스크', 'items': []},
+                            'next_week_action_plan': {'summary': '액션 플랜', 'items': []},
+                            'portfolio_suggestions': {'summary': '포트폴리오 제안', 'items': []},
+                        },
+                    ),
+                )
+            finally:
+                if original_emit_legacy is None:
+                    os.environ.pop('EMIT_LEGACY_DASHBOARD', None)
+                else:
+                    os.environ['EMIT_LEGACY_DASHBOARD'] = original_emit_legacy
 
             dashboard = json.loads((web_data_dir / 'dashboard.json').read_text(encoding='utf-8'))
             dashboard_history = json.loads((web_data_dir / 'dashboard_history.json').read_text(encoding='utf-8'))
