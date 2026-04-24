@@ -897,3 +897,80 @@ a:hover { background: transparent; }
   border-color: var(--cozy-ink);
   font-weight: 600;
 }
+
+/* ============================================================
+   COZY PREMIUM — Watchlist
+   (adapted to existing card-based layout rather than a <table>)
+   ============================================================ */
+
+/* Serif ticker symbol */
+.cozy-premium-watchlist .ticker-link {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--cozy-ink);
+  letter-spacing: 0.3px;
+}
+.cozy-premium-watchlist .ticker-link:hover {
+  color: var(--cozy-gold);
+}
+
+/* Small muted company name below ticker */
+.cozy-premium-watchlist .watchlist-card-name {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--cozy-muted);
+  letter-spacing: 0;
+}
+
+/* Cards: soft premium shell */
+.cozy-premium-watchlist .watchlist-card {
+  background: var(--cozy-cream);
+  border: 1px solid var(--cozy-border-color);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+.cozy-premium-watchlist .watchlist-card:hover {
+  box-shadow: var(--shadow);
+  background: var(--cozy-cream-2);
+}
+
+/* Decision pill — remap buy/watch/avoid to good/warn/bad */
+.cozy-premium-watchlist .watchlist-decision-pill {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-buy,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-long,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-add {
+  background: rgba(63,169,107,.14);
+  color: #2a7a4a;
+  border-color: rgba(63,169,107,.3);
+}
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-watch,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-hold {
+  background: rgba(217,154,58,.15);
+  color: #8a5e16;
+  border-color: rgba(217,154,58,.35);
+}
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-avoid,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-reduce,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-short {
+  background: rgba(194,90,78,.12);
+  color: #8a3e34;
+  border-color: rgba(194,90,78,.3);
+}
+
+/* Score block: serif number, tabular-nums */
+.cozy-premium-watchlist .watchlist-card-score strong,
+.cozy-premium-watchlist .watchlist-card-score > :not(span) {
+  font-family: var(--font-serif);
+  font-variant-numeric: tabular-nums;
+  color: var(--cozy-ink);
+}

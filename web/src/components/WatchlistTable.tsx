@@ -109,7 +109,7 @@ export function WatchlistTable({
   }
 
   return (
-    <div className="watchlist-list-wrapper">
+    <div className="watchlist-list-wrapper cozy-premium-watchlist">
       <div className="watchlist-dnd-toolbar">
         <label className="watchlist-dnd-toggle">
           <input
