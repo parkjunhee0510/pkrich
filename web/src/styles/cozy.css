@@ -828,3 +828,42 @@ a:hover { background: transparent; }
 .cozy-chip b { color: var(--cozy-ink); font-weight: 600; }
 .cozy-chip .score-plus  { color: var(--cozy-good); font-weight: 700; }
 .cozy-chip .score-minus { color: var(--cozy-bad);  font-weight: 700; }
+
+/* ============================================================
+   COZY PREMIUM — Market Regime Banner
+   ============================================================ */
+.market-regime-banner.cozy-premium-banner {
+  background: linear-gradient(180deg, var(--cozy-paper) 0%, var(--cozy-paper-2) 100%);
+  border: 1px solid var(--cozy-border-color);
+  border-radius: var(--radius-card);
+  padding: 22px 26px 20px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: var(--space-card-gap);
+}
+.market-regime-banner.cozy-premium-banner::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cozy-gold) 0%, var(--cozy-gold-2) 50%, var(--cozy-gold) 100%);
+}
+.market-regime-banner.cozy-premium-banner .cozy-eyebrow {
+  margin-bottom: 10px;
+}
+.market-regime-banner.cozy-premium-banner .regime-head-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.market-regime-banner.cozy-premium-banner .cozy-impl {
+  margin-bottom: 14px;
+}
+.market-regime-banner.cozy-premium-banner .regime-drivers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
