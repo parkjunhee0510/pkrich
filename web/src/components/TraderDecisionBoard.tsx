@@ -121,7 +121,7 @@ export function TraderDecisionBoard({
   })
 
   return (
-    <section className="dashboard-panel-section trader-decision-board-section">
+    <section className="dashboard-panel-section trader-decision-board-section cozy-premium-decision-board">
       <div className="section-header-with-kicker">
         <div>
           <h3>매매 판단 요약</h3>

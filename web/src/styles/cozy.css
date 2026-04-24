@@ -974,3 +974,49 @@ a:hover { background: transparent; }
   font-variant-numeric: tabular-nums;
   color: var(--cozy-ink);
 }
+
+/* ============================================================
+   COZY PREMIUM — Trader Decision Board
+   (adapted — the board's sub-cards get the premium card treatment
+   rather than the spec's 3-col highlight, which doesn't exist in
+   this codebase.)
+   ============================================================ */
+.cozy-premium-decision-board h3 {
+  font-family: var(--font-serif);
+  color: var(--cozy-ink);
+  letter-spacing: -0.3px;
+}
+
+.cozy-premium-decision-board .price-action-card,
+.cozy-premium-decision-board .decision-board-panel {
+  background: var(--cozy-cream);
+  border: 1px solid var(--cozy-border-color);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px;
+}
+
+.cozy-premium-decision-board .price-action-label,
+.cozy-premium-decision-board .decision-board-panel-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--cozy-gold);
+  font-weight: 700;
+}
+
+.cozy-premium-decision-board .price-action-subtext,
+.cozy-premium-decision-board .decision-board-panel-copy {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--cozy-muted);
+  line-height: 1.5;
+}
+
+.cozy-premium-decision-board .decision-board-panel-value,
+.cozy-premium-decision-board .price-action-card strong {
+  font-family: var(--font-serif);
+  color: var(--cozy-ink);
+  font-variant-numeric: tabular-nums;
+}
