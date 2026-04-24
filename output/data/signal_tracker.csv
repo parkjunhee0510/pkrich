@@ -45,7 +45,7 @@ signal_date,ticker,signal_type,signal_direction,signal_price,catalyst_tag,news_t
 2026-04-14,SPIR,10-K,bull,20.74,실적,neutral,실적 전까지 18.42-22.57 USD의 고변동 박스권 등락이 예상됩니다.,-0.96%,-9.64%,N/A,True,True,False,stop,1,-2.00%,2026-04-15
 2026-04-14,T,10-K,bull,25.62,실적,neutral,실적 전까지 24.99-27.90 USD 범위에서 박스권 등락이 유력합니다.,-0.62%,+1.01%,N/A,True,True,False,hit,2,+3.00%,2026-04-16
 2026-04-14,XOM,8-K,bull,149.24,기타 공시,neutral,현재가 기준 ±1 ATR인 143.33-155.15 USD 범위에서 실적 전 박스권 흐름이 유력합니다. RVOL 0.80x와 RSI 37.8로 급격한 추세 전환보다는 제한적 반등/조정이 예상됩니다.,-0.15%,-0.59%,N/A,True,True,False,stop,3,-2.00%,2026-04-17
-2026-04-15,AAPL,10-Q,bear,266.43,실적,중립~강세,266.43 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-1.14%,+2.53%,N/A,True,True,False,,,,
+2026-04-15,AAPL,10-Q,bear,266.43,실적,중립~강세,266.43 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-1.14%,+2.53%,N/A,True,True,False,stop,6,+3.00%,2026-04-23
 2026-04-15,AMD,8-K,bull,258.12,기타 공시,neutral,258.12 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+7.80%,+17.57%,N/A,True,True,False,hit,1,+3.00%,2026-04-16
 2026-04-15,CAT,8-K,bear,770.17,기타 공시,중립,770.17 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,+0.32%,+5.02%,N/A,True,True,False,hit,1,-2.00%,2026-04-16
 2026-04-15,IONQ,8-K,bear,43.25,기타 공시,강세,43.25 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,+3.31%,+9.50%,N/A,True,True,False,hit,1,-2.00%,2026-04-16
@@ -66,10 +66,10 @@ signal_date,ticker,signal_type,signal_direction,signal_price,catalyst_tag,news_t
 2026-04-17,PLUG,10-K,bull,2.78,실적,bearish,2.78 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+15.83%,N/A,N/A,True,False,False,hit,1,+3.00%,2026-04-20
 2026-04-17,SPIR,10-K,bear,19.54,실적,강세,19.54 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,-7.11%,N/A,N/A,True,False,False,hit,1,-2.00%,2026-04-20
 2026-04-17,T,10-K,bear,26.51,실적,약세,26.51 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-1.24%,N/A,N/A,True,False,False,hit,2,-2.00%,2026-04-21
-2026-04-17,XOM,8-K,bull,146.44,기타 공시,bullish,146.44 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,+0.85%,N/A,N/A,True,False,False,pending,,,
+2026-04-17,XOM,8-K,bull,146.44,기타 공시,bullish,146.44 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,+0.85%,N/A,N/A,True,False,False,hit,4,+3.00%,2026-04-23
 2026-04-20,AAPL,10-Q,bull,273.05,실적,bullish,273.05 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-2.52%,N/A,N/A,True,False,False,stop,1,-2.00%,2026-04-21
 2026-04-20,AMD,8-K,neutral,274.95,기타 공시,강세,274.95 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+3.47%,N/A,N/A,True,False,False,stop,1,+3.00%,2026-04-21
-2026-04-20,CAT,8-K,bull,798.40,기타 공시,neutral,798.40 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+0.26%,N/A,N/A,True,False,False,pending,,,
+2026-04-20,CAT,8-K,bull,798.40,기타 공시,neutral,798.40 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+0.26%,N/A,N/A,True,False,False,hit,3,+3.00%,2026-04-23
 2026-04-20,IONQ,8-K,bull,48.32,기타 공시,강세,48.32 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,-4.22%,N/A,N/A,True,False,False,stop,1,-2.00%,2026-04-21
 2026-04-20,KO,10-K,bull,75.48,실적,neutral,75.48 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-1.03%,N/A,N/A,True,False,False,pending,,,
 2026-04-20,ORA,10-K,bull,111.70,실적,bullish,111.70 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-3.18%,N/A,N/A,True,False,False,stop,1,-2.00%,2026-04-21
@@ -78,25 +78,36 @@ signal_date,ticker,signal_type,signal_direction,signal_price,catalyst_tag,news_t
 2026-04-20,SPIR,10-K,bear,18.15,실적,neutral,18.15 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,+3.25%,N/A,N/A,True,False,False,stop,1,+3.00%,2026-04-21
 2026-04-20,T,10-K,bear,26.18,실적,약세,26.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-1.15%,N/A,N/A,True,False,False,hit,2,-2.00%,2026-04-22
 2026-04-20,XOM,8-K,bull,147.68,기타 공시,중립-강세,147.68 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+0.46%,N/A,N/A,True,False,False,pending,,,
-2026-04-21,AAPL,10-Q,bear,266.17,실적,중립-약강세,266.17 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+2.63%,N/A,N/A,True,False,False,pending,,,
+2026-04-21,AAPL,10-Q,bear,266.17,실적,중립-약강세,266.17 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+2.63%,N/A,N/A,True,False,False,stop,2,+3.00%,2026-04-23
 2026-04-21,AMD,8-K,bull,284.49,기타 공시,bullish,284.49 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,+6.67%,N/A,N/A,True,False,False,hit,1,+3.00%,2026-04-22
-2026-04-21,CAT,8-K,bull,800.45,기타 공시,bullish,800.45 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+1.05%,N/A,N/A,True,False,False,pending,,,
+2026-04-21,CAT,8-K,bull,800.45,기타 공시,bullish,800.45 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+1.05%,N/A,N/A,True,False,False,hit,2,+3.00%,2026-04-23
 2026-04-21,IONQ,8-K,bull,46.28,기타 공시,강세,46.28 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,+2.33%,N/A,N/A,True,False,False,hit,1,+3.00%,2026-04-22
 2026-04-21,KO,10-K,bull,74.70,실적,bullish,74.70 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-0.09%,N/A,N/A,True,False,False,pending,,,
-2026-04-21,ORA,10-K,bull,108.15,실적,bullish,108.15 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,-1.06%,N/A,N/A,True,False,False,pending,,,
+2026-04-21,ORA,10-K,bull,108.15,실적,bullish,108.15 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,-1.06%,N/A,N/A,True,False,False,hit,2,+3.00%,2026-04-23
 2026-04-21,OXY,8-K,bull,56.33,기타 공시,neutral,56.33 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,+1.28%,N/A,N/A,True,False,False,pending,,,
 2026-04-21,PLUG,10-K,bull,3.08,실적,강세,3.08 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,+3.57%,N/A,N/A,True,False,False,hit,1,+3.00%,2026-04-22
 2026-04-21,SPIR,10-K,bull,18.74,실적,bearish,18.74 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,-2.51%,N/A,N/A,True,False,False,hit,1,+3.00%,2026-04-22
 2026-04-21,T,10-K,bull,25.88,실적,중립-약부정,25.88 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+0.39%,N/A,N/A,True,False,False,stop,1,-2.00%,2026-04-22
 2026-04-21,XOM,8-K,bull,148.36,기타 공시,중립,148.36 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+0.77%,N/A,N/A,True,False,False,pending,,,
-2026-04-22,AAPL,10-Q,bear,273.17,실적,중립,273.17 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,AMD,8-K,bull,303.46,기타 공시,bullish,303.46 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,CAT,8-K,bear,808.87,기타 공시,중립,808.87 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,IONQ,8-K,neutral,47.36,기타 공시,긍정적,47.36 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,KO,10-K,bull,74.63,실적,neutral,74.63 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,ORA,10-K,bull,107.00,실적,bullish,107.00 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,OXY,8-K,bull,57.05,기타 공시,약세,57.05 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,PLUG,10-K,bull,3.19,실적,중립,3.19 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,SPIR,10-K,bear,18.27,실적,bearish,18.27 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,T,8-K,bull,25.98,기타 공시,bullish,25.98 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
-2026-04-22,XOM,8-K,bear,149.50,기타 공시,neutral,149.50 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-22,AAPL,10-Q,bear,273.17,실적,중립,273.17 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+0.10%,N/A,N/A,True,False,False,pending,,,
+2026-04-22,AMD,8-K,bull,303.46,기타 공시,bullish,303.46 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,+0.62%,N/A,N/A,True,False,False,pending,,,
+2026-04-22,CAT,8-K,bear,808.87,기타 공시,중립,808.87 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+3.26%,N/A,N/A,True,False,False,stop,1,+3.00%,2026-04-23
+2026-04-22,IONQ,8-K,neutral,47.36,기타 공시,긍정적,47.36 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-7.88%,N/A,N/A,True,False,False,stop,1,-2.00%,2026-04-23
+2026-04-22,KO,10-K,bull,74.63,실적,neutral,74.63 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+2.21%,N/A,N/A,True,False,False,pending,,,
+2026-04-22,ORA,10-K,bull,107.00,실적,bullish,107.00 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+6.17%,N/A,N/A,True,False,False,hit,1,+3.00%,2026-04-23
+2026-04-22,OXY,8-K,bull,57.05,기타 공시,약세,57.05 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+1.37%,N/A,N/A,True,False,False,pending,,,
+2026-04-22,PLUG,10-K,bull,3.19,실적,중립,3.19 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,-0.31%,N/A,N/A,True,False,False,stop,1,-2.00%,2026-04-23
+2026-04-22,SPIR,10-K,bear,18.27,실적,bearish,18.27 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,-4.00%,N/A,N/A,True,False,False,hit,1,-2.00%,2026-04-23
+2026-04-22,T,8-K,bull,25.98,기타 공시,bullish,25.98 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+2.42%,N/A,N/A,True,False,False,pending,,,
+2026-04-22,XOM,8-K,bear,149.50,기타 공시,neutral,149.50 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,+0.69%,N/A,N/A,True,False,False,pending,,,
+2026-04-23,AAPL,10-Q,bear,273.43,실적,중립~약강세,273.43 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,AMD,8-K,neutral,305.33,기타 공시,강세,305.33 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,CAT,8-K,bull,835.24,기타 공시,bullish,835.24 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,IONQ,8-K,bear,43.63,기타 공시,중립,43.63 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,KO,10-K,bear,76.28,실적,bullish,76.28 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,ORA,10-K,bull,113.60,실적,bullish,113.60 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,OXY,8-K,neutral,57.83,기타 공시,중립~약강세,57.83 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,PLUG,10-K,bull,3.18,실적,중립,3.18 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,SPIR,10-K,bull,17.54,실적,neutral,17.54 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,T,8-K,bear,26.61,기타 공시,neutral,26.61 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
+2026-04-23,XOM,8-K,bear,150.53,기타 공시,neutral,150.53 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.,N/A,N/A,N/A,False,False,False,pending,,,
