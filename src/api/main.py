@@ -128,6 +128,7 @@ def _load_dashboard_payload() -> dict[str, Any]:
                     "market_overview": index_payload.get("market_overview", []),
                     "macro_context": index_payload.get("macro_context", {}),
                     "market_regime": index_payload.get("market_regime", {}),
+                    "pm_view": index_payload.get("pm_view"),
                     "portfolio_summary": index_payload.get("portfolio_summary"),
                     "portfolio_risk": index_payload.get("portfolio_risk", {}),
                     "tickers": index_payload.get("tickers", []),

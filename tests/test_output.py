@@ -9,7 +9,9 @@ import unittest
 from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
+from src.api.main import _load_dashboard_payload
 from src.output.json_export import _serialize_analysis, write_json_outputs
 from src.output.markdown import append_price_history, render_daily_markdown, render_ticker_markdown
 from src.types import NewsItem, PortfolioPosition, PortfolioSummary, TickerAnalysis, TickerDecision
@@ -213,6 +215,48 @@ def _sample_committee_analysis() -> dict[str, object]:
 
 
 class OutputTests(unittest.TestCase):
+    def test_api_dashboard_payload_preserves_pm_view_from_index_latest_day(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            output_root = Path(temp_dir) / 'output'
+            data_dir = output_root / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            data_dir.joinpath('index.json').write_text(
+                json.dumps(
+                    {
+                        'schema_version': 1,
+                        'date': '2026-04-08',
+                        'market_overview': [],
+                        'macro_context': {},
+                        'market_regime': {},
+                        'portfolio_summary': None,
+                        'portfolio_risk': {},
+                        'pm_view': {
+                            'as_of': '2026-04-08',
+                            'today_priority_queue': [{'ticker': 'AAPL', 'summary': 'review AAPL'}],
+                            'event_exposure_items': [],
+                            'swap_candidates': [],
+                            'empty_states': {
+                                'today_priority_queue': '',
+                                'event_exposure_items': 'none',
+                                'swap_candidates': 'none',
+                            },
+                        },
+                        'tickers': [],
+                        'signal_stats': {'recent_signals': [], 'summary_by_direction': {}},
+                        'weekly_summary': {'schema_version': 1},
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+                encoding='utf-8',
+            )
+
+            with patch('src.api.main.OUTPUT_ROOT', output_root):
+                payload = _load_dashboard_payload()
+
+        self.assertEqual(payload['days'][0]['pm_view']['as_of'], '2026-04-08')
+        self.assertEqual(payload['days'][0]['pm_view']['today_priority_queue'][0]['ticker'], 'AAPL')
+
     def test_render_daily_markdown_includes_key_sections_and_schedule(self) -> None:
         content = render_daily_markdown(
             [_sample_analysis()],
@@ -575,12 +619,18 @@ class OutputTests(unittest.TestCase):
 
             dashboard = json.loads((web_data_dir / 'dashboard.json').read_text(encoding='utf-8'))
             dashboard_history = json.loads((web_data_dir / 'dashboard_history.json').read_text(encoding='utf-8'))
+            index_payload = json.loads((data_dir / 'index.json').read_text(encoding='utf-8'))
+            web_index_payload = json.loads((web_data_dir / 'index.json').read_text(encoding='utf-8'))
             price_history = json.loads((web_data_dir / 'price_history.json').read_text(encoding='utf-8'))
             timeline = json.loads((web_data_dir / 'ticker_timelines.json').read_text(encoding='utf-8'))
 
             self.assertIn('AAPL', timelines)
             self.assertEqual(len(dashboard['days']), 1)
             self.assertEqual(len(dashboard_history['days']), 1)
+            self.assertEqual(index_payload['pm_view']['as_of'], '2026-04-08')
+            self.assertEqual(index_payload['pm_view']['swap_candidates'], [])
+            self.assertEqual(index_payload['pm_view']['event_exposure_items'][0]['ticker'], 'AAPL')
+            self.assertEqual(web_index_payload['pm_view']['as_of'], '2026-04-08')
             self.assertEqual(dashboard['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
             self.assertEqual(dashboard['days'][0]['portfolio_risk']['risk_grade'], 'C')
             self.assertEqual(dashboard['days'][0]['portfolio_risk']['hhi'], 2550.0)

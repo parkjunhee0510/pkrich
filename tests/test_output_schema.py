@@ -110,6 +110,7 @@ class OutputSchemaTests(unittest.TestCase):
             payload = json.loads((output_root / "data" / "index.json").read_text(encoding="utf-8"))
 
         self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
+        self.assertIn("pm_view", payload)
         expected = load_snapshot_fixture(_FIXTURE_DIR / "index.shape.json")
         self.assertEqual(normalize_json_shape(payload), expected)
 
@@ -178,6 +179,7 @@ class OutputSchemaTests(unittest.TestCase):
             )
             index_payload = json.loads((output_root / "data" / "index.json").read_text(encoding="utf-8"))
 
+        self.assertIn("pm_view", index_payload)
         expected = load_snapshot_fixture(_FIXTURE_DIR / "pm_view.shape.json")
         self.assertEqual(normalize_json_shape(index_payload["pm_view"]), expected)
 
