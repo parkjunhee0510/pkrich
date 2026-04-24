@@ -867,3 +867,33 @@ a:hover { background: transparent; }
   flex-wrap: wrap;
   gap: 6px;
 }
+
+/* ============================================================
+   COZY PREMIUM — Top Navigation
+   ============================================================ */
+.header-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--cozy-ink);
+}
+.header-title:hover { color: var(--cozy-gold); }
+
+.cozy-nav-date {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--cozy-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Active nav link: dark ink bg, gold-soft text (hardens previous invisibility fix) */
+.nav-link.nav-active,
+.nav-more-item.nav-active {
+  background: var(--cozy-ink);
+  color: var(--cozy-gold-soft) !important;
+  border-color: var(--cozy-ink);
+  font-weight: 600;
+}

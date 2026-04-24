@@ -31,6 +31,11 @@ export function Layout({ children }: { children: ReactNode }) {
 
   const isMoreActive = MORE_NAV.some((item) => isRouteActive(location.pathname, item.to))
 
+  const today = new Date()
+  const weekdays = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY']
+  const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER']
+  const todayLabel = `${weekdays[today.getDay()]} · ${months[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`
+
   useEffect(() => {
     setIsNavOpen(false)
     setIsMoreOpen(false)
@@ -145,6 +150,7 @@ export function Layout({ children }: { children: ReactNode }) {
               </div>
             )}
           </div>
+          <span className="cozy-nav-date" aria-hidden="true">{todayLabel}</span>
         </nav>
       </header>
       <main className="main">{children}</main>
