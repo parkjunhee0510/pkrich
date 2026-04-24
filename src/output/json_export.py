@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import json
+import sqlite3
 import shutil
 from datetime import date
 from pathlib import Path
@@ -19,6 +20,7 @@ from src.analyzer.derive import (
     load_monthly_summary,
     sort_sec_filings,
 )
+from src.output.pm_view import build_pm_view
 from src.output.schema import SCHEMA_VERSION
 from src.output.sharded_export import write_sharded_outputs
 from src.output.direction_alignment import write_direction_alignment_output
@@ -55,7 +57,8 @@ def write_json_outputs(
     data_dir.mkdir(parents=True, exist_ok=True)
 
     decision_map = {d.ticker: d for d in (decisions or [])}
-    emit_legacy_dashboard = is_env_flag_enabled("EMIT_LEGACY_DASHBOARD", default=False)
+    effective_price_history_rows = _resolve_price_history_rows(data_dir, price_history_rows)
+    emit_legacy_dashboard = is_env_flag_enabled("EMIT_LEGACY_DASHBOARD", default=True)
     weekly_summary_payload = {
         "schema_version": SCHEMA_VERSION,
         "iso_year": weekly_summary.iso_year if weekly_summary else run_date.isocalendar()[0],
@@ -82,14 +85,14 @@ def write_json_outputs(
         market_regime=market_regime,
         decision_map=decision_map,
         derived_by_ticker=derived_by_ticker,
-        price_history_rows=price_history_rows,
+        price_history_rows=effective_price_history_rows,
         emit_legacy_dashboard=emit_legacy_dashboard,
         weekly_summary_payload=weekly_summary_payload,
     )
     _write_price_history_exports(
         data_dir / "price_history.json",
         data_dir / "price_history.csv",
-        price_history_rows,
+        effective_price_history_rows,
     )
     backtest_payload = (
         backtest_summary
@@ -164,6 +167,13 @@ def _write_dashboard_jsons(
         "market_regime": _serialize_market_regime(market_regime),
         "portfolio_risk": portfolio_risk or {},
         "portfolio_summary": _serialize_portfolio_summary(portfolio_summary),
+        "pm_view": build_pm_view(
+            analyses,
+            as_of=run_date.isoformat(),
+            portfolio_summary=portfolio_summary,
+            portfolio_risk=portfolio_risk or {},
+            decision_map=dm,
+        ),
         "tickers": [
             _serialize_analysis(
                 a,
@@ -449,6 +459,84 @@ def _load_price_history_rows_from_csv(csv_path: Path) -> list[dict[str, str]]:
             {key.lstrip("\ufeff") if key else "": value for key, value in row.items() if key}
             for row in reader
         ]
+
+
+def _resolve_price_history_rows(
+    data_dir: Path,
+    rows: list[dict[str, str]] | None,
+) -> list[dict[str, str]]:
+    if rows is not None:
+        return rows
+    sqlite_rows = _load_price_history_rows_from_sqlite(data_dir / "price_history.sqlite")
+    if sqlite_rows:
+        return sqlite_rows
+    return _load_price_history_rows_from_csv(data_dir / "price_history.csv")
+
+
+def _load_price_history_rows_from_sqlite(sqlite_path: Path) -> list[dict[str, str]]:
+    if not sqlite_path.exists():
+        return []
+
+    connection = sqlite3.connect(sqlite_path)
+    try:
+        columns = {
+            str(row[1]).strip()
+            for row in connection.execute("PRAGMA table_info(prices)").fetchall()
+            if len(row) >= 2
+        }
+        if not columns:
+            return []
+
+        select_map = [
+            ("date", "date"),
+            ("ticker", "ticker"),
+            ("price", "price"),
+            ("daily_change", "daily_change"),
+            ("market_cap", "market_cap"),
+            ("trailing_pe", "trailing_pe"),
+            ("eps", "eps"),
+            ("high_52w", "52w_high"),
+            ("low_52w", "52w_low"),
+            ("open", "open"),
+            ("high", "high"),
+            ("low", "low"),
+            ("close", "close"),
+            ("volume", "volume"),
+        ]
+        select_clause = ", ".join(
+            column if column in columns else f"'N/A' AS [{alias}]"
+            for column, alias in select_map
+        )
+        cursor = connection.execute(
+            f"""
+            SELECT {select_clause}
+            FROM prices
+            ORDER BY date, ticker
+            """
+        )
+        return [
+            {
+                "date": str(row[0]),
+                "ticker": str(row[1]),
+                "price": str(row[2]),
+                "daily_change": str(row[3]),
+                "market_cap": str(row[4]),
+                "trailing_pe": str(row[5]),
+                "eps": str(row[6]),
+                "52w_high": str(row[7]),
+                "52w_low": str(row[8]),
+                "open": str(row[9]),
+                "high": str(row[10]),
+                "low": str(row[11]),
+                "close": str(row[12]),
+                "volume": str(row[13]),
+            }
+            for row in cursor.fetchall()
+        ]
+    except sqlite3.Error:
+        return []
+    finally:
+        connection.close()
 
 
 def _write_ticker_timelines_json(path: Path, days: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:

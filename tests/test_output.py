@@ -565,7 +565,15 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(dashboard['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
             self.assertEqual(dashboard['days'][0]['portfolio_risk']['risk_grade'], 'C')
             self.assertEqual(dashboard['days'][0]['portfolio_risk']['hhi'], 2550.0)
+            self.assertEqual(dashboard['days'][0]['pm_view']['as_of'], '2026-04-08')
+            self.assertEqual(dashboard['days'][0]['pm_view']['swap_candidates'], [])
+            self.assertEqual(dashboard['days'][0]['pm_view']['event_exposure_items'][0]['ticker'], 'AAPL')
+            self.assertGreaterEqual(
+                dashboard['days'][0]['pm_view']['today_priority_queue'][0]['today_priority_score'],
+                dashboard['days'][0]['pm_view']['today_priority_queue'][-1]['today_priority_score'],
+            )
             self.assertEqual(dashboard_history['days'][0]['portfolio_summary']['positions'][0]['ticker'], 'AAPL')
+            self.assertEqual(dashboard_history['days'][0]['pm_view']['as_of'], '2026-04-08')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['period_changes']['7d'], '+3.25%')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['news_tone']['label'], 'bullish')
             self.assertEqual(dashboard['days'][0]['tickers'][0]['earnings_setup']['forward_eps'], '6.80 USD/share')
