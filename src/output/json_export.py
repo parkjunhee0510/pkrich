@@ -202,16 +202,28 @@ def _write_dashboard_jsons(
         "weekly_report": weekly_summary.weekly_report if weekly_summary else {},
         "weekly_insight": weekly_summary.weekly_insight if weekly_summary else "",
     }
+    # Drop transient '_*' keys (e.g. _policy_tailwind_scores,
+    # _policy_impacts_by_ticker) — they may contain non-JSON-serializable
+    # dataclass instances meant only for the in-process decision factor
+    # path. Without this strip, json.dumps(latest_payload) raises
+    # TypeError ("Object of type TickerImpact is not JSON serializable")
+    # which silently aborted the dashboard.json write upstream and left
+    # /weekly report / risk-points cards stale.
+    serializable_signal_stats = (
+        {k: v for k, v in signal_stats.items() if not str(k).startswith("_")}
+        if isinstance(signal_stats, dict)
+        else signal_stats
+    )
     latest_payload = {
         "schema_version": SCHEMA_VERSION,
         "days": [new_day],
-        "signal_stats": signal_stats,
+        "signal_stats": serializable_signal_stats,
         "weekly_summary": weekly_summary_payload,
     }
     history_payload = {
         "schema_version": SCHEMA_VERSION,
         "days": merged,
-        "signal_stats": signal_stats,
+        "signal_stats": serializable_signal_stats,
         "weekly_summary": weekly_summary_payload,
     }
 
