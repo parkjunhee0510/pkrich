@@ -166,7 +166,7 @@ def _openai_web_search(today: str, model_profile: str) -> list[dict]:
                         "confidence": {"type": "number"},
                     },
                     "required": [
-                        "headline", "summary", "source_url",
+                        "headline", "summary", "raw_excerpt", "source_url",
                         "published_at", "category", "confidence",
                     ],
                     "additionalProperties": False,
