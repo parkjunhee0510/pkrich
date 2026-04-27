@@ -169,9 +169,12 @@ git commit -m "feat(design-system): add 5 semantic color roles × 7 sub-tokens (
   /* ============================================================
      Tier 3 — Component tokens
      ============================================================ */
-  --space-card-pad: var(--space-5);
+  /* NOTE: --space-card-pad (22px) and --space-card-gap (20px) already exist as
+     Tier 1 legacy in this file. They are NOT redeclared here to avoid
+     silently shifting every existing component by 2px. Plan C is
+     responsible for retuning those legacy values to the 8pt grid
+     when components are actually re-skinned. */
   --space-card-pad-hero: var(--space-6);
-  --space-card-gap: var(--space-4);
   --space-section-gap: var(--space-6);
   --space-page-pad: var(--space-7);
 

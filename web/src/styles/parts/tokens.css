@@ -133,6 +133,101 @@
   --shadow: 0 1px 2px rgba(80,60,30,.04), 0 8px 24px -12px rgba(80,60,30,.14);
   --shadow-lg: 0 2px 4px rgba(80,60,30,.06), 0 20px 40px -20px rgba(80,60,30,.2);
 
+  /* ============================================================
+     Tier 2 — Semantic role tokens (Plan A)
+     Components consume these instead of Tier 1 primitives.
+     Spec: 2026-04-27-design-system-foundation-design.md §3
+     ============================================================ */
+
+  /* Surfaces */
+  --color-bg-page: var(--cozy-cream-2);
+  --color-bg-card: var(--paper);
+  --color-bg-card-raised: var(--cozy-paper-2);
+
+  /* Text */
+  --color-fg-headline: var(--cozy-ink);
+  --color-fg-body: var(--cozy-ink-soft);
+  --color-fg-eyebrow: var(--cozy-gold);
+  --color-fg-muted: var(--cozy-muted);
+
+  /* Borders */
+  --color-border-subtle: var(--cozy-border-color);
+  --color-border-strong: var(--cozy-gold);
+
+  /* Semantic colors — 5 roles × {solid, fg, soft-bg, soft-fg, soft-border, outline-fg, outline-border} */
+
+  /* Positive (BUY, beat, risk-on) */
+  --color-positive: var(--cozy-good);
+  --color-positive-fg: #fff;
+  --color-positive-soft-bg: rgba(63, 169, 107, 0.18);
+  --color-positive-soft-fg: #2a7a4a;
+  --color-positive-soft-border: rgba(63, 169, 107, 0.3);
+  --color-positive-outline-fg: #2a7a4a;
+  --color-positive-outline-border: var(--cozy-good);
+
+  /* Negative (AVOID, miss, risk-off) */
+  --color-negative: var(--cozy-bad);
+  --color-negative-fg: #fff;
+  --color-negative-soft-bg: rgba(194, 90, 78, 0.18);
+  --color-negative-soft-fg: #8a3e34;
+  --color-negative-soft-border: rgba(194, 90, 78, 0.3);
+  --color-negative-outline-fg: #8a3e34;
+  --color-negative-outline-border: var(--cozy-bad);
+
+  /* Caution (WATCH, neutral, FED) — --color-caution already aliased above */
+  --color-caution-fg: #fff;
+  --color-caution-soft-bg: rgba(217, 154, 58, 0.18);
+  --color-caution-soft-fg: #8a5e16;
+  --color-caution-soft-border: rgba(217, 154, 58, 0.3);
+  --color-caution-outline-fg: #8a5e16;
+  --color-caution-outline-border: var(--cozy-warn);
+
+  /* Info (context, ancillary) */
+  --color-info: #5a7da8;
+  --color-info-fg: #fff;
+  --color-info-soft-bg: rgba(90, 125, 168, 0.18);
+  --color-info-soft-fg: #36506e;
+  --color-info-soft-border: rgba(90, 125, 168, 0.3);
+  --color-info-outline-fg: #36506e;
+  --color-info-outline-border: #5a7da8;
+
+  /* Accent (score, system highlight — gold) — --color-accent already aliased above */
+  --color-accent-fg: #fff;
+  --color-accent-soft-bg: rgba(184, 134, 47, 0.18);
+  --color-accent-soft-fg: #7a5a2e;
+  --color-accent-soft-border: rgba(184, 134, 47, 0.3);
+  --color-accent-outline-fg: #7a5a2e;
+  --color-accent-outline-border: var(--cozy-gold);
+
+  /* ============================================================
+     Tier 2 — Spacing scale (8pt grid, Plan A.3)
+     ============================================================ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+
+  /* ============================================================
+     Tier 3 — Component tokens
+     NOTE: --space-card-pad (22px) and --space-card-gap (20px) already
+     exist as Tier 1 legacy above. They are NOT redeclared here to
+     avoid silently shifting every existing component by 2px. Plan C
+     migrates components and retunes those legacy values when ready.
+     ============================================================ */
+  --space-card-pad-hero: var(--space-6);
+  --space-section-gap: var(--space-6);
+  --space-page-pad: var(--space-7);
+
+  --radius-badge: 6px;
+  /* --radius-card, --radius-pill, --radius-chip already defined in Tier 1 above */
+
+  --shadow-card: 0 2px 0 0 rgba(184, 134, 47, 0.18), 0 8px 22px -10px rgba(122, 90, 46, 0.28);
+
 }
 
 
