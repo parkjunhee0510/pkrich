@@ -1,0 +1,187 @@
+/* ============================================================
+   BRUTALIST DATA — stock research terminal
+   paper, ink, rules, hazard. mono-first. hard shadows. no blur.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  /* surfaces */
+  --bone: var(--cozy-cream);
+  --bone-dim: var(--cozy-cream-2);
+  --paper: #fffdf5;
+  --paper-raised: #ffffff;
+  --ink: var(--cozy-ink);
+  --ink-2: var(--cozy-ink-2);
+  --ink-soft: var(--cozy-ink-2);
+  --muted: var(--cozy-muted);
+  --rule: var(--cozy-gold);
+
+  /* signals (block swatches) */
+  --pos: #3f8a58;
+  --neg: #d16a6a;
+  --caution: #c79434;
+  --pos-block: var(--cozy-mint);  /* ② 올리브-라임 (덜 형광) */
+  --neg-block: #f4a7a7;
+  --caution-block: var(--cozy-peach);
+  --info-block: #b8d4f5;  /* ① 더 진한 블루 (대비 강화) */
+
+  /* Regime accent colors (used by macro-narrative-panel.regime-* and similar) */
+  --regime-color-risk-on: #10b981;
+  --regime-color-risk-off: #ef4444;
+  --regime-color-neutral: #94a3b8;
+  --regime-color-reflation: #f59e0b;
+  --regime-color-defensive: #6366f1;
+
+  /* hazard accent (sparing) */
+  --hazard: #e89b6a;  /* ③ 번트 앰버 (네비 골드와 통일) */
+
+  /* "on-*" tokens: text color for content placed on a colored block.
+     Themes override these when block colors change (e.g. cozy pastels need dark ink). */
+  --on-pos-block:     var(--ink);
+  --on-neg-block:     #fff;
+  --on-caution-block: var(--ink);
+  --on-info-block:    #fff;
+  --on-hazard:        #fff;
+
+  /* type */
+  --font-mono: 'Gowun Dodum', 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --font-display: 'Gaegu', 'Gowun Dodum', 'Archivo Black', sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* legacy aliases used across the codebase */
+  --color-bg-base: var(--cozy-cream);
+  --color-surface: var(--paper);
+  --surface: var(--paper);
+  --color-border: var(--cozy-gold-soft);
+  --color-border-hover: var(--cozy-gold);
+  --color-text: var(--cozy-ink);
+  --color-text-secondary: var(--cozy-ink-2);
+  --color-accent: var(--cozy-gold);
+  --color-accent-glow: transparent;
+  --color-up:      var(--pos);
+  --color-down:    var(--neg);
+  --color-caution: var(--caution);
+  --color-neutral: var(--muted);
+
+  --tone-positive-border: var(--cozy-gold-soft);
+  --tone-positive-bg: var(--cozy-mint);
+  --tone-negative-border: var(--cozy-gold-soft);
+  --tone-negative-bg: var(--neg-block);
+  --tone-caution-border: var(--cozy-gold-soft);
+  --tone-caution-bg: var(--cozy-peach);
+
+  --radius: 14px;
+  --radius-lg: 22px;
+
+  --shadow-hard: 0 4px 0 0 rgba(184,134,47,0.18), 0 8px 22px -10px rgba(122,90,46,0.28);
+  --shadow-hard-sm: 0 2px 0 0 rgba(184,134,47,0.16), 0 4px 12px -6px rgba(122,90,46,0.22);
+  --shadow-hard-lg: 0 6px 0 0 rgba(184,134,47,0.2),  0 14px 30px -14px rgba(122,90,46,0.32);
+  --shadow-glow: var(--shadow-hard);
+  --glass-blur: none;
+
+  --rule-weight: 1.5px;
+
+  /* nav hover — medieval theme */
+  --nav-hover-bg:   #120d04;
+  --nav-hover-gold: #d4a520;
+  --nav-hover-fire: #c8830a;
+
+  /* merged from cozy override */
+  --cozy-sky-1: #e8f1ff;
+  --cozy-sky-2: #f6e7f0;
+  --cozy-sky-3: #fff4e6;
+  --cozy-cream: #fbf6ec;
+  --cozy-cream-2: #f4ebd6;
+  --cozy-gold: #b8893a;
+  --cozy-gold-2: #c9a14a;
+  --cozy-gold-soft: #e8d8a8;
+  --cozy-rose: #f7b6c2;
+  --cozy-mint: #a8dcb6;
+  --cozy-peach: #ffcf9a;
+  --cozy-lav: #cdbdf0;
+  --cozy-leaf: #8ec29a;
+  --cozy-ink: #2a1f10;
+  --cozy-ink-2: #7a5a2e;
+  --cozy-muted: #8a7655;
+  --cozy-surface-gradient: linear-gradient(180deg, #fffdf5 0%, #fdf3df 100%);
+  --cozy-banner-gradient: linear-gradient(180deg, #fff7e4 0%, #fceccb 100%);
+  --cozy-primary-gradient: linear-gradient(180deg, #ffe1a8 0%, #f3bf60 100%);
+  --cozy-primary-gradient-hover: linear-gradient(180deg, #ffd98a 0%, #e8ac47 100%);
+  --cozy-border: 1.5px solid var(--cozy-gold-soft);
+  --cozy-border-strong: 1.5px solid var(--cozy-gold);
+  --cozy-pill-radius: 999px;
+  --cozy-card-radius: 6px;
+  --cozy-input-radius: 14px;
+  --cozy-soft-panel-bg: rgba(255,253,245,0.7);
+  --cozy-inset-shadow: inset 0 1px 2px rgba(184,134,47,0.08);
+  --cozy-pill-shadow: 0 2px 0 rgba(184,134,47,0.12);
+  --cozy-paper: #fdf9ef;
+  --cozy-paper-2: #f5ecd4;
+  --cozy-ink-soft: #4a3b22;
+  --cozy-border-color: #e8dcc0;
+  --cozy-good: #3fa96b;
+  --cozy-bad: #c25a4e;
+  --cozy-warn: #d99a3a;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --radius-card: 16px;
+  --radius-chip: 8px;
+  --radius-pill: 999px;
+  --space-card-gap: 20px;
+  --space-card-pad: 22px;
+  --shadow-sm: 0 1px 2px rgba(80,60,30,.04);
+  --shadow: 0 1px 2px rgba(80,60,30,.04), 0 8px 24px -12px rgba(80,60,30,.14);
+  --shadow-lg: 0 2px 4px rgba(80,60,30,.06), 0 20px 40px -20px rgba(80,60,30,.2);
+
+}
+
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { background: var(--bone); }
+
+body {
+  font-family: var(--font-sans);
+  background: radial-gradient(1100px 380px at 12% 8%,  rgba(255,255,255,0.85), transparent 65%),
+    radial-gradient(900px  320px at 88% 14%, rgba(255,255,255,0.7),  transparent 60%),
+    radial-gradient(800px  260px at 50% 92%, rgba(255,244,230,0.8),  transparent 65%),
+    linear-gradient(180deg, var(--cozy-sky-1) 0%, var(--cozy-sky-2) 55%, var(--cozy-sky-3) 100%);
+  color: var(--cozy-ink);
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums slashed-zero;
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+::selection {
+  background: var(--cozy-gold-soft);
+  color: var(--cozy-ink);
+}
+
+a {
+  color: var(--cozy-gold-2);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-skip-ink: none;
+}
+a:hover {
+  background: transparent;
+  color: var(--cozy-ink);
+  text-decoration: none;
+}
+
+button { font-family: inherit; cursor: pointer; }
+
+code, pre, kbd { font-family: var(--font-mono); }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: var(--cozy-ink);
+}
+
+hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }

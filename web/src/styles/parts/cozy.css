@@ -1,0 +1,808 @@
+/* ============================================================
+   COZY OVERRIDES (merged from cozy.css on 2026-04-27)
+   These rules previously lived in cozy.css and were loaded AFTER
+   global.css. They remain at the end of this file to preserve the
+   original cascade. Any new UI tweaks should go in this section or
+   replace the conflicting base rule above.
+   ============================================================ */
+
+/* ============================================================
+   COZY COTTAGECORE ??pastel parchment skin
+   Override layer on top of brutalist base. Keeps structure,
+   swaps tokens, softens corners, warms the palette.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap');
+
+/* :root override block removed — variables consolidated into base :root above */
+
+
+/* ============================================================
+   COZY PREMIUM REFRESH — 2026-04-24
+   A+B hybrid: editorial serif + modern warm.
+   Spec: docs/superpowers/specs/2026-04-24-cozy-premium-theme-refresh-design.md
+
+   Placed AFTER the legacy :root so these token values win the
+   CSS cascade (same specificity, later declaration).
+
+   Note on --cozy-border: the legacy skin defines this name as a
+   border shorthand. We add --cozy-border-color for the color only
+   and keep --cozy-border shorthand untouched for backward compat.
+   ============================================================ */
+
+/* :root override block removed — variables consolidated into base :root above */
+
+
+/* ???? body: sky + soft clouds gradient ?????????????????????????????????????????????? */
+html { background: var(--cozy-sky-1); }
+
+
+
+
+
+/* ???? typography: rounded, warm ???????????????????????????????????????????????????????????? */
+
+h1 { font-weight: 700; }
+
+
+
+
+/* ???? header: parchment banner ?????????????????????????????????????????????????????????????? */
+.dashboard-header,
+.header {
+  background: var(--cozy-banner-gradient);
+  border: var(--cozy-border);
+  border-radius: 26px;
+  box-shadow: var(--shadow-hard);
+  padding: 18px 24px;
+  position: relative;
+}
+.dashboard-header::before,
+.header::before {
+  content: "?";
+  position: absolute;
+  left: 14px; top: 10px;
+  color: var(--cozy-gold);
+  font-size: 14px;
+  opacity: 0.7;
+}
+.dashboard-header::after,
+.header::after {
+  content: "?";
+  position: absolute;
+  right: 14px; bottom: 10px;
+  color: var(--cozy-rose);
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+
+
+
+
+
+.nav-link.active    { background: var(--cozy-peach); color: var(--cozy-ink); border-color: var(--cozy-gold-2); font-weight: 700; }
+.nav-link.nav-active { background: var(--cozy-gold); color: var(--cozy-ink) !important; border-color: var(--cozy-gold-2); font-weight: 700; }
+
+/* ???? generic card surfaces ???????????????????????????????????????????????????????????????????? */
+.watchlist-card,
+.decision-card,
+.sector-card,
+.setup-card,
+.trade-frame-card,
+.earnings-board-card,
+.earnings-hero-card,
+.latest-filing-card,
+.macro-calendar-card,
+.macro-series-card,
+.portfolio-risk-card,
+.portfolio-group-card,
+.portfolio-risk-summary-card,
+.portfolio-summary-card,
+.signal-highlight-card,
+.signal-summary-card,
+.calendar-event-card,
+.weekly-report-card,
+.api-provider-card,
+.price-action-card,
+.detail-note-card,
+.ticker-detail-section-shell {
+  background: var(--cozy-surface-gradient);
+  border: var(--cozy-border);
+  border-radius: var(--cozy-card-radius);
+  box-shadow: var(--shadow-hard);
+  color: var(--cozy-ink);
+}
+
+/* stat cards: squarer corners, not pill-shaped (override cozy pill catch-all) */
+.watchlist-stat-card,
+.watchlist-stat-card.stat-tone-positive,
+.watchlist-stat-card.stat-tone-negative,
+.watchlist-stat-card.stat-tone-caution,
+.watchlist-stat-card.stat-tone-neutral {
+  border-radius: 6px !important;
+  border: var(--cozy-border) !important;
+  padding: 0.6rem 0.75rem;
+  box-shadow: none;
+}
+
+.watchlist-card:hover,
+.decision-card:hover {
+  border-color: var(--cozy-gold);
+  transform: translateY(-2px);
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+  box-shadow: var(--shadow-hard-lg);
+}
+
+/* ???? buttons / filter chips ?????????????????????????????????????????????????????????????????? */
+button,
+.dashboard-filter-btn,
+.primary-action-button,
+.secondary-action-button,
+.preset-chip,
+.filing-tab,
+.filing-form-chip,
+.catalyst-tab,
+.price-chart-mode-toggle,
+.watchlist-dnd-toggle,
+.watchlist-dnd-reset,
+.portfolio-add-lot-button,
+.portfolio-delete-lot-button {
+  border-radius: var(--cozy-pill-radius);
+  border: var(--cozy-border);
+  background: var(--paper);
+  color: var(--cozy-ink);
+  font-family: var(--font-sans);
+  padding: 6px 14px;
+  transition: background 0.18s, transform 0.18s, border-color 0.18s;
+  box-shadow: var(--shadow-hard-sm);
+}
+button:hover,
+.dashboard-filter-btn:hover,
+.preset-chip:hover,
+.filing-tab:hover {
+  background: var(--cozy-cream-2);
+  border-color: var(--cozy-gold);
+  transform: translateY(-1px);
+}
+button:active { transform: translateY(0); }
+
+
+.primary-action-button:hover { background: var(--cozy-primary-gradient-hover); }
+
+.dashboard-filter-btn.active,
+.preset-chip.active,
+.filing-tab.active,
+.catalyst-tab.active { background: var(--cozy-peach); border-color: var(--cozy-gold); color: var(--cozy-ink); font-weight: 700; }
+
+/* ???? decision pills (STRONG BUY / WATCH / AVOID) ???????????????????????? */
+.watchlist-decision-pill,
+.decision-action-badge,
+[class*="decision-pill-"],
+[class*="signal-badge"],
+.signal-overall-badge,
+.signal-direction-chip,
+.setup-direction,
+.tone-badge,
+[class*="tone-"],
+[class*="posture-"],
+.regime-badge,
+.event-badge,
+.filing-badge,
+.filing-catalyst-badge,
+.filing-impact-badge,
+.earnings-result-chip,
+.eps-chip,
+.correlation-badge,
+.score-factor-chip,
+.decision-factor-chip,
+.decision-ensemble-badge,
+.ticker-ensemble-badge,
+.ticker-third-review-badge,
+.decision-third-pass-badge,
+.setup-score-badge,
+.valuation-score-badge,
+.options-context-badge,
+.watchlist-catalyst-pill,
+.watchlist-focus-pill,
+.regime-driver-chip,
+.api-provider-field-chip,
+.calendar-day-badge,
+.period-badge,
+.macro-sensitive-chip {
+  border-radius: var(--cozy-pill-radius);
+  padding: 3px 10px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  border: var(--cozy-border);
+  letter-spacing: 0;
+  color: var(--cozy-ink);
+  box-shadow: var(--cozy-pill-shadow);
+}
+
+.watchlist-decision-pill.buy,
+.decision-action-badge.buy,
+.signal-direction-chip.bull,
+.setup-direction.bull,
+.tone-badge.bull,
+.tone-positive { background: var(--cozy-mint); border-color: #7db991; }
+
+.watchlist-decision-pill.watch,
+.decision-action-badge.watch,
+.tone-neutral { background: var(--cozy-peach); border-color: #e0a870; }
+
+.watchlist-decision-pill.avoid,
+.decision-action-badge.avoid,
+.signal-direction-chip.bear,
+.setup-direction.bear,
+.tone-badge.bear,
+.tone-negative { background: var(--neg-block); border-color: #d98585; }
+
+/* ???? inputs ?????????????????????????????????????????????????????????????????????????????????????????????????? */
+input, select, textarea,
+.dashboard-ticker-input,
+.dashboard-search,
+.filing-search,
+.date-select,
+.scenario-adjustment-input {
+  border-radius: var(--cozy-input-radius);
+  border: var(--cozy-border);
+  background: var(--paper);
+  color: var(--cozy-ink);
+  font-family: var(--font-sans);
+  padding: 7px 12px;
+  box-shadow: var(--cozy-inset-shadow);
+}
+
+
+/* ???? tables: soft parchment ?????????????????????????????????????????????????????????????????? */
+.watchlist-table,
+.snapshot-table,
+.api-status-table,
+table {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: var(--cozy-border);
+  background: var(--paper);
+}
+th {
+  background: #fceccb;
+  color: var(--cozy-ink);
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+  border-bottom: 1.5px solid var(--cozy-gold-soft);
+}
+td { border-bottom: 1px dashed var(--cozy-gold-soft); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(252,236,203,0.45); }
+
+/* ???? score badges ?????????????????????????????????????????????????????????????????????????????????????? */
+.watchlist-card-score,
+.setup-score-inline {
+  background: var(--cozy-primary-gradient);
+  border: var(--cozy-border-strong);
+  border-radius: var(--cozy-input-radius);
+  color: var(--cozy-ink);
+  font-family: var(--font-display);
+  box-shadow: var(--shadow-hard-sm);
+  padding: 4px 12px;
+}
+
+/* ???? conviction meter ?????????????????????????????????????????????????????????????????????????????? */
+.decision-conviction-bar,
+.portfolio-risk-gauge-bar {
+  background: rgba(184,134,47,0.18);
+  border-radius: var(--cozy-pill-radius);
+  overflow: hidden;
+  border: 1px solid var(--cozy-gold-soft);
+}
+.decision-conviction-fill,
+.portfolio-risk-gauge-fill {
+  background: linear-gradient(90deg, var(--cozy-mint) 0%, var(--cozy-gold) 100%);
+  border-radius: var(--cozy-pill-radius);
+}
+
+/* ???? toast / misc ?????????????????????????????????????????????????????????????????????????????????????? */
+.dashboard-toast,
+.dashboard-toast-stack > * {
+  border-radius: 16px;
+  border: var(--cozy-border);
+  background: var(--paper);
+  box-shadow: var(--shadow-hard);
+  color: var(--cozy-ink);
+}
+
+
+
+/* ???? remove brutalist artifacts ???????????????????????????????????????????????????????? */
+body::before, body::after { display: none !important; }
+
+/* hide "DATA // TERMINAL" watermark */
+
+
+/* ???? back-link (??DASHBOARD): rounded pill ???????????????????????????????????? */
+.back-link {
+  border-radius: var(--cozy-pill-radius);
+  border: var(--cozy-border);
+  background: var(--paper);
+  color: var(--cozy-ink);
+  font-family: var(--font-sans);
+  box-shadow: var(--shadow-hard-sm);
+  text-decoration: none;
+}
+.back-link:hover {
+  background: var(--cozy-peach);
+  border-color: var(--cozy-gold);
+  color: var(--cozy-ink);
+  transform: translateY(-1px);
+}
+
+/* ???? status pill (?????熬곣뫁?????댁쾼) ?????????????????????????????????????????????????????? */
+
+
+
+/* ???? macro event cards: cozy parchment ???????????????????????????????????????????? */
+
+
+
+
+
+/* macro calendar bias text block ??was dark-on-dark */
+
+
+/* ???? header: hide underline on title link ???????????????????????????????????? */
+
+
+
+/* hide brutalist corner accent */
+
+
+/* ???? ticker-header: cozy card, muted left stripe ?????????????????????? */
+
+
+
+
+
+
+/* decision board price-action cards: replace hazard left bands with cozy palette */
+
+
+
+
+
+
+
+
+/* ???? skeleton loaders ?????????????????????????????????????????????????????????????????????????????? */
+.skeleton, .skeleton-row {
+  background: linear-gradient(90deg, #fceccb 0%, #fff7e4 50%, #fceccb 100%);
+  background-size: 200% 100%;
+  border-radius: 10px;
+  animation: cozyShimmer 1.6s ease-in-out infinite;
+}
+@keyframes cozyShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ???? scrollbar ???????????????????????????????????????????????????????????????????????????????????????????? */
+
+
+
+
+
+/* ???? dashboard controls bar ?????????????????????????????????????????????????????????????????? */
+.dashboard-controls,
+.dashboard-quick-bar,
+.filing-toolbar,
+.filing-controls,
+.price-chart-toolbar,
+.watchlist-dnd-toolbar {
+  background: var(--cozy-soft-panel-bg);
+  border: var(--cozy-border);
+  border-radius: 18px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow-hard-sm);
+  backdrop-filter: blur(4px);
+}
+
+
+
+
+
+/* ???? section kicker / muted labels ???????????????????????????????????????????????????? */
+.section-kicker,
+.dashboard-refresh-note,
+.muted,
+.price-action-label,
+.ticker-meta-explainer {
+  color: var(--cozy-muted);
+  font-family: var(--font-sans);
+}
+
+/* ???? recolor ALL brutalist dark-bg elements to a softer cozy surface with light text ????
+   global.css uses `background: var(--ink)` in ~40 places. Because we overrode --ink
+   to brown, the cozy pill catch-all (which forces color: var(--cozy-ink)) produced
+   brown-on-brown. Target the actual classes and give them cozy-ink bg + cream text. */
+.watchlist-action-details summary,
+.watchlist-table th,
+.snapshot-table th,
+.setup-direction,
+.watchlist-focus-pill,
+.primary-action-button,
+.portfolio-add-lot-button.standalone,
+.dashboard-filter-btn.active,
+.dashboard-filter-btn:hover,
+.catalyst-tab.active,
+.filing-tab.active,
+.preset-chip.active,
+.decision-factor-chip.factor-negative,
+.options-chip.options-chip-bearish {
+  color: var(--cozy-cream) !important;
+}
+.watchlist-focus-pill {
+  background: var(--cozy-ink) !important;
+  border-color: var(--cozy-ink) !important;
+}
+
+.decision-action-badge,
+.valuation-score-badge.valuation-fair,
+.valuation-score-badge.valuation-overvalued,
+.signal-overall-badge {
+  color: #fff !important;
+}
+
+/* chart container: cozy shell + ensure lightweight-charts canvas fits */
+
+.chart-container .tv-lightweight-charts,
+.chart-container .tv-lightweight-charts table {
+  width: 100% !important;
+  max-width: 100%;
+}
+.chart-container .tv-lightweight-charts canvas {
+  max-width: 100%;
+}
+.watchlist-action-details summary strong,
+.watchlist-action-details summary span {
+  color: var(--cozy-cream) !important;
+}
+
+/* tab/filter active: cozy peach with dark text (more readable than dark pill) */
+.catalyst-tab.active,
+.dashboard-filter-btn.active,
+.filing-tab.active,
+.preset-chip.active {
+  background: var(--cozy-peach) !important;
+  color: var(--cozy-ink) !important;
+  border-color: var(--cozy-gold) !important;
+}
+
+
+
+
+
+/* ???? watchlist-card tone bands: thick left border with matched corner radius ???? */
+.watchlist-card.setup-tone-high,
+.watchlist-card.setup-tone-medium,
+.watchlist-card.setup-tone-light,
+.watchlist-card.setup-tone-muted,
+.decision-card.decision-buy,
+.decision-card.decision-watch,
+.decision-card.decision-avoid {
+  border-left-width: 6px;
+  border-left-style: solid;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+
+
+
+
+
+
+
+
+/* ???? links: don't flash dark brown on hover ???? */
+
+
+
+/* ============================================================
+   COZY PREMIUM — Typography & Component Utilities
+   ============================================================ */
+
+/* Typography */
+.cozy-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--cozy-gold);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.cozy-eyebrow .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cozy-good);
+  box-shadow: 0 0 0 4px rgba(63,169,107,.2);
+}
+.cozy-eyebrow .dot.warn { background: var(--cozy-warn); box-shadow: 0 0 0 4px rgba(217,154,58,.2); }
+.cozy-eyebrow .dot.bad  { background: var(--cozy-bad);  box-shadow: 0 0 0 4px rgba(194,90,78,.2); }
+
+.cozy-headline {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--cozy-ink);
+  margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+.cozy-headline em { font-style: italic; color: var(--cozy-gold); }
+
+.cozy-impl {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--cozy-ink-soft);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cozy-body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cozy-ink-soft);
+}
+
+.cozy-caption {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--cozy-muted);
+  font-weight: 700;
+}
+
+.cozy-numeric {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+.cozy-numeric-xl {
+  font-family: var(--font-serif);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--cozy-ink);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Component utilities */
+.cozy-pill {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cozy-ink);
+  background: var(--cozy-gold-soft);
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.2px;
+  display: inline-block;
+}
+
+.cozy-chip {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--cozy-border-color);
+  border-radius: var(--radius-chip);
+  color: var(--cozy-ink-soft);
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cozy-chip b { color: var(--cozy-ink); font-weight: 600; }
+.cozy-chip .score-plus  { color: var(--cozy-good); font-weight: 700; }
+.cozy-chip .score-minus { color: var(--cozy-bad);  font-weight: 700; }
+
+/* ============================================================
+   COZY PREMIUM — Market Regime Banner
+   ============================================================ */
+.market-regime-banner.cozy-premium-banner {
+  background: linear-gradient(180deg, var(--cozy-paper) 0%, var(--cozy-paper-2) 100%);
+  border: 1px solid var(--cozy-border-color);
+  border-radius: var(--radius-card);
+  padding: 22px 26px 20px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: var(--space-card-gap);
+}
+.market-regime-banner.cozy-premium-banner::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cozy-gold) 0%, var(--cozy-gold-2) 50%, var(--cozy-gold) 100%);
+}
+.market-regime-banner.cozy-premium-banner .cozy-eyebrow {
+  margin-bottom: 10px;
+}
+.market-regime-banner.cozy-premium-banner .regime-head-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.market-regime-banner.cozy-premium-banner .cozy-impl {
+  margin-bottom: 14px;
+}
+.market-regime-banner.cozy-premium-banner .regime-drivers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.market-regime-banner.cozy-premium-banner .cozy-chip.regime-driver-chip {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--cozy-border-color);
+  color: var(--cozy-ink);
+}
+
+/* ============================================================
+   COZY PREMIUM — Top Navigation
+   ============================================================ */
+
+
+
+.cozy-nav-date {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--cozy-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Active nav link: dark ink bg, gold-soft text (hardens previous invisibility fix) */
+.nav-link.nav-active,
+.nav-more-item.nav-active {
+  background: var(--cozy-ink);
+  color: var(--cozy-gold-soft) !important;
+  border-color: var(--cozy-ink);
+  font-weight: 600;
+}
+
+/* ============================================================
+   COZY PREMIUM — Watchlist
+   (adapted to existing card-based layout rather than a <table>)
+   ============================================================ */
+
+/* Serif ticker symbol */
+.cozy-premium-watchlist .ticker-link {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--cozy-ink);
+  letter-spacing: 0.3px;
+}
+.cozy-premium-watchlist .ticker-link:hover {
+  color: var(--cozy-gold);
+}
+
+/* Small muted company name below ticker */
+.cozy-premium-watchlist .watchlist-card-name {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--cozy-muted);
+  letter-spacing: 0;
+}
+
+/* Cards: soft premium shell */
+.cozy-premium-watchlist .watchlist-card {
+  background: var(--cozy-cream);
+  border: 1px solid var(--cozy-border-color);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+.cozy-premium-watchlist .watchlist-card:hover {
+  box-shadow: var(--shadow);
+  background: var(--cozy-cream-2);
+}
+
+/* Decision pill — remap buy/watch/avoid to good/warn/bad */
+.cozy-premium-watchlist .watchlist-decision-pill {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-buy,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-long,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-add {
+  background: rgba(63,169,107,.14);
+  color: #2a7a4a;
+  border-color: rgba(63,169,107,.3);
+}
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-watch,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-hold {
+  background: rgba(217,154,58,.15);
+  color: #8a5e16;
+  border-color: rgba(217,154,58,.35);
+}
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-avoid,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-reduce,
+.cozy-premium-watchlist .watchlist-decision-pill.decision-pill-short {
+  background: rgba(194,90,78,.12);
+  color: #8a3e34;
+  border-color: rgba(194,90,78,.3);
+}
+
+/* Score block: serif number, tabular-nums */
+.cozy-premium-watchlist .watchlist-card-score strong,
+.cozy-premium-watchlist .watchlist-card-score > :not(span) {
+  font-family: var(--font-serif);
+  font-variant-numeric: tabular-nums;
+  color: var(--cozy-ink);
+}
+
+/* ============================================================
+   COZY PREMIUM — Trader Decision Board
+   (adapted — the board's sub-cards get the premium card treatment
+   rather than the spec's 3-col highlight, which doesn't exist in
+   this codebase.)
+   ============================================================ */
+.cozy-premium-decision-board h3 {
+  font-family: var(--font-serif);
+  color: var(--cozy-ink);
+  letter-spacing: -0.3px;
+}
+
+.cozy-premium-decision-board .price-action-card,
+.cozy-premium-decision-board .decision-board-panel {
+  background: var(--cozy-cream);
+  border: 1px solid var(--cozy-border-color);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px;
+}
+
+.cozy-premium-decision-board .price-action-label,
+.cozy-premium-decision-board .decision-board-panel-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--cozy-gold);
+  font-weight: 700;
+}
+
+.cozy-premium-decision-board .price-action-subtext,
+.cozy-premium-decision-board .decision-board-panel-copy {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--cozy-muted);
+  line-height: 1.5;
+}
+
+.cozy-premium-decision-board .decision-board-panel-value,
+.cozy-premium-decision-board .price-action-card strong {
+  font-family: var(--font-serif);
+  color: var(--cozy-ink);
+  font-variant-numeric: tabular-nums;
+}
