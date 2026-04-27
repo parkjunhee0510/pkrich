@@ -1,13 +1,29 @@
 {
   "schema_version": 1,
   "summary": {
-    "total_signals": 112,
-    "comparable_signals": 0,
-    "agreement_count": 0,
+    "total_signals": 123,
+    "comparable_signals": 11,
+    "agreement_count": 11,
     "conflict_count": 0,
-    "agreement_rate": null,
-    "latest_signal_date": ""
+    "agreement_rate": 100.0,
+    "latest_signal_date": "2026-04-24"
   },
-  "by_pair": [],
+  "by_pair": [
+    {
+      "rule_direction": "bull",
+      "llm_direction": "bull",
+      "count": 7
+    },
+    {
+      "rule_direction": "bear",
+      "llm_direction": "bear",
+      "count": 2
+    },
+    {
+      "rule_direction": "neutral",
+      "llm_direction": "neutral",
+      "count": 2
+    }
+  ],
   "recent_conflicts": []
 }
