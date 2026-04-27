@@ -100,39 +100,52 @@ def _openai_map(
     profile = (models_cfg.get("profiles") or {}).get(model_profile) or {}
     model = profile.get("model", "gpt-5.4")
 
+    impact_item_schema = {
+        "type": "object",
+        "properties": {
+            "ticker": {"type": "string"},
+            "direction": {
+                "type": "string",
+                "enum": ["positive", "negative", "neutral"],
+            },
+            "strength": {
+                "type": "string",
+                "enum": ["direct", "indirect", "neutral"],
+            },
+            "score": {"type": "number"},
+            "confidence": {"type": "number"},
+            "rationale": {"type": "string"},
+        },
+        "required": [
+            "ticker", "direction", "strength",
+            "score", "confidence", "rationale",
+        ],
+        "additionalProperties": False,
+    }
+    # NOTE: list-of-pairs (not open-dict) so strict mode accepts.
+    # OpenAI strict mode requires additionalProperties=false on every
+    # object; the open-dict idiom (additionalProperties: <schema>) is
+    # rejected. We post-parse back into the dict shape downstream.
     schema = {
         "type": "object",
         "properties": {
-            "impacts_by_event": {
-                "type": "object",
-                "additionalProperties": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "ticker": {"type": "string"},
-                            "direction": {
-                                "type": "string",
-                                "enum": ["positive", "negative", "neutral"],
-                            },
-                            "strength": {
-                                "type": "string",
-                                "enum": ["direct", "indirect", "neutral"],
-                            },
-                            "score": {"type": "number"},
-                            "confidence": {"type": "number"},
-                            "rationale": {"type": "string"},
+            "events": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "event_id": {"type": "string"},
+                        "impacts": {
+                            "type": "array",
+                            "items": impact_item_schema,
                         },
-                        "required": [
-                            "ticker", "direction", "strength",
-                            "score", "confidence", "rationale",
-                        ],
-                        "additionalProperties": False,
                     },
+                    "required": ["event_id", "impacts"],
+                    "additionalProperties": False,
                 },
             }
         },
-        "required": ["impacts_by_event"],
+        "required": ["events"],
         "additionalProperties": False,
     }
 
@@ -163,7 +176,14 @@ def _openai_map(
         },
     )
     payload = json.loads(response.output_text)
-    return payload.get("impacts_by_event", {}) or {}
+    # Convert list-of-pairs back into the canonical {event_id: [impacts]} shape
+    result: dict[str, list[dict]] = {}
+    for entry in payload.get("events") or []:
+        eid = entry.get("event_id")
+        if not eid:
+            continue
+        result[eid] = entry.get("impacts") or []
+    return result
 
 
 def _coerce_impact(item: dict, allowed_tickers: set[str]) -> TickerImpact | None:
