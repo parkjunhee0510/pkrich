@@ -198,3 +198,43 @@ class TickerDecision:
     confidence_meta: dict[str, float] = field(default_factory=dict)
     factor_reasoning: dict[str, str] = field(default_factory=dict)
     final_consensus: Literal['single', 'agree', 'resolved', 'conflict'] = 'single'
+
+
+POLICY_CATEGORIES = (
+    'interest_rate', 'antitrust', 'export_control', 'subsidy',
+    'tariff', 'ira', 'chips_act', 'fda', 'defense_budget',
+    'energy_policy', 'other',
+)
+
+
+@dataclass(frozen=True)
+class PolicyEvent:
+    id: str
+    category: str
+    headline: str
+    summary: str
+    raw_excerpt: str
+    source_url: str
+    source_domain: str
+    published_at: str
+    confidence: float
+
+
+@dataclass(frozen=True)
+class TickerImpact:
+    ticker: str
+    direction: Literal['positive', 'negative', 'neutral']
+    strength: Literal['direct', 'indirect', 'neutral']
+    score: float
+    confidence: float
+    rationale: str
+
+
+@dataclass(frozen=True)
+class PolicyImpactReport:
+    date: str
+    events: list = field(default_factory=list)
+    impacts_by_event: dict = field(default_factory=dict)
+    impacts_by_ticker: dict = field(default_factory=dict)
+    tailwind_scores: dict = field(default_factory=dict)
+    metadata: dict = field(default_factory=dict)
