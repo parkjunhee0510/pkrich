@@ -24,6 +24,7 @@ class DecisionRegistryTests(unittest.TestCase):
             "macro_event": {"min": -8, "max": 6},
             "macro_regime": {"min": -6, "max": 8},
             "peer_rank": {"min": -4, "max": 8},
+            "policy_tailwind": {"min": -8, "max": 8},
         }
         registry = build_factor_registry(config)
         self.assertEqual(
@@ -41,6 +42,7 @@ class DecisionRegistryTests(unittest.TestCase):
                 "macro_event",
                 "macro_regime",
                 "peer_rank",
+                "policy_tailwind",
             },
         )
 
@@ -63,6 +65,7 @@ class DecisionRegistryTests(unittest.TestCase):
             "macro_event": {"min": -8, "max": 6},
             "macro_regime": {"min": -6, "max": 8},
             "peer_rank": {"min": -4, "max": 8},
+            "policy_tailwind": {"min": -8, "max": 8},
         }
         registry.discover(config)
         factor = registry.all()[0]
