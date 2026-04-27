@@ -3,7 +3,7 @@
   "plugins": ["stylelint-declaration-strict-value"],
   "rules": {
     "scale-unlimited/declaration-strict-value": [
-      ["/color$/", "fill", "stroke", "background-color", "border-color"],
+      ["/color$/", "fill", "stroke", "background-color", "border-color", "font-size"],
       {
         "ignoreValues": [
           "transparent", "inherit", "currentColor", "initial", "unset", "none",

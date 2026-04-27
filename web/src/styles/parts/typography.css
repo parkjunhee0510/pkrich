@@ -1,0 +1,84 @@
+/* ============================================================
+   Typography utilities (Plan A.4)
+   Spec: 2026-04-27-design-system-foundation-design.md §4
+   Scale: B Modern Balanced (24px serif headline / 13px sans body / 10px eyebrow).
+   Apply via class on any element; raw <h1>/<h2>/<h3> use these too.
+   ============================================================ */
+
+.type-display {
+  font-family: var(--font-serif);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  color: var(--color-fg-headline);
+}
+
+.type-headline {
+  font-family: var(--font-serif);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.2px;
+  color: var(--color-fg-headline);
+}
+
+.type-title {
+  font-family: var(--font-serif);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-fg-headline);
+}
+
+.type-body {
+  font-family: var(--font-sans);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--color-fg-body);
+}
+
+.type-body-strong {
+  font-family: var(--font-sans);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-fg-headline);
+}
+
+.type-meta {
+  font-family: var(--font-sans);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-fg-muted);
+}
+
+.type-eyebrow {
+  font-family: var(--font-sans);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-fg-eyebrow);
+}
+
+.type-mono {
+  font-family: var(--font-sans);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-fg-headline);
+}
