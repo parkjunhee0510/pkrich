@@ -39,3 +39,10 @@ category_to_sectors:
   defense_budget:  [defense, aerospace, industrials]
   energy_policy:   [energy, utilities, clean_energy]
   other:           []
+
+# LLM model profile override.
+# 'deep' (o3-mini) does NOT reliably support the web_search Responses
+# tool. 'standard' (gpt-5.4 family) is the safer default for stage 1
+# (web_search) and stage 2 (impact mapping). Override per environment
+# if needed.
+model_profile: standard
