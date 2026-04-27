@@ -700,6 +700,7 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
         "sectors.json",
         "factor_audit.json",
         "signal_quality.json",
+        "policy_impact.json",
         "index.json",
     ]
     dashboard_json = data_dir / "dashboard.json"

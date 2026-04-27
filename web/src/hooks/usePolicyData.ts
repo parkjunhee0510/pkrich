@@ -12,5 +12,5 @@ import { useJsonResource } from './useJsonResource'
  * `error !== null` as "no policy data today" and render an empty state.
  */
 export function usePolicyData() {
-  return useJsonResource<PolicyImpactReport>('data/policy_impact.json')
+  return useJsonResource<PolicyImpactReport>('output/data/policy_impact.json')
 }
