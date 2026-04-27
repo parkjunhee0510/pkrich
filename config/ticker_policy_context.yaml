@@ -91,3 +91,55 @@ XOM:
   business: "Integrated oil & gas major"
   exposure: [energy_policy, tariff]
   china_revenue_pct: 5
+
+# ── Watchlist additions (auto-synced 2026-04-27) ──────────────
+# Below are watchlist tickers that lacked explicit policy context.
+# Hand-curated to give the LLM enough metadata for accurate scoring.
+
+CAT:
+  sector: industrials
+  business: "Heavy machinery, mining, energy infrastructure"
+  exposure: [infrastructure_spending, china_revenue, tariff_steel, defense_aid_ukraine]
+  china_revenue_pct: 6
+
+KO:
+  sector: consumer_staples
+  business: "Beverage giant; global distribution"
+  exposure: [sugar_tax, fda_labeling, plastic_regulation]
+  china_revenue_pct: 8
+
+T:
+  sector: telecom
+  business: "AT&T wireless + fiber"
+  exposure: [fcc_spectrum, net_neutrality, antitrust_telecom, rural_broadband_subsidy]
+  china_revenue_pct: 0
+
+IONQ:
+  sector: quantum_computing
+  business: "Trapped-ion quantum computer hardware/cloud"
+  exposure: [defense_quantum_funding, export_control_quantum, doe_grants]
+  china_revenue_pct: 0
+
+OXY:
+  sector: oil_gas
+  business: "Oil & gas E&P; Permian basin focus"
+  exposure: [oil_price, spr_release, methane_regulation, ccs_45q_credit]
+  china_revenue_pct: 0
+
+ORA:
+  sector: clean_energy
+  business: "Geothermal power and energy storage"
+  exposure: [ira_clean_energy_credit, ptc_extension, blm_geothermal_lease]
+  china_revenue_pct: 0
+
+SPIR:
+  sector: aerospace
+  business: "Satellite weather and maritime data"
+  exposure: [defense_procurement, fcc_satellite_spectrum, noaa_contracts]
+  china_revenue_pct: 0
+
+PLUG:
+  sector: clean_energy
+  business: "Hydrogen fuel cells and electrolyzers"
+  exposure: [ira_hydrogen_45v_credit, doe_hydrogen_hub, hydrogen_safety_regulation]
+  china_revenue_pct: 0

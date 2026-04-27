@@ -295,6 +295,21 @@ def run_pipeline(run_date: date | None = None) -> None:
         # never propagate, factor 9 simply sees missing data.
         sources_cfg = load_yaml_mapping("config/policy_sources.yaml", optional=True) or {}
         ticker_policy_ctx = load_yaml_mapping("config/ticker_policy_context.yaml", optional=True) or {}
+        # Auto-synthesize stub context for watchlist tickers missing from
+        # ticker_policy_context.yaml so policy coverage tracks the watchlist
+        # automatically. Hand-curated entries (richer metadata) always win.
+        for _wl_item in watchlist:
+            if _wl_item.ticker not in ticker_policy_ctx:
+                ticker_policy_ctx[_wl_item.ticker] = {
+                    "sector": (_wl_item.sector or "").lower().replace(" ", "_") or "other",
+                    "business": _wl_item.name,
+                    "exposure": list(getattr(_wl_item, "keywords", []) or []),
+                    "china_revenue_pct": 0,
+                }
+                record_pipeline_event(
+                    "policy", "info", "ticker_ctx_synthesized",
+                    ticker=_wl_item.ticker,
+                )
         policy_report = run_policy_stage(
             today=effective_date.isoformat(),
             ticker_ctx=ticker_policy_ctx,
