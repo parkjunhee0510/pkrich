@@ -1,0 +1,72 @@
+/* ============================================================
+   Card system (Plan C)
+   Spec: 2026-04-27-design-system-foundation-design.md §6
+   3 variants: base / hero / list-row.
+   Specificity is intentionally low (single class, 0,0,1,0) so existing
+   component rules with compound selectors keep winning. Migration of
+   legacy classes happens incrementally in follow-up plans.
+   ============================================================ */
+
+.surface-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-card-pad);
+  position: relative;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.surface-card:hover {
+  border-color: var(--cozy-gold-soft);
+  box-shadow: var(--shadow-hard-lg);
+}
+
+/* Hero variant — for Market Regime Banner, Top Conviction, Macro hero.
+   Mirrors the existing .market-regime-banner.cozy-premium-banner look so
+   the pilot adoption is pixel-equivalent. */
+.surface-card--hero {
+  background: linear-gradient(180deg, var(--cozy-paper) 0%, var(--cozy-paper-2) 100%);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  padding: var(--space-card-pad-hero);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.surface-card--hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--cozy-gold) 0%, var(--cozy-gold-2) 50%, var(--cozy-gold) 100%);
+}
+
+.surface-card--hero:hover {
+  /* Hero already commands attention — no hover lift. */
+  border-color: var(--color-border-subtle);
+  box-shadow: var(--shadow);
+}
+
+/* List-row variant — for tabular rows inside larger panels (signal rows,
+   api-provider rows). Border-bottom only, no radius, no shadow. */
+.surface-card--list-row {
+  background: var(--color-bg-card);
+  border: 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  border-radius: 0;
+  box-shadow: none;
+  padding: var(--space-3) var(--space-card-pad);
+  transition: background-color 120ms ease;
+}
+
+.surface-card--list-row:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.surface-card--list-row:last-child {
+  border-bottom: 0;
+}

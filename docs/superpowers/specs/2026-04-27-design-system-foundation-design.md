@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-27
 **Scope:** UI/UX 시스템 통일 — 토큰·타이포·여백·카드·pill·페이지 헤더 5개 서브시스템을 cozy-premium 테마 위에 정합된 단일 디자인 시스템으로 정리.
-**Status:** Plans A & B landed (tokens, typography utilities, spacing migration + lint). Plans C–E pending.
+**Status:** Plans A, B, C landed (tokens, typography, spacing, card system + 1 hero pilot). Plans D, E pending. Card migration of remaining 15+ components is follow-up work.
 
 ---
 

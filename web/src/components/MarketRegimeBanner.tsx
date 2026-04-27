@@ -31,7 +31,7 @@ export function MarketRegimeBanner({ regime }: MarketRegimeBannerProps) {
   const eyebrowDate = formatEyebrowDate(regime.assessed_at)
 
   return (
-    <section className={`market-regime-banner cozy-premium-banner ${config.className}`}>
+    <section className={`surface-card surface-card--hero market-regime-banner cozy-premium-banner ${config.className}`}>
       <div className="cozy-eyebrow">
         <span className={`dot ${config.dotClass}`.trim()}></span>
         MARKET REGIME{eyebrowDate ? ` · ${eyebrowDate}` : ''}
