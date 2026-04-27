@@ -1158,7 +1158,7 @@
 .options-context-badge.strength-strong { background: color-mix(in srgb, var(--caution-block) 70%, var(--paper)); color: var(--ink); }
 .options-context-badge.strength-very-strong { background: color-mix(in srgb, var(--color-down) 16%, var(--paper)); color: var(--color-down); }
 
-.detail-section-summary { font-size: 1.08rem; color: var(--ink-2); margin-top: 0.75rem; margin-bottom: 0.5; line-height: 1.6; margin-left: 10px;}
+.detail-section-summary { font-size: 1.08rem; color: var(--ink-2); margin-top: 0.75rem; margin-bottom: 0.5rem; line-height: 1.6; margin-left: 10px;}
 
 /* ========== Portfolio ========== */
 .portfolio-page { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -2140,9 +2140,7 @@
 
 /* ========== Scenario ========== */
 .scenario-adjustment-input {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: textfield;
+  appearance: textfield;
   width: 85px;
   background: var(--paper);
   color: var(--ink);
@@ -2199,7 +2197,7 @@
 }
 .scenario-adjustment-input::-webkit-outer-spin-button,
 .scenario-adjustment-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 

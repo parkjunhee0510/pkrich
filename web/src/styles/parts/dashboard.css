@@ -627,7 +627,7 @@
   font-size: 1.55rem;
   line-height: 1.15;
   color: var(--ink);
-  word-break: break-word;
+  overflow-wrap: anywhere;
   margin-top: 0.15rem;
 }
 .decision-board-grid .price-action-card .price-action-subtext {

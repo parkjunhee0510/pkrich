@@ -1,0 +1,51 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "plugins": ["stylelint-declaration-strict-value"],
+  "rules": {
+    "scale-unlimited/declaration-strict-value": [
+      ["/color$/", "fill", "stroke", "background-color", "border-color"],
+      {
+        "ignoreValues": [
+          "transparent", "inherit", "currentColor", "initial", "unset", "none",
+          "/^var\\(/", "/^rgba?\\(/"
+        ],
+        "severity": "warning"
+      }
+    ],
+    "color-no-invalid-hex": true,
+    "color-hex-length": null,
+    "color-function-alias-notation": null,
+    "custom-property-empty-line-before": null,
+    "no-duplicate-selectors": null,
+    "no-descending-specificity": null,
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "value-keyword-case": null,
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "hue-degree-notation": null,
+    "comment-empty-line-before": null,
+    "declaration-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "shorthand-property-no-redundant-values": null,
+    "media-feature-range-notation": null,
+    "no-empty-source": null,
+    "block-no-empty": null,
+    "selector-id-pattern": null,
+    "keyframes-name-pattern": null,
+    "font-family-name-quotes": null,
+    "font-family-no-missing-generic-family-keyword": null,
+    "import-notation": null,
+    "at-rule-empty-line-before": null,
+    "declaration-block-single-line-max-declarations": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "declaration-block-no-shorthand-property-overrides": null,
+    "no-invalid-position-at-import-rule": null,
+    "no-duplicate-at-import-rules": null,
+    "function-no-unknown": null,
+    "length-zero-no-unit": null,
+    "number-max-precision": null,
+    "no-irregular-whitespace": null
+  },
+  "ignoreFiles": ["dist/**", "node_modules/**"]
+}
