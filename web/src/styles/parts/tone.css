@@ -1,0 +1,147 @@
+/* ============================================================
+   Pill / Chip / Badge tone system (Plan D)
+   Spec: 2026-04-27-design-system-foundation-design.md §7
+   Compose: shape class + tone class.
+     <span class="pill tone-positive--solid">BUY</span>
+     <span class="chip tone-positive--soft">EPS BEAT</span>
+     <span class="badge tone-accent--soft">78</span>
+   Specificity is intentionally low (single class, 0,0,1,0) so existing
+   component rules with compound selectors keep winning during gradual
+   migration.
+   ============================================================ */
+
+/* ---------- Shape ---------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  padding: 4px 10px;
+  border-radius: var(--radius-chip);
+  font-family: var(--font-sans);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  padding: 3px 8px;
+  border-radius: var(--radius-badge);
+  font-family: var(--font-sans);
+  /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- Tone × Treatment matrix ----------
+   5 semantic roles (positive, negative, caution, info, accent)
+   × 3 treatments (solid, soft, outline)
+   = 15 utility modifiers.
+   Each treatment provides {background, color, border}. */
+
+/* Solid — strong fill. Use sparingly: max 1 per card. */
+.tone-positive--solid {
+  background: var(--color-positive);
+  color: var(--color-positive-fg);
+  border: 1px solid var(--color-positive);
+}
+.tone-negative--solid {
+  background: var(--color-negative);
+  color: var(--color-negative-fg);
+  border: 1px solid var(--color-negative);
+}
+.tone-caution--solid {
+  background: var(--color-caution);
+  color: var(--color-caution-fg);
+  border: 1px solid var(--color-caution);
+}
+.tone-info--solid {
+  background: var(--color-info);
+  color: var(--color-info-fg);
+  border: 1px solid var(--color-info);
+}
+.tone-accent--solid {
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+  border: 1px solid var(--color-accent);
+}
+
+/* Soft — light tint background, dark text, subtle border. Default for meta. */
+.tone-positive--soft {
+  background: var(--color-positive-soft-bg);
+  color: var(--color-positive-soft-fg);
+  border: 1px solid var(--color-positive-soft-border);
+}
+.tone-negative--soft {
+  background: var(--color-negative-soft-bg);
+  color: var(--color-negative-soft-fg);
+  border: 1px solid var(--color-negative-soft-border);
+}
+.tone-caution--soft {
+  background: var(--color-caution-soft-bg);
+  color: var(--color-caution-soft-fg);
+  border: 1px solid var(--color-caution-soft-border);
+}
+.tone-info--soft {
+  background: var(--color-info-soft-bg);
+  color: var(--color-info-soft-fg);
+  border: 1px solid var(--color-info-soft-border);
+}
+.tone-accent--soft {
+  background: var(--color-accent-soft-bg);
+  color: var(--color-accent-soft-fg);
+  border: 1px solid var(--color-accent-soft-border);
+}
+
+/* Outline — white background, colored border, colored text. For inactive / candidate states. */
+.tone-positive--outline {
+  background: var(--color-bg-card);
+  color: var(--color-positive-outline-fg);
+  border: 1px solid var(--color-positive-outline-border);
+}
+.tone-negative--outline {
+  background: var(--color-bg-card);
+  color: var(--color-negative-outline-fg);
+  border: 1px solid var(--color-negative-outline-border);
+}
+.tone-caution--outline {
+  background: var(--color-bg-card);
+  color: var(--color-caution-outline-fg);
+  border: 1px solid var(--color-caution-outline-border);
+}
+.tone-info--outline {
+  background: var(--color-bg-card);
+  color: var(--color-info-outline-fg);
+  border: 1px solid var(--color-info-outline-border);
+}
+.tone-accent--outline {
+  background: var(--color-bg-card);
+  color: var(--color-accent-outline-fg);
+  border: 1px solid var(--color-accent-outline-border);
+}

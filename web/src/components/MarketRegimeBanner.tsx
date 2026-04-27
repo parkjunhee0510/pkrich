@@ -44,7 +44,7 @@ export function MarketRegimeBanner({ regime }: MarketRegimeBannerProps) {
       {driverEntries.length > 0 ? (
         <div className="regime-drivers">
           {driverEntries.map(([key, value]) => (
-            <span key={key} className="cozy-chip regime-driver-chip">
+            <span key={key} className="chip tone-info--soft cozy-chip regime-driver-chip">
               {value}
             </span>
           ))}
