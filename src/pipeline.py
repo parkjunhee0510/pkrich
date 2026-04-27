@@ -23,6 +23,10 @@ from src.analyzer.ensemble import apply_consensus_to_decisions
 from src.analyzer.orchestrator import AnalysisOrchestrator
 from src.analyzer.registry import ModuleRegistry
 from src.collector.macro import collect_macro_context
+from src.utils.config import load_yaml_mapping
+from src.collector.policy_events import extract_events
+from src.analyzer.policy_impact import map_impacts
+from src.output.policy_json import write_policy_impact_json
 from src.collector.peer_candidates import load_peer_candidates, persist_peer_selections
 from src.decision.decision_layer import generate_decisions
 from src.decision.market_regime import detect_market_regime
@@ -104,6 +108,53 @@ def _build_analysis_ensemble() -> AnalysisEnsemble:
         ),
         config=ensemble_config,
     )
+
+
+def run_policy_stage(
+    today: str,
+    ticker_ctx: dict,
+    sources_config: dict,
+    model_profile: str,
+    category_to_sectors: dict,
+    output_path: str = "output/data/policy_impact.json",
+):
+    """Run the two-stage policy pipeline with isolated try/except.
+
+    Returns a PolicyImpactReport on success, None on any failure or empty events.
+    Failures here MUST NOT propagate — the main pipeline keeps running with
+    policy data treated as missing.
+    """
+    try:
+        events = extract_events(
+            today=today,
+            model_profile=model_profile,
+            sources_config=sources_config,
+        )
+        record_pipeline_event(
+            "policy.collector", "info", "events_extracted",
+            count=len(events),
+        )
+        if not events:
+            return None
+        report = map_impacts(
+            events=events,
+            ticker_ctx=ticker_ctx,
+            category_to_sectors=category_to_sectors,
+            model_profile=model_profile,
+            today=today,
+        )
+        record_pipeline_event(
+            "policy.analyzer", "info", "tickers_scored",
+            count=len(report.tailwind_scores),
+        )
+        write_policy_impact_json(report, output_path)
+        return report
+    except Exception as exc:
+        record_pipeline_event(
+            "policy", "error", "policy_stage_failed",
+            error=str(exc),
+        )
+        return None
 
 
 def run_pipeline(run_date: date | None = None) -> None:
@@ -239,6 +290,24 @@ def run_pipeline(run_date: date | None = None) -> None:
                 error=str(exc),
             )
         signal_stats = datastore.load_signal_stats_data()
+
+        # Policy/regulation impact stage (Task 8). Isolated — failures
+        # never propagate, factor 9 simply sees missing data.
+        sources_cfg = load_yaml_mapping("config/policy_sources.yaml", optional=True) or {}
+        ticker_policy_ctx = load_yaml_mapping("config/ticker_policy_context.yaml", optional=True) or {}
+        policy_report = run_policy_stage(
+            today=effective_date.isoformat(),
+            ticker_ctx=ticker_policy_ctx,
+            sources_config=sources_cfg,
+            model_profile=str(sources_cfg.get("model_profile", "deep")),
+            category_to_sectors=sources_cfg.get("category_to_sectors", {}) or {},
+        )
+        if policy_report is not None and isinstance(signal_stats, dict):
+            signal_stats["_policy_tailwind_scores"] = dict(policy_report.tailwind_scores)
+            signal_stats["_policy_impacts_by_ticker"] = {
+                t: list(impacts) for t, impacts in policy_report.impacts_by_ticker.items()
+            }
+
         # Decision layer: market regime + per-ticker decisions
         try:
             decisions = apply_consensus_to_decisions(
