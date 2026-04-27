@@ -829,3 +829,40 @@ export interface TickerTimelineEntry {
 }
 
 export type TickerTimelinesData = Record<string, TickerTimelineEntry[]>
+
+
+// ─── Policy Impact Analysis (Plan T10) ─────────────────────────────────
+// Mirrors src/types.py PolicyEvent / TickerImpact / PolicyImpactReport.
+
+export type PolicyEvent = {
+  id: string
+  category: string
+  headline: string
+  summary: string
+  raw_excerpt: string
+  source_url: string
+  source_domain: string
+  published_at: string
+  confidence: number
+}
+
+export type TickerImpactDirection = 'positive' | 'negative' | 'neutral'
+export type TickerImpactStrength = 'direct' | 'indirect' | 'neutral'
+
+export type TickerImpact = {
+  ticker: string
+  direction: TickerImpactDirection
+  strength: TickerImpactStrength
+  score: number
+  confidence: number
+  rationale: string
+}
+
+export type PolicyImpactReport = {
+  date: string
+  events: PolicyEvent[]
+  impacts_by_event: Record<string, TickerImpact[]>
+  impacts_by_ticker: Record<string, TickerImpact[]>
+  tailwind_scores: Record<string, number>
+  metadata: Record<string, unknown>
+}
