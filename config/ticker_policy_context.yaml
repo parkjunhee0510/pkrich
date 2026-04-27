@@ -1,0 +1,93 @@
+# Per-ticker compressed policy context (≤ 80 tokens per ticker for LLM).
+# Add tickers as watchlist grows. business: one-line; exposure: ≤5 tags;
+# china_revenue_pct: 0–100 integer estimate.
+
+NVDA:
+  sector: semiconductor
+  business: "AI accelerator GPUs; data center dominant"
+  exposure: [export_control_china, antitrust_ftc]
+  china_revenue_pct: 17
+
+AMD:
+  sector: semiconductor
+  business: "x86 CPUs and GPUs; AI accelerator follower"
+  exposure: [export_control_china]
+  china_revenue_pct: 15
+
+INTC:
+  sector: semiconductor
+  business: "US-domestic foundry beneficiary; Ohio/Arizona fabs"
+  exposure: [chips_act_subsidy, export_control_china]
+  china_revenue_pct: 27
+
+TSM:
+  sector: semiconductor
+  business: "Foundry leader; Taiwan + Arizona fabs"
+  exposure: [chips_act_subsidy, geopolitical_taiwan]
+  china_revenue_pct: 10
+
+MU:
+  sector: semiconductor
+  business: "DRAM/NAND memory; Idaho/NY fabs"
+  exposure: [chips_act_subsidy, export_control_china]
+  china_revenue_pct: 11
+
+ASML:
+  sector: semiconductor
+  business: "EUV/DUV lithography monopoly; equipment maker"
+  exposure: [export_control_china_euv]
+  china_revenue_pct: 30
+
+AAPL:
+  sector: technology
+  business: "Consumer hardware/services; China supply chain heavy"
+  exposure: [tariff_china, antitrust_app_store]
+  china_revenue_pct: 19
+
+GOOGL:
+  sector: communication_services
+  business: "Search + cloud + ads; antitrust under DOJ"
+  exposure: [antitrust_doj, ai_regulation]
+  china_revenue_pct: 1
+
+META:
+  sector: communication_services
+  business: "Social platforms + ads + AI infra"
+  exposure: [antitrust_ftc, ai_regulation]
+  china_revenue_pct: 0
+
+MSFT:
+  sector: technology
+  business: "Cloud + AI + productivity; OpenAI partner"
+  exposure: [antitrust_ftc, ai_regulation]
+  china_revenue_pct: 1
+
+TSLA:
+  sector: automotive
+  business: "EV maker; IRA EV credit beneficiary"
+  exposure: [ira_ev_credit, tariff_china, energy_policy]
+  china_revenue_pct: 22
+
+JNJ:
+  sector: healthcare
+  business: "Pharma + medtech diversified"
+  exposure: [fda_approval, drug_price_negotiation]
+  china_revenue_pct: 4
+
+PFE:
+  sector: pharma
+  business: "Big pharma; vaccine + oncology"
+  exposure: [fda_approval, drug_price_negotiation]
+  china_revenue_pct: 5
+
+LMT:
+  sector: defense
+  business: "Defense prime; F-35, missile systems"
+  exposure: [defense_budget]
+  china_revenue_pct: 0
+
+XOM:
+  sector: energy
+  business: "Integrated oil & gas major"
+  exposure: [energy_policy, tariff]
+  china_revenue_pct: 5

@@ -35,6 +35,9 @@ factors:
   macro_regime:
     min: -6
     max: 8
+  policy_tailwind:
+    min: -8
+    max: 8
 
 regime_multipliers:
   risk_on:
@@ -50,6 +53,7 @@ regime_multipliers:
     peer_rank: 1.1
     portfolio_risk: 0.9
     regime_adjustment: 1.0
+    policy_tailwind: 0.8
   risk_off:
     valuation: 1.4
     momentum: 0.7
@@ -63,6 +67,7 @@ regime_multipliers:
     peer_rank: 0.9
     portfolio_risk: 1.3
     regime_adjustment: 1.1
+    policy_tailwind: 1.4
   reflation:
     momentum: 1.4
     valuation: 0.85
@@ -76,6 +81,7 @@ regime_multipliers:
     peer_rank: 1.2
     portfolio_risk: 0.9
     regime_adjustment: 1.0
+    policy_tailwind: 1.0
   defensive_bias:
     valuation: 1.3
     momentum: 0.7
@@ -89,6 +95,7 @@ regime_multipliers:
     peer_rank: 0.9
     portfolio_risk: 1.4
     regime_adjustment: 1.1
+    policy_tailwind: 1.3
   neutral: {}
 
 thresholds:

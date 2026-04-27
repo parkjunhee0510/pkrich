@@ -3,6 +3,8 @@ module_profile_overrides:
   signal_takeaway_module: standard
 module_batch_size_overrides:
   signal_takeaway_module: 3
+policy:
+  model_profile: deep
 committee:
   enabled: true
   economy_model: economy

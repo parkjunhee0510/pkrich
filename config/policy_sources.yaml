@@ -1,0 +1,41 @@
+# Policy/regulation event source configuration
+# Used by src/collector/policy_events.py for confidence scoring,
+# and by src/analyzer/policy_impact.py for sector pre-filtering.
+
+trusted_domains:
+  - whitehouse.gov
+  - federalreserve.gov
+  - ustr.gov
+  - commerce.gov
+  - fda.gov
+  - sec.gov
+  - state.gov
+  - treasury.gov
+  - energy.gov
+  - reuters.com
+  - bloomberg.com
+  - wsj.com
+  - ft.com
+
+penalized_domains:
+  - reddit.com
+  - twitter.com
+  - x.com
+  - medium.com
+  - substack.com
+
+trust_bonus: 0.2
+penalty: 0.3
+
+category_to_sectors:
+  interest_rate:   [financials, real_estate, utilities, technology]
+  antitrust:       [technology, communication_services, consumer_discretionary]
+  export_control:  [semiconductor, technology, defense]
+  subsidy:         [semiconductor, clean_energy, industrials, automotive]
+  tariff:          [industrials, consumer_discretionary, materials, automotive]
+  ira:             [clean_energy, automotive, utilities]
+  chips_act:       [semiconductor, technology]
+  fda:             [healthcare, biotech, pharma]
+  defense_budget:  [defense, aerospace, industrials]
+  energy_policy:   [energy, utilities, clean_energy]
+  other:           []
