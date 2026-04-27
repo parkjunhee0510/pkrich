@@ -3,11 +3,11 @@
   "plugins": ["stylelint-declaration-strict-value"],
   "rules": {
     "scale-unlimited/declaration-strict-value": [
-      ["/color$/", "fill", "stroke", "background-color", "border-color", "font-size"],
+      ["/color$/", "fill", "stroke", "background-color", "border-color", "font-size", "padding", "/^padding-/", "margin", "/^margin-/", "gap", "row-gap", "column-gap"],
       {
         "ignoreValues": [
           "transparent", "inherit", "currentColor", "initial", "unset", "none",
-          "/^var\\(/", "/^rgba?\\(/"
+          "/^var\\(/", "/^rgba?\\(/", "0", "auto"
         ],
         "severity": "warning"
       }

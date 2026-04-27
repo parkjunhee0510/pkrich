@@ -118,7 +118,7 @@
 .nav-active::after  { display: none; }
 .nav-active:hover { background: var(--ink); color: var(--paper-raised); letter-spacing: 0.12em; text-shadow: none; box-shadow: none; }
 
-.main { display: flex; flex-direction: column; gap: 2rem; position: relative; }
+.main { display: flex; flex-direction: column; gap: var(--space-7); position: relative; }
 
 /* ========== Nav More (dropdown) ========== */
 .nav-more { position: relative; display: inline-flex; }
