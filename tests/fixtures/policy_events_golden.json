@@ -1,0 +1,182 @@
+[
+  {
+    "name": "2022 CHIPS Act subsidy → US foundry beneficiaries",
+    "events": [{
+      "id": "g1", "category": "chips_act",
+      "headline": "President signs CHIPS and Science Act",
+      "summary": "Provides $52B in US semiconductor manufacturing subsidies and 25% investment tax credit.",
+      "raw_excerpt": "",
+      "source_url": "https://www.whitehouse.gov/briefing-room/statements-releases/2022/08/09/chips-and-science-act/",
+      "source_domain": "whitehouse.gov",
+      "published_at": "2022-08-09T00:00:00Z",
+      "confidence": 0.95
+    }],
+    "expected_top_positive": ["INTC", "TSM", "MU"],
+    "expected_top_negative": []
+  },
+  {
+    "name": "2023 export control → NVDA/AMD direct China risk",
+    "events": [{
+      "id": "g2", "category": "export_control",
+      "headline": "Commerce tightens AI chip exports to China",
+      "summary": "New rules block sales of advanced GPUs (H100, A100) and successor chips to PRC entities; targets 13 additional firms.",
+      "raw_excerpt": "",
+      "source_url": "https://www.commerce.gov/news/press-releases/2023/10/commerce-strengthens-restrictions",
+      "source_domain": "commerce.gov",
+      "published_at": "2023-10-17T00:00:00Z",
+      "confidence": 0.95
+    }],
+    "expected_top_positive": [],
+    "expected_top_negative": ["NVDA", "AMD"]
+  },
+  {
+    "name": "China tariffs raised → Apple supply-chain hit",
+    "events": [{
+      "id": "g3", "category": "tariff",
+      "headline": "US imposes 25% tariff on Chinese consumer electronics imports",
+      "summary": "Includes smartphones and laptops assembled in China; takes effect Q3.",
+      "raw_excerpt": "",
+      "source_url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2025/may/china-tariffs",
+      "source_domain": "ustr.gov",
+      "published_at": "2025-05-12T00:00:00Z",
+      "confidence": 0.92
+    }],
+    "expected_top_positive": [],
+    "expected_top_negative": ["AAPL"]
+  },
+  {
+    "name": "IRA solar credits extended → ENPH/FSLR upside",
+    "events": [{
+      "id": "g4", "category": "ira",
+      "headline": "Treasury finalizes IRA solar manufacturing tax credits",
+      "summary": "45X production credits affirmed for US-made solar cells, modules, inverters; ramps through 2032.",
+      "raw_excerpt": "",
+      "source_url": "https://home.treasury.gov/news/press-releases/jy2230",
+      "source_domain": "treasury.gov",
+      "published_at": "2024-04-25T00:00:00Z",
+      "confidence": 0.93
+    }],
+    "expected_top_positive": ["ENPH", "FSLR"],
+    "expected_top_negative": []
+  },
+  {
+    "name": "EV tax credits expanded → Tesla beneficiary",
+    "events": [{
+      "id": "g5", "category": "ira",
+      "headline": "IRS expands EV tax credit eligibility under IRA Section 30D",
+      "summary": "$7,500 credit applies to North American-assembled EVs with qualifying battery sourcing; doubles 2024 list.",
+      "raw_excerpt": "",
+      "source_url": "https://www.irs.gov/newsroom/treasury-irs-issue-final-regulations-on-30d",
+      "source_domain": "irs.gov",
+      "published_at": "2024-05-03T00:00:00Z",
+      "confidence": 0.9
+    }],
+    "expected_top_positive": ["TSLA"],
+    "expected_top_negative": []
+  },
+  {
+    "name": "FDA accelerated Alzheimer approval → BIIB positive",
+    "events": [{
+      "id": "g6", "category": "fda",
+      "headline": "FDA grants traditional approval to Alzheimer's therapy lecanemab",
+      "summary": "Medicare coverage expected to follow; broadens patient access.",
+      "raw_excerpt": "",
+      "source_url": "https://www.fda.gov/news-events/press-announcements/fda-converts-novel-alzheimers-disease-treatment-traditional-approval",
+      "source_domain": "fda.gov",
+      "published_at": "2023-07-06T00:00:00Z",
+      "confidence": 0.94
+    }],
+    "expected_top_positive": ["BIIB"],
+    "expected_top_negative": []
+  },
+  {
+    "name": "FDA black-box warning → Pfizer earnings risk",
+    "events": [{
+      "id": "g7", "category": "fda",
+      "headline": "FDA adds black-box warning to JAK inhibitor class for cardiovascular events",
+      "summary": "Affects Pfizer's Xeljanz; revenue impact estimated $300M annual.",
+      "raw_excerpt": "",
+      "source_url": "https://www.fda.gov/drugs/drug-safety-and-availability/fda-requires-warnings-jak-inhibitors",
+      "source_domain": "fda.gov",
+      "published_at": "2024-09-01T00:00:00Z",
+      "confidence": 0.88
+    }],
+    "expected_top_positive": [],
+    "expected_top_negative": ["PFE"]
+  },
+  {
+    "name": "Big Tech antitrust verdict → Google search monopoly",
+    "events": [{
+      "id": "g8", "category": "antitrust",
+      "headline": "Federal judge rules Google maintained illegal search monopoly",
+      "summary": "Ruling opens door to remedies including breakup of default-search deals; appeal expected.",
+      "raw_excerpt": "",
+      "source_url": "https://www.justice.gov/opa/pr/justice-department-statement-court-ruling-google-monopolization",
+      "source_domain": "justice.gov",
+      "published_at": "2024-08-05T00:00:00Z",
+      "confidence": 0.95
+    }],
+    "expected_top_positive": [],
+    "expected_top_negative": ["GOOGL", "META"]
+  },
+  {
+    "name": "Defense budget hike → LMT/RTX/NOC tailwind",
+    "events": [{
+      "id": "g9", "category": "defense",
+      "headline": "Congress passes 7% defense budget increase emphasizing Indo-Pacific",
+      "summary": "$886B FY24 NDAA; missile defense and shipbuilding line items grow double-digit.",
+      "raw_excerpt": "",
+      "source_url": "https://www.congress.gov/bill/118th-congress/house-bill/2670",
+      "source_domain": "congress.gov",
+      "published_at": "2023-12-22T00:00:00Z",
+      "confidence": 0.93
+    }],
+    "expected_top_positive": ["LMT", "RTX", "NOC"],
+    "expected_top_negative": []
+  },
+  {
+    "name": "Strategic Petroleum Reserve release → XOM/CVX margin pressure",
+    "events": [{
+      "id": "g10", "category": "energy",
+      "headline": "Administration announces 50M barrel SPR release to suppress oil prices",
+      "summary": "Coordinated with allies; aimed at moderating retail gasoline.",
+      "raw_excerpt": "",
+      "source_url": "https://www.energy.gov/articles/biden-administration-announces-additional-spr-release",
+      "source_domain": "energy.gov",
+      "published_at": "2023-03-31T00:00:00Z",
+      "confidence": 0.9
+    }],
+    "expected_top_positive": [],
+    "expected_top_negative": ["XOM", "CVX"]
+  },
+  {
+    "name": "Fed rate cut signal → broad equity tailwind",
+    "events": [{
+      "id": "g11", "category": "interest_rate",
+      "headline": "Fed projects two rate cuts in 2025, dot-plot shows easing path",
+      "summary": "FOMC SEP signals 50bp of cuts in 2025; risk assets rally.",
+      "raw_excerpt": "",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20250318.htm",
+      "source_domain": "federalreserve.gov",
+      "published_at": "2025-03-18T00:00:00Z",
+      "confidence": 0.91
+    }],
+    "expected_top_positive": ["AAPL", "TSLA"],
+    "expected_top_negative": []
+  },
+  {
+    "name": "Bank capital rules tightened → JPM/BAC headwind",
+    "events": [{
+      "id": "g12", "category": "banking",
+      "headline": "Federal Reserve finalizes Basel III endgame capital rules",
+      "summary": "Largest banks face 9% increase in required capital; phase-in over 3 years.",
+      "raw_excerpt": "",
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20250915a.htm",
+      "source_domain": "federalreserve.gov",
+      "published_at": "2025-09-15T00:00:00Z",
+      "confidence": 0.92
+    }],
+    "expected_top_positive": [],
+    "expected_top_negative": ["JPM", "BAC"]
+  }
+]
