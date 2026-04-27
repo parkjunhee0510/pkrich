@@ -64,7 +64,33 @@ export function PolicyImpact() {
   const totalTickers = data ? Object.keys(data.tailwind_scores).length : 0
 
   if (loading) return <DashboardSkeleton />
-  if (error) return <ErrorState message={`policy_impact.json: ${error}`} />
+
+  // 404 / missing file = policy stage hasn't run yet (graceful degradation).
+  // Show a friendly empty state, not an ErrorState.
+  if (error) {
+    const isMissing = /(^|\s)4\d\d(\s|$)/.test(error)
+    if (isMissing) {
+      return (
+        <div className="policy-impact-page">
+          <header className="page-header">
+            <div className="page-header__eyebrow">RESEARCH · POLICY IMPACT</div>
+            <div className="page-header__row">
+              <h2 className="page-header__headline">정책·규제 영향도</h2>
+            </div>
+            <p className="page-header__meta">
+              아직 분석 데이터가 준비되지 않았습니다. 다음 파이프라인 실행에서 생성됩니다.
+            </p>
+          </header>
+          <p className="status">
+            <code>output/data/policy_impact.json</code> 파일이 없습니다 — <code>python main.py</code>를 한 번 실행해 정책 stage를 활성화하세요.
+            (OPENAI_API_KEY 필요)
+          </p>
+        </div>
+      )
+    }
+    return <ErrorState message={`policy_impact.json: ${error}`} />
+  }
+
   if (!data) return null
 
   return (
