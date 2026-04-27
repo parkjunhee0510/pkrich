@@ -106,20 +106,21 @@ export function ApiStatus() {
 
   return (
     <div className="api-status-page">
-      <div className="dashboard-header">
-        <div>
-          <h2>API 상태</h2>
-          <p className="section-kicker">
-            최신 파이프라인 실행 기준으로 공급자별 건강 상태와 티커별 실제 사용 여부를 확인합니다.
-          </p>
+      <header className="page-header">
+        <div className="page-header__eyebrow">DIAGNOSTICS · API STATUS</div>
+        <div className="page-header__row">
+          <h2 className="page-header__headline">API 상태</h2>
+          <div className="page-header__actions">
+            <span className={`api-state-pill ${data.summary.pipeline_completed ? 'state-used' : 'state-failed'}`}>
+              {data.summary.pipeline_completed ? 'pipeline completed' : 'pipeline incomplete'}
+            </span>
+            <span className="status">{data.summary.run_date}</span>
+          </div>
         </div>
-        <div className="api-status-run-meta">
-          <span className={`api-state-pill ${data.summary.pipeline_completed ? 'state-used' : 'state-failed'}`}>
-            {data.summary.pipeline_completed ? 'pipeline completed' : 'pipeline incomplete'}
-          </span>
-          <span className="status">{data.summary.run_date}</span>
-        </div>
-      </div>
+        <p className="page-header__meta">
+          최신 파이프라인 실행 기준으로 공급자별 건강 상태와 티커별 실제 사용 여부를 확인합니다.
+        </p>
+      </header>
 
       <div className="api-provider-grid">
         <OpenAiUsageCard summary={data.summary} />
