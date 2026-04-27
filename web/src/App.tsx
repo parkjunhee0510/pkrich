@@ -42,6 +42,9 @@ const SectorDetail = lazy(() =>
 const ApiStatus = lazy(() =>
   import('./pages/ApiStatus').then((module) => ({ default: module.ApiStatus })),
 )
+const PolicyImpact = lazy(() =>
+  import('./pages/PolicyImpact').then((module) => ({ default: module.PolicyImpact })),
+)
 const NotFound = lazy(() =>
   import('./pages/NotFound').then((module) => ({ default: module.NotFound })),
 )
@@ -66,6 +69,7 @@ export default function App() {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/sectors" element={<Sectors />} />
             <Route path="/sectors/:sectorId" element={<SectorDetail />} />
+            <Route path="/policy" element={<PolicyImpact />} />
             <Route path="/api-status" element={<ApiStatus />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

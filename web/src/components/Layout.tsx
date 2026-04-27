@@ -9,6 +9,7 @@ const PRIMARY_NAV = [
 ] as const
 
 const MORE_NAV = [
+  { to: '/policy', label: '정책·규제' },
   { to: '/sectors', label: '섹터 탐색' },
   { to: '/calendar', label: '캘린더' },
   { to: '/scenario', label: '시나리오' },
