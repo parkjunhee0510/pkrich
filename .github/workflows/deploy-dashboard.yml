@@ -48,8 +48,17 @@ jobs:
             monthly_summary.json \
             api_status.json \
             api_ticker_matrix.json \
+            api_ticker_matrix.csv \
+            analysis_quality.json \
+            cost_log.json \
+            routing_outcome.json \
+            direction_alignment.json \
+            ab_test_results.json \
             calibration.json \
             factor_audit.json \
+            signal_quality.json \
+            policy_impact.json \
+            sectors.json \
             tuning_report.json \
             validation_warnings.json; do
             cp "output/data/$f" web/dist/output/data/ 2>/dev/null || echo "No $f yet"
