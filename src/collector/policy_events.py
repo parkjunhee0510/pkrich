@@ -189,9 +189,9 @@ def _openai_web_search(today: str, model_profile: str) -> list[dict]:
         model=model,
         tools=[{"type": "web_search"}],
         input=prompt,
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
+        text={
+            "format": {
+                "type": "json_schema",
                 "name": "policy_events",
                 "schema": schema,
                 "strict": True,

@@ -152,9 +152,9 @@ def _openai_map(
     response = client.responses.create(
         model=model,
         input=json.dumps(prompt),
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
+        text={
+            "format": {
+                "type": "json_schema",
                 "name": "impacts",
                 "schema": schema,
                 "strict": True,
