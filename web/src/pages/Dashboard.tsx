@@ -564,6 +564,7 @@ export function Dashboard() {
         <DashboardAccordionSection
           title="주간 인사이트"
           summary={data.weekly_summary?.weekly_report?.headline ?? data.weekly_summary?.weekly_report?.summary ?? data.weekly_summary?.weekly_insight ?? '주간 보고서'}
+          defaultOpen
         >
           <section className="ticker-detail-section-shell">
             <div className="detail-note-card">
@@ -674,13 +675,15 @@ function DashboardAccordionSection({
   title,
   summary,
   children,
+  defaultOpen = false,
 }: {
   title: string
   summary: string
   children: ReactNode
+  defaultOpen?: boolean
 }) {
   return (
-    <details className="dashboard-accordion-section">
+    <details className="dashboard-accordion-section" open={defaultOpen}>
       <summary>
         <div className="dashboard-accordion-copy">
           <div className="dashboard-accordion-text">
