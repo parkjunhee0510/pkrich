@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 
 from src.types import POLICY_CATEGORIES, PolicyEvent, PolicyImpactReport, TickerImpact
 from src.utils.token_budget import count_tokens, split_into_chunks
+from src.utils.pipeline_logging import record_pipeline_event
 
 
 _DIRECT_BAND = (0.7, 1.0)
@@ -239,8 +240,14 @@ def map_impacts(
 
         try:
             raw = _openai_map(chunk_events, compact, model_profile)
-        except Exception:
+        except Exception as exc:
             chunks_failed += 1
+            record_pipeline_event(
+                "policy.analyzer", "error", "chunk_failed",
+                error=str(exc),
+                chunk_size=len(chunk),
+                event_count=len(chunk_events),
+            )
             continue
 
         for event_id, items in raw.items():
