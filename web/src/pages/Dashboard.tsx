@@ -1,12 +1,12 @@
 ﻿import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DailyCommandQueue } from '../components/DailyCommandQueue'
 import { ErrorState } from '../components/ErrorState'
 import { MacroContextBar } from '../components/MacroContextBar'
 import { MacroNarrativePanel } from '../components/MacroNarrativePanel'
 import { MarketOverview } from '../components/MarketOverview'
 import { MarketRegimeBanner } from '../components/MarketRegimeBanner'
-import { PmDailyQueue } from '../components/PmDailyQueue'
 import { SectorSummary } from '../components/SectorSummary'
 import { DashboardSkeleton } from '../components/Skeleton'
 import {
@@ -19,6 +19,7 @@ import { WatchlistTable } from '../components/WatchlistTable'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useLocalResearchAutomation } from '../hooks/useLocalResearchAutomation'
 import type { TickerAnalysisData, WeeklyReportSection } from '../types'
+import { buildCommandDeskModel } from '../utils/commandDesk'
 import {
   buildCatalystFeedSections,
   buildEarningsBoardSections,
@@ -175,6 +176,10 @@ export function Dashboard() {
     () => buildDashboardPriorityCards(day.tickers, sortedWatchlistTickers, previousDay?.tickers ?? []),
     [day.tickers, previousDay?.tickers, sortedWatchlistTickers],
   )
+  const commandDesk = useMemo(
+    () => buildCommandDeskModel(day, sortedWatchlistTickers),
+    [day, sortedWatchlistTickers],
+  )
   const decisionCounts = useMemo(() => countDecisions(day.tickers), [day.tickers])
   const emptyState = useMemo(
     () => buildEmptyStateMessage(searchQuery, selectedSector, traderFilters),
@@ -314,6 +319,8 @@ export function Dashboard() {
           </select>
         )}
       </div>
+
+      <DailyCommandQueue model={commandDesk} />
 
       <div className="dashboard-quick-bar">
         <div className="dashboard-automation-panel">
@@ -505,8 +512,6 @@ export function Dashboard() {
 
       {refreshing && <p className="dashboard-refresh-note">최신 output을 다시 불러오는 중입니다.</p>}
 
-      <PmDailyQueue pmView={day.pm_view} />
-
       <section className="dashboard-priority-section">
         <div className="section-header-with-kicker">
           <div>
@@ -549,16 +554,18 @@ export function Dashboard() {
         </div>
       </DashboardAccordionSection>
 
-      <DashboardAccordionSection
-        title="오늘 시장 분위기"
-        summary={`${day.market_regime?.regime ?? '시장 분위기 정보 없음'} · 매크로와 섹터 흐름`}
-      >
-        <MarketRegimeBanner regime={day.market_regime} />
-        <MacroNarrativePanel narrative={day.macro_context?.macro_narrative} regime={day.market_regime} />
-        <MacroContextBar macroContext={day.macro_context} />
-        <MarketOverview entries={day.market_overview} />
-        <SectorSummary tickers={day.tickers} />
-      </DashboardAccordionSection>
+      <div id="market-context">
+        <DashboardAccordionSection
+          title="오늘 시장 분위기"
+          summary={`${day.market_regime?.regime ?? '시장 분위기 정보 없음'} · 매크로와 섹터 흐름`}
+        >
+          <MarketRegimeBanner regime={day.market_regime} />
+          <MacroNarrativePanel narrative={day.macro_context?.macro_narrative} regime={day.market_regime} />
+          <MacroContextBar macroContext={day.macro_context} />
+          <MarketOverview entries={day.market_overview} />
+          <SectorSummary tickers={day.tickers} />
+        </DashboardAccordionSection>
+      </div>
 
       {(data.weekly_summary?.weekly_report || data.weekly_summary?.weekly_insight) ? (
         <DashboardAccordionSection
@@ -602,14 +609,16 @@ export function Dashboard() {
         </DashboardAccordionSection>
       ) : null}
 
-      {sortedWatchlistTickers.length > 0 ? (
-        <WatchlistTable tickers={sortedWatchlistTickers} accountSize={accountSize} density={density} />
-      ) : (
-        <div className="dashboard-empty-state">
-          <strong>{emptyState.title}</strong>
-          <p>{emptyState.body}</p>
-        </div>
-      )}
+      <div id="watchlist">
+        {sortedWatchlistTickers.length > 0 ? (
+          <WatchlistTable tickers={sortedWatchlistTickers} accountSize={accountSize} density={density} />
+        ) : (
+          <div className="dashboard-empty-state">
+            <strong>{emptyState.title}</strong>
+            <p>{emptyState.body}</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
