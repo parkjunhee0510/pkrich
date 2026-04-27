@@ -4,6 +4,7 @@ import { useDashboardData } from '../hooks/useDashboardData'
 import { usePriceHistory } from '../hooks/usePriceHistory'
 import { useTickerTimeline } from '../hooks/useTickerTimeline'
 import { usePolicyData } from '../hooks/usePolicyData'
+import { useTickerAnalysis } from '../hooks/useTickerAnalysis'
 import { DataSnapshot } from '../components/DataSnapshot'
 import { NewsItem } from '../components/NewsItem'
 import { SecFilingBadges } from '../components/SecFilingBadges'
@@ -83,6 +84,7 @@ const PriceChart = lazy(() =>
 export function TickerDetail() {
   const { ticker } = useParams<{ ticker: string }>()
   const { data: policyData } = usePolicyData()
+  const { analysis: shardAnalysis } = useTickerAnalysis(ticker)
   const { data, loading, error } = useDashboardData()
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
@@ -94,7 +96,11 @@ export function TickerDetail() {
   const [selectedFormType, setSelectedFormType] = useState('ALL')
 
   const latestDay = data?.days[data.days.length - 1]
-  const analysis = latestDay?.tickers.find((t) => t.ticker === ticker)
+  // Prefer the per-ticker shard (full payload incl. risks_or_watchpoints,
+  // key_news, financial_highlights, signal_history, quarterly_financials).
+  // Fall back to the slim index.json entry only when the shard is missing.
+  const slimAnalysis = latestDay?.tickers.find((t) => t.ticker === ticker)
+  const analysis = shardAnalysis ?? slimAnalysis
   const fallbackSignalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
   const pct = parseNumericChange(analysis?.data_snapshot['Daily Change'] ?? '0')
   const visibleTimeline = useMemo(() => {
