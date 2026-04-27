@@ -6,12 +6,12 @@
     "ticker": "KO",
     "name": "The Coca-Cola Company",
     "date": "2026-04-24",
-    "summary": "현재 KO는 주가 76.63달러로 50일선 77.28달러를 소폭 하회하지만 200일선 71.74달러 대비는 +6.81%이며, RSI 53.2와 MACD는 중립/완만한 개선 신호이고 옵션 흐름은 PCR 5.53으로 약세 편향이 관찰됩니다. 다음 촉매는 2026-04-28 실적 발표이며, 발표 전까지는 실적 기대와 단기 기술적 저항(50일선) 돌파 여부가 핵심입니다.",
+    "summary": "현재 주가는 30일 기준 +1.22%로 제한적 상승이며, SMA50 대비 -0.84%로 횡보권에 가깝습니다. 다음 촉매는 2026-04-28 실적 발표이며, peer_rank는 PER pctl 50과 RS pctl 40으로 중립적입니다.",
     "key_news": [
-      "소프트드링크 수요로 이익 성장 전망",
-      "새 CEO, 빠른 혁신 추진",
+      "탄산음료 수요로 이익 성장 전망",
+      "차기 CEO가 혁신 속도 강화 모색",
       "4분기 수요 증가에도 주가 하락",
-      "10-K 연간 보고서 제출",
+      "연간 사업 및 재무 보고서 제출",
       "SEC에 8-K 중요 공시 제출"
     ],
     "news_references": [
@@ -42,24 +42,24 @@
       {
         "title": "Coca-Cola demand rises in fourth quarter but shares slide on tepid outlook - AP News",
         "source": "AP News",
-        "published_at": "Tue, 10 Feb 2026 08:00:00 GMT",
+        "published_at": "Tue, 10 Feb 2026 12:26:55 GMT",
         "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOU0tQXzFYTi1GUEo2ZlU2MHV3c1d5dGxnZHZJaXRneDQ0NWJvTkdDbHAwQTByZkRUOEhYeG1OblluZGdtU1c4ZjY2OTBsX1pvV3JBaWNvTUlGUzQwRVI4c1Z2MGh6ZlYwV2VDZmc4OHNobW9TU3oxdGphVU1pajZULW5POTVGTGpCTTJpSW1QVXFJQTB1?oc=5"
       }
     ],
     "financial_highlights": [
-      "주가 76.63달러, 30D +1.22%",
+      "가격 76.63달러, 30일 +1.22%",
       "SMA50 77.28달러 대비 -0.84%",
       "SMA200 71.74달러 대비 +6.81%",
-      "Forward EPS 3.45, TTM EPS 3.04, EPS 성장 +3.60% YoY",
-      "PER 25.2x, peer_rank PER 50p / RS 40p"
+      "PER 25.2x, peer PER pctl 50",
+      "Forward EPS 3.45, EPS 성장 +3.60% YoY"
     ],
     "risks_or_watchpoints": [
-      "2026-04-28 실적 발표 전까지 현재가 76.63 USD가 SMA50 77.28 USD 아래에 머무르면 단기 약세 압력이 커질 수 있음",
-      "2026-04-28 실적 발표에서 EPS가 기대치 3.45 또는 최근 실적 패턴(2025-Q4 0.53 vs est 0.56)보다 약하면 조정 리스크가 커질 수 있음",
-      "옵션 만기 2026-05-01 전후 PUT $80·$78·$85의 이상거래가 지속되고 PCR 5.53( bearish )가 유지되면 하방 헤지 수요가 강한 상태로 해석될 수 있음",
-      "현재가가 MaxPain $68 또는 TopPuts $70/$65/$60 구간에 접근하면 옵션 포지셔닝에 따른 하방 변동성 확대 가능성이 있음"
+      "2026-04-28 실적 발표(D-1) 전까지 주가가 77.28 USD(SMA50) 회복에 실패하면 단기 약세 지속",
+      "주가가 74.32-77.99 USD 볼린저 밴드 상단 근처에서 밀리면 박스권 상단 저항 확인",
+      "2026-05-01 옵션 만기 전까지 PUT $80의 OI 대비 170% 거래가 이어지면 하방 포지셔닝 강화",
+      "RS vs Sector ETF -0.55%가 개선되지 않으면 섹터 대비 상대강도 약세 지속"
     ],
-    "signal_or_takeaway": "중립 경계 — 실적 전 50일선 저항과 수급 혼재 | 진입 트리거 77.28 회복 | 목표 78.56/83.67달러 | 손절 76.63달러",
+    "signal_or_takeaway": "중립 관찰 — 실적과 공시 모멘텀은 있으나 SMA50 근처 횡보 | 진입 트리거 77.28 회복 | 목표 78.56/83.67달러 | 손절 71.74달러",
     "data_snapshot": {
       "Price": "76.63 USD",
       "Daily Change": "+0.46%",
@@ -193,7 +193,7 @@
     "news_tone": {
       "label": "neutral",
       "confidence": 3,
-      "reasoning": "수요 개선과 혁신 기대가 있으나 실적 전망은 다소 약해 보도 흐름이 중립적입니다."
+      "reasoning": "수요와 성장 전망은 긍정적이지만, 낮은 가이던스로 주가가 하락해 혼재되어 있습니다."
     },
     "trade_frame": {
       "entry_price": "현재가 76.63 또는 눌림 시 75.34 USD",
@@ -219,6 +219,14 @@
       "oi_change": "N/A"
     },
     "signal_history": [
+      {
+        "date": "2026-04-24",
+        "direction": "bull",
+        "llm_direction": "bull",
+        "catalyst": "실적",
+        "return_5d": "N/A",
+        "note": "76.63 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
       {
         "date": "2026-04-23",
         "direction": "bear",
@@ -250,14 +258,6 @@
         "catalyst": "실적",
         "return_5d": "N/A",
         "note": "75.48 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-17",
-        "direction": "bull",
-        "llm_direction": "neutral",
-        "catalyst": "실적",
-        "return_5d": "N/A",
-        "note": "75.74 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
       }
     ],
     "sector_comparison": {
@@ -301,7 +301,7 @@
     },
     "committee_analysis": {
       "status": "economy_only",
-      "agreement_status": "mixed",
+      "agreement_status": "aligned",
       "deep_review_triggered": false,
       "deep_review_reasons": [],
       "roles": {
@@ -313,7 +313,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "KO는 2025-Q3 EPS 0.86로 추정치 0.78을 상회했지만, 최근 2025-Q4 EPS 0.53은 추정치 0.56에 못 미쳐 실적 가속이 아직 확인되지 않았습니다. 2026-04-28 실적 발표와 새 CEO의 혁신 추진이 상방 촉매지만, 현재 PER 25.2x와 EPS 성장 +3.60% YoY만으로는 성장주 관점에서 강한 재평가 근거가 부족해 50일선 77.28달러 회복 여부를 지켜보는 것이 적절합니다.",
+          "summary": "EPS 성장률이 +3.60% YoY로 낮고, 최근 분기 실적도 2025-Q3만 beat였을 뿐 2025-Q4는 EPS 0.53으로 추정치 0.56을 소폭 하회해 성장 가속 신호가 약합니다. 30일 수익률 +1.22%와 SMA50 대비 -0.84%로 모멘텀도 애매하므로, 2026-04-28 실적에서 83.67 USD 목표를 뒷받침할 매출/EPS 상향이 확인될 때까지는 관망이 맞습니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -321,11 +321,11 @@
           "role": "value_skeptic",
           "round": "economy",
           "profile": "economy",
-          "stance": "reduce",
-          "action": "avoid",
+          "stance": "watch",
+          "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "KO는 방어주 치고도 PER 25.2x, P/B 10.25x로 밸류에이션 부담이 크고, 애널리스트 목표가 83.67달러 대비 현재가 76.63달러의 업사이드는 9.2%에 불과해 리레이팅 여지가 제한적입니다. EPS가 3.04에서 3.45로 3.60% 성장하는 수준인데도 실적 직전 분기 0.53 vs 0.56, 0.77 vs 0.72처럼 서프라이즈가 크지 않고 2026-04-28 발표 전에는 77.28달러 SMA50 아래에 있어 하방 비대칭이 더 커 보입니다.",
+          "summary": "PER 25.2x와 P/B 10.25x는 동종군 중립(PER pctl 50) 대비 절대적으로 싸지 않고, 현재가 76.63달러는 애널리스트 목표가 83.67달러 대비 고작 9.2% 업사이드라 밸류에이션 여지가 크지 않습니다. EPS 성장도 +3.60% YoY에 그쳐 25배대 멀티플을 정당화하기엔 약하고, 주가가 77.28달러(SMA50) 아래로 밀리면 단기 약세가 이어질 수 있어 수익/리스크 비대칭이 좋지 않습니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -337,7 +337,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "KO는 76.63로 50일선 77.28 아래에 있어 단기 추세 훼손 가능성을 우선 봐야 하며, 200일선 71.74와는 아직 +6.81%로 중기 추세는 유지 중입니다. 하방 무효화는 50일선 77.28 상향 회복 실패가 아니라, 실적 전후로 76.17 저점 이탈 및 71.74 이탈 시로 보며, 52주 고점 82.00 대비 상단 여력은 제한적이고 옵션은 PUT $80/$78 집중과 PCR 0.30x인데도 톤은 bearish라 실적 가이던스가 약하면 조정이 먼저 나올 수 있습니다.",
+          "summary": "주가는 76.63으로 SMA50 77.28 바로 아래, SMA200 71.74 위라 중기 추세는 유지되지만 단기 모멘텀은 약합니다. 하방 시나리오는 실적 전후에 77.28 회복에 실패하고 74.32-77.99 밴드 하단을 이탈할 때이며, 특히 74.32 하향 이탈 시 71.74(SMA200)까지 조정이 열립니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -349,7 +349,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "KO는 76.63달러로 200일선 71.74달러 대비 +6.81%지만 50일선 77.28달러를 -0.84% 하회해, 금리 하락/방어주 선호 국면에서는 상대적으로 버티되 강한 리레이팅은 제한적입니다. 다만 RS vs Sector ETF가 -0.55%이고 3M 평균 거래량 16.93M 대비 상대거래량 0.70x로 확인돼, 현재는 리스크오프 수혜보다 섹터 내 상대강도 둔화가 더 눈에 띄므로 이벤트 전까지 중립 관찰이 적절합니다.",
+          "summary": "KO는 200D SMA 71.74 대비 +6.81%로 장기 레짐은 유지되지만, 50D SMA 77.28 대비 -0.84%이고 52W High 82.00 대비 68% 수준이라 단기 모멘텀은 둔화된 상태입니다. 방어주 특성상 금리 하락·리스크오프에 상대적으로 우호적이지만, RS vs Sector ETF -0.55%와 상대거래량 0.70x는 섹터 내 자금 유입이 강하지 않음을 시사해 이벤트 전까지는 중립 관찰이 적절합니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -359,9 +359,9 @@
           "profile": "economy",
           "stance": "watch",
           "action": "watch",
-          "confidence": 0.67,
+          "confidence": 0.78,
           "strong_objection": false,
-          "summary": "KO는 76.63달러로 200일선 71.74달러 대비 +6.81%이지만 50일선 77.28달러를 -0.84% 하회해, 4/28 실적 전까지는 방향성 확인 구간입니다. PER 25.2x와 P/B 10.25x, 목표가 83.67달러 대비 +9.2% 업사이드는 방어주 프리미엄이 이미 반영된 수준이라 추격 매수 근거가 약합니다. 반대 근거로는 23명 애널리스트의 Buy와 EPS 3.45 전망, 배당수익률 2.69%가 있어 하방만 보는 것은 과합니다.",
+          "summary": "대체로 중립입니다. 주가는 76.63달러로 30일 +1.22%에 그쳤고 SMA50 77.28달러를 -0.84% 하회해 실적 전까지는 방향성 확인이 필요하지만, SMA200 71.74달러 대비 +6.81%로 중기 추세는 유지됩니다. 반대 근거는 PER 25.2x와 P/B 10.25x가 EPS 성장 +3.60% YoY 대비 부담이고, 2026-04-28 실적 전후로 77.28달러 회복 실패 시 74.32~77.99달러 박스 하단 및 71.74달러까지 조정 위험이 열려 있다는 점입니다.",
           "valid": true,
           "invalid_reason": ""
         }
@@ -413,6 +413,7 @@
         "momentum": 10.0,
         "news_tone": 0.0,
         "peer_rank": 0.0,
+        "policy_tailwind": 0.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 5.0,
         "signal_track_record": -10.0,
@@ -427,6 +428,7 @@
         "momentum": "섹터 대비 -0.6%",
         "news_tone": "뉴스 톤이 중립",
         "peer_rank": "peer percentile 기준 특이 우위는 제한적입니다",
+        "policy_tailwind": "정책 임팩트 +0.00 — 영국 농업사업체에 적용되는 환경법 전반을 단순화·현대화·통합하는 검토 프로젝트다. KO는 plastic_regulation, sugar_tax, fda_labeling 노출이 있으나 이번 사안은 농업 규제개혁 중심이라 직접 영향은 제한적이다.",
         "portfolio_risk": "현재 포트폴리오 집중 리스크 감점 요인은 크지 않음",
         "regime_adjustment": "리스크온 환경에서도 방어주 프리미엄 유지",
         "signal_track_record": "최근 시그널 승률 14% (1/7)",

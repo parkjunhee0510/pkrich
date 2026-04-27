@@ -6,13 +6,13 @@
     "ticker": "XOM",
     "name": "Exxon Mobil Corporation",
     "date": "2026-04-24",
-    "summary": "현재 XOM은 주가가 148.91달러로 30일간 -12.91%였고, 50일선(154.54달러) 아래에서 기술적으로는 약세이며 RSI는 41.8, MACD도 bearish입니다. 다음 촉매는 2026-05-01 실적 발표이며, 호르무즈 해협 차질과 OPEC 공급 충격은 유가와 해상 물류 변동성을 키워 에너지 업종 전반에 영향을 줄 수 있습니다.",
+    "summary": "현재 주가는 30일 기준 -12.91%로 약세이며, SMA50 대비 -3.64%이고 MACD도 bearish로 표시됩니다. 다음 촉매는 2026-05-01 실적 발표이며, 호르무즈 해협 차질과 OPEC 공급 충격은 에너지 가격과 기대 인플레이션을 자극할 수 있습니다.",
     "key_news": [
       "2030년까지 이익 성장 목표 상향",
-      "유가 하락과 지정학적 완화로 에너지 약세",
+      "카타르 LNG 생산 차질 보도",
       "SEC에 8-K 중요 공시 제출",
-      "SEC에 위임장 설명서 제출",
-      "지정학적 변화와 LNG 노출 관련 분석"
+      "SEC에 주주총회 관련 위임장 제출",
+      "지정학적·LNG 노출 영향 분석"
     ],
     "news_references": [
       {
@@ -20,12 +20,6 @@
         "source": "SEC EDGAR",
         "published_at": "2026-04-08",
         "link": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000056/xom-20260408.htm"
-      },
-      {
-        "title": "Tech boosts US stocks to record close, oil dips on signs of Iran peace progress - Reuters",
-        "source": "Reuters",
-        "published_at": "Fri, 24 Apr 2026 22:44:34 GMT",
-        "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPcGFfSlR2bzRVYUJjekt5UlU3ZFlaLWc1aXI2SXFmMEhaUWhuYVFEN0hFNC00QzlOZ0d3eGFqUEt5RGcxS2JLVTZsVFNKZUlxM0Ytd05mRVBTdy1Fc3E1MUNSeGZOOWNaWlh1WS1sYS1MN3pwX0ZJWVlyRXZBbXlBWEV4eEZVcUMzWnRFWA?oc=5"
       },
       {
         "title": "Exxon boosts forecast, aims for $25 billion earnings growth by 2030 - Reuters",
@@ -40,6 +34,12 @@
         "link": "https://www.sec.gov/Archives/edgar/data/34088/000119312526147614/d16317ddef14a.htm"
       },
       {
+        "title": "Exclusive: Iran attacks wipe out 17% of Qatar’s LNG capacity for up to five years, QatarEnergy CEO says - Reuters",
+        "source": "Reuters",
+        "published_at": "Fri, 20 Mar 2026 07:00:00 GMT",
+        "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQM2VOR0pPU1pWbUpRdUU3Tjg4WWhRRU5uN1RkTG4wSFF0VndlUHI1dm5lQU9kbTMtWnhyV0VJVnZ1VkNET3ZGQ3A1ckRvSU1xTnJPWm80RmI5Z0pBem5HTkFGbE1VTnZ0T0tCSjNCVlRuaFB3T0g1SXh2RkpYQ05hN3pvQkpFNXNBeVBaVmZZOUY2d1hlUkJuMHZ1NE9NQS1HbmctOGR5RjZRTzVjbTFvd0FHVUM4U0VJLUVsUXVINWROenpUQURDemlLMVY?oc=5"
+      },
+      {
         "title": "What Exxon Mobil (XOM)'s Shifting Geopolitical and LNG Exposure Means For Shareholders - Yahoo Finance",
         "source": "Yahoo Finance",
         "published_at": "Thu, 19 Feb 2026 08:00:00 GMT",
@@ -47,19 +47,19 @@
       }
     ],
     "financial_highlights": [
-      "PER 22.2x, peer_rank PER 50퍼센타일",
-      "RS 피어 랭크 0퍼센타일, 모멘텀 하위 0%",
-      "ROE 11.1%, ROE 피어 랭크 50퍼센타일",
-      "FCF Yield 4.5%, ND/EBITDA 0.5x",
-      "Forward EPS 10.06, TTM EPS 6.70, EPS Growth -11.00% YoY"
+      "가격 148.91달러, 30일 -12.91%",
+      "SMA50 154.54달러 대비 -3.64%",
+      "SMA200 126.87달러 대비 +17.37%",
+      "PER 22.2x, FCF Yield 4.5%",
+      "Forward EPS 10.06, EPS 성장 -11.00% YoY"
     ],
     "risks_or_watchpoints": [
-      "2026-05-01 실적 발표 전까지 주가가 154.54 USD(SMA50) 아래에 머물면 단기 약세 지속 가능",
-      "주가가 176.41 USD(52W High)까지 회복하지 못하면 상단 돌파 실패 리스크가 남음",
-      "옵션 만기 2026-05-01 기준 PCR 5.51(옵션 플로우)과 MaxPain 160 USD 간 괴리가 커 가격 왜곡 가능",
-      "RS vs Sector ETF가 -3.81%인 상태가 이어지면 업종 대비 상대강도 저하를 점검"
+      "종가가 SMA50 154.54 USD 아래에 머물거나 50일 이동평균을 하향 이탈하면 약세 시나리오로 전환될 수 있음",
+      "2026-05-01 실적 발표 전까지 현재가 148.91 USD가 1.5×ATR 목표 156.01 USD를 회복하지 못하면 단기 반등 탄력이 약할 수 있음",
+      "MACD가 -2.23/-1.25의 bearish 상태를 유지하고 RSI(14) 41.8이 50 아래에 계속 머물면 모멘텀 약세가 지속될 수 있음",
+      "PCR 5.51(bearish) 및 2026-05-01 만기 옵션에서 PUT $185, PUT $180, PUT $230의 비정상 거래가 이어지면 하방 헤지 수요가 높다는 신호로 해석될 수 있음"
     ],
-    "signal_or_takeaway": "매도 경계 — 50일선 아래 약세와 실적 D-4 부담 | 진입 트리거 154.54 하회 지속 | 목표 148.91/126.87달러 | 손절 154.54달러",
+    "signal_or_takeaway": "중립 관찰 — 2026-05-01 실적 발표와 약세 추세가 혼재 | 진입 트리거 148.91 회복 | 목표 154.54/156.01달러 | 손절 126.87달러",
     "data_snapshot": {
       "Price": "148.91 USD",
       "Daily Change": "-1.08%",
@@ -193,7 +193,7 @@
     "news_tone": {
       "label": "neutral",
       "confidence": 3,
-      "reasoning": "장기 이익 목표 상향은 긍정적이지만 유가 약세와 지정학적 부담이 함께 보여 톤이 중립적입니다."
+      "reasoning": "이익 성장 목표 상향은 긍정적이지만 LNG 차질과 지정학적 불확실성이 함께 있어 중립적입니다."
     },
     "trade_frame": {
       "entry_price": "현재가 148.91 또는 눌림 시 144.18 USD",
@@ -219,6 +219,14 @@
       "oi_change": "N/A"
     },
     "signal_history": [
+      {
+        "date": "2026-04-24",
+        "direction": "bear",
+        "llm_direction": "bear",
+        "catalyst": "기타 공시",
+        "return_5d": "N/A",
+        "note": "148.91 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
       {
         "date": "2026-04-23",
         "direction": "bear",
@@ -250,14 +258,6 @@
         "catalyst": "기타 공시",
         "return_5d": "N/A",
         "note": "147.68 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-17",
-        "direction": "bull",
-        "llm_direction": "neutral",
-        "catalyst": "기타 공시",
-        "return_5d": "N/A",
-        "note": "146.44 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다."
       }
     ],
     "sector_comparison": {
@@ -304,10 +304,12 @@
       "final_consensus": "single"
     },
     "committee_analysis": {
-      "status": "economy_only",
+      "status": "deep_reviewed",
       "agreement_status": "mixed",
-      "deep_review_triggered": false,
-      "deep_review_reasons": [],
+      "deep_review_triggered": true,
+      "deep_review_reasons": [
+        "risk_strong_objection"
+      ],
       "roles": {
         "growth_analyst": {
           "role": "growth_analyst",
@@ -317,7 +319,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "XOM은 2025-Q1~Q4 매출이 79.48B~83.33B달러로 정체되어 있고, 최근 4개 분기 EPS도 1.53~1.76달러 수준에 머물러 실적 가속이 보이지 않습니다. 2026-05-01 실적 발표가 단기 촉매이지만 EPS 성장률이 -11.0% YoY이고 주가가 30일 -12.91%로 50일선(154.54달러) 아래에 있어, 상방은 있으나 성장주 관점의 확신 매수 근거는 아직 부족합니다.",
+          "summary": "2026-05-01 실적이 4일 남았고 최근 4개 분기 EPS가 1.76→1.64→1.76→1.53으로 정체돼 성장 가속 증거가 아직 부족합니다. 2030년까지 이익 목표 상향과 카타르 LNG 차질은 상방 촉매지만, 주가는 30일 -12.91%로 약세이고 EPS 성장률도 -11.00% YoY라서 확인 전까지는 관망이 적절합니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -329,43 +331,43 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "XOM은 PER 22.2x, P/B 2.40x로 방어주치고 밸류에이션 부담이 있고, 애널리스트 목표가 164.41달러 대비 현재가 148.91달러는 업사이드가 약 +10.4%에 불과해 리스크 대비 보상이 크지 않습니다. 더 불안한 점은 TTM EPS 6.70에서 Forward EPS 10.06으로 점프를 전제하지만 최근 EPS 성장률이 -11.0% YoY이고, FCF Yield 4.5%도 고평가를 정당화할 만큼 강하지 않아 실적 발표(2026-05-01) 전에는 보수적으로 보는 게 맞습니다.",
+          "summary": "PER 22.2x와 P/B 2.40배는 정유/에너지 대형주 치고 저렴하다고 보기 어렵고, FCF Yield 4.5%는 현재 EPS 성장률 -11.0% YoY를 감안하면 밸류에이션 방어력이 약합니다. 목표가 164.41달러 대비 현 주가 148.91달러는 업사이드가 약 10.4%에 불과한데, 최근 30일 -12.91% 하락·SMA50 대비 -3.64%·MACD bearish·RSI 41.8로 기술적 약세가 겹쳐 단기 비대칭은 하방이 더 커 보입니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "risk_manager": {
           "role": "risk_manager",
-          "round": "economy",
-          "profile": "economy",
+          "round": "deep",
+          "profile": "deep",
           "stance": "watch",
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "XOM은 148.91로 SMA50 154.54 아래(-3.64%)에 있고 RSI 41.8로 모멘텀이 약해, 2026-05-01 실적 전까지 154.54 상향 회복이 없으면 단기 하방 시나리오를 우선 봐야 합니다. 반대로 50D SMA를 회복하지 못한 채 146.95 저점 이탈이나 52W Low 101.19 쪽으로 재개되는 흐름이면 thesis break로 보겠고, 현재는 200D SMA 126.87 위(+17.37%)라 장기 훼손까지는 아님.",
+          "summary": "하방이 먼저 보입니다: 종가 148.91은 SMA50 154.54보다 -3.64% 낮고 RSI 41.8로 50 아래이며, 200D SMA 126.87 위이지만 52주 고점 176.41 대비 아직 -15.6%라 추세 훼손 직전은 아닙니다. 명확한 무효화는 종가가 154.54 위로 복귀하지 못한 채 50일선 아래에 머무르거나, 반대로 126.87 아래로 이탈해 200D SMA를 깨는 경우이며, 2026-05-01 실적 전까지는 148대 지지와 146.95 일중 저점 하향 여부를 먼저 봐야 합니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "macro_strategist": {
           "role": "macro_strategist",
-          "round": "economy",
-          "profile": "economy",
+          "round": "deep",
+          "profile": "deep",
           "stance": "reduce",
           "action": "avoid",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "XOM은 유가 민감도가 높은 섹터인데도 최근 30일 -12.91%로 피어 평균 -9.44%보다 약했고, 주가도 50D SMA 154.54 아래인 148.91로 거래되어 에너지 내 상대강도가 둔화된 상태입니다. 200D SMA 126.87 대비 +17.37% 프리미엄은 유지되지만 RS vs Sector ETF -3.81%, 하루 거래량 0.60x는 리스크온보다 방어적 로테이션에서만 버틸 수 있는 모습이라, 금리 하락·달러 약세·유가 반등이 확인되기 전까지 비중축소가 더 합리적입니다.",
+          "summary": "유가·에너지 리스크온이 아니라도 버티는 방어적 성격은 있지만, 현재는 50D SMA 154.54 대비 -3.64%이고 30일 수익률 -12.91%로 섹터 평균 -9.44%보다 더 약해 상대강도 이탈이 뚜렷합니다. 또한 RS vs Sector ETF가 -3.81%라 에너지 내 로테이션에서도 밀리고 있어, 금리보다 유가/달러/정책 헤드라인에 더 민감한 구간에서 비중을 줄이는 쪽이 맞습니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "pm": {
           "role": "pm",
-          "round": "economy",
-          "profile": "economy",
+          "round": "deep",
+          "profile": "deep",
           "stance": "watch",
           "action": "watch",
           "confidence": 0.68,
           "strong_objection": false,
-          "summary": "XOM은 PER 22.2x와 P/B 2.40x로 밸류에이션이 아주 싸지는 않지만, 최근 30일 -12.91% 하락과 50일선 154.54달러 하회, RS vs Sector ETF -3.81%로 단기 모멘텀이 약합니다. 2026-05-01 실적이 4일 남았고, 목표가 164.41달러 대비 현 주가 148.91달러는 +10.4% 업사이드지만 EPS 성장률 -11.0% YoY와 0.60x 저거래량이 확인돼 실적 전까지는 포지션 확대보다 관찰이 합리적입니다. 반대 근거는 FCF Yield 4.5%와 ND/EBITDA 0.5x로 재무 안전성은 양호하다는 점입니다.",
+          "summary": "현재가 148.91달러는 30일 -12.91% 하락이고 SMA50 154.54달러 대비 -3.64%, RSI 41.8 및 MACD bearish로 2026-05-01 실적 전까지는 방향성 확인이 우선입니다. 다만 SMA200 126.87달러 대비 +17.37%, PER 22.2x, FCF Yield 4.5%, 애널리스트 목표가 164.41달러는 중기 방어력을 남기므로 급히 줄이기보다 실적 확인 대기입니다. 반대 근거는 4일 내 실적과 PCR 5.51, 상대강도 -3.81%가 단기 하방 리스크를 아직 키운다는 점입니다.",
           "valid": true,
           "invalid_reason": ""
         }
@@ -417,6 +419,7 @@
         "momentum": 8.0,
         "news_tone": 0.0,
         "peer_rank": 0.0,
+        "policy_tailwind": 0.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 10.0,
         "signal_track_record": -10.0,
@@ -431,6 +434,7 @@
         "momentum": "섹터 대비 -3.8%",
         "news_tone": "뉴스 톤이 중립",
         "peer_rank": "peer percentile 기준 특이 우위는 제한적입니다",
+        "policy_tailwind": "정책 임팩트 +0.00 — XOM은 energy_policy 노출이 있으나, 이번 사안은 영국 전력 인터커넥터 면허 조건 변경으로 전력망 규제 성격이 강하다. 석유·가스 중심 사업과의 직접 연결성은 낮아 중립적으로 판단된다.",
         "portfolio_risk": "현재 포트폴리오 집중 리스크 감점 요인은 크지 않음",
         "regime_adjustment": "리스크온 환경의 중립 업종",
         "signal_track_record": "최근 시그널 승률 29% (2/7)",
@@ -438,13 +442,13 @@
       },
       "ensemble_agreement": "single",
       "final_consensus": "single",
-      "raw_conviction": 58,
+      "raw_conviction": 57,
       "confidence_meta": {
-        "data_quality": 0.92,
+        "data_quality": 1.0,
         "evidence_coverage": 1.0,
         "evidence_consistency": 0.54,
         "model_agreement": 0.6,
-        "confidence_gate": 0.816
+        "confidence_gate": 0.848
       }
     }
   }
