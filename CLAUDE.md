@@ -50,6 +50,8 @@ Entry: `src/pipeline.py::run_pipeline`. `_run_sector_scan` is isolated so sector
 | `src/collector/price.py` | yfinance → Stooq fallback |
 | `src/collector/macro.py` | VIX, DXY, copper, bonds |
 | `src/collector/sector_scan.py` | 1y history + benchmark ETF, no LLM |
+| `src/collector/policy_events.py` | Stage 1: web_search policy events (trusted-domain filter, dedupe cache) |
+| `src/analyzer/policy_impact.py` | Stage 2: ticker impact mapping + tailwind aggregation |
 | `src/analyzer/research_note.py` | Batched LLM notes |
 | `src/decision/decision_layer.py` | 8-factor conviction scoring |
 | `src/decision/market_regime.py` | Regime detection |
@@ -57,12 +59,14 @@ Entry: `src/pipeline.py::run_pipeline`. `_run_sector_scan` is isolated so sector
 | `src/output/json_export.py` | `dashboard.json` + `_sync_web_public_data` |
 | `src/output/sectors_json.py` | `sectors.json` for `/sectors` |
 | `src/output/markdown.py` | Daily/weekly/ticker notes |
+| `src/output/policy_json.py` | `policy_impact.json` writer (events, ticker impacts, tailwind scores) |
+| `src/decision/factors/policy_tailwind_factor.py` | Decision factor 9: policy/regulation tailwind |
 | `src/utils/datastore.py` | CSV/SQLite backend abstraction |
 | `src/utils/signal_tracker.py` | Signals + 1D/5D/20D return backfill |
 | `src/utils/config.py` | YAML loader |
 
 ### Web frontend (`web/`, React + TS, read-only)
-Key files: `hooks/useDashboardData.ts`, `hooks/useSectorsData.ts`, `pages/{Dashboard,TickerDetail,Sectors,SectorDetail}.tsx`, `components/DecisionCard.tsx`, `types/index.ts` (mirrors `src/types.py`). No write API — all data comes from the Python pipeline.
+Key files: `hooks/useDashboardData.ts`, `hooks/useSectorsData.ts`, `hooks/usePolicyData.ts`, `pages/{Dashboard,TickerDetail,Sectors,SectorDetail,PolicyImpact}.tsx`, `components/DecisionCard.tsx`, `types/index.ts` (mirrors `src/types.py`). No write API — all data comes from the Python pipeline.
 
 ### Config (`config/`)
 `watchlist.yaml` (tickers/news/CIK/IR), `portfolio.yaml` (holdings), `models.yaml` (LLM profiles), `output.yaml`, `providers.yaml`, `decision_weights.yaml` (regime-conditional), `sectors.yaml` (read-only `/sectors`: ticker list + `news_keywords` + optional `benchmark_etf`).
