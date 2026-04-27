@@ -76,3 +76,38 @@
   flex: 1 1 100%;
   margin-top: var(--space-1);
 }
+
+/* TickerDetail Policy Exposure card (T12) */
+.policy-exposure-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.policy-exposure-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.policy-exposure-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.policy-exposure-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.policy-exposure-rationale {
+  flex: 1 1 100%;
+}

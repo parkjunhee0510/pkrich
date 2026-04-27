@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { usePriceHistory } from '../hooks/usePriceHistory'
 import { useTickerTimeline } from '../hooks/useTickerTimeline'
+import { usePolicyData } from '../hooks/usePolicyData'
 import { DataSnapshot } from '../components/DataSnapshot'
 import { NewsItem } from '../components/NewsItem'
 import { SecFilingBadges } from '../components/SecFilingBadges'
@@ -81,6 +82,7 @@ const PriceChart = lazy(() =>
 
 export function TickerDetail() {
   const { ticker } = useParams<{ ticker: string }>()
+  const { data: policyData } = usePolicyData()
   const { data, loading, error } = useDashboardData()
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
@@ -270,6 +272,44 @@ export function TickerDetail() {
         />
       )}
 
+      {policyData && (() => {
+        const tailwind = policyData.tailwind_scores[analysis.ticker]
+        const impacts = policyData.impacts_by_ticker[analysis.ticker] ?? []
+        if (tailwind === undefined && impacts.length === 0) return null
+        const tone = tailwind === undefined ? 'info' : tailwind > 0.1 ? 'positive' : tailwind < -0.1 ? 'negative' : 'caution'
+        return (
+          <section className="surface-card policy-exposure-card">
+            <div className="policy-exposure-head">
+              <span className="type-eyebrow">POLICY EXPOSURE · {policyData.date}</span>
+              {tailwind !== undefined ? (
+                <span className={`badge tone-${tone}--soft`}>
+                  tailwind {tailwind >= 0 ? '+' : ''}{tailwind.toFixed(2)}
+                </span>
+              ) : null}
+            </div>
+            {impacts.length > 0 ? (
+              <ul className="policy-exposure-list">
+                {impacts.map((impact, idx) => {
+                  const itone = impact.direction === 'positive' ? 'positive' : impact.direction === 'negative' ? 'negative' : 'caution'
+                  return (
+                    <li key={`${analysis.ticker}-${idx}`} className="policy-exposure-row">
+                      <span className={`chip tone-${itone}--soft`}>
+                        {impact.direction} · {impact.strength}
+                      </span>
+                      <span className="badge tone-accent--soft">
+                        score {impact.score >= 0 ? '+' : ''}{impact.score.toFixed(2)}
+                      </span>
+                      <span className="type-meta policy-exposure-rationale">{impact.rationale}</span>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="status">오늘 영향 받은 정책 이벤트는 없습니다.</p>
+            )}
+          </section>
+        )
+      })()}
       <div className="ticker-detail-tabs" role="tablist" aria-label="종목 상세 섹션">
         {DETAIL_TABS.map((tab) => (
           <button
