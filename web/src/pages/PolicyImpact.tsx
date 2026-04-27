@@ -39,6 +39,18 @@ const CATEGORY_TONE: Record<string, 'positive' | 'negative' | 'caution' | 'info'
   other: 'info',
 }
 
+const DIRECTION_LABELS: Record<TickerImpact['direction'], string> = {
+  positive: '긍정',
+  negative: '부정',
+  neutral: '중립',
+}
+
+const STRENGTH_LABELS: Record<TickerImpact['strength'], string> = {
+  direct: '직접',
+  indirect: '간접',
+  neutral: '중립',
+}
+
 function impactTone(direction: TickerImpact['direction']): 'positive' | 'negative' | 'caution' {
   if (direction === 'positive') return 'positive'
   if (direction === 'negative') return 'negative'
@@ -151,7 +163,7 @@ export function PolicyImpact() {
                     {CATEGORY_LABELS[event.category] ?? event.category}
                   </span>
                   <span className="badge tone-accent--soft">
-                    conf {event.confidence.toFixed(2)}
+                    확신도 {event.confidence.toFixed(2)}
                   </span>
                   <span className="status">{event.source_domain}</span>
                 </div>
@@ -172,14 +184,14 @@ export function PolicyImpact() {
                           {impact.ticker}
                         </Link>
                         <span className={`chip tone-${impactTone(impact.direction)}--soft`}>
-                          {impact.direction} · {impact.strength}
+                          {DIRECTION_LABELS[impact.direction]} · {STRENGTH_LABELS[impact.strength]}
                         </span>
                         <span className="badge tone-accent--soft">
-                          score {impact.score >= 0 ? '+' : ''}
+                          점수 {impact.score >= 0 ? '+' : ''}
                           {impact.score.toFixed(2)}
                         </span>
                         {impact.confidence < 0.5 ? (
-                          <span className="chip tone-caution--soft">low confidence</span>
+                          <span className="chip tone-caution--soft">낮은 확신도</span>
                         ) : null}
                         <span className="type-meta policy-impact-rationale">
                           {impact.rationale}

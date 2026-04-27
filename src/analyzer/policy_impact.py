@@ -158,8 +158,9 @@ def _openai_map(
         "candidates": candidates,
         "instructions": (
             "For each event, identify which candidate tickers face direct, "
-            "indirect, or neutral impact. Use rationale to cite the specific "
-            "exposure (e.g., 'China revenue 17%'). confidence in [0,1]."
+            "indirect, or neutral impact. rationale 필드는 반드시 한국어로 작성하라 "
+            "(예: '중국 매출 비중 17%로 직접 노출'). 구체적인 노출 근거를 인용. "
+            "confidence in [0,1]."
         ),
     }
 

@@ -181,8 +181,9 @@ def _openai_web_search(today: str, model_profile: str) -> list[dict]:
         f"Find US and global policy/regulation events published in the 24 hours "
         f"before {today}. Cover all of these categories: "
         f"{', '.join(POLICY_CATEGORIES)}. Each event MUST include source_url and "
-        "published_at (ISO8601). summary must be ≤ 120 tokens. Return JSON "
-        "matching the provided schema."
+        "published_at (ISO8601). headline 필드는 영어 원문 그대로 두되, "
+        "summary 필드는 반드시 한국어로 작성하라 (≤ 120 tokens). "
+        "raw_excerpt는 원문 영어 인용. Return JSON matching the provided schema."
     )
 
     response = client.responses.create(

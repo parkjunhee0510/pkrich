@@ -283,7 +283,7 @@ export function TickerDetail() {
               <span className="type-eyebrow">POLICY EXPOSURE · {policyData.date}</span>
               {tailwind !== undefined ? (
                 <span className={`badge tone-${tone}--soft`}>
-                  tailwind {tailwind >= 0 ? '+' : ''}{tailwind.toFixed(2)}
+                  영향도 {tailwind >= 0 ? '+' : ''}{tailwind.toFixed(2)}
                 </span>
               ) : null}
             </div>
@@ -294,10 +294,10 @@ export function TickerDetail() {
                   return (
                     <li key={`${analysis.ticker}-${idx}`} className="policy-exposure-row">
                       <span className={`chip tone-${itone}--soft`}>
-                        {impact.direction} · {impact.strength}
+                        {({positive: '긍정', negative: '부정', neutral: '중립'}[impact.direction] || impact.direction)} · {({direct: '직접', indirect: '간접', neutral: '중립'}[impact.strength] || impact.strength)}
                       </span>
                       <span className="badge tone-accent--soft">
-                        score {impact.score >= 0 ? '+' : ''}{impact.score.toFixed(2)}
+                        점수 {impact.score >= 0 ? '+' : ''}{impact.score.toFixed(2)}
                       </span>
                       <span className="type-meta policy-exposure-rationale">{impact.rationale}</span>
                     </li>
