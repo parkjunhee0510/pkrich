@@ -1,0 +1,86 @@
+{
+  "run_date": "2026-04-28",
+  "log_path": "logs\\pipeline\\2026-04-28.jsonl",
+  "pipeline_completed": false,
+  "providers": {
+    "yfinance": {
+      "overall_status": "active",
+      "used_tickers": 11,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "alpha_vantage": {
+      "overall_status": "active",
+      "used_tickers": 11,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "polygon": {
+      "overall_status": "active",
+      "used_tickers": 11,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "fmp": {
+      "overall_status": "active",
+      "used_tickers": 11,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "finnhub": {
+      "overall_status": "active",
+      "used_tickers": 11,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 0
+    },
+    "sec_edgar": {
+      "overall_status": "idle",
+      "used_tickers": 0,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 11
+    },
+    "ir_rss": {
+      "overall_status": "idle",
+      "used_tickers": 0,
+      "throttled_tickers": 0,
+      "unavailable_tickers": 0,
+      "failed_tickers": 0,
+      "not_used_tickers": 11
+    }
+  },
+  "llm": {
+    "used": false,
+    "planned_batches": 0,
+    "completed_batches": 0,
+    "failed_batches": 0,
+    "validation_failures": 0,
+    "estimated_cost_usd": 0.0,
+    "latest_model": "N/A",
+    "models_used": {},
+    "quality": {
+      "run_date": "2026-04-28",
+      "success": false,
+      "daily_api_cost_usd": 0.0,
+      "batch_count": 0,
+      "validated_ticker_count": 0,
+      "validation_failure_count": 0,
+      "schema_violation_count": 0,
+      "fact_warning_count": 0,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 0,
+      "hallucination_ratio": 0.0
+    }
+  }
+}

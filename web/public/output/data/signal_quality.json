@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "ic_decay": {
+    "status": "insufficient_data",
+    "sample_sizes": {
+      "1d": 0,
+      "5d": 0,
+      "20d": 0
+    },
+    "factors": []
+  },
+  "rolling_ic": {
+    "status": "insufficient_data",
+    "sample_size": 0,
+    "factors": []
+  },
+  "kelly": {
+    "status": "ok",
+    "horizon": 5,
+    "haircut": 0.5,
+    "by_direction": {
+      "neutral": {
+        "status": "insufficient_data",
+        "n": 15
+      },
+      "bull": {
+        "status": "ok",
+        "n": 39,
+        "hit_rate": 0.692,
+        "avg_win": 10.946,
+        "avg_loss": 4.43,
+        "payoff_ratio": 2.471,
+        "kelly_full": 0.568,
+        "kelly_half": 0.284
+      },
+      "bear": {
+        "status": "insufficient_data",
+        "n": 14
+      }
+    }
+  },
+  "turnover": {
+    "status": "ok",
+    "sample_size": 12,
+    "avg_turnover": 0.025,
+    "points": [
+      {
+        "date": "2026-04-11",
+        "tickers": 8,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-12",
+        "tickers": 8,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-13",
+        "tickers": 11,
+        "turnover": 0.273
+      },
+      {
+        "date": "2026-04-14",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-15",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-17",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-20",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-21",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-22",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-23",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-24",
+        "tickers": 11,
+        "turnover": 0.0
+      }
+    ]
+  }
+}
