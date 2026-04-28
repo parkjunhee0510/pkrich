@@ -59,6 +59,21 @@ def _build_check(check_id: str, cfg: "RunnerConfig") -> BaseCheck:
     if check_id == "I4":
         from src.eval.checks.i4_input_size_drift import I4InputSizeDrift
         return I4InputSizeDrift()
+    if check_id == "O1":
+        from src.eval.checks.o1_schema_compliance import O1SchemaCompliance
+        return O1SchemaCompliance()
+    if check_id == "O2":
+        from src.eval.checks.o2_numeric_grounding import O2NumericGrounding
+        return O2NumericGrounding()
+    if check_id == "O3":
+        from src.eval.checks.o3_citation_integrity import O3CitationIntegrity
+        return O3CitationIntegrity(check_links=cfg.check_links)
+    if check_id == "O4":
+        from src.eval.checks.o4_language_consistency import O4LanguageConsistency
+        return O4LanguageConsistency()
+    if check_id == "O5":
+        from src.eval.checks.o5_contradiction import O5Contradiction
+        return O5Contradiction()
     raise KeyError(f"Unknown check_id: {check_id}")
 
 
