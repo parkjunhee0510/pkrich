@@ -137,11 +137,20 @@ export interface MarketRegimeData {
   forward_signals?: Record<string, string>
 }
 
+export interface MacroNarrativeHeadline {
+  title: string
+  source: string
+  url: string
+  takeaway: string
+}
+
 export interface MacroNarrativeData {
+  schema_version?: number
   headline: string
   three_themes: string[]
   risk_map?: string
   what_changed_this_week?: string
+  key_headlines?: MacroNarrativeHeadline[]
   source?: 'llm' | 'fallback'
   model?: string
 }

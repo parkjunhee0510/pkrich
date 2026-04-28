@@ -61,6 +61,22 @@ export function MacroNarrativePanel({ narrative, regime }: Props) {
           <small className="macro-narrative-source">자동 요약으로 생성된 시장 설명입니다.</small>
         ) : null}
       </div>
+      {narrative.key_headlines && narrative.key_headlines.length > 0 ? (
+        <div className="macro-narrative-headlines">
+          <span className="macro-narrative-eyebrow">주요 헤드라인 (web search)</span>
+          <ul className="macro-narrative-headline-list">
+            {narrative.key_headlines.slice(0, 5).map((h, idx) => (
+              <li key={idx} className="macro-narrative-headline-item">
+                <a href={h.url} target="_blank" rel="noreferrer" className="macro-narrative-headline-link">
+                  {h.title}
+                </a>
+                <span className="macro-narrative-headline-source">{h.source}</span>
+                <p className="macro-narrative-headline-takeaway">{h.takeaway}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </section>
   )
 }
