@@ -50,6 +50,18 @@ async function fetchJson<T>(url: string, refreshToken: number): Promise<T | null
   }
 }
 
+// Skip days where the pipeline only wrote a fallback shell (no real
+// market data) — typically caused by a Ctrl+C / network failure mid-run.
+// The day is identified by vix=N/A AND market_overview[0].change=N/A AND
+// market_regime.confidence=0. Without this guard, the dashboard would
+// pick the empty day as latest and show every metric as N/A.
+function isEmptyDay(day: any): boolean {
+  const vix = day?.macro_context?.vix?.level
+  const mo = (day?.market_overview ?? [])[0]?.change
+  const conf = day?.market_regime?.confidence
+  return (!vix || vix === 'N/A') && (!mo || mo === 'N/A') && conf === 0
+}
+
 export class StaticJsonRepository implements DashboardRepository {
   async loadDashboard(refreshToken: number): Promise<DashboardData> {
     const latestIndex = await this.loadDashboardIndex(refreshToken)
@@ -69,7 +81,7 @@ export class StaticJsonRepository implements DashboardRepository {
 
       const mergedDays = history?.days?.length
         ? [
-            ...history.days.filter((day) => day.date !== latestDay.date),
+            ...history.days.filter((day) => day.date !== latestDay.date && !isEmptyDay(day)),
             latestDay,
           ].sort((left, right) => left.date.localeCompare(right.date))
         : [latestDay]
@@ -83,9 +95,11 @@ export class StaticJsonRepository implements DashboardRepository {
     }
 
     if (history?.days?.length) {
+      const cleanDays = history.days.filter((day) => !isEmptyDay(day))
+      if (cleanDays.length === 0) return { schema_version: history.schema_version, days: [], signal_stats: history.signal_stats ?? { recent_signals: [], summary_by_direction: {} }, weekly_summary: history.weekly_summary }
       return {
         schema_version: history.schema_version,
-        days: history.days,
+        days: cleanDays,
         signal_stats: history.signal_stats ?? { recent_signals: [], summary_by_direction: {} },
         weekly_summary: history.weekly_summary,
       }
