@@ -8,7 +8,7 @@ import traceback
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
-from typing import Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 from src.eval.checks.base import BaseCheck, CheckResult, Finding
 from src.eval.config import (
@@ -86,6 +86,28 @@ def _build_check(check_id: str, cfg: "RunnerConfig") -> BaseCheck:
     if check_id == "R2":
         from src.eval.checks.r2_retry_distribution import R2RetryDistribution
         return R2RetryDistribution()
+    if check_id == "D1":
+        if cfg.skip_replay:
+            class _Skipped(BaseCheck):
+                check_id = "D1"
+                dimension = "semantic_drift"
+
+                def run(self, ds: Any) -> CheckResult:
+                    return CheckResult(
+                        check_id="D1", severity="info", pass_rate=0.0,
+                        findings=(), metrics={"skipped": 1.0},
+                        recommendation="Run without --skip-replay to enable drift check.",
+                    )
+            return _Skipped()
+        from src.eval.checks.d1_semantic_drift import D1SemanticDrift
+        from src.eval.replay import OpenAIReplayClient
+        return D1SemanticDrift(
+            client=OpenAIReplayClient(model_profile=cfg.model_profile),
+            replay_tickers=cfg.replay_tickers,
+            runs_per_ticker=cfg.runs_per_ticker,
+            max_cost_usd=cfg.max_replay_cost_usd,
+            dry_run=cfg.dry_run,
+        )
     raise KeyError(f"Unknown check_id: {check_id}")
 
 
