@@ -70,19 +70,13 @@ function SwapReviewCard({
 
       {items.length > 0 ? (
         <ul className="dashboard-priority-list">
-          {items.slice(0, 5).map((item) => (
+          {items.slice(0, 3).map((item) => (
             <li key={`${item.held_ticker}-${item.candidate_ticker}`} className="priority-tone-neutral">
               <div className="dashboard-priority-label-row priority-tone-neutral">
                 <span>{item.held_ticker} vs {item.candidate_ticker}</span>
                 <strong>{item.swap_candidate_score}점</strong>
               </div>
-              <div className="dashboard-priority-badges">
-                <span className="dashboard-priority-badge priority-tone-neutral">{item.overlap_context}</span>
-                <span className="dashboard-priority-badge priority-tone-neutral">검토 포인트 {item.review_points.length}개</span>
-              </div>
               <p>{item.summary}</p>
-              <p>{compactText(item.reasons, 2)}</p>
-              <p>확인할 점: {compactText(item.review_points, 2)}</p>
               <Link to="/portfolio" className="ticker-link">포트폴리오에서 이어서 보기</Link>
             </li>
           ))}
@@ -110,19 +104,13 @@ function EventExposureCard({
 
       {items.length > 0 ? (
         <ul className="dashboard-priority-list">
-          {items.slice(0, 5).map((item) => (
+          {items.slice(0, 3).map((item) => (
             <li key={`${item.ticker}-${item.event_label}-${item.event_date}`} className="priority-tone-down">
               <div className="dashboard-priority-label-row priority-tone-down">
                 <span>{item.ticker}</span>
                 <strong>{item.event_label} · {formatDaysUntil(item.days_until)}</strong>
               </div>
-              <div className="dashboard-priority-badges">
-                <span className="dashboard-priority-badge priority-tone-down">리스크 {item.event_risk_score}</span>
-                <span className="dashboard-priority-badge priority-tone-neutral">{item.event_date || '일정 확인 필요'}</span>
-              </div>
               <p>{item.summary}</p>
-              <p>{compactText(item.reasons, 2)}</p>
-              <p>확인할 점: {compactText(item.review_points, 2)}</p>
               <Link to={`/ticker/${item.ticker}`} className="ticker-link">{item.ticker} 상세 보기</Link>
             </li>
           ))}
@@ -144,27 +132,19 @@ function TodayPriorityQueueCard({
   return (
     <article className="dashboard-priority-card">
       <div className="dashboard-priority-head">
-        <span className="dashboard-priority-kicker">{items.length > 0 ? `TOP ${Math.min(items.length, 6)}` : '비어 있음'}</span>
+        <span className="dashboard-priority-kicker">{items.length > 0 ? `TOP ${Math.min(items.length, 4)}` : '비어 있음'}</span>
         <strong>오늘 우선 검토 큐</strong>
       </div>
 
       {items.length > 0 ? (
         <ul className="dashboard-priority-list">
-          {items.slice(0, 6).map((item) => (
+          {items.slice(0, 4).map((item) => (
             <li key={`${item.priority_type}-${item.ticker}-${item.related_ticker ?? 'none'}`} className={queueTone(item.priority_type)}>
               <div className={`dashboard-priority-label-row ${queueTone(item.priority_type)}`}>
-                <span>{priorityLabel(item.priority_type)}</span>
-                <strong>{formatQueueValue(item)}</strong>
-              </div>
-              <div className="dashboard-priority-badges">
-                <span className={`dashboard-priority-badge ${queueTone(item.priority_type)}`}>{item.today_priority_score}점</span>
-                <span className="dashboard-priority-badge priority-tone-neutral">
-                  {item.ticker}
-                  {item.related_ticker ? ` · ${item.related_ticker}` : ''}
-                </span>
+                <span>{priorityLabel(item.priority_type)} · {formatQueueValue(item)}</span>
+                <strong>{item.today_priority_score}점</strong>
               </div>
               <p>{item.summary}</p>
-              <p>{compactText(item.reasons, 2)}</p>
               <Link to={queueDestination(item)} className="ticker-link">{queueLinkLabel(item)}</Link>
             </li>
           ))}
@@ -174,10 +154,6 @@ function TodayPriorityQueueCard({
       )}
     </article>
   )
-}
-
-function compactText(lines: string[], limit: number): string {
-  return lines.filter(Boolean).slice(0, limit).join(' · ')
 }
 
 function formatDaysUntil(value: number): string {
