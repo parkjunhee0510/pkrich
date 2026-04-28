@@ -218,6 +218,10 @@ class PolicyEvent:
     source_domain: str
     published_at: str
     confidence: float
+    # Plan B (active-events dossier)
+    effective_through: str = ""
+    first_seen: str = ""
+    last_seen: str = ""
 
 
 @dataclass(frozen=True)

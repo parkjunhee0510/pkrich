@@ -27,6 +27,7 @@ from src.utils.config import load_yaml_mapping
 from src.collector.policy_events import extract_events
 from src.analyzer.policy_impact import map_impacts
 from src.output.policy_json import write_policy_impact_json
+from src.output.policy_active_events import update_dossier, to_policy_events
 from src.collector.peer_candidates import load_peer_candidates, persist_peer_selections
 from src.decision.decision_layer import generate_decisions
 from src.decision.market_regime import detect_market_regime
@@ -125,23 +126,37 @@ def run_policy_stage(
     policy data treated as missing.
     """
     try:
-        events = extract_events(
+        new_events = extract_events(
             today=today,
             model_profile=model_profile,
             sources_config=sources_config,
         )
         record_pipeline_event(
             "policy.collector", "info", "events_extracted",
-            count=len(events),
+            count=len(new_events),
         )
-        if not events:
+        # Plan B: merge into the rolling active-events dossier so
+        # events stay in scope for up to 30 days with age-based decay.
+        dossier_entries = update_dossier(new_events, today=today)
+        record_pipeline_event(
+            "policy.dossier", "info", "dossier_active",
+            active=len(dossier_entries),
+            new=len(new_events),
+        )
+        if not dossier_entries:
             return None
+        active_events = to_policy_events(dossier_entries)
+        event_weight_by_id = {
+            entry["id"]: float(entry.get("decay_weight", 1.0))
+            for entry in dossier_entries
+        }
         report = map_impacts(
-            events=events,
+            events=active_events,
             ticker_ctx=ticker_ctx,
             category_to_sectors=category_to_sectors,
             model_profile=model_profile,
             today=today,
+            event_weight_by_id=event_weight_by_id,
         )
         record_pipeline_event(
             "policy.analyzer", "info", "tickers_scored",

@@ -44,12 +44,25 @@ class TestRunPolicyStage(unittest.TestCase):
 
     @patch("src.pipeline.write_policy_impact_json")
     @patch("src.pipeline.map_impacts")
+    @patch("src.pipeline.to_policy_events")
+    @patch("src.pipeline.update_dossier")
     @patch("src.pipeline.extract_events")
     def test_writes_json_when_events_present(
-        self, mock_extract, mock_map, mock_write
+        self, mock_extract, mock_dossier, mock_to_events, mock_map, mock_write
     ):
-        # Single sentinel event so extract returns truthy.
-        mock_extract.return_value = [object()]
+        from src.types import PolicyEvent
+        # One real PolicyEvent so update_dossier gets the right shape.
+        ev = PolicyEvent(
+            id="evt1", category="tariff", headline="h", summary="s",
+            raw_excerpt="r", source_url="https://x", source_domain="x",
+            published_at="2026-04-27T00:00:00Z", confidence=0.8,
+        )
+        mock_extract.return_value = [ev]
+        # Plan B: dossier returns annotated active events.
+        mock_dossier.return_value = [
+            {"id": "evt1", "decay_weight": 1.0, "first_seen": "2026-04-27"}
+        ]
+        mock_to_events.return_value = [ev]
         fake_report = PolicyImpactReport(
             date="2026-04-27",
             events=[],
@@ -70,7 +83,13 @@ class TestRunPolicyStage(unittest.TestCase):
         )
 
         self.assertIs(report, fake_report)
+        mock_dossier.assert_called_once()
         mock_write.assert_called_once()
+        # decay weights flow through to map_impacts.
+        self.assertEqual(
+            mock_map.call_args.kwargs.get("event_weight_by_id"),
+            {"evt1": 1.0},
+        )
         # First positional arg is the report.
         self.assertIs(mock_write.call_args.args[0], fake_report)
 

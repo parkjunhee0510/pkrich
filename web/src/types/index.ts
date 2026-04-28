@@ -853,6 +853,12 @@ export type PolicyEvent = {
   source_domain: string
   published_at: string
   confidence: number
+  // Plan B (active-events dossier)
+  effective_through?: string
+  first_seen?: string
+  last_seen?: string
+  age_days?: number
+  decay_weight?: number
 }
 
 export type TickerImpactDirection = 'positive' | 'negative' | 'neutral'

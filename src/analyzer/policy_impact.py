@@ -74,6 +74,25 @@ def aggregate_tailwind(
     return scores
 
 
+def aggregate_tailwind_decayed(
+    by_event: dict[str, list[TickerImpact]],
+    event_weight: dict[str, float] | None = None,
+) -> dict[str, float]:
+    """Plan B: per-event decay-weighted aggregation."""
+    weights = event_weight or {}
+    raw: dict[str, float] = {}
+    for event_id, impacts in by_event.items():
+        w = float(weights.get(event_id, 1.0))
+        for impact in impacts:
+            if impact.confidence < _CONFIDENCE_FLOOR:
+                continue
+            raw[impact.ticker] = (
+                raw.get(impact.ticker, 0.0)
+                + impact.score * impact.confidence * w
+            )
+    return {t: max(-1.0, min(1.0, round(v, 4))) for t, v in raw.items()}
+
+
 def _ticker_context_compact(ticker: str, ctx: dict) -> dict:
     return {
         "ticker": ticker,
@@ -219,6 +238,7 @@ def map_impacts(
     chunk_size: int = 25,
     model_profile: str = "deep",
     today: str | None = None,
+    event_weight_by_id: dict[str, float] | None = None,
 ) -> PolicyImpactReport:
     started = time.time()
     candidate_map = prefilter_candidates(events, ticker_ctx, category_to_sectors)
@@ -280,7 +300,10 @@ def map_impacts(
                 impacts_by_event[event_id].append(impact)
                 impacts_by_ticker.setdefault(impact.ticker, []).append(impact)
 
-    tailwind = aggregate_tailwind(impacts_by_ticker)
+    if event_weight_by_id:
+        tailwind = aggregate_tailwind_decayed(impacts_by_event, event_weight_by_id)
+    else:
+        tailwind = aggregate_tailwind(impacts_by_ticker)
     report_date = today or datetime.now(timezone.utc).strftime("%Y-%m-%d")
     return PolicyImpactReport(
         date=report_date,

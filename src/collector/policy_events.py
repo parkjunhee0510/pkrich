@@ -49,7 +49,8 @@ def filter_events(
     penalty: float,
 ) -> list[PolicyEvent]:
     today_dt = _parse_iso(today + "T00:00:00Z")
-    cutoff = today_dt - timedelta(hours=24)
+    # Plan B: widened to 7 days so events stay discoverable across runs.
+    cutoff = today_dt - timedelta(days=7)
     out: list[PolicyEvent] = []
     seen: dict[str, PolicyEvent] = {}
 
@@ -95,6 +96,7 @@ def filter_events(
             source_domain=domain,
             published_at=published_at,
             confidence=round(confidence, 3),
+            effective_through=(ev.get("effective_through") or "").strip()[:10],
         )
         seen[evt_id] = event
         out.append(event)
@@ -164,10 +166,12 @@ def _openai_web_search(today: str, model_profile: str) -> list[dict]:
                             "enum": list(POLICY_CATEGORIES),
                         },
                         "confidence": {"type": "number"},
+                        "effective_through": {"type": "string"},
                     },
                     "required": [
                         "headline", "summary", "raw_excerpt", "source_url",
                         "published_at", "category", "confidence",
+                        "effective_through",
                     ],
                     "additionalProperties": False,
                 },
@@ -178,12 +182,18 @@ def _openai_web_search(today: str, model_profile: str) -> list[dict]:
     }
 
     prompt = (
-        f"Find US and global policy/regulation events published in the 24 hours "
-        f"before {today}. Cover all of these categories: "
-        f"{', '.join(POLICY_CATEGORIES)}. Each event MUST include source_url and "
-        "published_at (ISO8601). headline 필드는 영어 원문 그대로 두되, "
+        f"Find US and global policy/regulation events still ACTIVE as of "
+        f"{today} — published in the last 7 days OR scheduled to take effect "
+        f"in the next 30 days. Cover all of these categories: "
+        f"{', '.join(POLICY_CATEGORIES)}. Each event MUST include source_url "
+        "and published_at (ISO8601). headline 필드는 영어 원문 그대로 두되, "
         "summary 필드는 반드시 한국어로 작성하라 (≤ 120 tokens). "
-        "raw_excerpt는 원문 영어 인용. Return JSON matching the provided schema."
+        "raw_excerpt는 원문 영어 인용. "
+        "effective_through 필드는 ISO 날짜 (YYYY-MM-DD): 이벤트가 종목 영향력을 "
+        "잃는 시점 (예: 'FED 5/1 회의' → '2026-05-01'; CHIPS Act 같은 진행 "
+        "중 입법 → '' 빈 문자열). 향후 30일 이내 만료가 명확하면 그 날짜를, "
+        "지속 진행 중이면 빈 문자열을 사용하라. "
+        "Return JSON matching the provided schema."
     )
 
     response = client.responses.create(

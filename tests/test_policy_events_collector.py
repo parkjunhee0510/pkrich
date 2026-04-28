@@ -35,9 +35,10 @@ class TestFilters(unittest.TestCase):
         )
         self.assertEqual(out, [])
 
-    def test_drops_event_older_than_24h(self):
+    def test_drops_event_older_than_window(self):
+        # Plan B widened the rolling discovery window from 24h to 7 days.
         out = filter_events(
-            [_raw(published_at="2026-04-24T00:00:00Z")],
+            [_raw(published_at="2026-04-15T00:00:00Z")],
             today="2026-04-27", trusted=[], penalized=[],
             trust_bonus=0.2, penalty=0.3,
         )

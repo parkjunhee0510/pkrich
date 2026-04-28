@@ -165,6 +165,15 @@ export function PolicyImpact() {
                   <span className="badge tone-accent--soft">
                     확신도 {event.confidence.toFixed(2)}
                   </span>
+                  {typeof event.age_days === 'number' ? (
+                    <span className="badge tone-info--soft">발견 D+{event.age_days}</span>
+                  ) : null}
+                  {event.effective_through ? (
+                    <span className="badge tone-caution--soft">만료 {event.effective_through}</span>
+                  ) : null}
+                  {typeof event.decay_weight === 'number' && event.decay_weight < 0.99 ? (
+                    <span className="badge tone-accent--outline">가중치 {event.decay_weight.toFixed(2)}</span>
+                  ) : null}
                   <span className="status">{event.source_domain}</span>
                 </div>
                 <a
