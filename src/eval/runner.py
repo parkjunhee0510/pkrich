@@ -50,6 +50,15 @@ def _build_check(check_id: str, cfg: "RunnerConfig") -> BaseCheck:
     if check_id == "I1":
         from src.eval.checks.i1_schema_stability import I1SchemaStability
         return I1SchemaStability()
+    if check_id == "I2":
+        from src.eval.checks.i2_missingness import I2Missingness
+        return I2Missingness()
+    if check_id == "I3":
+        from src.eval.checks.i3_format_consistency import I3FormatConsistency
+        return I3FormatConsistency()
+    if check_id == "I4":
+        from src.eval.checks.i4_input_size_drift import I4InputSizeDrift
+        return I4InputSizeDrift()
     raise KeyError(f"Unknown check_id: {check_id}")
 
 
