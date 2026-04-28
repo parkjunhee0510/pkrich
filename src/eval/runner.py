@@ -74,6 +74,18 @@ def _build_check(check_id: str, cfg: "RunnerConfig") -> BaseCheck:
     if check_id == "O5":
         from src.eval.checks.o5_contradiction import O5Contradiction
         return O5Contradiction()
+    if check_id == "D2":
+        from src.eval.checks.d2_committee_agreement import D2CommitteeAgreement
+        return D2CommitteeAgreement()
+    if check_id == "D3":
+        from src.eval.checks.d3_signal_volatility import D3SignalVolatility
+        return D3SignalVolatility()
+    if check_id == "R1":
+        from src.eval.checks.r1_pipeline_summary import R1PipelineSummary
+        return R1PipelineSummary()
+    if check_id == "R2":
+        from src.eval.checks.r2_retry_distribution import R2RetryDistribution
+        return R2RetryDistribution()
     raise KeyError(f"Unknown check_id: {check_id}")
 
 
