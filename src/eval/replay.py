@@ -34,6 +34,30 @@ def estimate_cost(*, tickers: Sequence[str], runs_per_ticker: int,
     return len(tickers) * runs_per_ticker * cost_per_call_usd
 
 
+class OpenAIReplayClient(LLMReplayClient):
+    """Lazy-imported adapter over the analyzer's existing llm_runtime.
+
+    Kept lazy so unit tests don't pay the import cost or require an API key.
+    Real production use replays research_note for the requested ticker.
+    """
+
+    def __init__(self, model_profile: str) -> None:
+        self.model_profile = model_profile
+
+    def call(self, ticker: str, run_index: int) -> dict[str, Any]:
+        from src.analyzer.llm_runtime import run_structured_llm_module  # lazy
+        result = run_structured_llm_module(  # type: ignore[call-arg]
+            module_name="research_note",
+            ticker=ticker,
+            model_profile=self.model_profile,
+        )
+        return {
+            "action": result.get("action"),
+            "summary": result.get("summary"),
+            "cost_usd": float(result.get("cost_usd") or 0.0),
+        }
+
+
 def run_replay(*, client: LLMReplayClient, config: ReplayConfig) -> ReplayResult:
     estimated = estimate_cost(
         tickers=config.tickers,
