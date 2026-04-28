@@ -552,6 +552,7 @@ export function Dashboard() {
       <DashboardAccordionSection
         title="오늘 시장 분위기"
         summary={`${day.market_regime?.regime ?? '시장 분위기 정보 없음'} · 매크로와 섹터 흐름`}
+        defaultOpen
       >
         <MarketRegimeBanner regime={day.market_regime} />
         <MacroNarrativePanel narrative={day.macro_context?.macro_narrative} regime={day.market_regime} />
