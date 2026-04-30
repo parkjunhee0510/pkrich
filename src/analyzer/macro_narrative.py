@@ -22,6 +22,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from src.analyzer.evidence_manifest import evidence_hash, write_evidence_record
 from src.types import MarketRegime
 
 logger = logging.getLogger(__name__)
@@ -63,21 +64,39 @@ def build_macro_narrative(
         return _fallback(market_regime)
 
     cache_path = _CACHE_DIR / f"macro_narrative_{run_date.isoformat()}.json"
+    payload = _build_prompt_payload(macro_context, market_regime)
     cached = _read_cache(cache_path)
     if cached:
+        _emit_macro_evidence(
+            macro_context=macro_context,
+            market_regime=market_regime,
+            prompt_payload=payload,
+            run_date=run_date,
+            cache_status="hit",
+            source=str(cached.get("source", "cache")),
+        )
         return cached
 
     if not os.getenv("OPENAI_API_KEY"):
         result = _fallback(market_regime)
         _write_cache(cache_path, result)
+        _emit_macro_evidence(
+            macro_context=macro_context,
+            market_regime=market_regime,
+            prompt_payload=payload,
+            run_date=run_date,
+            cache_status="fallback",
+            source="fallback",
+        )
         return result
 
-    payload = _build_prompt_payload(macro_context, market_regime)
     try:
         narrative = _call_llm(payload)
+        cache_status = "miss"
     except Exception:
         logger.debug("macro_narrative llm call failed", exc_info=True)
         narrative = None
+        cache_status = "fallback"
 
     if not narrative:
         narrative = _fallback(market_regime)
@@ -87,6 +106,14 @@ def build_macro_narrative(
         narrative.setdefault("schema_version", _SCHEMA_VERSION)
 
     _write_cache(cache_path, narrative)
+    _emit_macro_evidence(
+        macro_context=macro_context,
+        market_regime=market_regime,
+        prompt_payload=payload,
+        run_date=run_date,
+        cache_status=cache_status,
+        source=str(narrative.get("source", "fallback")),
+    )
     return narrative
 
 
@@ -110,6 +137,48 @@ def _build_prompt_payload(
         "drivers": dict(market_regime.drivers or {}),
     }
     return compact
+
+
+def _emit_macro_evidence(
+    *,
+    macro_context: dict[str, Any],
+    market_regime: MarketRegime,
+    prompt_payload: dict[str, Any],
+    run_date: date,
+    cache_status: str,
+    source: str,
+) -> None:
+    try:
+        macro_hash, macro_present = evidence_hash(macro_context)
+        regime_hash, regime_present = evidence_hash(
+            {
+                "regime": market_regime.regime,
+                "sub_regime": getattr(market_regime, "sub_regime", ""),
+                "confidence": market_regime.confidence,
+                "drivers": dict(market_regime.drivers or {}),
+            }
+        )
+        prompt_hash, prompt_present = evidence_hash(prompt_payload)
+        write_evidence_record(
+            {
+                "run_date": run_date.isoformat(),
+                "stage": "analyzer",
+                "scope": "run",
+                "module": "macro_narrative",
+                "macro_prompt_payload_hash": prompt_hash,
+                "macro_prompt_payload_present": prompt_present,
+                "macro_context_hash": macro_hash,
+                "macro_context_present": macro_present,
+                "market_regime_hash": regime_hash,
+                "market_regime_present": regime_present,
+                "cache_status": cache_status,
+                "source": source,
+                "model": _MODEL,
+            },
+            run_date=run_date,
+        )
+    except Exception:
+        logger.debug("macro_narrative evidence emit failed", exc_info=True)
 
 
 def _call_llm(payload: dict[str, Any]) -> dict[str, Any] | None:
