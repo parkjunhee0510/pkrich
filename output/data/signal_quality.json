@@ -21,28 +21,34 @@
     "by_direction": {
       "neutral": {
         "status": "insufficient_data",
-        "n": 16
+        "n": 17
       },
       "bull": {
         "status": "ok",
-        "n": 57,
-        "hit_rate": 0.632,
-        "avg_win": 9.34,
-        "avg_loss": 4.191,
-        "payoff_ratio": 2.228,
-        "kelly_full": 0.466,
-        "kelly_half": 0.233
+        "n": 63,
+        "hit_rate": 0.651,
+        "avg_win": 9.012,
+        "avg_loss": 4.041,
+        "payoff_ratio": 2.23,
+        "kelly_full": 0.494,
+        "kelly_half": 0.247
       },
       "bear": {
-        "status": "insufficient_data",
-        "n": 17
+        "status": "ok",
+        "n": 21,
+        "hit_rate": 0.381,
+        "avg_win": 8.226,
+        "avg_loss": 5.08,
+        "payoff_ratio": 1.619,
+        "kelly_full": 0.0,
+        "kelly_half": 0.0
       }
     }
   },
   "turnover": {
     "status": "ok",
-    "sample_size": 14,
-    "avg_turnover": 0.021,
+    "sample_size": 15,
+    "avg_turnover": 0.019,
     "points": [
       {
         "date": "2026-04-11",
@@ -106,6 +112,11 @@
       },
       {
         "date": "2026-04-28",
+        "tickers": 11,
+        "turnover": 0.0
+      },
+      {
+        "date": "2026-04-29",
         "tickers": 11,
         "turnover": 0.0
       }

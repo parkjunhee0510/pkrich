@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -33,6 +34,7 @@ _MODEL = os.getenv("PKRICH_MACRO_NARRATIVE_MODEL", "gpt-5.4")
 _FLAG = "PKRICH_MACRO_NARRATIVE"
 # Bump when output schema changes — old cached files are treated as miss.
 _SCHEMA_VERSION = 2
+_CACHE_TTL_SECONDS = 24 * 60 * 60
 
 
 def build_macro_narrative(
@@ -64,7 +66,7 @@ def build_macro_narrative(
 
     cache_path = _CACHE_DIR / f"macro_narrative_{run_date.isoformat()}.json"
     cached = _read_cache(cache_path)
-    if cached:
+    if cached and not _should_refresh_cache(cache_path, cached, market_regime):
         return cached
 
     if not os.getenv("OPENAI_API_KEY"):
@@ -265,6 +267,43 @@ def _read_cache(path: Path) -> dict[str, Any] | None:
     except Exception:
         logger.debug("macro_narrative cache read failed: %s", path, exc_info=True)
     return None
+
+
+def _should_refresh_cache(path: Path, cached: dict[str, Any], market_regime: MarketRegime) -> bool:
+    return _cache_is_expired(path) or _cached_fallback_has_missing_driver_evidence(cached, market_regime)
+
+
+def _cache_is_expired(path: Path) -> bool:
+    try:
+        return time.time() - path.stat().st_mtime > _CACHE_TTL_SECONDS
+    except OSError:
+        return True
+
+
+def _cached_fallback_has_missing_driver_evidence(
+    cached: dict[str, Any],
+    market_regime: MarketRegime,
+) -> bool:
+    if cached.get("source") != "fallback":
+        return False
+
+    themes = cached.get("three_themes")
+    if not isinstance(themes, list):
+        return False
+    if not any(_contains_missing_marker(theme) for theme in themes):
+        return False
+
+    drivers = market_regime.drivers or {}
+    return any(
+        isinstance(value := drivers.get(key), str)
+        and value.strip()
+        and not _contains_missing_marker(value)
+        for key in ("trend", "rates", "vix")
+    )
+
+
+def _contains_missing_marker(value: Any) -> bool:
+    return "N/A" in str(value)
 
 
 def _write_cache(path: Path, payload: dict[str, Any]) -> None:
