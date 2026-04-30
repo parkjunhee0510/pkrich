@@ -295,10 +295,16 @@ class MissingTickerRetryTests(unittest.TestCase):
         self.assertEqual(first_record["execution_mode"], "full")
         self.assertEqual(first_record["model_profile"], "economy")
         self.assertEqual(first_record["prompt_version"], "research_v1")
+        self.assertTrue(first_record["raw_payload_present"])
+        self.assertTrue(first_record["fallback_payload_present"])
         self.assertTrue(first_record["macro_context_present"])
         self.assertTrue(first_record["market_regime_present"])
         self.assertTrue(first_record["upstream_payload_present"])
         self.assertTrue(first_record["raw_payload_hash"].startswith("sha256:"))
+        self.assertTrue(first_record["fallback_payload_hash"].startswith("sha256:"))
+        self.assertTrue(first_record["upstream_payload_hash"].startswith("sha256:"))
+        self.assertTrue(first_record["macro_context_hash"].startswith("sha256:"))
+        self.assertTrue(first_record["market_regime_hash"].startswith("sha256:"))
         self.assertTrue(first_record["prompt_template_hash"].startswith("sha256:"))
 
     def test_retries_single_ticker_after_fact_warning_and_recovers(self) -> None:
