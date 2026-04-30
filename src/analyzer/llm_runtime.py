@@ -431,14 +431,28 @@ def _request_structured_batch(
     batch_tickers: list[str],
 ) -> dict[str, dict[str, Any]]:
     batch_payload = module.build_batch_payload(ctx, batch_tickers)
-    _emit_structured_batch_evidence(
-        module=module,
-        ctx=ctx,
-        model_profile=model_profile,
-        prompt_template=prompt_template,
-        batch_payload=batch_payload,
-        batch_tickers=batch_tickers,
-    )
+    try:
+        _emit_structured_batch_evidence(
+            module=module,
+            ctx=ctx,
+            model_profile=model_profile,
+            prompt_template=prompt_template,
+            batch_payload=batch_payload,
+            batch_tickers=batch_tickers,
+        )
+    except Exception as exc:
+        try:
+            record_pipeline_event(
+                "analyzer",
+                "warning",
+                "llm_evidence_emit_failed",
+                module=module.name,
+                ticker_count=len(batch_tickers),
+                error_type=type(exc).__name__,
+                error_message=str(exc)[:200],
+            )
+        except Exception:
+            pass
     response = client.responses.create(
         model=model_profile.model,
         max_output_tokens=model_profile.max_output_tokens,

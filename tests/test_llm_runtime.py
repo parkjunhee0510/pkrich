@@ -254,6 +254,17 @@ class MissingTickerRetryTests(unittest.TestCase):
             "research_v1:fake_structured",
         )
 
+    def test_evidence_hash_failure_does_not_skip_provider_call(self) -> None:
+        fake_client = _FakeOpenAIClient(
+            [_FakeResponse({"tickers": [{"ticker": "AAPL", "summary": "llm:AAPL"}, {"ticker": "MSFT", "summary": "llm:MSFT"}]})]
+        )
+
+        with patch("src.analyzer.llm_runtime.evidence_hash", side_effect=RuntimeError("hash boom")):
+            result = self._run_with_responses([], client=fake_client)
+
+        self.assertEqual(result.results_by_ticker["AAPL"]["summary"], "llm:AAPL")
+        self.assertEqual(len(fake_client.responses.calls), 1)
+
     def test_records_evidence_manifest_for_structured_batch(self) -> None:
         fake_client = _FakeOpenAIClient(
             [_FakeResponse({"tickers": [{"ticker": "AAPL", "summary": "llm:AAPL"}, {"ticker": "MSFT", "summary": "llm:MSFT"}]})]
@@ -282,7 +293,7 @@ class MissingTickerRetryTests(unittest.TestCase):
         )
 
         with patch("src.analyzer.llm_runtime.write_evidence_record") as writer:
-            result = self._run_with_responses([], client=fake_client)
+            result = self._run_with_responses([], client=fake_client, patch_evidence_writer=False)
 
         self.assertEqual(result.results_by_ticker["AAPL"]["summary"], "llm:AAPL")
         self.assertEqual(writer.call_count, 2)
@@ -381,14 +392,30 @@ class MissingTickerRetryTests(unittest.TestCase):
         self.assertEqual(fake_client.responses.calls[0]["temperature"], 0.2)
         self.assertEqual(fake_client.responses.calls[1]["temperature"], 0.1)
 
-    def _run_with_responses(self, responses: list[_FakeResponse], client: _FakeOpenAIClient | None = None):
+    def _run_with_responses(
+        self,
+        responses: list[_FakeResponse],
+        client: _FakeOpenAIClient | None = None,
+        *,
+        patch_evidence_writer: bool = True,
+    ):
         fake_openai = types.ModuleType("openai")
         fake_openai.OpenAI = lambda api_key=None: client or _FakeOpenAIClient(responses)
-        with (
+        patches = [
             patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False),
             patch.dict(sys.modules, {"openai": fake_openai}),
             patch("src.analyzer.llm_runtime.record_pipeline_event"),
-        ):
+        ]
+        if patch_evidence_writer:
+            patches.append(patch("src.analyzer.llm_runtime.write_evidence_record"))
+        with patches[0], patches[1], patches[2]:
+            if patch_evidence_writer:
+                with patches[3]:
+                    return run_structured_llm_module(
+                        self.module,
+                        self.ctx,
+                        prompt_template_override=self.prompt_template,
+                    )
             return run_structured_llm_module(
                 self.module,
                 self.ctx,
@@ -523,6 +550,7 @@ class ParallelBatchExecutionTests(unittest.TestCase):
             patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False),
             patch.dict(sys.modules, {"openai": fake_openai}),
             patch("src.analyzer.llm_runtime.record_pipeline_event"),
+            patch("src.analyzer.llm_runtime.write_evidence_record"),
         ):
             start = time.monotonic()
             result = run_structured_llm_module(
