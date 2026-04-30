@@ -20,16 +20,23 @@ _BLOCKED_KEYS = {
     "model_response",
     "response_text",
     "api_key",
+    "raw_response",
+    "response_body",
+    "content",
 }
 
 
 def _json_default(value: Any) -> Any:
     if isinstance(value, datetime):
+        if value.tzinfo is None:
+            return value.isoformat()
         return value.astimezone(timezone.utc).isoformat()
     if isinstance(value, date):
         return value.isoformat()
-    if isinstance(value, tuple | set):
+    if isinstance(value, tuple):
         return list(value)
+    if isinstance(value, set):
+        return sorted(value, key=canonical_json)
     if hasattr(value, "__dict__"):
         return dict(value.__dict__)
     return str(value)
@@ -70,12 +77,29 @@ def generic_hash(value: Any) -> str:
     return digest
 
 
+def _sanitize_value(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        sanitized: dict[Any, Any] = {}
+        for key, child in value.items():
+            if str(key).lower() in _BLOCKED_KEYS:
+                continue
+            sanitized[key] = _sanitize_value(child)
+        return sanitized
+    if isinstance(value, list):
+        return [_sanitize_value(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_sanitize_value(item) for item in value)
+    if isinstance(value, set):
+        return {_sanitize_value(item) for item in value}
+    return value
+
+
 def _sanitize_record(record: Mapping[str, Any]) -> dict[str, Any]:
     sanitized: dict[str, Any] = {}
     for key, value in record.items():
-        if key.lower() in _BLOCKED_KEYS:
+        if str(key).lower() in _BLOCKED_KEYS:
             continue
-        sanitized[key] = value
+        sanitized[key] = _sanitize_value(value)
     if "schema_version" not in sanitized:
         sanitized["schema_version"] = SCHEMA_VERSION
     if "created_at" not in sanitized:
@@ -83,23 +107,14 @@ def _sanitize_record(record: Mapping[str, Any]) -> dict[str, Any]:
     return sanitized
 
 
-def write_evidence_record(
-    record: Mapping[str, Any],
-    *,
-    run_date: str | date,
-    output_root: Path = Path("output"),
-) -> bool:
-    date_text = run_date.isoformat() if isinstance(run_date, date) else str(run_date)
-    path = output_root / "data" / "llm_evidence" / f"{date_text}.jsonl"
+def _run_date_segment(run_date: str | date) -> str:
+    if isinstance(run_date, date):
+        return run_date.isoformat()
+    return date.fromisoformat(str(run_date)).isoformat()
+
+
+def _record_write_failure(record: Mapping[str, Any], exc: Exception) -> None:
     try:
-        payload = _sanitize_record(record)
-        line = canonical_json(payload)
-        with _WRITE_LOCK:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            with path.open("a", encoding="utf-8") as fh:
-                fh.write(line + "\n")
-        return True
-    except Exception as exc:
         record_pipeline_event(
             "analyzer",
             "warning",
@@ -109,4 +124,26 @@ def write_evidence_record(
             module=str(record.get("module", "")),
             ticker=str(record.get("ticker", "")),
         )
+    except Exception:
+        return
+
+
+def write_evidence_record(
+    record: Mapping[str, Any],
+    *,
+    run_date: str | date,
+    output_root: Path = Path("output"),
+) -> bool:
+    try:
+        date_text = _run_date_segment(run_date)
+        path = output_root / "data" / "llm_evidence" / f"{date_text}.jsonl"
+        payload = _sanitize_record(record)
+        line = canonical_json(payload)
+        with _WRITE_LOCK:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a", encoding="utf-8") as fh:
+                fh.write(line + "\n")
+        return True
+    except Exception as exc:
+        _record_write_failure(record, exc)
         return False
