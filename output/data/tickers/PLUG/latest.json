@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-04-29",
+  "date": "2026-04-30",
   "ticker": "PLUG",
   "payload": {
     "ticker": "PLUG",
@@ -75,35 +75,35 @@
     ],
     "signal_or_takeaway": "매수 관찰 — [실적] PLUG POWER INC, 10-K 연간 사업 및 재무 보고서를 SEC에 제출 | 진입 트리거 3.17–3.65 | 손절 SMA50(2.43 USD) (R:R 0.4R)",
     "data_snapshot": {
-      "Price": "3.41 USD",
-      "Daily Change": "+12.54%",
-      "Market Cap": "4.75B",
+      "Price": "3.11 USD",
+      "Daily Change": "-8.94%",
+      "Market Cap": "4.33B",
       "Trailing P/E": "N/A",
       "EPS": "-1.42",
       "52W High": "4.58",
       "52W Low": "0.69",
       "50D SMA": "2.43",
       "200D SMA": "2.26",
-      "Volume": "131.43M",
+      "Volume": "59607693",
       "3M Avg Volume": "82.17M",
-      "Price/Book": "4.86",
+      "Price/Book": "4.42",
       "Dividend Yield": "N/A",
       "Sector": "Industrials",
-      "Open": "3.14",
-      "High": "3.44",
-      "Low": "3.06",
-      "Close": "3.41",
+      "Open": "3.42",
+      "High": "3.42",
+      "Low": "3.04",
+      "Close": "3.11",
       "RS vs Sector ETF": "+45.81%"
     },
     "fundamentals": {
-      "market_cap": "4.75B",
+      "market_cap": "4.33B",
       "trailing_pe": "N/A",
       "eps": "-1.42",
       "forward_eps": "-0.21",
       "earnings_growth": "-24.00% YoY",
-      "price_to_book": "4.86",
+      "price_to_book": "4.42",
       "dividend_yield": "N/A",
-      "volume": "131.43M",
+      "volume": "59607693",
       "avg_volume_3m": "82.17M",
       "52w_high": "4.58",
       "52w_low": "0.69",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 2개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "0.24",
-      "atr_percent": "6.91%",
-      "relative_volume": "1.60x",
-      "gap_percent": "+3.47%",
-      "price_vs_sma50": "+40.14%",
-      "price_vs_sma200": "+50.92%",
-      "week52_position": "70%",
+      "atr_14d": "0.25",
+      "atr_percent": "8.07%",
+      "relative_volume": "0.73x",
+      "gap_percent": "+0.29%",
+      "price_vs_sma50": "+27.61%",
+      "price_vs_sma200": "+37.42%",
+      "week52_position": "62%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+45.81%"
+      "rs_vs_sector_etf": "+30.01%"
     },
     "quarterly_financials": [
       {
@@ -224,10 +224,10 @@
     },
     "options_summary": {
       "expiry": "2026-05-01",
-      "atm_call_iv": "12.5%",
-      "atm_put_iv": "0.0%",
-      "iv_percentile_30d": "50th",
-      "put_call_ratio": "0.21",
+      "atm_call_iv": "103.1%",
+      "atm_put_iv": "71.9%",
+      "iv_percentile_30d": "4th",
+      "put_call_ratio": "0.19x",
       "tone": "bullish",
       "unusual_activity": "PUT $7, vol 2500, OI 대비 96% ; CALL $4, vol 5226, OI 대비 306%",
       "oi_change": "콜 OI +0.1% / 풋 OI -0.0%"
@@ -392,8 +392,8 @@
       }
     },
     "period_changes": {
-      "7d": "+6.90%",
-      "30d": "+59.35%"
+      "7d": "-2.20%",
+      "30d": "+37.61%"
     },
     "sec_filing_tags": [
       "실적",
@@ -469,5 +469,6 @@
         "confidence_gate": 0.829
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-04-30T15:45:23"
 }
