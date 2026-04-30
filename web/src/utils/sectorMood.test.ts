@@ -244,7 +244,43 @@ describe('deriveSectorMoodInsights', () => {
     expect(minish?.regimeFitScore).toBeCloseTo(-1)
   })
 
-  it('keeps the lowest scoring watch candidates when more than three qualify', () => {
+  it('keeps only the strongest focus and weakest watch sectors emphasized', () => {
+    const result = deriveSectorMoodInsights({
+      tickers: [
+        makeTicker('NVDA', 'Semiconductors', '+3.0%', 'buy', 92, {
+          macro_regime: 8,
+          regime_adjustment: 15,
+          macro_event: 6,
+        }),
+        makeTicker('MSFT', 'Technology', '+1.6%', 'buy', 82, {
+          macro_regime: 6,
+          regime_adjustment: 10,
+          macro_event: 4,
+        }),
+        makeTicker('NEE', 'Utilities', '-0.9%', 'avoid', 35, {
+          macro_regime: -6,
+          regime_adjustment: -12,
+        }),
+        makeTicker('XLRE', 'Real Estate', '-0.5%', 'watch', 38, {
+          macro_regime: -5,
+          regime_adjustment: -8,
+        }),
+      ],
+      marketRegime: regime,
+      macroContext: {},
+    })
+
+    expect(result.focus.map((sector) => sector.sector)).toEqual(['Semiconductors'])
+    expect(result.watch.map((sector) => sector.sector)).toEqual(['Utilities'])
+    expect(result.insights.map((sector) => sector.sector)).toEqual([
+      'Semiconductors',
+      'Technology',
+      'Real Estate',
+      'Utilities',
+    ])
+  })
+
+  it('keeps the lowest scoring watch candidate when more than one qualifies', () => {
     const result = deriveSectorMoodInsights({
       tickers: [
         makeTicker('UTIL', 'Utilities', '-0.1%', 'watch', 40, {
@@ -268,7 +304,8 @@ describe('deriveSectorMoodInsights', () => {
       macroContext: {},
     })
 
-    expect(result.watch.map((sector) => sector.sector)).toEqual(['Financials', 'Energy', 'Materials'])
+    expect(result.watch.map((sector) => sector.sector)).toEqual(['Financials'])
+    expect(result.insights.filter((sector) => sector.classification === 'watch')).toHaveLength(1)
   })
 
   it('treats risk appetite improvement as supportive macro evidence', () => {

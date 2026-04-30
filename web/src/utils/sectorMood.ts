@@ -160,13 +160,13 @@ export function deriveSectorMoodInsights(input: DeriveSectorMoodInput): SectorMo
 
   const focus = insights
     .filter((insight) => isFocusCandidate(insight))
-    .slice(0, 3)
+    .slice(0, 1)
 
   const focusSectors = new Set(focus.map((insight) => insight.sector))
   const watch = insights
     .filter((insight) => !focusSectors.has(insight.sector) && isWatchCandidate(insight))
     .sort((left, right) => left.score - right.score)
-    .slice(0, 3)
+    .slice(0, 1)
 
   const watchSectors = new Set(watch.map((insight) => insight.sector))
   const classified = insights.map((insight) => {

@@ -114,4 +114,21 @@ describe('MarketMoodSectorBriefing', () => {
     expect(screen.getByText('섹터 데이터 부족')).toBeInTheDocument()
     expect(screen.queryByText('매도')).not.toBeInTheDocument()
   })
+
+  it('keeps actionable regime implication text out of the briefing copy', () => {
+    render(
+      <MemoryRouter>
+        <MarketMoodSectorBriefing
+          marketRegime={{
+            ...regime,
+            implication: '위험선호 구간: 공격적 진입 가능, 롱 바이어스 유지, 매수 우위',
+          }}
+          sectorMood={sectorMood}
+        />
+      </MemoryRouter>,
+    )
+
+    expect(screen.queryByText(/진입|롱|숏|매수|매도|바이어스|buy|sell|entry|bias/i)).not.toBeInTheDocument()
+    expect(screen.getByText('위험 선호가 살아 있어 성장성과 상대강도가 좋은 섹터를 우선 관찰합니다.')).toBeInTheDocument()
+  })
 })

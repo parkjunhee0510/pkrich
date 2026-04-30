@@ -24,6 +24,14 @@ const REGIME_LABELS: Record<MarketRegimeData['regime'], string> = {
   defensive_bias: '방어적 흐름',
 }
 
+const REGIME_COPY: Record<MarketRegimeData['regime'], string> = {
+  risk_on: '위험 선호가 살아 있어 성장성과 상대강도가 좋은 섹터를 우선 관찰합니다.',
+  neutral: '방향성이 뚜렷하지 않아 섹터별 상대강도와 이벤트 노출을 함께 확인합니다.',
+  risk_off: '변동성 관리가 필요한 흐름이라 방어력과 하락 압력을 함께 봅니다.',
+  reflation: '경기 민감 섹터와 금리 영향을 함께 확인할 구간입니다.',
+  defensive_bias: '방어적 성격의 섹터와 변동성 부담을 함께 확인할 구간입니다.',
+}
+
 const CLASSIFICATION_LABELS: Record<SectorMoodClassification, string> = {
   focus: '주목',
   watch: '주의',
@@ -36,8 +44,10 @@ function getRegimeLabel(marketRegime: MarketRegimeData | null | undefined): stri
 }
 
 function getRegimeCopy(marketRegime: MarketRegimeData | null | undefined): string {
-  return marketRegime?.implication
-    || '섹터 흐름은 확인 가능하지만 시장 분위기 데이터가 아직 충분하지 않습니다.'
+  if (!marketRegime?.regime) {
+    return '섹터 흐름은 확인 가능하지만 시장 분위기 데이터가 아직 충분하지 않습니다.'
+  }
+  return REGIME_COPY[marketRegime.regime] ?? '섹터 흐름은 확인 가능하지만 시장 분위기 데이터가 아직 충분하지 않습니다.'
 }
 
 function collectEvidence(insights: SectorMoodInsight[]): string[] {
