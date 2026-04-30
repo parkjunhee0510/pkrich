@@ -177,7 +177,7 @@ export function Signals() {
     document.title = '시그널 검증 · Stock Research'
   }, [])
 
-  const recentSignals = data?.signal_stats?.recent_signals ?? []
+  const recentSignals = useMemo(() => data?.signal_stats?.recent_signals ?? [], [data?.signal_stats?.recent_signals])
 
   const tickerStats = useMemo(() => computeTickerStats(recentSignals), [recentSignals])
 

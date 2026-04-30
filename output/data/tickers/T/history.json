@@ -187,7 +187,7 @@
       ],
       "news_tone": {
         "label": "neutral",
-        "score": 1.0
+        "score": 1
       },
       "trade_frame": {
         "entry_price": "현재가 26.46 또는 눌림 시 25.81 USD",
@@ -422,7 +422,7 @@
       ],
       "news_tone": {
         "label": "neutral",
-        "score": 1.0
+        "score": 1
       },
       "trade_frame": {
         "entry_price": "현재가 26.38 또는 눌림 시 25.73 USD",
@@ -662,7 +662,7 @@
         "label": "neutral",
         "confidence": 3,
         "reasoning": "배당과 EPS 상향은 긍정적이지만 SMA50 하회와 MACD bearish가 단기 리스크를 키웁니다.",
-        "score": 0.0
+        "score": 0
       },
       "trade_frame": {
         "entry_price": "현재가 26.46달러 또는 25.82-26.45달러 눌림 시",
@@ -938,7 +938,7 @@
         "label": "neutral",
         "confidence": 4,
         "reasoning": "과매도 반등 가능성과 배당 매력은 있으나, SMA50·SMA200 아래와 실적 전 불확실성이 공존합니다.",
-        "score": 0.0
+        "score": 0
       },
       "trade_frame": {
         "entry_price": "현재가 25.61 USD 또는 25.00-25.61 USD 눌림 시",
@@ -1051,14 +1051,14 @@
         "reason": "시장 환경 양호 (+15점) / 밸류에이션 양호 (양호 (+12점)) / 촉매 양호 (+10점)",
         "valid_until": "2026-04-22",
         "factors": {
-          "valuation": 12.0,
-          "momentum": 2.0,
-          "catalyst_recency": 10.0,
+          "valuation": 12,
+          "momentum": 2,
+          "catalyst_recency": 10,
           "signal_track_record": 0,
           "news_tone": 0,
           "regime_adjustment": 15,
           "earnings_pattern": 0,
-          "fundamentals": 4.0
+          "fundamentals": 4
         }
       }
     },
@@ -1254,7 +1254,7 @@
         "label": "neutral",
         "confidence": 3,
         "reasoning": "배당 가치와 저평가 매력은 있으나 실적 둔화, SMA50·SMA200 하회, 옵션 흐름의 중립성이 함께 존재합니다.",
-        "score": 0.0
+        "score": 0
       },
       "trade_frame": {
         "entry_price": "현재가 25.62 USD 또는 25.00-25.70 USD 눌림 시",
@@ -1366,14 +1366,14 @@
         "reason": "밸류에이션 양호 (호재 (+16점)) / 촉매 호재 (+15점) / 시장 환경 호재 (+15점)",
         "valid_until": "2026-04-22",
         "factors": {
-          "valuation": 16.0,
-          "momentum": 3.0,
-          "catalyst_recency": 15.0,
+          "valuation": 16,
+          "momentum": 3,
+          "catalyst_recency": 15,
           "signal_track_record": 0,
           "news_tone": 0,
           "regime_adjustment": 15,
-          "earnings_pattern": 0.0,
-          "fundamentals": 4.0
+          "earnings_pattern": 0,
+          "fundamentals": 4
         }
       }
     },
@@ -1696,16 +1696,16 @@
         "reason": "실적 D-6 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 대체로 적정 가치 범위에 위치합니다.",
         "valid_until": "2026-04-22",
         "factors": {
-          "catalyst_recency": 20.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 4.0,
-          "momentum": 3.0,
-          "news_tone": -3.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 0.0,
-          "valuation": 12.0
+          "catalyst_recency": 20,
+          "earnings_pattern": 0,
+          "fundamentals": 4,
+          "momentum": 3,
+          "news_tone": -3,
+          "peer_rank": 0,
+          "portfolio_risk": 0,
+          "regime_adjustment": 15,
+          "signal_track_record": 0,
+          "valuation": 12
         },
         "ensemble_agreement": "single"
       }
@@ -2048,16 +2048,16 @@
         "reason": "실적 D-2 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (3/3)",
         "valid_until": "2026-04-22",
         "factors": {
-          "catalyst_recency": 20.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 4.0,
-          "momentum": 3.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 10.0
+          "catalyst_recency": 20,
+          "earnings_pattern": 0,
+          "fundamentals": 4,
+          "momentum": 3,
+          "news_tone": 0,
+          "peer_rank": 0,
+          "portfolio_risk": 0,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 10
         },
         "ensemble_agreement": "agree",
         "final_consensus": "agree"
@@ -2413,17 +2413,17 @@
         "reason": "실적 D-1 / 하드 촉매 2026-02-09 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
         "valid_until": "2026-04-22",
         "factors": {
-          "catalyst_recency": 20.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 4.0,
-          "macro_event": -4.0,
-          "momentum": 3.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 12.0
+          "catalyst_recency": 20,
+          "earnings_pattern": 0,
+          "fundamentals": 4,
+          "macro_event": -4,
+          "momentum": 3,
+          "news_tone": 0,
+          "peer_rank": 0,
+          "portfolio_risk": 0,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 12
         },
         "ensemble_agreement": "agree",
         "final_consensus": "resolved"
@@ -2779,18 +2779,18 @@
         "reason": "실적 D-0 / 하드 촉매 2026-02-09 / 최근 시그널 승률 100% (5/5) / 리스크온 환경에서 공격주 선호",
         "valid_until": "2026-04-22",
         "factors": {
-          "catalyst_recency": 20.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 4.0,
-          "macro_event": -4.0,
-          "macro_regime": 4.0,
-          "momentum": 3.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 12.0
+          "catalyst_recency": 20,
+          "earnings_pattern": 0,
+          "fundamentals": 4,
+          "macro_event": -4,
+          "macro_regime": 4,
+          "momentum": 3,
+          "news_tone": 0,
+          "peer_rank": 0,
+          "portfolio_risk": 0,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 12
         },
         "ensemble_agreement": "agree",
         "final_consensus": "agree"
@@ -3103,7 +3103,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "무선 가입자 증가와 번들링 성과가 확인되며 배당일까지의 단기 모멘텀은 우호적이지만, 주가는 SMA50 27.81과 SMA200 26.78 아래에 있고 30D 수익률도 -9.07%로 성장 추세의 지속성은 아직 약합니다. PER 8.55배는 매력적이나 업사이드가 실적으로 이어지려면 2026-05-01 배당 전까지 가입자 성장과 추세 회복이 더 확인되어야 합니다.",
             "valid": true,
@@ -3115,7 +3115,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "PER 8.6x와 4.29% 배당으로 밸류에이션은 과도하지 않지만, 최근 30D -9.07%와 RS vs Sector ETF -15.14%로 모멘텀이 약하고 50D/SMA200 아래에 있어 하방 비대칭이 남아 있습니다. 실적은 최근 분기 beat였지만 EPS 성장률 -5.60% YoY, forward EPS 2.55로 이익 질의 개선이 뚜렷하지 않아, 배당 방어력은 인정하되 추세 확인 전까지는 관망이 적절합니다.",
             "valid": true,
@@ -3127,7 +3127,7 @@
             "profile": "deep",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "밸류에이션과 배당, 최근 실적/가입자 모멘텀은 우호적이지만 주가가 SMA50과 SMA200을 모두 하회하고 RS가 섹터 대비 크게 약세라 추세 훼손이 진행 중입니다. 핵심 무효화는 50일 이동평균 27.81 USD 회복 실패 또는 하회 지속이며, 그 전까지는 25.98 USD 부근 지지 확인이 필요합니다.",
             "valid": true,
@@ -3139,7 +3139,7 @@
             "profile": "deep",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "금리 민감 방어주 성격과 4.29% 배당은 거시 변동성 국면에서 완충재가 되지만, 최근 가격이 SMA50·SMA200 아래에 있고 상대강도가 크게 약해 추가 하락 시 신호가 더 나빠질 수 있습니다. 거시적으로는 방향성 베팅보다 배당일 전후 수급과 금리 경로, 커뮤니케이션 서비스 내 리스크온/리스크오프 전환을 확인하는 구간입니다.",
             "valid": true,
@@ -3151,7 +3151,7 @@
             "profile": "deep",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "",
             "valid": false,
@@ -3197,18 +3197,18 @@
         "reason": "최근 시그널 승률 100% (6/6) / 리스크온 환경에서 공격주 선호 / 대체로 적정 가치 범위에 위치합니다.",
         "valid_until": "2026-04-29",
         "factors": {
-          "catalyst_recency": -5.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 4.0,
-          "macro_event": -4.0,
-          "macro_regime": 4.0,
-          "momentum": 5.0,
-          "news_tone": 5.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 12.0
+          "catalyst_recency": -5,
+          "earnings_pattern": 0,
+          "fundamentals": 4,
+          "macro_event": -4,
+          "macro_regime": 4,
+          "momentum": 5,
+          "news_tone": 5,
+          "peer_rank": 0,
+          "portfolio_risk": 0,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 12
         },
         "factor_reasoning": {
           "catalyst_recency": "가까운 촉매가 없어 감점",
@@ -3228,8 +3228,8 @@
         "final_consensus": "single",
         "raw_conviction": 57,
         "confidence_meta": {
-          "data_quality": 1.0,
-          "evidence_coverage": 1.0,
+          "data_quality": 1,
+          "evidence_coverage": 1,
           "evidence_consistency": 0.6,
           "model_agreement": 0.6,
           "confidence_gate": 0.86
@@ -3548,7 +3548,7 @@
             "profile": "economy",
             "stance": "reduce",
             "action": "avoid",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "AT&T는 PER 8.75x로 저렴하지만 EPS 성장률이 -12.20% YoY이고, 최근 4개 분기 중 2025-Q4만 EPS 0.53으로 컨센서스 0.47을 소폭 상회해 실적 가속이 아직 확인되지 않습니다. 30일 주가가 -6.67%로 SMA50 아래에 있고 RS가 섹터 대비 -12.01%라 상승 추세가 약하며, 다음 실적까지 D-89라 단기 촉매도 제한적입니다.",
             "valid": true,
@@ -3560,7 +3560,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "PER 8.8x와 P/B 1.69x만 보면 싸 보이지만, EPS 성장률이 -12.20% YoY이고 forward EPS도 2.55로 TTM EPS 3.04보다 낮아 이익의 질이 약합니다. 목표가 30.43달러 대비 현재가 26.61달러는 +14.4%뿐인데, 주가는 이미 30일 -6.67% 하락했고 SMA50 27.77달러와 SMA200 26.76달러 아래에서 흔들려 상방보다 기술적/실적 하방이 더 큽니다.",
             "valid": true,
@@ -3572,7 +3572,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "현재가 26.61은 200D SMA 26.76 바로 아래이고 50D SMA 27.77 대비 -4.18%라 추세는 아직 약세 쪽입니다. 하방 이탈 기준은 26.76 회복 실패가 이어질 때이며, 24.74(볼린저 하단) 이탈 시 추가 조정 경보로 보겠습니다; 반대로 27.77 상향 회복 전에는 추세 훼손 리스크가 해소되지 않습니다.",
             "valid": true,
@@ -3584,7 +3584,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "금리 민감도는 낮지만 배당형 방어주로서 장기금리 하락·리스크오프에서는 상대적으로 버티는 편입니다. 다만 현재 가격이 26.61달러로 50D SMA 27.77과 200D SMA 26.76 모두 아래이고, RS vs Sector ETF가 -12.01%라 방어적 섹터 안에서도 상대강도가 약해 아직은 확실한 추세 전환 신호로 보기 어렵습니다.",
             "valid": true,
@@ -3642,18 +3642,18 @@
         "reason": "최근 시그널 승률 100% (6/6) / 리스크온 환경에서 공격주 선호 / 대체로 적정 가치 범위에 위치합니다.",
         "valid_until": "2026-04-30",
         "factors": {
-          "catalyst_recency": -5.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 4.0,
-          "macro_event": -4.0,
-          "macro_regime": 4.0,
-          "momentum": 3.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 10.0
+          "catalyst_recency": -5,
+          "earnings_pattern": 0,
+          "fundamentals": 4,
+          "macro_event": -4,
+          "macro_regime": 4,
+          "momentum": 3,
+          "news_tone": 0,
+          "peer_rank": 0,
+          "portfolio_risk": 0,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 10
         },
         "factor_reasoning": {
           "catalyst_recency": "실적 D-89",
@@ -3673,8 +3673,8 @@
         "final_consensus": "single",
         "raw_conviction": 52,
         "confidence_meta": {
-          "data_quality": 1.0,
-          "evidence_coverage": 1.0,
+          "data_quality": 1,
+          "evidence_coverage": 1,
           "evidence_consistency": 0.54,
           "model_agreement": 0.6,
           "confidence_gate": 0.848
@@ -3998,7 +3998,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "Q4 매출 33.47B, EPS 0.53로 컨센서스 0.47을 소폭 상회했지만, 연간 EPS 성장률은 -12.20% YoY이고 forward EPS도 2.56으로 하향되어 이익 모멘텀 가속은 아직 확인되지 않습니다. 30일 수익률 -9.02%, SMA50 대비 -5.50%, RS 하위 0%로 기술적/상대강도 측면 상방 추세가 약해 2026-07-22 실적 전까지는 관망이 적절합니다.",
             "valid": true,
@@ -4010,7 +4010,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "PER 8.6x와 P/B 1.67은 절대적으로 비싸 보이진 않지만, 목표가 30.37달러 대비 현재가 26.20달러가 이미 +15.9% 괴리라서 업사이드는 제한적인 반면 30일 -9.02% 하락과 SMA50 대비 -5.50% 약세가 이어져 하방 비대칭이 더 큽니다. 또한 Forward EPS 2.56이 EPS 3.04보다 낮고 성장률도 -12.20% YoY로 둔화 중이라, 이익 질이 개선되는 구간이라기보다 추정치 하향 리스크를 경계해야 합니다.",
             "valid": true,
@@ -4022,7 +4022,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "하방 시나리오가 우선입니다: 현재가 26.20은 SMA50 27.73보다 -5.50%, SMA200 26.75보다 -2.07% 낮고 52주 고점 29.79 대비 여전히 멀어 추세 훼손이 완전히 해소되지 않았습니다. 명확한 무효화는 종가 기준 27.73 상회이며, 반대로 25.49(배당일 전 눌림 진입가) 이탈이 반복되면 추가 조정 리스크가 커집니다.",
             "valid": true,
@@ -4034,7 +4034,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "금리 하락·리스크오프 환경에서는 4.24% 배당과 8.62배 P/E가 방어력을 주지만, 현재 주가는 50D SMA 대비 -5.50%, 200D SMA 대비 -2.07%로 모멘텀이 약해 방어주 프리미엄이 이미 일부 반영된 상태입니다. 다만 Communication Services 피어 평균 30일 수익률 12.06% 대비 T는 -9.02%로 RS가 -16.96%까지 밀려 있어, 금리 안정에도 섹터 내 상대강도 회복 없이는 추가 리레이팅이 제한적입니다.",
             "valid": true,
@@ -4092,19 +4092,19 @@
         "reason": "최근 시그널 승률 86% (6/7) / 리스크온 환경에서 공격주 선호 / 대체로 적정 가치 범위에 위치합니다.",
         "valid_until": "2026-05-01",
         "factors": {
-          "catalyst_recency": -5.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 4.0,
-          "macro_event": -4.0,
-          "macro_regime": 4.0,
-          "momentum": 3.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "policy_tailwind": 0.0,
-          "portfolio_risk": 0.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 12.0
+          "catalyst_recency": -5,
+          "earnings_pattern": 0,
+          "fundamentals": 4,
+          "macro_event": -4,
+          "macro_regime": 4,
+          "momentum": 3,
+          "news_tone": 0,
+          "peer_rank": 0,
+          "policy_tailwind": 0,
+          "portfolio_risk": 0,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 12
         },
         "factor_reasoning": {
           "catalyst_recency": "실적 D-86",
@@ -4125,14 +4125,939 @@
         "final_consensus": "single",
         "raw_conviction": 53,
         "confidence_meta": {
-          "data_quality": 1.0,
-          "evidence_coverage": 1.0,
+          "data_quality": 1,
+          "evidence_coverage": 1,
           "evidence_consistency": 0.54,
           "model_agreement": 0.6,
           "confidence_gate": 0.848
         }
       }
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "T",
+      "name": "AT&T Inc.",
+      "summary": "현재 주가는 50일선과 200일선 아래에 있고 30일 기준 -11.38%로 부진하며, 섹터 대비 RS도 -19.57%입니다. 다음 촉매는 2026-07-22 실적 발표이지만 일정까지는 아직 여유가 있습니다.",
+      "key_news": [
+        "섬유와 주파수 거래로 연간 이익 전망 상향",
+        "버라이즌, 무선 가입자 증가로 실적 전망 상향",
+        "SEC에 10-Q 분기 실적 보고서 제출",
+        "SEC에 8-K 중요 공시 제출"
+      ],
+      "key_news_source_titles": [
+        "[실적] AT&T INC., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+        "[기타 공시] AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+        "Verizon boosts annual profit forecast after surprise rise in wireless subscribers - Reuters",
+        "AT&T bets on fiber, spectrum deals to forecast annual profit above expectations - Reuters"
+      ],
+      "key_news_reference_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "news_references": [
+        {
+          "title": "[실적] AT&T INC., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+          "source": "SEC EDGAR",
+          "published_at": "2026-04-27",
+          "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000206/t-20260331.htm"
+        },
+        {
+          "title": "[기타 공시] AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "source": "SEC EDGAR",
+          "published_at": "2026-04-22",
+          "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000203/t-20260422.htm"
+        },
+        {
+          "title": "Verizon boosts annual profit forecast after surprise rise in wireless subscribers - Reuters",
+          "source": "Reuters",
+          "published_at": "2026-04-27",
+          "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxPbFpnQm00TW80RXBRNGd5TTQ5ek5mUHlHai1CeWFtc2FmWVlJaGhUZ2hvMFdUb2ZpU1h1bFlnc1ZERjFaVE5HUW9BNVdRbTlWM3V6WlhINVJHOHZpNEVkYmtfVmdRdDY5SUhUSlNzdFJoMzM5NEhMQ090X1pobndGSkVjXzNEU2ZoMzBia1dvbWxJVXBSR2dlUzFmXzNZb2M1SWFsS2FoQnViZ3h0X0pFT1JVWWx4WDByT2hDSnh4bTdTaWo0bkdONGxxbVN4MGowb2c?oc=5"
+        },
+        {
+          "title": "AT&T bets on fiber, spectrum deals to forecast annual profit above expectations - Reuters",
+          "source": "Reuters",
+          "published_at": "2026-01-28",
+          "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxQNGdYdmNhUll0dzNIREIxa09uRzdoN2NfZ0xBLTRENzRKTGRiMGttbHBKV0pSd05VSTNoUHZTMENROERuRExSMkRKdnp4eXA2eHBZeE5WNzRGQ0NZVkFXOGNsaDNFMFpZdldOV3VaemZoUFNnV1N4dE5fY2hxX1VSZEU5cDZ2S2ZoT3VSZEMwLVpuLTRtRDgwUnQ4YjVvaExMRzhZT2NUMUF0MlNqZS1aelNDTjY0dlJFTE44dlo2a05seHE3Tml6eFRB?oc=5"
+        },
+        {
+          "title": "Verizon boosts annual profit forecast after surprise rise in wireless subscribers - Yahoo Finance",
+          "source": "Yahoo Finance",
+          "published_at": "2026-04-27",
+          "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPN3FlNjlWOV9pTGlkUTd3MURVTnhWaHRfZm9LNXBzdVhpSFVKSVoyT1FkNTVyZldEcEhYcUN0Wm92WkpvNXk2b0s1ZmlsaE5WYmNOQVZ5b2dZZHlhV2RWYWhRbTBLNFBEaG9hMGxqWWZ6eFB5em5pTjFva3lfLUpQSUpicHpXZHl6aWhQdnd4d1Jtd3dlT2dqZUExYXRoQ0dJcVdn?oc=5"
+        }
+      ],
+      "financial_highlights": [
+        "PER 8.4x / valuation score 6/10",
+        "Forward EPS 2.56, TTM EPS 3.04",
+        "EPS Growth -12.20% YoY",
+        "52W 고점 대비 위치 38%",
+        "PCR 0.50x, MaxPain $25"
+      ],
+      "risks_or_watchpoints": [
+        "현재가 25.52 USD가 SMA50 27.73 USD와 SMA200 26.75 USD를 모두 하회한 상태가 2026-05-01 배당 지급일까지 지속되면 추세 약세 리스크",
+        "30D 수익률 -11.38%가 이어지고 RS vs Sector ETF -19.57%가 개선되지 않으면 상대강도 부진 리스크",
+        "MACD -0.45/-0.38과 BB 24.66-28.85 하단 구간이 계속되면 추가 조정 리스크",
+        "2026-07-22 실적 발표까지 현재가 25.52 USD가 26.75 USD(SMA200) 아래에 머무르면 중기 방어력 저하 리스크"
+      ],
+      "signal_or_takeaway": "매수 관찰 — 연간 이익 전망 상향과 업계 비교 소식 | 진입 트리거 26.63 상향 돌파 | 목표 26.75/27.73달러 | 손절 22.95달러",
+      "data_snapshot": {
+        "Price": "25.52 USD",
+        "Daily Change": "-2.60%",
+        "Market Cap": "178.18B",
+        "Trailing P/E": "8.39",
+        "EPS": "3.04",
+        "52W High": "29.79",
+        "52W Low": "22.95",
+        "50D SMA": "27.73",
+        "200D SMA": "26.75",
+        "Volume": "32.57M",
+        "3M Avg Volume": "44.39M",
+        "Price/Book": "1.62",
+        "Dividend Yield": "4.24%",
+        "Sector": "Communication Services",
+        "Open": "26.33",
+        "High": "26.43",
+        "Low": "25.45",
+        "Close": "25.52",
+        "RS vs Sector ETF": "-19.57%"
+      },
+      "fundamentals": {
+        "market_cap": "178.18B",
+        "trailing_pe": "8.39",
+        "eps": "3.04",
+        "forward_eps": "2.56",
+        "earnings_growth": "-12.20% YoY",
+        "price_to_book": "1.62",
+        "dividend_yield": "4.24%",
+        "volume": "32.57M",
+        "avg_volume_3m": "44.39M",
+        "52w_high": "29.79",
+        "52w_low": "22.95",
+        "short_float_pct": "1.70%",
+        "short_ratio": "2.76일",
+        "analyst_target_price": "30.37 USD",
+        "analyst_recommendation": "Buy",
+        "analyst_count": "23명",
+        "held_by_insiders": "0.09%",
+        "held_by_institutions": "68.09%",
+        "implied_volatility": "N/A"
+      },
+      "earnings_setup": {
+        "forward_eps": "2.56 USD/share",
+        "ttm_eps": "3.04 USD/share",
+        "forward_vs_ttm": "-15.79%",
+        "earnings_growth": "-12.20% YoY",
+        "latest_estimated_eps": "0.47 USD/share",
+        "latest_surprise_pct": "+0.12%",
+        "latest_beat_miss": "beat",
+        "next_earnings_event": "2026-07-22 실적 발표 (D-85 · BMO)"
+      },
+      "earnings_surprise_history": {
+        "consecutive_beats": 0,
+        "consecutive_misses": 0,
+        "beat_rate": "N/A",
+        "avg_surprise_pct": "N/A",
+        "pattern": "insufficient_data",
+        "post_earnings_hint": "실적 서프라이즈 데이터 부족으로 패턴 판단 불가",
+        "quarters_analyzed": 1
+      },
+      "earnings_pattern": {
+        "beat_streak": 1,
+        "surprise_trend": "stable",
+        "avg_surprise_pct": "+0.0%",
+        "quarters_analyzed": 3,
+        "pattern_note": "최근 1개 분기 연속 상회 · 최근 3개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
+      },
+      "price_action": {
+        "atr_14d": "0.74",
+        "atr_percent": "2.91%",
+        "relative_volume": "0.73x",
+        "gap_percent": "+0.50%",
+        "price_vs_sma50": "-7.95%",
+        "price_vs_sma200": "-4.61%",
+        "week52_position": "38%",
+        "rs_vs_spy": "N/A",
+        "rs_vs_sector_etf": "-19.57%"
+      },
+      "quarterly_financials": [
+        {
+          "fiscal_date": "2025-12-31",
+          "quarter": "2025-Q4",
+          "revenue": "33.47B",
+          "operating_income": "6.12B",
+          "eps": "0.53",
+          "estimated_eps": "0.47",
+          "surprise_pct": "+0.12%",
+          "beat_miss": "beat"
+        },
+        {
+          "fiscal_date": "2025-09-30",
+          "quarter": "2025-Q3",
+          "revenue": "30.71B",
+          "operating_income": "6.12B",
+          "eps": "1.29",
+          "estimated_eps": "0.54",
+          "surprise_pct": "+0.00%",
+          "beat_miss": "in-line"
+        },
+        {
+          "fiscal_date": "2025-06-30",
+          "quarter": "2025-Q2",
+          "revenue": "30.85B",
+          "operating_income": "6.50B",
+          "eps": "0.62",
+          "estimated_eps": "0.53",
+          "surprise_pct": "+0.02%",
+          "beat_miss": "in-line"
+        },
+        {
+          "fiscal_date": "2025-03-31",
+          "quarter": "2025-Q1",
+          "revenue": "30.63B",
+          "operating_income": "6.26B",
+          "eps": "0.61",
+          "estimated_eps": "N/A",
+          "surprise_pct": "N/A",
+          "beat_miss": "N/A"
+        }
+      ],
+      "upcoming_events": [
+        {
+          "type": "dividend",
+          "label": "배당 지급일",
+          "date": "2026-05-01",
+          "days_until": "3",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-07-22",
+          "days_until": "85",
+          "timing": "BMO"
+        }
+      ],
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 2,
+        "reasoning": "연간 이익 전망 상향과 업계 비교 소식이 우호적으로 작용합니다."
+      },
+      "trade_frame": {
+        "entry_price": "현재가 25.52 또는 눌림 시 24.78 USD",
+        "stop_loss": "SMA50 27.73 USD",
+        "target_1": "26.63 USD (1.5×ATR)",
+        "target_2": "애널리스트 목표 30.37 USD",
+        "risk_reward_ratio": "N/A",
+        "position_size_note": "$59,403 계좌 1% 리스크 기준 약 802주 (ATR $0.74 기반)",
+        "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
+        "base_scenario": "25.52 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+        "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
+        "invalidation_price": "50일 이동평균선인 27.73 USD 아래로 밀리면 약세 시나리오 확인",
+        "watch_period": "2026-05-01 배당 지급일 전까지"
+      },
+      "options_summary": {
+        "expiry": "2026-05-01",
+        "atm_call_iv": "32.8%",
+        "atm_put_iv": "30.1%",
+        "put_call_ratio": "0.50x",
+        "iv_percentile_30d": "3th",
+        "tone": "neutral",
+        "unusual_activity": "PUT $40, vol 11, OI 대비 46% ; PUT $35, vol 7, OI 대비 37% ; PUT $40, vol 4, OI 대비 100%",
+        "oi_change": "콜 OI +3.4% / 풋 OI +0.7%"
+      },
+      "signal_history": [
+        {
+          "date": "2026-04-28",
+          "direction": "neutral",
+          "llm_direction": "neutral",
+          "catalyst": "일반 이슈",
+          "return_5d": "N/A",
+          "note": "25.52 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-27",
+          "direction": "bull",
+          "llm_direction": "bull",
+          "catalyst": "실적",
+          "return_5d": "N/A",
+          "note": "25.52 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-24",
+          "direction": "bull",
+          "llm_direction": "bull",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "26.20 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-23",
+          "direction": "bear",
+          "llm_direction": "neutral",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "26.61 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-22",
+          "direction": "bull",
+          "llm_direction": "neutral",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "25.98 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        }
+      ],
+      "sector_comparison": {
+        "summary": "Communication Services 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
+        "pe_ratio": {
+          "company": "8.39",
+          "peer_average": "8.69x",
+          "difference": null
+        },
+        "rs_vs_spy": {
+          "company": "N/A",
+          "peer_average": "N/A",
+          "difference": null
+        },
+        "price_change_30d": {
+          "company": "-11.38%",
+          "peer_average": "12.06%",
+          "difference": "-23.44"
+        }
+      },
+      "peer_rank": {
+        "per_pctl": 33,
+        "rs_pctl": 0,
+        "revenue_growth_pctl": 50,
+        "dividend_yield_pctl": 25,
+        "summary": "모멘텀 하위 0%"
+      },
+      "valuation_score": {
+        "score": "6/10",
+        "factors": [
+          "PER 8.4x",
+          "목표가 대비 업사이드 +19.0%"
+        ],
+        "assessment": "대체로 적정 가치 범위에 위치합니다."
+      },
+      "analysis_consensus": {
+        "status": "not_applicable",
+        "direction_agreement": null,
+        "selection_reason": "cap_exceeded",
+        "third_review_completed": false,
+        "final_consensus": "single"
+      },
+      "committee_analysis": {
+        "status": "economy_only",
+        "agreement_status": "aligned",
+        "deep_review_triggered": false,
+        "deep_review_reasons": [],
+        "roles": {
+          "growth_analyst": {
+            "role": "growth_analyst",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "2025-Q4 매출 334.7억 달러와 EPS 0.53이 컨센서스를 상회했지만, 연간 EPS 성장률이 -12.2%로 아직 이익 모멘텀이 가속 국면은 아닙니다. PER 8.4x와 목표주가 30.37달러는 지지되지만, 최근 30일 주가 -11.38%와 2026-07-22 실적까지 85일 공백이 있어 명확한 성장 촉매 확인 전까지는 관망이 적절합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "value_skeptic": {
+            "role": "value_skeptic",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "PER 8.4x와 P/B 1.62x만 보면 싸보이지만, EPS가 YoY -12.2%로 역성장이고 Forward EPS도 2.56으로 TTM EPS 3.04보다 낮아 이익 질이 약합니다. 목표가 30.37달러는 현재가 25.52달러 대비 +19.0% 여지지만, 주가는 이미 50일선 27.73달러와 200일선 26.75달러를 밑돌고 30D 수익률이 -11.38%라 하방 모멘텀이 먼저 확인돼야 하며 배당 4.24%만으로 이 괴리를 정당화하긴 어렵습니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "risk_manager": {
+            "role": "risk_manager",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "주가는 25.52로 SMA200 26.75와 SMA50 27.73를 모두 하회해 추세 훼손 상태이며, 52주 고점 29.79 대비 약세가 지속되고 RS vs Sector ETF -19.57%도 개선되지 않았습니다. 하방 시나리오는 26.75 회복 실패가 이어지고 24.66(BB 하단) 이탈 시 추가 조정으로 보는 것이며, 27.73 상향 회복 전까지는 추세 반전으로 보기 어렵습니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "macro_strategist": {
+            "role": "macro_strategist",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "금리 민감도는 낮지만 배당수익률 4.24%와 P/E 8.39가 방어적 성격을 주는 반면, 주가는 50D SMA 27.73과 200D SMA 26.75를 모두 하회하고 RS vs Sector ETF가 -19.57%로 섹터 내에서도 자금 유입이 약합니다. 현재 가격 25.52는 52W Low 22.95보다 11.2% 위, 52W High 29.79보다 14.3% 아래라 리스크오프 구간에서 상대적 버팀은 가능하지만, 금리 하락·방어주 선호가 약해지면 추가 디레이팅 압력이 남아 있습니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "pm": {
+            "role": "pm",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.84,
+            "strong_objection": false,
+            "summary": "현재 주가는 25.52달러로 50일선 27.73달러와 200일선 26.75달러를 모두 하회하고, 30일 수익률이 -11.38%이며 섹터 대비 상대강도도 -19.57%로 추세 확인 전까지는 보수적 대응이 적절합니다. 다만 PER 8.39x, 배당수익률 4.24%, 애널리스트 목표가 30.37달러는 하방을 일정 부분 완충하지만, EPS가 YoY -12.20%이고 Forward EPS 2.56이 TTM EPS 3.04보다 낮아 실적 모멘텀은 아직 약합니다. 2026-05-01 배당일과 2026-07-22 실적까지는 이벤트 확인 구간이므로 비중 확대보다 26.75달러 회복 여부와 27.73달러 돌파를 우선 점검하겠습니다.",
+            "valid": true,
+            "invalid_reason": ""
+          }
+        }
+      },
+      "period_changes": {
+        "7d": "-2.52%",
+        "30d": "-11.39%"
+      },
+      "sec_filing_tags": [
+        "실적",
+        "기타 공시"
+      ],
+      "sec_filings": [
+        {
+          "tag": "실적",
+          "title": "AT&T INC., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+          "form_type": "10-Q",
+          "item_number": "",
+          "catalyst_type": "hard",
+          "importance_score": 200,
+          "published_at": "2026-04-27",
+          "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000206/t-20260331.htm",
+          "source": "SEC EDGAR"
+        },
+        {
+          "tag": "기타 공시",
+          "title": "AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "form_type": "8-K",
+          "item_number": "",
+          "catalyst_type": "medium",
+          "importance_score": 120,
+          "published_at": "2026-04-22",
+          "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000203/t-20260422.htm",
+          "source": "SEC EDGAR"
+        }
+      ],
+      "decision": {
+        "action": "watch",
+        "conviction": 56,
+        "reason": "리스크온 환경에서 공격주 선호 / 최근 시그널 승률 67% (6/9) / 대체로 적정 가치 범위에 위치합니다.",
+        "valid_until": "2026-05-04",
+        "factors": {
+          "catalyst_recency": 8.0,
+          "earnings_pattern": 0.0,
+          "fundamentals": 4.0,
+          "macro_event": -4.0,
+          "macro_regime": 4.0,
+          "momentum": 3.0,
+          "news_tone": 5.0,
+          "peer_rank": 0.0,
+          "policy_tailwind": 0.0,
+          "portfolio_risk": 0.0,
+          "regime_adjustment": 15.0,
+          "signal_track_record": 10.0,
+          "valuation": 12.0
+        },
+        "factor_reasoning": {
+          "catalyst_recency": "실적 D-85 / 하드 촉매 2026-04-27",
+          "earnings_pattern": "연속 상회 1분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.0%",
+          "fundamentals": "선행 EPS 성장 -15.8% / 기관 보유 68.1%",
+          "macro_event": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
+          "macro_regime": "risk_on 레짐에서 communication services 섹터 편향 +4",
+          "momentum": "섹터 대비 -19.6% / SMA50·SMA200 아래",
+          "news_tone": "강세 뉴스지만 가격 확인은 제한적",
+          "peer_rank": "peer percentile 기준 특이 우위는 제한적입니다",
+          "policy_tailwind": "해당 종목 정책 임팩트 미산출",
+          "portfolio_risk": "현재 포트폴리오 집중 리스크 감점 요인은 크지 않음",
+          "regime_adjustment": "리스크온 환경에서 공격주 선호",
+          "signal_track_record": "최근 시그널 승률 67% (6/9)",
+          "valuation": "대체로 적정 가치 범위에 위치합니다."
+        },
+        "ensemble_agreement": "single",
+        "final_consensus": "single",
+        "raw_conviction": 59,
+        "confidence_meta": {
+          "data_quality": 1.0,
+          "evidence_coverage": 1.0,
+          "evidence_consistency": 0.6,
+          "model_agreement": 0.6,
+          "confidence_gate": 0.86
+        }
+      }
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "T",
+      "name": "AT&T Inc.",
+      "summary": "현재 주가는 26.06달러로 30일 기준 -8.50% 하락했고, SMA50(27.66) 및 SMA200(26.74) 아래에 있으며 RSI 43.7과 MACD -0.43/-0.39로 단기 모멘텀은 약합니다. 다음 촉매는 2026-07-22 실적 발표이며, 그 전까지는 실적 개선 여부와 주가가 50일 이동평균을 회복하는지 여부가 핵심입니다.",
+      "key_news": [
+        "무선 가입자 증가가 예상보다 많음",
+        "번들링 전략이 성과를 내는 중",
+        "10-Q 분기 실적 보고서 제출",
+        "8-K 중요 사항 공시 제출"
+      ],
+      "key_news_source_titles": [
+        "[실적] AT&T INC., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+        "[기타 공시] AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+        "AT&T adds more wireless subscribers than expected as bundling pays off - Reuters",
+        "Verizon boosts annual profit forecast after surprise rise in wireless subscribers - Reuters"
+      ],
+      "key_news_reference_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "news_references": [
+        {
+          "title": "[실적] AT&T INC., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+          "source": "SEC EDGAR",
+          "published_at": "2026-04-27",
+          "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000206/t-20260331.htm"
+        },
+        {
+          "title": "[기타 공시] AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "source": "SEC EDGAR",
+          "published_at": "2026-04-22",
+          "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000203/t-20260422.htm"
+        },
+        {
+          "title": "AT&T adds more wireless subscribers than expected as bundling pays off - Reuters",
+          "source": "Reuters",
+          "published_at": "2026-04-22",
+          "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOVE5CNFplVzAzb1JwZ0lEdlFyRGhQM0hPdXlJZlVLUjVrVTF0M09MZVZPdUxoQjU2TXJnTFM5a3EwUmFmMTNCZDNJOWZiVjZmZ0V5Q3lPaC1iNE13OGFkblNNTFJCWExKRkViU3l3ejBydTlHVGdrOUYzTnhMNjQwMGozc2QydlNYdDB6c1ZfQlpuempNS2FfcUNGdlJxeTB6Q1lnbWxWRFpaM2x5YWF6QTF5ekdmb19ROXQzMjdkNjA0ZGc?oc=5"
+        },
+        {
+          "title": "Verizon boosts annual profit forecast after surprise rise in wireless subscribers - Reuters",
+          "source": "Reuters",
+          "published_at": "2026-04-27",
+          "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxPbFpnQm00TW80RXBRNGd5TTQ5ek5mUHlHai1CeWFtc2FmWVlJaGhUZ2hvMFdUb2ZpU1h1bFlnc1ZERjFaVE5HUW9BNVdRbTlWM3V6WlhINVJHOHZpNEVkYmtfVmdRdDY5SUhUSlNzdFJoMzM5NEhMQ090X1pobndGSkVjXzNEU2ZoMzBia1dvbWxJVXBSR2dlUzFmXzNZb2M1SWFsS2FoQnViZ3h0X0pFT1JVWWx4WDByT2hDSnh4bTdTaWo0bkdONGxxbVN4MGowb2c?oc=5"
+        },
+        {
+          "title": "Verizon boosts annual profit forecast after surprise rise in wireless subscribers - Yahoo Finance",
+          "source": "Yahoo Finance",
+          "published_at": "2026-04-27",
+          "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPN3FlNjlWOV9pTGlkUTd3MURVTnhWaHRfZm9LNXBzdVhpSFVKSVoyT1FkNTVyZldEcEhYcUN0Wm92WkpvNXk2b0s1ZmlsaE5WYmNOQVZ5b2dZZHlhV2RWYWhRbTBLNFBEaG9hMGxqWWZ6eFB5em5pTjFva3lfLUpQSUpicHpXZHl6aWhQdnd4d1Jtd3dlT2dqZUExYXRoQ0dJcVdn?oc=5"
+        }
+      ],
+      "financial_highlights": [
+        "PER 8.6x, peer PER percentile 33",
+        "RS vs sector ETF: -15.72%",
+        "Forward EPS 2.56 / TTM EPS 3.04",
+        "EPS Growth: -12.20% YoY",
+        "Analyst: Buy (23명), target 30.37 USD"
+      ],
+      "risks_or_watchpoints": [
+        "주가가 27.66 USD(SMA50) 아래로 밀리면 약세 시나리오 확인",
+        "2026-05-01 배당 지급일 전까지 26.06 USD 부근 지지 여부 점검",
+        "MACD -0.43/-0.39의 약세 상태가 지속되는지 확인",
+        "풋 IV 40.2%가 콜 IV 34.0% 대비 높은 상태로 유지되는지 확인"
+      ],
+      "signal_or_takeaway": "중립 관찰 — 약세 추세 속 실적 전까지 반등 확인 필요 | 진입 트리거 26.74 회복 | 목표 27.14/27.66달러 | 손절 22.95달러",
+      "data_snapshot": {
+        "Price": "26.06 USD",
+        "Daily Change": "+2.12%",
+        "Market Cap": "181.95B",
+        "Trailing P/E": "8.57",
+        "EPS": "3.04",
+        "52W High": "29.79",
+        "52W Low": "22.95",
+        "50D SMA": "27.66",
+        "200D SMA": "26.74",
+        "Volume": "29.43M",
+        "3M Avg Volume": "43.55M",
+        "Price/Book": "1.66",
+        "Dividend Yield": "4.35%",
+        "Sector": "Communication Services",
+        "Open": "25.94",
+        "High": "26.31",
+        "Low": "25.88",
+        "Close": "26.06",
+        "RS vs Sector ETF": "-15.72%"
+      },
+      "fundamentals": {
+        "market_cap": "181.95B",
+        "trailing_pe": "8.57",
+        "eps": "3.04",
+        "forward_eps": "2.56",
+        "earnings_growth": "-12.20% YoY",
+        "price_to_book": "1.66",
+        "dividend_yield": "4.35%",
+        "volume": "29.43M",
+        "avg_volume_3m": "43.55M",
+        "52w_high": "29.79",
+        "52w_low": "22.95",
+        "short_float_pct": "1.70%",
+        "short_ratio": "2.76일",
+        "analyst_target_price": "30.37 USD",
+        "analyst_recommendation": "Buy",
+        "analyst_count": "23명",
+        "held_by_insiders": "0.09%",
+        "held_by_institutions": "68.12%",
+        "implied_volatility": "N/A"
+      },
+      "earnings_setup": {
+        "forward_eps": "2.56 USD/share",
+        "ttm_eps": "3.04 USD/share",
+        "forward_vs_ttm": "-15.79%",
+        "earnings_growth": "-12.20% YoY",
+        "latest_estimated_eps": "0.47 USD/share",
+        "latest_surprise_pct": "+0.12%",
+        "latest_beat_miss": "beat",
+        "next_earnings_event": "2026-07-22 실적 발표 (D-84 · BMO)"
+      },
+      "earnings_surprise_history": {
+        "consecutive_beats": 0,
+        "consecutive_misses": 0,
+        "beat_rate": "N/A",
+        "avg_surprise_pct": "N/A",
+        "pattern": "insufficient_data",
+        "post_earnings_hint": "실적 서프라이즈 데이터 부족으로 패턴 판단 불가",
+        "quarters_analyzed": 1
+      },
+      "earnings_pattern": {
+        "beat_streak": 1,
+        "surprise_trend": "stable",
+        "avg_surprise_pct": "+0.0%",
+        "quarters_analyzed": 3,
+        "pattern_note": "최근 1개 분기 연속 상회 · 최근 3개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
+      },
+      "price_action": {
+        "atr_14d": "0.72",
+        "atr_percent": "2.76%",
+        "relative_volume": "0.68x",
+        "gap_percent": "+1.65%",
+        "price_vs_sma50": "-5.78%",
+        "price_vs_sma200": "-2.56%",
+        "week52_position": "45%",
+        "rs_vs_spy": "N/A",
+        "rs_vs_sector_etf": "-15.72%"
+      },
+      "quarterly_financials": [
+        {
+          "fiscal_date": "2025-12-31",
+          "quarter": "2025-Q4",
+          "revenue": "33.47B",
+          "operating_income": "6.12B",
+          "eps": "0.53",
+          "estimated_eps": "0.47",
+          "surprise_pct": "+0.12%",
+          "beat_miss": "beat"
+        },
+        {
+          "fiscal_date": "2025-09-30",
+          "quarter": "2025-Q3",
+          "revenue": "30.71B",
+          "operating_income": "6.12B",
+          "eps": "1.29",
+          "estimated_eps": "0.54",
+          "surprise_pct": "+0.00%",
+          "beat_miss": "in-line"
+        },
+        {
+          "fiscal_date": "2025-06-30",
+          "quarter": "2025-Q2",
+          "revenue": "30.85B",
+          "operating_income": "6.50B",
+          "eps": "0.62",
+          "estimated_eps": "0.53",
+          "surprise_pct": "+0.02%",
+          "beat_miss": "in-line"
+        },
+        {
+          "fiscal_date": "2025-03-31",
+          "quarter": "2025-Q1",
+          "revenue": "30.63B",
+          "operating_income": "6.26B",
+          "eps": "0.61",
+          "estimated_eps": "N/A",
+          "surprise_pct": "N/A",
+          "beat_miss": "N/A"
+        }
+      ],
+      "upcoming_events": [
+        {
+          "type": "dividend",
+          "label": "배당 지급일",
+          "date": "2026-05-01",
+          "days_until": "2",
+          "timing": ""
+        },
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-07-22",
+          "days_until": "84",
+          "timing": "BMO"
+        }
+      ],
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 4,
+        "reasoning": "예상보다 강한 무선 가입자 증가와 번들링 성과가 실적 개선 기대를 높입니다."
+      },
+      "trade_frame": {
+        "entry_price": "현재가 26.06 또는 눌림 시 25.34 USD",
+        "stop_loss": "SMA50 27.66 USD",
+        "target_1": "27.14 USD (1.5×ATR)",
+        "target_2": "애널리스트 목표 30.37 USD",
+        "risk_reward_ratio": "N/A",
+        "position_size_note": "$59,425 계좌 1% 리스크 기준 약 825주 (ATR $0.72 기반)",
+        "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
+        "base_scenario": "26.06 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+        "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
+        "invalidation_price": "50일 이동평균선인 27.66 USD 아래로 밀리면 약세 시나리오 확인",
+        "watch_period": "2026-05-01 배당 지급일 전까지"
+      },
+      "options_summary": {
+        "expiry": "2026-05-01",
+        "atm_call_iv": "34.0%",
+        "atm_put_iv": "40.2%",
+        "put_call_ratio": "0.48x",
+        "iv_percentile_30d": "8th",
+        "tone": "bearish",
+        "unusual_activity": "CALL $15, vol 14, OI 대비 88% ; PUT $35, vol 7, OI 대비 37% ; PUT $40, vol 4, OI 대비 100%",
+        "oi_change": "콜 OI +2.0% / 풋 OI +1.5%"
+      },
+      "signal_history": [
+        {
+          "date": "2026-04-28",
+          "direction": "neutral",
+          "llm_direction": "neutral",
+          "catalyst": "일반 이슈",
+          "return_5d": "N/A",
+          "note": "25.52 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-27",
+          "direction": "bull",
+          "llm_direction": "bull",
+          "catalyst": "실적",
+          "return_5d": "N/A",
+          "note": "25.52 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-24",
+          "direction": "bull",
+          "llm_direction": "bull",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "26.20 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-23",
+          "direction": "bear",
+          "llm_direction": "neutral",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "26.61 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-22",
+          "direction": "bull",
+          "llm_direction": "neutral",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "25.98 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        }
+      ],
+      "sector_comparison": {
+        "summary": "Communication Services 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
+        "pe_ratio": {
+          "company": "8.57",
+          "peer_average": "8.69x",
+          "difference": null
+        },
+        "rs_vs_spy": {
+          "company": "N/A",
+          "peer_average": "N/A",
+          "difference": null
+        },
+        "price_change_30d": {
+          "company": "-8.50%",
+          "peer_average": "12.06%",
+          "difference": "-20.56"
+        }
+      },
+      "peer_rank": {
+        "per_pctl": 33,
+        "rs_pctl": 0,
+        "revenue_growth_pctl": 50,
+        "dividend_yield_pctl": 25,
+        "summary": "모멘텀 하위 0%"
+      },
+      "valuation_score": {
+        "score": "6/10",
+        "factors": [
+          "PER 8.6x",
+          "목표가 대비 업사이드 +16.5%"
+        ],
+        "assessment": "대체로 적정 가치 범위에 위치합니다."
+      },
+      "analysis_consensus": {
+        "status": "not_applicable",
+        "direction_agreement": null,
+        "selection_reason": "cap_exceeded",
+        "third_review_completed": false,
+        "final_consensus": "single"
+      },
+      "committee_analysis": {
+        "status": "economy_only",
+        "agreement_status": "aligned",
+        "deep_review_triggered": false,
+        "deep_review_reasons": [],
+        "roles": {
+          "growth_analyst": {
+            "role": "growth_analyst",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "무선 가입자 증가와 번들링 전략은 실적 개선 신호지만, 최근 EPS 성장률이 -12.20% YoY이고 30일 수익률이 -8.50%로 아직 성장 재가속이 숫자로 확인되지 않았습니다. 밸류에이션은 PER 8.6x로 낮고 애널리스트 목표가 30.37 USD가 현재가 26.06 대비 약 16% 상방을 시사하지만, 다음 실적이 2026-07-22라 가시적 촉매가 멀어 현재는 확인 대기입니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "value_skeptic": {
+            "role": "value_skeptic",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "PER 8.6x와 P/B 1.66배만 보면 싸 보이지만, EPS가 전년 대비 -12.2% 감소했고 forward EPS도 3.04에서 2.56으로 더 낮아져 이익 모멘텀이 꺾였습니다. 목표가 30.37달러는 현재 26.06달러 대비 +16.5%지만, 주가가 이미 50일선 27.66과 200일선 26.74 아래이고 RS가 섹터 ETF 대비 -15.72%라 밸류에이션 갭보다 실적 둔화와 상대강도 악화가 더 먼저 보입니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "risk_manager": {
+            "role": "risk_manager",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "현재 26.06은 SMA200 26.74와 50일선 27.66 아래에 있어 추세 훼손이 완전히 해소되지 않았고, RSI 43.7이라 과매도 반등보다 약세 지속 가능성을 먼저 봐야 합니다. 하방 시나리오는 25.88 장중저점 이탈과 25.52 부근 지지 붕괴이며, 27.66 회복 전까지는 배당일(2026-05-01) 전후 변동성만 확인하는 관점이 적절합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "macro_strategist": {
+            "role": "macro_strategist",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "방어주 성격이라 금리 상승기에는 상대적으로 버티지만, 현재 주가는 26.06달러로 50D SMA 27.66과 200D SMA 26.74를 모두 하회해 리스크온 추세의 수혜는 약합니다. 다만 배당수익률 4.35%와 낮은 밸류에이션(Forward/Trailing P/E 8.57)은 장기 금리 안정 또는 하락 시 자금 유입 여지를 주지만, RS vs Sector ETF -15.72%와 30일 수익률 -8.50%는 섹터 내 자금 이동에서 아직 뒤처진 상태입니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "pm": {
+            "role": "pm",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.82,
+            "strong_objection": false,
+            "summary": "전원 watch로 수렴했지만, 현재가 26.06달러가 SMA50 27.66과 SMA200 26.74를 모두 하회하고 30일 수익률이 -8.50%, 섹터 대비 RS도 -15.72%로 아직 추세 확인이 안 됩니다. 반면 PER 8.57배와 배당수익률 4.35%, 애널리스트 목표가 30.37달러(+16.5%)는 하방을 일부 받쳐주지만, EPS 성장률 -12.20%와 forward EPS 2.56 하향은 실적 모멘텀 회복이 먼저 필요하다는 신호입니다. 2026-05-01 배당일 전후 변동성과 2026-07-22 실적 전까지는 26.06달러 지지 및 27.66달러 회복 여부를 확인하는 대기 판단이 적절합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          }
+        }
+      },
+      "period_changes": {
+        "7d": "+0.70%",
+        "30d": "-9.51%"
+      },
+      "sec_filing_tags": [
+        "실적",
+        "기타 공시"
+      ],
+      "sec_filings": [
+        {
+          "tag": "실적",
+          "title": "AT&T INC., 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+          "form_type": "10-Q",
+          "item_number": "",
+          "catalyst_type": "hard",
+          "importance_score": 200,
+          "published_at": "2026-04-27",
+          "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000206/t-20260331.htm",
+          "source": "SEC EDGAR"
+        },
+        {
+          "tag": "기타 공시",
+          "title": "AT&T INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "form_type": "8-K",
+          "item_number": "",
+          "catalyst_type": "medium",
+          "importance_score": 120,
+          "published_at": "2026-04-22",
+          "link": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000203/t-20260422.htm",
+          "source": "SEC EDGAR"
+        }
+      ],
+      "decision": {
+        "action": "watch",
+        "conviction": 56,
+        "reason": "리스크온 환경에서 공격주 선호 / 최근 시그널 승률 67% (6/9) / 대체로 적정 가치 범위에 위치합니다.",
+        "valid_until": "2026-05-05",
+        "factors": {
+          "catalyst_recency": 8.0,
+          "earnings_pattern": 0.0,
+          "fundamentals": 4.0,
+          "macro_event": -4.0,
+          "macro_regime": 4.0,
+          "momentum": 3.0,
+          "news_tone": 5.0,
+          "peer_rank": 0.0,
+          "policy_tailwind": 0.0,
+          "portfolio_risk": 0.0,
+          "regime_adjustment": 15.0,
+          "signal_track_record": 10.0,
+          "valuation": 12.0
+        },
+        "factor_reasoning": {
+          "catalyst_recency": "실적 D-84 / 하드 촉매 2026-04-27",
+          "earnings_pattern": "연속 상회 1분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.0%",
+          "fundamentals": "선행 EPS 성장 -15.8% / 기관 보유 68.1%",
+          "macro_event": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
+          "macro_regime": "risk_on 레짐에서 communication services 섹터 편향 +4",
+          "momentum": "섹터 대비 -15.7% / SMA50·SMA200 아래",
+          "news_tone": "강세 뉴스지만 가격 확인은 제한적",
+          "peer_rank": "peer percentile 기준 특이 우위는 제한적입니다",
+          "policy_tailwind": "해당 종목 정책 임팩트 미산출",
+          "portfolio_risk": "현재 포트폴리오 집중 리스크 감점 요인은 크지 않음",
+          "regime_adjustment": "리스크온 환경에서 공격주 선호",
+          "signal_track_record": "최근 시그널 승률 67% (6/9)",
+          "valuation": "대체로 적정 가치 범위에 위치합니다."
+        },
+        "ensemble_agreement": "single",
+        "final_consensus": "single",
+        "raw_conviction": 59,
+        "confidence_meta": {
+          "data_quality": 1.0,
+          "evidence_coverage": 1.0,
+          "evidence_consistency": 0.6,
+          "model_agreement": 0.6,
+          "confidence_gate": 0.86
+        }
+      }
     }
-  ],
-  "intraday_refreshed_at": "2026-04-27T20:55:05"
+  ]
 }

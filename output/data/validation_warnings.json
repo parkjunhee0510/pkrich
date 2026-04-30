@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "window_days": 14,
-  "generated_at": "2026-04-27",
+  "generated_at": "2026-04-29",
   "categories": [
     "schema_violation_count",
     "fact_warning_count",
@@ -11,34 +11,12 @@
   ],
   "totals": {
     "schema_violation_count": 0,
-    "fact_warning_count": 75,
+    "fact_warning_count": 84,
     "consistency_warning_count": 3,
-    "hallucination_warning_count": 53,
+    "hallucination_warning_count": 60,
     "dropped_unsupported_count": 0
   },
   "series": [
-    {
-      "date": "2026-04-14",
-      "batch_count": 3,
-      "validated_ticker_count": 0,
-      "validation_failure_count": 1,
-      "schema_violation_count": 0,
-      "fact_warning_count": 0,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "dropped_unsupported_count": 0
-    },
-    {
-      "date": "2026-04-15",
-      "batch_count": 3,
-      "validated_ticker_count": 0,
-      "validation_failure_count": 1,
-      "schema_violation_count": 0,
-      "fact_warning_count": 0,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "dropped_unsupported_count": 0
-    },
     {
       "date": "2026-04-16",
       "batch_count": 0,
@@ -125,6 +103,28 @@
       "fact_warning_count": 4,
       "consistency_warning_count": 0,
       "hallucination_warning_count": 4,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-04-28",
+      "batch_count": 0,
+      "validated_ticker_count": 146,
+      "validation_failure_count": 7,
+      "schema_violation_count": 0,
+      "fact_warning_count": 4,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 4,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-04-29",
+      "batch_count": 0,
+      "validated_ticker_count": 145,
+      "validation_failure_count": 6,
+      "schema_violation_count": 0,
+      "fact_warning_count": 5,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 3,
       "dropped_unsupported_count": 0
     }
   ]

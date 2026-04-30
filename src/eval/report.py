@@ -6,9 +6,46 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from src.eval.checks.base import CheckResult
+from src.eval.config import DEFAULT_THRESHOLDS
 
 
 SEVERITY_ICON = {"pass": "OK", "warn": "WARN", "fail": "FAIL", "info": "i"}
+CHECK_DIMENSIONS = {
+    "I1": "schema_stability",
+    "I2": "missingness",
+    "I3": "format_consistency",
+    "I4": "input_size_drift",
+    "O1": "schema_compliance",
+    "O2": "numeric_grounding",
+    "O3": "citation_integrity",
+    "O4": "language_consistency",
+    "O5": "contradiction",
+    "D1": "semantic_drift",
+    "D2": "committee_agreement",
+    "D3": "signal_volatility",
+    "R1": "pipeline_summary",
+    "R2": "retry_distribution",
+}
+
+
+def _thresholds_for(check_id: str) -> dict[str, dict[str, Any]]:
+    thresholds = DEFAULT_THRESHOLDS.get(check_id, {})
+    return {
+        name: {
+            "pass_at": threshold.pass_at,
+            "warn_at": threshold.warn_at,
+            "direction": threshold.direction,
+        }
+        for name, threshold in thresholds.items()
+    }
+
+
+def _sample_count(metrics: Mapping[str, float]) -> int:
+    for key in ("sample_count", "total_records", "total_numeric_claims", "total_key_news",
+                "evaluated_records", "evaluated_decisions"):
+        if key in metrics:
+            return int(metrics[key])
+    return 0
 
 
 def _summary_counts(results: Sequence[CheckResult]) -> dict[str, Any]:
@@ -51,13 +88,17 @@ def render_json(
             "pass": counts["pass"],
             "warn": counts["warn"],
             "fail": counts["fail"],
+            "info": counts["info"],
             "overall_severity": counts["overall_severity"],
         },
         "checks": [
             {
                 "check_id": r.check_id,
+                "dimension": CHECK_DIMENSIONS.get(r.check_id, ""),
                 "severity": r.severity,
                 "pass_rate": r.pass_rate,
+                "thresholds": _thresholds_for(r.check_id),
+                "sample_count": _sample_count(r.metrics),
                 "metrics": dict(r.metrics),
                 "findings": [
                     {
@@ -97,18 +138,32 @@ def render_markdown(
     )
     lines.append(
         f"**Overall verdict:** {counts['fail']} fail / {counts['warn']} warn / "
-        f"{counts['pass']} pass (out of {counts['total_checks']})"
+        f"{counts['pass']} pass / {counts['info']} info (out of {counts['total_checks']})"
+    )
+    lines.append("")
+    lines.append("## Executive Summary")
+    lines.append("")
+    failing = [r.check_id for r in results if r.severity == "fail"]
+    warning = [r.check_id for r in results if r.severity == "warn"]
+    insufficient = [r.check_id for r in results if r.severity == "info"]
+    lines.append(
+        "Audit completed with "
+        f"{len(failing)} fail, {len(warning)} warn, and {len(insufficient)} insufficient-data checks. "
+        f"Failing checks: {', '.join(failing) if failing else 'none'}. "
+        f"Insufficient-data checks: {', '.join(insufficient) if insufficient else 'none'}."
     )
     lines.append("")
     lines.append("## Verdict Matrix")
     lines.append("")
-    lines.append("| ID | Severity | Pass rate | Top metric |")
-    lines.append("|----|----------|-----------|------------|")
+    lines.append("| ID | Dimension | Severity | Pass rate | Samples | Top metric |")
+    lines.append("|----|-----------|----------|-----------|---------|------------|")
     for r in results:
         metric_kv = next(iter(r.metrics.items()), ("-", 0.0))
+        sample_count = _sample_count(r.metrics)
         lines.append(
-            f"| {r.check_id} | {SEVERITY_ICON[r.severity]} {r.severity} | "
-            f"{r.pass_rate * 100:.1f}% | {metric_kv[0]}={metric_kv[1]:.3f} |"
+            f"| {r.check_id} | {CHECK_DIMENSIONS.get(r.check_id, '')} | "
+            f"{SEVERITY_ICON[r.severity]} {r.severity} | "
+            f"{r.pass_rate * 100:.1f}% | {sample_count} | {metric_kv[0]}={metric_kv[1]:.3f} |"
         )
     lines.append("")
     lines.append("## 차원별 상세")
@@ -127,6 +182,13 @@ def render_markdown(
         if r.recommendation:
             lines.append("")
             lines.append(f"**Recommendation:** {r.recommendation}")
+    lines.append("")
+    lines.append("## Methodology")
+    lines.append("")
+    lines.append(
+        "The audit reads existing ticker output and pipeline logs only, except D1 replay when enabled. "
+        "Checks with no evaluable samples are reported as info instead of pass so missing evidence is visible."
+    )
     return "\n".join(lines) + "\n"
 
 

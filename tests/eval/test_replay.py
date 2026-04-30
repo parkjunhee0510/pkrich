@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import unittest
 from typing import Any
+from unittest import mock
 
 from src.eval.replay import (
     LLMReplayClient,
+    OpenAIReplayClient,
     ReplayConfig,
     run_replay,
     estimate_cost,
 )
+from src.analyzer.base import ModuleResult
 
 
 class FakeClient(LLMReplayClient):
@@ -53,6 +56,24 @@ class TestReplay(unittest.TestCase):
         cost = estimate_cost(tickers=("AAPL", "MSFT"), runs_per_ticker=3,
                              cost_per_call_usd=0.05)
         self.assertAlmostEqual(cost, 0.30, places=3)
+
+    def test_openai_client_uses_structured_runtime_contract(self):
+        client = OpenAIReplayClient(model_profile="economy")
+        with mock.patch(
+            "src.analyzer.llm_runtime.run_structured_llm_module",
+            return_value=ModuleResult(
+                results_by_ticker={
+                    "AAPL": {"signal_or_takeaway": "buy signal with stable summary text"}
+                }
+            ),
+        ) as fake_run:
+            result = client.call("AAPL", 0)
+
+        self.assertEqual(result["action"], "buy")
+        self.assertEqual(result["summary"], "buy signal with stable summary text")
+        args, kwargs = fake_run.call_args
+        self.assertEqual(len(args), 2)
+        self.assertFalse({"module_name", "ticker", "model_profile"} & set(kwargs))
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any, Sequence
 
 
@@ -38,22 +39,62 @@ class OpenAIReplayClient(LLMReplayClient):
     """Lazy-imported adapter over the analyzer's existing llm_runtime.
 
     Kept lazy so unit tests don't pay the import cost or require an API key.
-    Real production use replays research_note for the requested ticker.
+    Real production use replays signal_takeaway_module for the requested ticker.
     """
 
     def __init__(self, model_profile: str) -> None:
         self.model_profile = model_profile
 
     def call(self, ticker: str, run_index: int) -> dict[str, Any]:
+        del run_index
+        from src.analyzer.base import AnalysisContext
+        from src.analyzer.modules.signal_takeaway_module import SignalTakeawayModule
         from src.analyzer.llm_runtime import run_structured_llm_module  # lazy
-        result = run_structured_llm_module(  # type: ignore[call-arg]
-            module_name="research_note",
-            ticker=ticker,
-            model_profile=self.model_profile,
+        from src.analyzer.payloads import build_fallback_payloads, build_raw_payloads
+        from src.types import CollectedTickerData, WatchlistItem
+        from src.utils.model_config import load_model_profile
+
+        watchlist = [WatchlistItem(ticker=ticker, name=ticker)]
+        collected = {
+            ticker: CollectedTickerData(
+                ticker=ticker,
+                name=ticker,
+                sector="",
+                price=None,
+                change_percent=None,
+                currency="USD",
+                market_cap="N/A",
+                pe_ratio="N/A",
+                summary_note="N/A",
+            )
+        }
+        news_map: dict[str, list[Any]] = {ticker: []}
+        raw_payloads = build_raw_payloads(watchlist, collected, news_map)
+        fallback_payloads = build_fallback_payloads(
+            watchlist,
+            collected,
+            news_map,
+            date.today(),
+            raw_payload_by_ticker=raw_payloads,
         )
+        ctx = AnalysisContext(
+            watchlist=watchlist,
+            collected=collected,
+            news_map=news_map,
+            run_date=date.today(),
+            model_profile=load_model_profile(profile_name=self.model_profile),
+            raw_payload_by_ticker=raw_payloads,
+            fallback_payload_by_ticker=fallback_payloads,
+            intermediate_results={
+                ticker: dict(fallback_payloads.get(ticker, {}))
+            },
+        )
+        module_result = run_structured_llm_module(SignalTakeawayModule(), ctx)
+        result = module_result.results_by_ticker.get(ticker, {})
+        summary = str(result.get("signal_or_takeaway") or result.get("summary") or "")
         return {
-            "action": result.get("action"),
-            "summary": result.get("summary"),
+            "action": result.get("action") or _classify_action(summary),
+            "summary": summary,
             "cost_usd": float(result.get("cost_usd") or 0.0),
         }
 
@@ -86,3 +127,12 @@ def run_replay(*, client: LLMReplayClient, config: ReplayConfig) -> ReplayResult
             result.actual_cost_usd += cost
             result.outputs[ticker].append(response)
     return result
+
+
+def _classify_action(text: str) -> str:
+    normalized = text.strip().lower()
+    if any(token in normalized for token in ("avoid", "sell", "bear")):
+        return "avoid"
+    if any(token in normalized for token in ("buy", "bull")):
+        return "buy"
+    return "watch"

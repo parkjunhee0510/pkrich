@@ -69,13 +69,26 @@ class O5Contradiction(BaseCheck):
                         detail={"summary_dir": a, "risk_dir": b, "narrative_dir": c},
                     ))
         rate = (agreed / total) if total else 1.0
+        if total == 0:
+            return CheckResult(
+                check_id="O5",
+                severity="info",
+                pass_rate=0.0,
+                findings=(Finding(
+                    module="payload",
+                    jsonpath="$.payload",
+                    detail={"reason": "no_contradiction_records_evaluated"},
+                ),),
+                metrics={"three_way_agreement": 0.0, "evaluated_records": 0.0, "sample_count": 0.0},
+                recommendation="No payloads contained risk_assessment and research_narrative fields for contradiction checking.",
+            )
         sev = severity_for("O5", value=rate, kind="three_way_agreement")
         return CheckResult(
             check_id="O5",
             severity=sev,
             pass_rate=rate,
             findings=tuple(findings[:50]),
-            metrics={"three_way_agreement": rate, "evaluated_records": float(total)},
+            metrics={"three_way_agreement": rate, "evaluated_records": float(total), "sample_count": float(total)},
             recommendation=(
                 "Add a coherence pass that vetoes mismatched summary/risk/outlook tuples."
                 if sev != "pass" else None

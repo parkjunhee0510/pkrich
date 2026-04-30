@@ -16,17 +16,19 @@ export function useTickerAnalysis(
   const [refreshToken, setRefreshToken] = useState(0)
 
   useEffect(() => {
-    if (!ticker) {
-      setStatus('idle')
-      setAnalysis(null)
-      return
-    }
     let cancelled = false
-    setStatus('loading')
-    setError(null)
-    repository
-      .loadTickerLatest(ticker, refreshToken)
-      .then((payload) => {
+
+    async function loadAnalysis() {
+      if (!ticker) {
+        setStatus('idle')
+        setAnalysis(null)
+        return
+      }
+
+      setStatus('loading')
+      setError(null)
+      try {
+        const payload = await repository.loadTickerLatest(ticker, refreshToken)
         if (cancelled) return
         if (payload) {
           setAnalysis(payload)
@@ -35,12 +37,15 @@ export function useTickerAnalysis(
           setAnalysis(null)
           setStatus('missing')
         }
-      })
-      .catch((err: unknown) => {
+      } catch (err) {
         if (cancelled) return
         setError(err instanceof Error ? err.message : String(err))
         setStatus('error')
-      })
+      }
+    }
+
+    void loadAnalysis()
+
     return () => {
       cancelled = true
     }

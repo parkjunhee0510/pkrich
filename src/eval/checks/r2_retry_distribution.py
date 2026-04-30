@@ -31,6 +31,7 @@ class R2RetryDistribution(BaseCheck):
             pass_rate=1.0 if worst == 0 else max(0.0, 1.0 - worst / 14),
             findings=tuple(findings),
             metrics={"max_retry_per_ticker": float(worst),
+                     "sample_count": float(len(dataset.logs)),
                      "tickers_with_retries": float(len(retry_counts))},
             recommendation=(
                 f"Investigate {worst_t} retries; often indicates collector data shape regression."

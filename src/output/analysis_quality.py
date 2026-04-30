@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
+
+from src.output.schema import SCHEMA_VERSION
 
 
 def write_analysis_quality_output(
@@ -16,12 +19,14 @@ def write_analysis_quality_output(
     runs = _load_quality_runs(summaries_root, limit=limit)
     latest = runs[0] if runs else {}
     payload = {
+        "schema_version": SCHEMA_VERSION,
         "runs": runs,
         "latest": latest,
     }
     path = root / "data" / "analysis_quality.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    _sync_web_public_analysis_quality(path, root.parent)
     return payload
 
 
@@ -58,3 +63,12 @@ def _load_quality_runs(logs_root: Path, *, limit: int) -> list[dict[str, Any]]:
         if len(runs) >= limit:
             break
     return runs
+
+
+def _sync_web_public_analysis_quality(source_path: Path, project_root: Path) -> None:
+    web_root = project_root / "web"
+    if not web_root.exists() or not source_path.exists():
+        return
+    target_dir = web_root / "public" / "output" / "data"
+    target_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source_path, target_dir / source_path.name)

@@ -443,7 +443,7 @@ def run_pipeline(run_date: date | None = None) -> None:
         write_cost_log_output(output_root=Path("output"), logs_root=Path("logs") / "pipeline")
         write_routing_outcome_output(output_root=Path("output"))
         if watchlist:
-            write_api_status_outputs(effective_date, watchlist, output_root=Path("output"))
+            write_api_status_outputs(calendar_run_date, watchlist, output_root=Path("output"))
 
 
 def collect_only(run_date: date | None = None) -> dict[str, object]:

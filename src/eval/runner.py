@@ -130,6 +130,17 @@ def _exit_code_from_results(results: Sequence[CheckResult]) -> int:
     return 0
 
 
+def _replay_cost_from_results(results: Sequence[CheckResult]) -> float:
+    for result in results:
+        if result.check_id != "D1":
+            continue
+        metrics = result.metrics or {}
+        for key in ("actual_cost_usd", "estimated_cost_usd"):
+            if key in metrics:
+                return float(metrics[key])
+    return 0.0
+
+
 def run_audit(cfg: RunnerConfig) -> tuple[int, list[CheckResult]]:
     if cfg.window_days < 1:
         raise ValueError(f"window_days must be >= 1, got {cfg.window_days}")
@@ -158,7 +169,7 @@ def run_audit(cfg: RunnerConfig) -> tuple[int, list[CheckResult]]:
             "enabled": not cfg.skip_replay,
             "tickers": list(cfg.replay_tickers),
             "runs_per_ticker": cfg.runs_per_ticker,
-            "cost_usd": 0.0,
+            "cost_usd": _replay_cost_from_results(results),
             "cost_cap_usd": cfg.max_replay_cost_usd,
         },
         results=results,

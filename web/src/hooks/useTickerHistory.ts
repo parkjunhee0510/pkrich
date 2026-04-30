@@ -16,26 +16,31 @@ export function useTickerHistory(
   const [refreshToken, setRefreshToken] = useState(0)
 
   useEffect(() => {
-    if (!ticker) {
-      setStatus('idle')
-      setHistory([])
-      return
-    }
     let cancelled = false
-    setStatus('loading')
-    setError(null)
-    repository
-      .loadTickerHistory(ticker, refreshToken)
-      .then((payload) => {
+
+    async function loadHistory() {
+      if (!ticker) {
+        setStatus('idle')
+        setHistory([])
+        return
+      }
+
+      setStatus('loading')
+      setError(null)
+      try {
+        const payload = await repository.loadTickerHistory(ticker, refreshToken)
         if (cancelled) return
         setHistory(payload)
         setStatus('loaded')
-      })
-      .catch((err: unknown) => {
+      } catch (err) {
         if (cancelled) return
         setError(err instanceof Error ? err.message : String(err))
         setStatus('error')
-      })
+      }
+    }
+
+    void loadHistory()
+
     return () => {
       cancelled = true
     }

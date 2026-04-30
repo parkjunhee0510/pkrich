@@ -425,7 +425,7 @@ export function Admin() {
     }
   }, [])
 
-  const costRuns = data?.cost_log?.runs ?? []
+  const costRuns = useMemo(() => data?.cost_log?.runs ?? [], [data?.cost_log?.runs])
   const executionRuns = analysisQuality?.runs ?? data?.runs ?? []
   const latestExecutionRun = executionRuns[0]
   const latestCostRun = costRuns[0]

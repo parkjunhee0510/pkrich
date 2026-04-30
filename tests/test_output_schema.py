@@ -261,6 +261,37 @@ class OutputSchemaTests(unittest.TestCase):
         expected = load_snapshot_fixture(_FIXTURE_DIR / "analysis_quality.shape.json")
         self.assertEqual(normalize_json_shape(payload), expected)
 
+    def test_analysis_quality_output_syncs_web_public_copy(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            output_root = root / "output"
+            logs_root = root / "logs" / "pipeline"
+            web_public_dir = root / "web" / "public" / "output" / "data"
+            logs_root.mkdir(parents=True, exist_ok=True)
+            web_public_dir.mkdir(parents=True, exist_ok=True)
+            (logs_root / "2026-04-16.summary.json").write_text(
+                json.dumps(
+                    {
+                        "run_date": "2026-04-16",
+                        "success": True,
+                        "daily_api_cost_usd": 0.42,
+                        "analyzer_quality": {
+                            "batch_count": 4,
+                            "validated_ticker_count": 10,
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            write_analysis_quality_output(output_root=output_root, logs_root=logs_root)
+
+            synced = web_public_dir / "analysis_quality.json"
+            self.assertTrue(synced.exists())
+            payload = json.loads(synced.read_text(encoding="utf-8"))
+            self.assertEqual(payload["latest"]["run_date"], "2026-04-16")
+
     def test_cost_log_json_matches_snapshot_shape(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_root = Path(temp_dir) / "output"

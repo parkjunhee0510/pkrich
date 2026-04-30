@@ -93,6 +93,7 @@ class D1SemanticDrift(BaseCheck):
 
         action_match = _action_match_rate(replay_result.outputs)
         sim = _summary_similarity(replay_result.outputs)
+        sample_count = sum(len(outputs) for outputs in replay_result.outputs.values())
         sev_action = severity_for("D1", value=action_match, kind="action_match")
         sev_sim = severity_for("D1", value=sim, kind="embedding_similarity")
         order = {"pass": 0, "info": 0, "warn": 1, "fail": 2}
@@ -113,6 +114,7 @@ class D1SemanticDrift(BaseCheck):
             findings=tuple(findings),
             metrics={"action_match": action_match,
                      "summary_similarity": sim,
+                     "sample_count": float(sample_count),
                      "actual_cost_usd": replay_result.actual_cost_usd},
             recommendation=(
                 "Reduce model temperature, pin seed where supported, or move from "

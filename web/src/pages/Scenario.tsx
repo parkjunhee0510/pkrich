@@ -13,9 +13,10 @@ export function Scenario() {
 
   const latestDay = data?.days?.[data.days.length - 1]
   const risk = latestDay?.portfolio_risk
-  const positions = risk?.positions_by_weight ?? []
+  const positions = useMemo(() => risk?.positions_by_weight ?? [], [risk?.positions_by_weight])
+  const correlationPairs = useMemo(() => risk?.correlation_pairs ?? [], [risk?.correlation_pairs])
 
-  const scenario = useMemo(() => buildScenarioSummary(positions, risk?.correlation_pairs ?? [], adjustments), [positions, risk?.correlation_pairs, adjustments])
+  const scenario = useMemo(() => buildScenarioSummary(positions, correlationPairs, adjustments), [positions, correlationPairs, adjustments])
 
   if (loading) return <p className="status">Loading scenario...</p>
   if (error) return <p className="status error">{error}</p>

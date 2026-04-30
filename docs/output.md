@@ -32,6 +32,9 @@ Per-ticker payloads now include:
 * `committee_analysis` for always-visible committee debate summaries plus PM conclusions
 * the web dashboard and ticker detail UI consume `committee_analysis` as a presentation-layer debate record, separate from the official `decision`
 * `pm_view` on the latest index payload and each `dashboard_history.days[]` entry for additive PM review context on held names
+* `key_news_source_titles` and `key_news_reference_indices` alongside `key_news`, so short translated summaries remain display-friendly while citation audits can trace each item to its source headline
+
+`news_references[*].published_at` is serialized as ISO date (`YYYY-MM-DD`) when the source provides an ISO or RFC822 timestamp.
 
 `pm_view` is a review-oriented payload for the web UI. It is additive and must not override the official rule-based `buy` / `watch` / `avoid` decision.
 
@@ -49,6 +52,13 @@ Current `pm_view` fields:
 * cost log
 * routing outcome
 * A/B test results
+* LLM audit reports under `docs/reports/llm-audit-YYYY-MM-DD.md` and `output/data/llm_audit/`
+
+`analysis_quality.json` includes the shared `schema_version`, `runs[]`, and `latest`. When a `web/` app exists beside `output/`, the writer also syncs this file to `web/public/output/data/analysis_quality.json` so the static dashboard reads the same operational payload as the pipeline output.
+
+`api_status.json` is written for the requested calendar run date. This is intentionally distinct from the effective market date detected from price history, because API freshness and scheduled run status are calendar-run concerns.
+
+LLM audit JSON reports include check dimensions, threshold metadata, sample counts, severity counts including `info`, and replay cost when D1 replay is enabled. Markdown reports include an executive summary, verdict matrix, per-check details, and methodology notes.
 
 ## Requirements
 
@@ -70,3 +80,4 @@ Current `pm_view` fields:
 * Web payload shape should evolve additively unless a planned schema migration is documented
 * Committee output is presentation data and must not override rule-based `buy/watch/avoid`
 * `pm_view` is presentation data for portfolio review surfaces and must not reinterpret or replace official `buy/watch/avoid`
+* Audit checks with no evaluable samples should report `info`, not `pass`, so missing evidence stays visible

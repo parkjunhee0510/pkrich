@@ -6,10 +6,8 @@ import {
 } from '../hooks/useSectorsData'
 import { Sparkline } from '../components/Sparkline'
 import { FiftyTwoWeekBadge } from '../components/FiftyTwoWeekBadge'
-import {
-  SectorBenchmarkHeader,
-  relativeReturn,
-} from '../components/SectorBenchmark'
+import { SectorBenchmarkHeader } from '../components/SectorBenchmark'
+import { relativeReturn } from '../utils/sectorBenchmark'
 import { CorrelationHeatmap } from '../components/CorrelationHeatmap'
 import { DashboardSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'

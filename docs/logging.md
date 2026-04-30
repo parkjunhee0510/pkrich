@@ -21,7 +21,7 @@ Track pipeline execution, failures, warnings, and derived operational metrics.
 
 * Each run is finalized with success or failure status
 * Analysis-run metadata is recorded through datastore-backed paths
-
+    
 ### Derived Operational Outputs
 
 The logging pipeline currently feeds:

@@ -34,13 +34,26 @@ class D3SignalVolatility(BaseCheck):
                             detail={"std": std, "samples": vals},
                         ))
         worst = max(per_ticker_signal_std.values()) if per_ticker_signal_std else 0.0
+        if not per_ticker_signal_std:
+            return CheckResult(
+                check_id="D3",
+                severity="info",
+                pass_rate=0.0,
+                findings=(Finding(
+                    module="payload",
+                    jsonpath="$.payload.llm_signals",
+                    detail={"reason": "no_signal_samples_evaluated"},
+                ),),
+                metrics={"worst_signal_std": 0.0, "sample_count": 0.0},
+                recommendation="No llm_signals samples were found for volatility measurement.",
+            )
         sev = severity_for("D3", value=worst, kind="signal_std")
         return CheckResult(
             check_id="D3",
             severity=sev,
             pass_rate=1.0 - min(worst, 1.0),
             findings=tuple(findings),
-            metrics={"worst_signal_std": worst},
+            metrics={"worst_signal_std": worst, "sample_count": float(len(per_ticker_signal_std))},
             recommendation=(
                 "Inspect LLM signal generation; consider averaging across n committee samples."
                 if sev != "pass" else None

@@ -3,7 +3,7 @@ import { useSectorsData } from '../hooks/useSectorsData'
 import { DashboardSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
 import { SectorPerformanceBars } from '../components/SectorPerformanceBars'
-import { countFiftyTwoStrength } from '../components/FiftyTwoWeekBadge'
+import { countFiftyTwoStrength } from '../utils/fiftyTwoWeek'
 
 export function Sectors() {
   const { data, loading, error } = useSectorsData()

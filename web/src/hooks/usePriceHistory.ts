@@ -47,37 +47,42 @@ export function usePriceHistory(ticker?: string, repository: DashboardRepository
 
   useEffect(() => {
     let cancelled = false
-    setLoading(true)
 
-    Promise.all([
-      fetch(DATA_URL)
-        .then((res) => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`)
-          return res.json()
-        })
-        .catch(() => [] as PriceHistoryRow[]),
-      ticker ? repository.loadTickerHistory(ticker, 0).catch(() => []) : Promise.resolve([]),
-    ])
-      .then(([json, historyDays]) => {
-        if (cancelled) return
-        const globalRows = Array.isArray(json)
-          ? (ticker ? json.filter((r) => r.ticker === ticker) : json)
-          : []
-        if (!ticker) {
-          setRows(globalRows)
-          return
+    async function loadRows() {
+      setLoading(true)
+      try {
+        const [json, historyDays] = await Promise.all([
+          fetch(DATA_URL)
+            .then((res) => {
+              if (!res.ok) throw new Error(`HTTP ${res.status}`)
+              return res.json()
+            })
+            .catch(() => [] as PriceHistoryRow[]),
+          ticker ? repository.loadTickerHistory(ticker, 0).catch(() => []) : Promise.resolve([]),
+        ])
+        if (!cancelled) {
+          const globalRows = Array.isArray(json)
+            ? (ticker ? json.filter((r) => r.ticker === ticker) : json)
+            : []
+          if (!ticker) {
+            setRows(globalRows)
+          } else {
+            const shardRows = deriveRowsFromTickerHistory(historyDays)
+            setRows(mergeRows(globalRows, shardRows))
+          }
         }
-        const shardRows = deriveRowsFromTickerHistory(historyDays)
-        setRows(mergeRows(globalRows, shardRows))
-      })
-      .catch(() => {
-        if (cancelled) return
-        setRows([])
-      })
-      .finally(() => {
-        if (cancelled) return
-        setLoading(false)
-      })
+      } catch {
+        if (!cancelled) {
+          setRows([])
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadRows()
 
     return () => {
       cancelled = true

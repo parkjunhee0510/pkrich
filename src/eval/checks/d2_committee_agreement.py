@@ -37,13 +37,25 @@ class D2CommitteeAgreement(BaseCheck):
                     detail={"roles": dict(roles)},
                 ))
         rate = (agreed / total) if total else 1.0
+        if total == 0:
+            return CheckResult(
+                check_id="D2",
+                severity="info",
+                pass_rate=0.0,
+                findings=(Finding(
+                    module="committee",
+                    detail={"reason": "no_committee_decisions_evaluated"},
+                ),),
+                metrics={"role_agreement": 0.0, "evaluated_decisions": 0.0, "sample_count": 0.0},
+                recommendation="No committee role decisions were found in pipeline logs for this window.",
+            )
         sev = severity_for("D2", value=rate, kind="role_agreement")
         return CheckResult(
             check_id="D2",
             severity=sev,
             pass_rate=rate,
             findings=tuple(findings[:50]),
-            metrics={"role_agreement": rate, "evaluated_decisions": float(total)},
+            metrics={"role_agreement": rate, "evaluated_decisions": float(total), "sample_count": float(total)},
             recommendation=(
                 "Tighten committee aggregator: surface disagreements to the user instead of hiding them."
                 if sev != "pass" else None

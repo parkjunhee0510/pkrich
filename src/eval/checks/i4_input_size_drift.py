@@ -30,6 +30,18 @@ class I4InputSizeDrift(BaseCheck):
             cvs[t] = stdev / mean
         worst = max(cvs.values()) if cvs else 0.0
         worst_t = max(cvs, key=lambda k: cvs[k]) if cvs else None
+        if not cvs:
+            return CheckResult(
+                check_id="I4",
+                severity="info",
+                pass_rate=0.0,
+                findings=(Finding(
+                    module="prompt_tokens",
+                    detail={"reason": "no_token_usage_samples_evaluated"},
+                ),),
+                metrics={"worst_cv": 0.0, "sample_count": 0.0},
+                recommendation="No per-ticker token usage samples were found in pipeline summaries.",
+            )
         sev = severity_for("I4", value=worst, kind="cv")
         if worst_t and sev != "pass":
             findings.append(Finding(
@@ -41,7 +53,7 @@ class I4InputSizeDrift(BaseCheck):
             severity=sev,
             pass_rate=1.0 - min(worst, 1.0),
             findings=tuple(findings),
-            metrics={"worst_cv": worst, **{f"cv_{t}": v for t, v in cvs.items()}},
+            metrics={"worst_cv": worst, "sample_count": float(len(cvs)), **{f"cv_{t}": v for t, v in cvs.items()}},
             recommendation=(
                 f"{worst_t} prompt size CV {worst:.2f}; investigate news/filing volume swings."
                 if sev != "pass" else None

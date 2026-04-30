@@ -31,7 +31,11 @@ class TestRender(unittest.TestCase):
         )
         self.assertEqual(out["schema_version"], 1)
         self.assertEqual(out["summary"]["total_checks"], 1)
+        self.assertEqual(out["summary"]["info"], 0)
         self.assertIn("checks", out)
+        self.assertEqual(out["checks"][0]["dimension"], "schema_stability")
+        self.assertIn("thresholds", out["checks"][0])
+        self.assertEqual(out["checks"][0]["sample_count"], 0)
 
     def test_render_markdown_contains_verdict_matrix(self):
         md = render_markdown(

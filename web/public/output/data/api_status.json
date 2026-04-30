@@ -1,7 +1,7 @@
 {
-  "run_date": "2026-04-28",
-  "log_path": "logs\\pipeline\\2026-04-28.jsonl",
-  "pipeline_completed": false,
+  "run_date": "2026-04-29",
+  "log_path": "logs\\pipeline\\2026-04-29.jsonl",
+  "pipeline_completed": true,
   "providers": {
     "yfinance": {
       "overall_status": "active",
@@ -44,43 +44,45 @@
       "not_used_tickers": 0
     },
     "sec_edgar": {
-      "overall_status": "idle",
-      "used_tickers": 0,
+      "overall_status": "active",
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 11
+      "not_used_tickers": 0
     },
     "ir_rss": {
-      "overall_status": "idle",
-      "used_tickers": 0,
+      "overall_status": "active",
+      "used_tickers": 1,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 11
+      "not_used_tickers": 10
     }
   },
   "llm": {
-    "used": false,
+    "used": true,
     "planned_batches": 0,
-    "completed_batches": 0,
+    "completed_batches": 93,
     "failed_batches": 0,
-    "validation_failures": 0,
-    "estimated_cost_usd": 0.0,
-    "latest_model": "N/A",
-    "models_used": {},
+    "validation_failures": 6,
+    "estimated_cost_usd": 0.26467925,
+    "latest_model": "gpt-5.4-mini",
+    "models_used": {
+      "gpt-5.4-mini": 93
+    },
     "quality": {
-      "run_date": "2026-04-28",
-      "success": false,
-      "daily_api_cost_usd": 0.0,
+      "run_date": "2026-04-29",
+      "success": true,
+      "daily_api_cost_usd": 0.26467925,
       "batch_count": 0,
-      "validated_ticker_count": 0,
-      "validation_failure_count": 0,
+      "validated_ticker_count": 145,
+      "validation_failure_count": 6,
       "schema_violation_count": 0,
-      "fact_warning_count": 0,
+      "fact_warning_count": 5,
       "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "hallucination_ratio": 0.0
+      "hallucination_warning_count": 3,
+      "hallucination_ratio": 0.0207
     }
   }
 }

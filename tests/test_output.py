@@ -309,6 +309,9 @@ class OutputTests(unittest.TestCase):
     def test_serialize_analysis_includes_earnings_pattern(self) -> None:
         serialized = _serialize_analysis(_sample_analysis(), {})
         self.assertIn('earnings_pattern', serialized)
+        self.assertEqual(serialized['key_news'][0], '애플 실적이 예상치를 웃돌았습니다.')
+        self.assertEqual(serialized['key_news_source_titles'][0], 'Apple earnings beat expectations')
+        self.assertEqual(serialized['key_news_reference_indices'][:2], [0, 1])
         self.assertIn('peer_rank', serialized)
         self.assertIn('analysis_consensus', serialized)
         self.assertIn('committee_analysis', serialized)
@@ -317,6 +320,26 @@ class OutputTests(unittest.TestCase):
         self.assertEqual(serialized['earnings_pattern']['avg_surprise_pct'], '-1.7%')
         self.assertEqual(serialized['options_summary']['tone'], 'bullish')
         self.assertIn('CALL $270', serialized['options_summary']['unusual_activity'])
+
+    def test_serialize_analysis_normalizes_reference_published_at(self) -> None:
+        analysis = _sample_analysis()
+        analysis = TickerAnalysis(
+            **{
+                **analysis.__dict__,
+                'news_references': [
+                    NewsItem(
+                        title='RSS headline',
+                        source='Reuters',
+                        published_at='Fri, 30 Jan 2026 08:00:00 GMT',
+                        link='https://example.com/rss',
+                    )
+                ],
+            }
+        )
+
+        serialized = _serialize_analysis(analysis, {})
+
+        self.assertEqual(serialized['news_references'][0]['published_at'], '2026-01-30')
 
     def test_serialize_analysis_includes_committee_analysis_payload(self) -> None:
         analysis = TickerAnalysis(**{**_sample_analysis().__dict__, 'committee_analysis': _sample_committee_analysis()})

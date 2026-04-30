@@ -43,13 +43,26 @@ class O4LanguageConsistency(BaseCheck):
                     detail={"korean_ratio_std": std, "samples": ratios},
                 ))
         worst = max(per_ticker_stds.values()) if per_ticker_stds else 0.0
+        if not per_ticker_stds:
+            return CheckResult(
+                check_id="O4",
+                severity="info",
+                pass_rate=0.0,
+                findings=(Finding(
+                    module="payload",
+                    jsonpath="$.payload.summary",
+                    detail={"reason": "no_language_ratio_series_evaluated"},
+                ),),
+                metrics={"worst_korean_ratio_std": 0.0, "sample_count": 0.0},
+                recommendation="Need at least two summaries per ticker to measure language consistency.",
+            )
         sev = severity_for("O4", value=worst, kind="lang_ratio_std")
         return CheckResult(
             check_id="O4",
             severity=sev,
             pass_rate=1.0 - min(worst, 1.0),
             findings=tuple(findings),
-            metrics={"worst_korean_ratio_std": worst},
+            metrics={"worst_korean_ratio_std": worst, "sample_count": float(len(per_ticker_stds))},
             recommendation=(
                 "Pin language in system prompt; reject mixed-language outputs in llm_runtime parser."
                 if sev != "pass" else None

@@ -46,6 +46,29 @@ class TestLoadWindow(unittest.TestCase):
         )
         self.assertEqual(len(ds.daily["AAPL"]), 1)
 
+    def test_load_window_uses_latest_when_daily_file_is_absent(self):
+        shutil.rmtree(self.tmp / "output" / "data" / "tickers" / "AAPL" / "daily")
+        latest = self.tmp / "output" / "data" / "tickers" / "AAPL" / "latest.json"
+        latest.write_text(json.dumps({
+            "schema_version": 1,
+            "date": "2026-04-28",
+            "ticker": "AAPL",
+            "payload": {
+                "ticker": "AAPL",
+                "date": "2026-04-28",
+                "summary": "latest payload",
+                "key_news": ["headline"],
+                "news_references": [],
+            },
+        }))
+
+        ds = load_window(
+            root=self.tmp, end=date(2026, 4, 28), window_days=1,
+            tickers=["AAPL"], model_profile="economy",
+        )
+
+        self.assertEqual(ds.daily["AAPL"][date(2026, 4, 28)]["payload"]["summary"], "latest payload")
+
 
 class TestAuditDatasetIsFrozen(unittest.TestCase):
     def test_frozen(self):

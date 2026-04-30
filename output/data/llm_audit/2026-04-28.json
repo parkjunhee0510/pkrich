@@ -1,0 +1,905 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-04-28",
+  "window": {
+    "start": "2026-04-15",
+    "end": "2026-04-28",
+    "days": 14
+  },
+  "tickers_audited": [
+    "AAPL",
+    "CAT",
+    "XOM",
+    "AMD",
+    "KO",
+    "T",
+    "IONQ",
+    "OXY",
+    "ORA",
+    "SPIR",
+    "PLUG"
+  ],
+  "model_profile": "economy",
+  "git_sha": "13e324d",
+  "replay": {
+    "enabled": true,
+    "tickers": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "TSLA",
+      "GOOGL"
+    ],
+    "runs_per_ticker": 3,
+    "cost_usd": 0.0,
+    "cost_cap_usd": 1.0
+  },
+  "summary": {
+    "total_checks": 14,
+    "pass": 7,
+    "warn": 1,
+    "fail": 1,
+    "info": 5,
+    "overall_severity": "fail"
+  },
+  "checks": [
+    {
+      "check_id": "I1",
+      "dimension": "schema_stability",
+      "severity": "pass",
+      "pass_rate": 1.0,
+      "thresholds": {
+        "missing_field_rate": {
+          "pass_at": 0.02,
+          "warn_at": 0.1,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 55,
+      "metrics": {
+        "missing_field_rate": 0.0,
+        "total_records": 55.0
+      },
+      "findings": [],
+      "recommendation": null
+    },
+    {
+      "check_id": "I2",
+      "dimension": "missingness",
+      "severity": "pass",
+      "pass_rate": 1.0,
+      "thresholds": {
+        "missingness_rate": {
+          "pass_at": 0.3,
+          "warn_at": 0.6,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 33,
+      "metrics": {
+        "worst_field_missing_rate": 0.0,
+        "sample_count": 33.0,
+        "rate_summary": 0.0,
+        "rate_key_news": 0.0,
+        "rate_news_references": 0.0
+      },
+      "findings": [],
+      "recommendation": null
+    },
+    {
+      "check_id": "I3",
+      "dimension": "format_consistency",
+      "severity": "warn",
+      "pass_rate": 0.5,
+      "thresholds": {
+        "format_count": {
+          "pass_at": 1,
+          "warn_at": 2,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 53,
+      "metrics": {
+        "format_count": 2.0,
+        "sample_count": 53.0
+      },
+      "findings": [
+        {
+          "ticker": null,
+          "date": null,
+          "module": "news_references",
+          "jsonpath": "$.payload.news_references[*].published_at",
+          "detail": {
+            "formats_seen": [
+              "ISO-8601",
+              "RFC822"
+            ],
+            "examples": {
+              "ISO-8601": "2026-01-30",
+              "RFC822": "Fri, 30 Jan 2026 08:00:00 GMT"
+            },
+            "affected_tickers_count": 11
+          }
+        }
+      ],
+      "recommendation": "Normalize published_at to ISO-8601 in collector (src/collector/news.py, sec.py)."
+    },
+    {
+      "check_id": "I4",
+      "dimension": "input_size_drift",
+      "severity": "info",
+      "pass_rate": 0.0,
+      "thresholds": {
+        "cv": {
+          "pass_at": 0.2,
+          "warn_at": 0.4,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 0,
+      "metrics": {
+        "worst_cv": 0.0,
+        "sample_count": 0.0
+      },
+      "findings": [
+        {
+          "ticker": null,
+          "date": null,
+          "module": "prompt_tokens",
+          "jsonpath": null,
+          "detail": {
+            "reason": "no_token_usage_samples_evaluated"
+          }
+        }
+      ],
+      "recommendation": "No per-ticker token usage samples were found in pipeline summaries."
+    },
+    {
+      "check_id": "O1",
+      "dimension": "schema_compliance",
+      "severity": "pass",
+      "pass_rate": 1.0,
+      "thresholds": {
+        "violation_rate": {
+          "pass_at": 0.0,
+          "warn_at": 0.0,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 55,
+      "metrics": {
+        "violation_rate": 0.0,
+        "total_records": 55.0
+      },
+      "findings": [],
+      "recommendation": null
+    },
+    {
+      "check_id": "O2",
+      "dimension": "numeric_grounding",
+      "severity": "pass",
+      "pass_rate": 1.0,
+      "thresholds": {
+        "match_rate": {
+          "pass_at": 0.95,
+          "warn_at": 0.85,
+          "direction": "higher_is_better"
+        }
+      },
+      "sample_count": 16,
+      "metrics": {
+        "match_rate": 1.0,
+        "total_numeric_claims": 16.0,
+        "sample_count": 16.0
+      },
+      "findings": [],
+      "recommendation": null
+    },
+    {
+      "check_id": "O3",
+      "dimension": "citation_integrity",
+      "severity": "fail",
+      "pass_rate": 0.0,
+      "thresholds": {
+        "citation_match_rate": {
+          "pass_at": 0.98,
+          "warn_at": 0.9,
+          "direction": "higher_is_better"
+        }
+      },
+      "sample_count": 49,
+      "metrics": {
+        "citation_match_rate": 0.0,
+        "total_key_news": 49.0,
+        "sample_count": 49.0,
+        "link_check_enabled": 0.0,
+        "link_success_rate": 1.0,
+        "link_sample_count": 0.0
+      },
+      "findings": [
+        {
+          "ticker": "AAPL",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "iPhone 수요/판매 전망 상향: 홀리데이 분기 판매가 월가 예상 상회, 아시아 수요 반등으로 성장 기대",
+            "best_jaccard": 0.041666666666666664
+          }
+        },
+        {
+          "ticker": "AAPL",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "SEC 8-K 공시: 중요 사항 공시, 단기 촉매 여부는 공시 내용 확인 필요",
+            "best_jaccard": 0.2631578947368421
+          }
+        },
+        {
+          "ticker": "AAPL",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "10-Q 제출: 분기 실적 공시로 실적/가이던스 재점검 구간",
+            "best_jaccard": 0.35714285714285715
+          }
+        },
+        {
+          "ticker": "AAPL",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "실적 임박: 2026-04-30 AMC 예정으로 가이던스·수요 코멘트에 시선 집중",
+            "best_jaccard": 0.047619047619047616
+          }
+        },
+        {
+          "ticker": "CAT",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "AI 붐으로 에너지 장비 수요 확대",
+            "best_jaccard": 0.05555555555555555
+          }
+        },
+        {
+          "ticker": "CAT",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "실적 추정치 상회 후 주가 급등",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "CAT",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "8-K 중요 사항 공시 제출",
+            "best_jaccard": 0.5
+          }
+        },
+        {
+          "ticker": "CAT",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "애널리스트의 주가 전망 점검 기사",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "CAT",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "애널리스트가 실적 상향 전망",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "XOM",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "장기 실적 성장 가이던스 상향",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "XOM",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "원유 약세·지정학 변수",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "XOM",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "SEC 8-K 공시",
+            "best_jaccard": 0.21428571428571427
+          }
+        },
+        {
+          "ticker": "XOM",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "실적 발표 임박",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "AMD",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "AI 칩 수요 기반 매출 가이던스 상향",
+            "best_jaccard": 0.05263157894736842
+          }
+        },
+        {
+          "ticker": "AMD",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "주가 급등 관련 시장 모멘텀",
+            "best_jaccard": 0.0625
+          }
+        },
+        {
+          "ticker": "AMD",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "SEC 8-K 공시",
+            "best_jaccard": 0.2
+          }
+        },
+        {
+          "ticker": "AMD",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "실적 발표 임박",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "KO",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "탄산음료 수요로 이익 성장 전망",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "KO",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "신임 CEO가 더 빠른 혁신을 추진",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "KO",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "4분기 수요 증가에도 보수적 전망으로 주가 하락",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "KO",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "10-K 연간 보고서 제출",
+            "best_jaccard": 0.2857142857142857
+          }
+        },
+        {
+          "ticker": "KO",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "8-K 중요 사항 공시 제출",
+            "best_jaccard": 0.46153846153846156
+          }
+        },
+        {
+          "ticker": "T",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "광섬유와 스펙트럼 거래로 연간 이익 전망 상향",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "T",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "버라이즌, 무선 가입자 증가로 이익 전망 상향",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "T",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "10-Q 분기 실적 보고서 제출",
+            "best_jaccard": 0.4166666666666667
+          }
+        },
+        {
+          "ticker": "T",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "8-K 중요 사항 공시 제출",
+            "best_jaccard": 0.46153846153846156
+          }
+        },
+        {
+          "ticker": "IONQ",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "8-K 중요 사항 공시 제출",
+            "best_jaccard": 0.5
+          }
+        },
+        {
+          "ticker": "IONQ",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "양자 기술 성장으로 데이터센터가 주목받음",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "IONQ",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "마이크로소프트·알파벳·IBM·아마존·엔비디아 관련 애널리스트 블로그",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "IONQ",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "3분기 2025 실적 발표",
+            "best_jaccard": 0.08333333333333333
+          }
+        },
+        {
+          "ticker": "IONQ",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "엔비디아 주가 관련 기사",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "OXY",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "8-K 중요 사항 공시 제출",
+            "best_jaccard": 0.42857142857142855
+          }
+        },
+        {
+          "ticker": "OXY",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "주주총회 위임장 설명서 제출",
+            "best_jaccard": 0.23076923076923078
+          }
+        },
+        {
+          "ticker": "OXY",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "애널리스트 상향과 높은 유가가 가치에 긍정적",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "OXY",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "최근 주가 강세와 탄소포집 개발 반영한 가치 점검",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "OXY",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "탄소포집과 전망 관련 기사",
+            "best_jaccard": 0.06666666666666667
+          }
+        },
+        {
+          "ticker": "ORA",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "SEC 8-K 공시",
+            "best_jaccard": 0.21428571428571427
+          }
+        },
+        {
+          "ticker": "ORA",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "연간 사업·재무 보고서 제출",
+            "best_jaccard": 0.2857142857142857
+          }
+        },
+        {
+          "ticker": "ORA",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "지열·데이터센터 관련 재평가 이슈",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "ORA",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "실적 발표 임박",
+            "best_jaccard": 0.06666666666666667
+          }
+        },
+        {
+          "ticker": "SPIR",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "8-K 중요 사항 공시 제출",
+            "best_jaccard": 0.46153846153846156
+          }
+        },
+        {
+          "ticker": "SPIR",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "주주총회 위임장 설명서 제출",
+            "best_jaccard": 0.25
+          }
+        },
+        {
+          "ticker": "SPIR",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "ERCOT AI 확장 속 지속 손실 가이던스에 주가 하락",
+            "best_jaccard": 0.06666666666666667
+          }
+        },
+        {
+          "ticker": "SPIR",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "높아진 PER 가정이 밸류에이션 기대를 재편",
+            "best_jaccard": 0.0
+          }
+        },
+        {
+          "ticker": "SPIR",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "해양 사업 매각 후 2025 실적 재편",
+            "best_jaccard": 0.05555555555555555
+          }
+        },
+        {
+          "ticker": "PLUG",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "SEC 8-K 공시",
+            "best_jaccard": 0.21428571428571427
+          }
+        },
+        {
+          "ticker": "PLUG",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "연간 사업·재무 보고서 제출",
+            "best_jaccard": 0.2857142857142857
+          }
+        },
+        {
+          "ticker": "PLUG",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "재생에너지 섹터 실적 비교 이슈",
+            "best_jaccard": 0.058823529411764705
+          }
+        },
+        {
+          "ticker": "PLUG",
+          "date": "2026-04-27",
+          "module": null,
+          "jsonpath": "$.payload.key_news",
+          "detail": {
+            "orphan": "실적 발표 임박",
+            "best_jaccard": 0.06666666666666667
+          }
+        }
+      ],
+      "recommendation": "Constrain prompt: 'key_news must be drawn from news_references list verbatim'."
+    },
+    {
+      "check_id": "O4",
+      "dimension": "language_consistency",
+      "severity": "info",
+      "pass_rate": 0.0,
+      "thresholds": {
+        "lang_ratio_std": {
+          "pass_at": 0.15,
+          "warn_at": 0.3,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 0,
+      "metrics": {
+        "worst_korean_ratio_std": 0.0,
+        "sample_count": 0.0
+      },
+      "findings": [
+        {
+          "ticker": null,
+          "date": null,
+          "module": "payload",
+          "jsonpath": "$.payload.summary",
+          "detail": {
+            "reason": "no_language_ratio_series_evaluated"
+          }
+          }
+        ],
+      "recommendation": "Need at least two summaries per ticker to measure language consistency."
+    },
+    {
+      "check_id": "O5",
+      "dimension": "contradiction",
+      "severity": "info",
+      "pass_rate": 0.0,
+      "thresholds": {
+        "three_way_agreement": {
+          "pass_at": 0.85,
+          "warn_at": 0.7,
+          "direction": "higher_is_better"
+        }
+      },
+      "sample_count": 0,
+      "metrics": {
+        "three_way_agreement": 0.0,
+        "evaluated_records": 0.0,
+        "sample_count": 0.0
+      },
+      "findings": [
+        {
+          "ticker": null,
+          "date": null,
+          "module": "payload",
+          "jsonpath": "$.payload",
+          "detail": {
+            "reason": "no_contradiction_records_evaluated"
+          }
+        }
+      ],
+      "recommendation": "No payloads contained risk_assessment and research_narrative fields for contradiction checking."
+    },
+    {
+      "check_id": "D1",
+      "dimension": "semantic_drift",
+      "severity": "pass",
+      "pass_rate": 1.0,
+      "thresholds": {
+        "action_match": {
+          "pass_at": 1.0,
+          "warn_at": 0.67,
+          "direction": "higher_is_better"
+        },
+        "embedding_similarity": {
+          "pass_at": 0.9,
+          "warn_at": 0.8,
+          "direction": "higher_is_better"
+        }
+      },
+      "sample_count": 15,
+      "metrics": {
+        "action_match": 1.0,
+        "summary_similarity": 1.0,
+        "sample_count": 15.0,
+        "actual_cost_usd": 0.0
+      },
+      "findings": [],
+      "recommendation": null
+    },
+    {
+      "check_id": "D2",
+      "dimension": "committee_agreement",
+      "severity": "info",
+      "pass_rate": 0.0,
+      "thresholds": {
+        "role_agreement": {
+          "pass_at": 0.75,
+          "warn_at": 0.6,
+          "direction": "higher_is_better"
+        }
+      },
+      "sample_count": 0,
+      "metrics": {
+        "role_agreement": 0.0,
+        "evaluated_decisions": 0.0,
+        "sample_count": 0.0
+      },
+      "findings": [
+        {
+          "ticker": null,
+          "date": null,
+          "module": "committee",
+          "jsonpath": null,
+          "detail": {
+            "reason": "no_committee_decisions_evaluated"
+          }
+        }
+      ],
+      "recommendation": "No committee role decisions were found in pipeline logs for this window."
+    },
+    {
+      "check_id": "D3",
+      "dimension": "signal_volatility",
+      "severity": "info",
+      "pass_rate": 0.0,
+      "thresholds": {
+        "signal_std": {
+          "pass_at": 0.25,
+          "warn_at": 0.4,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 0,
+      "metrics": {
+        "worst_signal_std": 0.0,
+        "sample_count": 0.0
+      },  
+      "findings": [
+        {
+          "ticker": null,
+          "date": null,
+          "module": "payload",
+          "jsonpath": "$.payload.llm_signals",
+          "detail": {
+            "reason": "no_signal_samples_evaluated"
+          }
+        }
+      ],
+      "recommendation": "No llm_signals samples were found for volatility measurement."
+    },
+    {
+      "check_id": "R1",
+      "dimension": "pipeline_summary",
+      "severity": "pass",
+      "pass_rate": 1.0,
+      "thresholds": {
+        "fallback_rate": {
+          "pass_at": 0.05,
+          "warn_at": 0.15,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 10,
+      "metrics": {
+        "fallback_rate": 0.0,
+        "sample_count": 10.0,
+        "total_daily_cost_usd": 2.2029207499999997
+      },
+      "findings": [],
+      "recommendation": null
+    },
+    {
+      "check_id": "R2",
+      "dimension": "retry_distribution",
+        "severity": "pass",
+        "pass_rate": 1.0,
+      "thresholds": {
+        "retry_per_ticker": {
+          "pass_at": 2,
+          "warn_at": 5,
+          "direction": "lower_is_better"
+        }
+      },
+      "sample_count": 2446,
+      "metrics": {
+        "max_retry_per_ticker": 0.0,
+        "sample_count": 2446.0,
+        "tickers_with_retries": 0.0
+      },
+      "findings": [],
+      "recommendation": null
+    }
+  ]
+}

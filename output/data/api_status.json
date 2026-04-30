@@ -1,7 +1,7 @@
 {
-  "run_date": "2026-04-24",
-  "log_path": "logs\\pipeline\\2026-04-24.jsonl",
-  "pipeline_completed": false,
+  "run_date": "2026-04-29",
+  "log_path": "logs\\pipeline\\2026-04-29.jsonl",
+  "pipeline_completed": true,
   "providers": {
     "yfinance": {
       "overall_status": "active",
@@ -13,11 +13,11 @@
     },
     "alpha_vantage": {
       "overall_status": "active",
-      "used_tickers": 5,
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 6
+      "not_used_tickers": 0
     },
     "polygon": {
       "overall_status": "active",
@@ -29,11 +29,11 @@
     },
     "fmp": {
       "overall_status": "active",
-      "used_tickers": 0,
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 11
+      "not_used_tickers": 0
     },
     "finnhub": {
       "overall_status": "active",
@@ -45,11 +45,11 @@
     },
     "sec_edgar": {
       "overall_status": "active",
-      "used_tickers": 10,
+      "used_tickers": 11,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 1
+      "not_used_tickers": 0
     },
     "ir_rss": {
       "overall_status": "active",
@@ -61,26 +61,28 @@
     }
   },
   "llm": {
-    "used": false,
+    "used": true,
     "planned_batches": 0,
-    "completed_batches": 0,
+    "completed_batches": 93,
     "failed_batches": 0,
-    "validation_failures": 0,
-    "estimated_cost_usd": 0.0,
-    "latest_model": "N/A",
-    "models_used": {},
+    "validation_failures": 6,
+    "estimated_cost_usd": 0.26467925,
+    "latest_model": "gpt-5.4-mini",
+    "models_used": {
+      "gpt-5.4-mini": 93
+    },
     "quality": {
-      "run_date": "2026-04-27",
+      "run_date": "2026-04-29",
       "success": true,
-      "daily_api_cost_usd": 0.2762833,
+      "daily_api_cost_usd": 0.26467925,
       "batch_count": 0,
-      "validated_ticker_count": 150,
-      "validation_failure_count": 7,
+      "validated_ticker_count": 145,
+      "validation_failure_count": 6,
       "schema_violation_count": 0,
-      "fact_warning_count": 4,
+      "fact_warning_count": 5,
       "consistency_warning_count": 0,
-      "hallucination_warning_count": 4,
-      "hallucination_ratio": 0.0267
+      "hallucination_warning_count": 3,
+      "hallucination_ratio": 0.0207
     }
   }
 }

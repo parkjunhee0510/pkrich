@@ -1,18 +1,32 @@
 {
   "schema_version": 1,
-  "date": "2026-04-27",
+  "date": "2026-04-28",
   "ticker": "XOM",
   "payload": {
     "ticker": "XOM",
     "name": "Exxon Mobil Corporation",
-    "date": "2026-04-24",
-    "summary": "현재 주가는 30일 기준 -12.91%로 약세이며, SMA50 대비 -3.64%이고 MACD도 bearish로 표시됩니다. 다음 촉매는 2026-05-01 실적 발표이며, 호르무즈 해협 차질과 OPEC 공급 충격은 에너지 가격과 기대 인플레이션을 자극할 수 있습니다.",
+    "date": "2026-04-28",
+    "summary": "현재 주가는 150.56달러로 30일간 -12.19%이며 SMA50 대비 -2.55%로 단기 흐름은 약합니다. 다음 촉매는 2026-05-01 실적 발표(D-2)와 유가 변동이며, 거시 충격이 에너지 섹터에 다시 영향을 줄 수 있습니다.",
     "key_news": [
-      "2030년까지 이익 성장 목표 상향",
-      "카타르 LNG 생산 차질 보도",
-      "SEC에 8-K 중요 공시 제출",
-      "SEC에 주주총회 관련 위임장 제출",
-      "지정학적·LNG 노출 영향 분석"
+      "실적 성장 전망 상향, 2030년까지 이익 확대 목표",
+      "8-K 중요 사항 공시 제출",
+      "DEF 14A 주주총회 관련 위임장 제출",
+      "유가 추가 상승 가능성에 대한 경고",
+      "지정학적 요인과 LNG 노출 변화가 주주에 미칠 영향"
+    ],
+    "key_news_source_titles": [
+      "[기타 공시] EXXON MOBIL CORP, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+      "Exxon boosts forecast, aims for $25 billion earnings growth by 2030 - Reuters",
+      "[주주총회] EXXON MOBIL CORP, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+      "What Exxon Mobil (XOM)'s Shifting Geopolitical and LNG Exposure Means For Shareholders - Yahoo Finance",
+      "‘Sky is the limit’: Analysts warn oil prices could surge further - CNBC"
+    ],
+    "key_news_reference_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
     ],
     "news_references": [
       {
@@ -24,7 +38,7 @@
       {
         "title": "Exxon boosts forecast, aims for $25 billion earnings growth by 2030 - Reuters",
         "source": "Reuters",
-        "published_at": "Tue, 09 Dec 2025 08:00:00 GMT",
+        "published_at": "2025-12-09",
         "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQc19PSmREVk5Sa0dMYTdXTnFab1g0bmZlMUlPa2gwOW1OV0diZi1qNENMZzM4WHk0UHl3VERrQ2pvSnNmek1jSG9TNkZBaGFjYnJUQko4NmV6REd0clJUanhoMVZuU3U0UGxsM0V2bzRCSllLMnhzNVdBNzJVelFvcE4tU2lHMnF1YlQwdXpMZXR6dXZQQjR0ckx2bm1CdjgwcnRWQk9n?oc=5"
       },
       {
@@ -34,63 +48,63 @@
         "link": "https://www.sec.gov/Archives/edgar/data/34088/000119312526147614/d16317ddef14a.htm"
       },
       {
-        "title": "Exclusive: Iran attacks wipe out 17% of Qatar’s LNG capacity for up to five years, QatarEnergy CEO says - Reuters",
-        "source": "Reuters",
-        "published_at": "Fri, 20 Mar 2026 07:00:00 GMT",
-        "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQM2VOR0pPU1pWbUpRdUU3Tjg4WWhRRU5uN1RkTG4wSFF0VndlUHI1dm5lQU9kbTMtWnhyV0VJVnZ1VkNET3ZGQ3A1ckRvSU1xTnJPWm80RmI5Z0pBem5HTkFGbE1VTnZ0T0tCSjNCVlRuaFB3T0g1SXh2RkpYQ05hN3pvQkpFNXNBeVBaVmZZOUY2d1hlUkJuMHZ1NE9NQS1HbmctOGR5RjZRTzVjbTFvd0FHVUM4U0VJLUVsUXVINWROenpUQURDemlLMVY?oc=5"
-      },
-      {
         "title": "What Exxon Mobil (XOM)'s Shifting Geopolitical and LNG Exposure Means For Shareholders - Yahoo Finance",
         "source": "Yahoo Finance",
-        "published_at": "Thu, 19 Feb 2026 08:00:00 GMT",
+        "published_at": "2026-02-19",
         "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxNZFlaVkJYQ0NIRE5SSmNQdnZleTNFQlA5RERfdmFoRmJDcURNYlNiMENzMnJiMk1odGRyUl9BX0t0bzBDVFItUWZSSU0yeVB6VHU4Nk1CQUdFNG1hanN0UXhqa3lPREI1dUJWd2dvUHRKc2hRWElkN1B0M3NMUnUwV3JkZ1ZhS0NfVXhF?oc=5"
+      },
+      {
+        "title": "‘Sky is the limit’: Analysts warn oil prices could surge further - CNBC",
+        "source": "CNBC",
+        "published_at": "2026-03-09",
+        "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOcDI3TjJMNjhudkJ4eUN4bUNreDZpWV90R1lHTERmTTU2WjlqTEM2WlEwcEpzTTl5MHRVUFIta2tCbmFsN0lVeU11MDVwcU8teUR4RVpvVzVyWW93elpBdm5mbXdFS1IxaGMzVTBCSXpfODExazVqaVZMQWFJZTNqZks3QjZ3MlM3LVJLdE5hWHcycGd4VVBydjdfONIBoAFBVV95cUxNSVBwMUFOaU1SNDNHVlpXLWRFcHl0SWsyMjBReVh4LV9oTEs3aGFNQkMzSWNCcU9oVTB3Z2c3NHMzb3dGZUNQQkdoYkJwZmFTNnpQQVRncF9LdzhDTW5mMDdTWDRqMTZjeEUwNnduX3l3QUtZUkFLTVlvZEktLWZ6R3ZEMUtBZndleTdCcU5YX3o2NWZMQ2Vnbnp2V1BwVG0z?oc=5"
       }
     ],
     "financial_highlights": [
-      "가격 148.91달러, 30일 -12.91%",
-      "SMA50 154.54달러 대비 -3.64%",
-      "SMA200 126.87달러 대비 +17.37%",
-      "PER 22.2x, FCF Yield 4.5%",
-      "Forward EPS 10.06, EPS 성장 -11.00% YoY"
+      "PER 22.5x, peer PER 중간",
+      "RS vs Sector ETF -5.33%",
+      "Forward EPS 10.17, TTM EPS 6.70",
+      "EPS Growth -11.00% YoY",
+      "FCF Yield 4.5%, ND/EBITDA 0.5x"
     ],
     "risks_or_watchpoints": [
-      "종가가 SMA50 154.54 USD 아래에 머물거나 50일 이동평균을 하향 이탈하면 약세 시나리오로 전환될 수 있음",
-      "2026-05-01 실적 발표 전까지 현재가 148.91 USD가 1.5×ATR 목표 156.01 USD를 회복하지 못하면 단기 반등 탄력이 약할 수 있음",
-      "MACD가 -2.23/-1.25의 bearish 상태를 유지하고 RSI(14) 41.8이 50 아래에 계속 머물면 모멘텀 약세가 지속될 수 있음",
-      "PCR 5.51(bearish) 및 2026-05-01 만기 옵션에서 PUT $185, PUT $180, PUT $230의 비정상 거래가 이어지면 하방 헤지 수요가 높다는 신호로 해석될 수 있음"
+      "주가가 154.50 USD(SMA50) 아래로 밀리면 약세 시나리오 확인",
+      "2026-05-01 실적 발표 전까지 150.56 USD 부근에서 추가 약세가 나오는지 점검",
+      "MACD -2.15/-1.60의 약세 상태가 유지되는지 확인",
+      "풋 OI +6.1%와 PCR 3.53이 2026-05-01 옵션 만기까지 확대되는지 확인"
     ],
-    "signal_or_takeaway": "중립 관찰 — 2026-05-01 실적 발표와 약세 추세가 혼재 | 진입 트리거 148.91 회복 | 목표 154.54/156.01달러 | 손절 126.87달러",
+    "signal_or_takeaway": "중립 관찰 — 실적 D-2와 유가 변동성 교차 | 진입 트리거 150.56 지지 확인 | 목표 154.50/156.59달러 | 손절 127.04달러",
     "data_snapshot": {
-      "Price": "148.19 USD",
-      "Daily Change": "-0.48%",
-      "Market Cap": "615.96B",
-      "Trailing P/E": "22.12",
+      "Price": "150.56 USD",
+      "Daily Change": "+1.60%",
+      "Market Cap": "625.81B",
+      "Trailing P/E": "22.47",
       "EPS": "6.70",
       "52W High": "176.41",
       "52W Low": "101.19",
-      "50D SMA": "154.54",
-      "200D SMA": "126.87",
-      "Volume": "9709403",
-      "3M Avg Volume": "23.02M",
-      "Price/Book": "2.39",
-      "Dividend Yield": "N/A",
+      "50D SMA": "154.50",
+      "200D SMA": "127.04",
+      "Volume": "14.70M",
+      "3M Avg Volume": "22.99M",
+      "Price/Book": "2.43",
+      "Dividend Yield": "2.78%",
       "Sector": "Energy",
-      "Open": "149.15",
-      "High": "151.17",
-      "Low": "147.97",
-      "Close": "148.19",
-      "RS vs Sector ETF": "-3.81%"
+      "Open": "151.53",
+      "High": "152.31",
+      "Low": "149.83",
+      "Close": "150.56",
+      "RS vs Sector ETF": "-5.33%"
     },
     "fundamentals": {
-      "market_cap": "615.96B",
-      "trailing_pe": "22.12",
+      "market_cap": "625.81B",
+      "trailing_pe": "22.47",
       "eps": "6.70",
-      "forward_eps": "10.15",
+      "forward_eps": "10.17",
       "earnings_growth": "-11.00% YoY",
-      "price_to_book": "2.39",
-      "dividend_yield": "N/A",
-      "volume": "9709403",
-      "avg_volume_3m": "23.02M",
+      "price_to_book": "2.43",
+      "dividend_yield": "2.78%",
+      "volume": "14.70M",
+      "avg_volume_3m": "22.99M",
       "52w_high": "176.41",
       "52w_low": "101.19",
       "short_float_pct": "1.16%",
@@ -99,18 +113,18 @@
       "analyst_recommendation": "Buy",
       "analyst_count": "22명",
       "held_by_insiders": "0.09%",
-      "held_by_institutions": "67.60%",
+      "held_by_institutions": "67.59%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
-      "forward_eps": "10.06 USD/share",
+      "forward_eps": "10.17 USD/share",
       "ttm_eps": "6.70 USD/share",
-      "forward_vs_ttm": "+50.15%",
+      "forward_vs_ttm": "+51.79%",
       "earnings_growth": "-11.00% YoY",
       "latest_estimated_eps": "1.69 USD/share",
       "latest_surprise_pct": "+0.01%",
       "latest_beat_miss": "in-line",
-      "next_earnings_event": "2026-05-01 실적 발표 (D-4 · BMO)"
+      "next_earnings_event": "2026-05-01 실적 발표 (D-2 · BMO)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 0,
@@ -129,15 +143,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "4.64",
-      "atr_percent": "3.13%",
-      "relative_volume": "0.42x",
-      "gap_percent": "+0.16%",
-      "price_vs_sma50": "-4.11%",
-      "price_vs_sma200": "+16.80%",
-      "week52_position": "62%",
+      "atr_14d": "4.02",
+      "atr_percent": "2.67%",
+      "relative_volume": "0.64x",
+      "gap_percent": "+2.25%",
+      "price_vs_sma50": "-2.55%",
+      "price_vs_sma200": "+18.51%",
+      "week52_position": "66%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-4.07%"
+      "rs_vs_sector_etf": "-5.33%"
     },
     "quarterly_financials": [
       {
@@ -186,39 +200,55 @@
         "type": "earnings",
         "label": "실적 발표",
         "date": "2026-05-01",
-        "days_until": "4",
+        "days_until": "2",
         "timing": "BMO"
       }
     ],
     "news_tone": {
       "label": "neutral",
       "confidence": 3,
-      "reasoning": "이익 성장 목표 상향은 긍정적이지만 LNG 차질과 지정학적 불확실성이 함께 있어 중립적입니다."
+      "reasoning": "실적 성장 목표와 유가 강세 기대가 있으나, 공시와 지정학적 변수도 함께 있어 방향성이 혼재합니다."
     },
     "trade_frame": {
-      "entry_price": "현재가 148.91 또는 눌림 시 144.18 USD",
-      "stop_loss": "SMA50 154.54 USD",
-      "target_1": "156.01 USD (1.5×ATR)",
-      "target_2": "애널리스트 목표 164.41 USD",
+      "entry_price": "현재가 150.56 또는 눌림 시 146.54 USD",
+      "stop_loss": "SMA50 154.50 USD",
+      "target_1": "156.59 USD (1.5×ATR)",
+      "target_2": "애널리스트 목표 166.14 USD",
       "risk_reward_ratio": "N/A",
-      "position_size_note": "$60,079 계좌 1% 리스크 기준 약 127주 (ATR $4.73 기반)",
+      "position_size_note": "$59,425 계좌 1% 리스크 기준 약 147주 (ATR $4.02 기반)",
       "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-      "base_scenario": "148.91 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+      "base_scenario": "150.56 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-      "invalidation_price": "50일 이동평균선인 154.54 USD 아래로 밀리면 약세 시나리오 확인",
+      "invalidation_price": "50일 이동평균선인 154.50 USD 아래로 밀리면 약세 시나리오 확인",
       "watch_period": "2026-05-01 실적 발표 전까지"
     },
     "options_summary": {
       "expiry": "2026-05-01",
-      "atm_call_iv": "41.6%",
-      "atm_put_iv": "41.4%",
-      "put_call_ratio": "0.20x",
-      "iv_percentile_30d": "9th",
+      "atm_call_iv": "51.7%",
+      "atm_put_iv": "47.7%",
+      "put_call_ratio": "0.30x",
+      "iv_percentile_30d": "10th",
       "tone": "neutral",
-      "unusual_activity": "PUT $185, vol 68, OI 대비 43% ; PUT $180, vol 58, OI 대비 36% ; PUT $230, vol 2, OI 대비 40%",
-      "oi_change": "N/A"
+      "unusual_activity": "PUT $185, vol 68, OI 대비 43% ; PUT $105, vol 222, OI 대비 80% ; PUT $125, vol 53, OI 대비 33%",
+      "oi_change": "콜 OI +0.1% / 풋 OI +6.1%"
     },
     "signal_history": [
+      {
+        "date": "2026-04-28",
+        "direction": "neutral",
+        "llm_direction": "neutral",
+        "catalyst": "일반 이슈",
+        "return_5d": "N/A",
+        "note": "148.19 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
+      {
+        "date": "2026-04-27",
+        "direction": "bear",
+        "llm_direction": "bear",
+        "catalyst": "기타 공시",
+        "return_5d": "N/A",
+        "note": "148.19 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
       {
         "date": "2026-04-24",
         "direction": "bear",
@@ -242,28 +272,12 @@
         "catalyst": "기타 공시",
         "return_5d": "N/A",
         "note": "149.50 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-21",
-        "direction": "bull",
-        "llm_direction": "neutral",
-        "catalyst": "기타 공시",
-        "return_5d": "N/A",
-        "note": "148.36 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-20",
-        "direction": "bull",
-        "llm_direction": "neutral",
-        "catalyst": "기타 공시",
-        "return_5d": "N/A",
-        "note": "147.68 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
       }
     ],
     "sector_comparison": {
       "summary": "Energy 피어 3개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "22.23",
+        "company": "22.47",
         "peer_average": "25.13x",
         "difference": null
       },
@@ -273,9 +287,9 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "-12.91%",
+        "company": "-12.19%",
         "peer_average": "-9.44%",
-        "difference": "-3.47"
+        "difference": "-2.75"
       }
     },
     "peer_rank": {
@@ -289,8 +303,8 @@
     "valuation_score": {
       "score": "6/10",
       "factors": [
-        "PER 22.2x",
-        "목표가 대비 업사이드 +10.4%",
+        "PER 22.5x",
+        "목표가 대비 업사이드 +10.3%",
         "ROE 11.1%",
         "FCF Yield 4.5%"
       ],
@@ -304,12 +318,10 @@
       "final_consensus": "single"
     },
     "committee_analysis": {
-      "status": "deep_reviewed",
-      "agreement_status": "mixed",
-      "deep_review_triggered": true,
-      "deep_review_reasons": [
-        "risk_strong_objection"
-      ],
+      "status": "economy_only",
+      "agreement_status": "aligned",
+      "deep_review_triggered": false,
+      "deep_review_reasons": [],
       "roles": {
         "growth_analyst": {
           "role": "growth_analyst",
@@ -319,7 +331,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "2026-05-01 실적이 4일 남았고 최근 4개 분기 EPS가 1.76→1.64→1.76→1.53으로 정체돼 성장 가속 증거가 아직 부족합니다. 2030년까지 이익 목표 상향과 카타르 LNG 차질은 상방 촉매지만, 주가는 30일 -12.91%로 약세이고 EPS 성장률도 -11.00% YoY라서 확인 전까지는 관망이 적절합니다.",
+          "summary": "2025-Q1~Q4 EPS가 1.76→1.64→1.76→1.53으로 정체/감소했고, 2026년 EPS 성장률도 -11.00% YoY라 성장주 관점의 이익 가속 신호는 아직 약합니다. 다만 2026-05-01 실적 발표 D-2와 2030년까지 이익 확대 목표, Forward EPS 10.17 및 FCF Yield 4.5%는 확인되므로 실적 가이던스 상향이나 유가 강세가 실제로 동반되는지 지켜볼 구간입니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -331,51 +343,51 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "PER 22.2x와 P/B 2.40배는 정유/에너지 대형주 치고 저렴하다고 보기 어렵고, FCF Yield 4.5%는 현재 EPS 성장률 -11.0% YoY를 감안하면 밸류에이션 방어력이 약합니다. 목표가 164.41달러 대비 현 주가 148.91달러는 업사이드가 약 10.4%에 불과한데, 최근 30일 -12.91% 하락·SMA50 대비 -3.64%·MACD bearish·RSI 41.8로 기술적 약세가 겹쳐 단기 비대칭은 하방이 더 커 보입니다.",
+          "summary": "PER 22.5x와 P/B 2.43배인데도 EPS는 YoY -11.0%로 역성장 중이고, FCF Yield 4.5%는 시총 625.81B 대비 현금창출 매력이 강하지 않습니다. 목표가 166.14달러 대비 현재가 150.56달러의 괴리 +10.3%도 크지 않은데, RS가 Sector ETF 대비 -5.33%이고 52주 고점 176.41달러에서 이미 -14.7% 내려와 있어 추가 상승보다 실적(D-2) 변동성에 따른 하방 비대칭이 더 커 보입니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "risk_manager": {
           "role": "risk_manager",
-          "round": "deep",
-          "profile": "deep",
+          "round": "economy",
+          "profile": "economy",
           "stance": "watch",
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "하방이 먼저 보입니다: 종가 148.91은 SMA50 154.54보다 -3.64% 낮고 RSI 41.8로 50 아래이며, 200D SMA 126.87 위이지만 52주 고점 176.41 대비 아직 -15.6%라 추세 훼손 직전은 아닙니다. 명확한 무효화는 종가가 154.54 위로 복귀하지 못한 채 50일선 아래에 머무르거나, 반대로 126.87 아래로 이탈해 200D SMA를 깨는 경우이며, 2026-05-01 실적 전까지는 148대 지지와 146.95 일중 저점 하향 여부를 먼저 봐야 합니다.",
+          "summary": "주가는 150.56으로 SMA200 127.04 위이지만 SMA50 154.50 아래(-2.55%)라 단기 추세는 아직 훼손된 상태입니다. 52주 고점 176.41 대비 66% 수준이고 RS가 섹터 ETF 대비 -5.33%로 약세라, 154.50 회복 실패 또는 148.19 부근 이탈 시 하방 시나리오를 먼저 봐야 합니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "macro_strategist": {
           "role": "macro_strategist",
-          "round": "deep",
-          "profile": "deep",
-          "stance": "reduce",
-          "action": "avoid",
+          "round": "economy",
+          "profile": "economy",
+          "stance": "watch",
+          "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "유가·에너지 리스크온이 아니라도 버티는 방어적 성격은 있지만, 현재는 50D SMA 154.54 대비 -3.64%이고 30일 수익률 -12.91%로 섹터 평균 -9.44%보다 더 약해 상대강도 이탈이 뚜렷합니다. 또한 RS vs Sector ETF가 -3.81%라 에너지 내 로테이션에서도 밀리고 있어, 금리보다 유가/달러/정책 헤드라인에 더 민감한 구간에서 비중을 줄이는 쪽이 맞습니다.",
+          "summary": "XOM은 200D SMA 127.04 대비 +18.51%에 있지만 50D SMA 154.50 대비 -2.55%, 최근 30일 -12.19%로 에너지 내에서도 상대강도(RS vs Sector ETF -5.33%)가 약합니다. 유가가 재가속되거나 리스크오프가 완화될 때만 방어·배당 프리미엄이 살아나기 쉬우며, 현재는 고금리·달러 강세·유가 변동성의 교차압력 아래 2026-05-01 실적 전까지 중립 관찰이 적절합니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "pm": {
           "role": "pm",
-          "round": "deep",
-          "profile": "deep",
+          "round": "economy",
+          "profile": "economy",
           "stance": "watch",
           "action": "watch",
-          "confidence": 0.68,
+          "confidence": 0.69,
           "strong_objection": false,
-          "summary": "현재가 148.91달러는 30일 -12.91% 하락이고 SMA50 154.54달러 대비 -3.64%, RSI 41.8 및 MACD bearish로 2026-05-01 실적 전까지는 방향성 확인이 우선입니다. 다만 SMA200 126.87달러 대비 +17.37%, PER 22.2x, FCF Yield 4.5%, 애널리스트 목표가 164.41달러는 중기 방어력을 남기므로 급히 줄이기보다 실적 확인 대기입니다. 반대 근거는 4일 내 실적과 PCR 5.51, 상대강도 -3.81%가 단기 하방 리스크를 아직 키운다는 점입니다.",
+          "summary": "현재가는 150.56달러로 SMA50 154.50달러를 -2.55% 하회하고, 최근 30일 -12.19% 및 섹터 대비 RS -5.33%로 단기 모멘텀이 약합니다. 다만 PER 22.47배는 피어 평균 25.13배보다 낮고 ND/EBITDA 0.5x, FCF Yield 4.5%로 재무 여력은 양호해 2026-05-01 실적(D-2) 전까지는 방향성 확인이 우선입니다. 반대 근거로는 analyst target 166.14달러가 현재가 대비 +10.3%여서 실적만 받쳐주면 재평가 여지가 있습니다.",
           "valid": true,
           "invalid_reason": ""
         }
       }
     },
     "period_changes": {
-      "7d": "+0.35%",
-      "30d": "-13.33%"
+      "7d": "+1.48%",
+      "30d": "-11.95%"
     },
     "sec_filing_tags": [
       "기타 공시",
@@ -407,42 +419,42 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 54,
-      "reason": "실적 D-4 / 최근 시그널 승률 29% (2/7) / 섹터 대비 -3.8%",
+      "conviction": 60,
+      "reason": "실적 D-2 / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다.",
       "valid_until": "2026-05-01",
       "factors": {
-        "catalyst_recency": 15.0,
+        "catalyst_recency": 20.0,
         "earnings_pattern": 0.0,
         "fundamentals": 10.0,
         "macro_event": 6.0,
         "macro_regime": 2.0,
-        "momentum": 8.0,
+        "momentum": 6.0,
         "news_tone": 0.0,
         "peer_rank": 0.0,
-        "policy_tailwind": 0.0,
+        "policy_tailwind": 1.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 10.0,
-        "signal_track_record": -10.0,
+        "signal_track_record": 0.0,
         "valuation": 12.0
       },
       "factor_reasoning": {
-        "catalyst_recency": "실적 D-4",
+        "catalyst_recency": "실적 D-2",
         "earnings_pattern": "서프라이즈 추세 안정 / 평균 서프라이즈 +0.0%",
-        "fundamentals": "선행 EPS 성장 +50.1% / 기관 보유 67.6%",
+        "fundamentals": "선행 EPS 성장 +51.8% / 기관 보유 67.6%",
         "macro_event": "원유 공급 차질은 에너지 밸류체인에 우호적일 수 있습니다.",
         "macro_regime": "risk_on 레짐에서 energy 섹터 편향 +2",
-        "momentum": "섹터 대비 -3.8%",
+        "momentum": "섹터 대비 -5.3%",
         "news_tone": "뉴스 톤이 중립",
         "peer_rank": "peer percentile 기준 특이 우위는 제한적입니다",
-        "policy_tailwind": "정책 임팩트 +0.00 — XOM은 energy_policy 노출이 있으나, 이번 사안은 영국 전력 인터커넥터 면허 조건 변경으로 전력망 규제 성격이 강하다. 석유·가스 중심 사업과의 직접 연결성은 낮아 중립적으로 판단된다.",
+        "policy_tailwind": "정책 임팩트 +0.12 — 에너지 메이저로서 EU의 대러 제재 강화는 글로벌 에너지 물류·거래 규제 불확실성을 높여 간접 영향이 있다.",
         "portfolio_risk": "현재 포트폴리오 집중 리스크 감점 요인은 크지 않음",
         "regime_adjustment": "리스크온 환경의 중립 업종",
-        "signal_track_record": "최근 시그널 승률 29% (2/7)",
+        "signal_track_record": "최근 시그널 승률 33% (3/9)",
         "valuation": "대체로 적정 가치 범위에 위치합니다."
       },
       "ensemble_agreement": "single",
       "final_consensus": "single",
-      "raw_conviction": 57,
+      "raw_conviction": 64,
       "confidence_meta": {
         "data_quality": 1.0,
         "evidence_coverage": 1.0,
@@ -451,6 +463,5 @@
         "confidence_gate": 0.848
       }
     }
-  },
-  "intraday_refreshed_at": "2026-04-27T20:55:05"
+  }
 }

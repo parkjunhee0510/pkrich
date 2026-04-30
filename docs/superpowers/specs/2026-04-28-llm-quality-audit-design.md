@@ -69,7 +69,7 @@ tests/eval/
 ├── test_runner.py
 ├── fixtures/              # 작은 합성 daily JSON·로그
 └── checks/
-    └── test_<id>.py × 14
+    └── test_<id>.py × 13
 
 docs/reports/
 └── llm-audit-YYYY-MM-DD.md
@@ -421,7 +421,7 @@ JSON:   output/data/llm_audit/2026-04-28.json
 - 타입 힌트 strict (mypy 활성 시 `src/eval/**/*.py` 포함)
 - frozen dataclass 우선
 - 커버리지 목표:
-  - `src/eval/checks/*.py`: 단위 100% (14 체크 × 평균 3 케이스 = 42 테스트)
+  - `src/eval/checks/*.py`: 단위 100%
   - `runner.py`, `report.py`, `data_sources.py`: ≥85%
   - `replay.py` 분기: ≥90%
 
@@ -429,7 +429,7 @@ JSON:   output/data/llm_audit/2026-04-28.json
 
 | 그룹 | 목표 |
 |------|------|
-| 단위 테스트 (14×3) | < 5초 |
+| 단위 테스트 (13×3) | < 5초 |
 | 통합 테스트 | < 10초 |
 | 전체 `tests/eval/` | < 15초 |
 

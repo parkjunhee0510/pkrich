@@ -51,6 +51,7 @@ class I2Missingness(BaseCheck):
             pass_rate=1.0 - worst_rate,
             findings=tuple(findings[:50]),
             metrics={"worst_field_missing_rate": worst_rate,
+                     "sample_count": float(sum(per_field_total.values())),
                      **{f"rate_{k}": v for k, v in rates.items()}},
             recommendation=(
                 f"{worst_field} missingness {worst_rate:.0%}; review collector for that field."

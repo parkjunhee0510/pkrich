@@ -35,6 +35,16 @@ def _read_json(p: Path) -> dict[str, Any] | None:
     return json.loads(p.read_text(encoding="utf-8"))
 
 
+def _record_date(payload: dict[str, Any]) -> date | None:
+    raw_date = payload.get("date")
+    if raw_date is None and isinstance(payload.get("payload"), dict):
+        raw_date = payload["payload"].get("date")
+    try:
+        return date.fromisoformat(str(raw_date))
+    except (TypeError, ValueError):
+        return None
+
+
 def _read_jsonl(p: Path) -> list[dict[str, Any]]:
     if not p.exists():
         return []
@@ -82,6 +92,11 @@ def load_window(
             payload = _read_json(base / f"{d.isoformat()}.json")
             if payload is not None:
                 per_day[d] = payload
+        latest_payload = _read_json(root / "output" / "data" / "tickers" / ticker / "latest.json")
+        if latest_payload is not None:
+            latest_date = _record_date(latest_payload)
+            if latest_date in days and latest_date not in per_day:
+                per_day[latest_date] = latest_payload
         daily[ticker] = per_day
 
     summaries: dict[date, dict] = {}

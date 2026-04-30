@@ -81,6 +81,8 @@ Current responsibilities:
 * Write sharded JSON payloads for web consumption
 * Write portfolio, weekly summary, routing, quality, and cost artifacts
 * Emit auxiliary outputs such as sector explorer payloads and intraday refresh payloads
+* Write API status for the calendar run date, even when market data resolves to an earlier effective market date
+* Sync `analysis_quality.json` into `web/public/output/data/` when the static web app is present
 
 Important output families:
 * `output/data/index.json`
@@ -90,6 +92,8 @@ Important output families:
 * `output/data/analysis_quality.json`
 * `output/data/cost_log.json`
 * `output/data/routing_outcome.json`
+* `docs/reports/llm-audit-YYYY-MM-DD.md`
+* `output/data/llm_audit/YYYY-MM-DD.json`
 
 ### 6. Store
 

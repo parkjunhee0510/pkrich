@@ -30,6 +30,7 @@ class I3FormatConsistency(BaseCheck):
         formats_seen: set[str] = set()
         examples: dict[str, str] = {}
         affected: set[str] = set()
+        total_values = 0
         for ticker, days in dataset.daily.items():
             for d, record in days.items():
                 refs = (record.get("payload") or {}).get("news_references") or []
@@ -37,6 +38,7 @@ class I3FormatConsistency(BaseCheck):
                     pa = ref.get("published_at")
                     if not pa:
                         continue
+                    total_values += 1
                     cls = _classify(str(pa))
                     if cls not in formats_seen:
                         examples[cls] = str(pa)
@@ -60,6 +62,6 @@ class I3FormatConsistency(BaseCheck):
             severity=sev,
             pass_rate=1.0 if count <= 1 else (1.0 / count),
             findings=(finding,) if formats_seen else (),
-            metrics={"format_count": float(count)},
+            metrics={"format_count": float(count), "sample_count": float(total_values)},
             recommendation=rec,
         )

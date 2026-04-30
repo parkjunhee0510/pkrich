@@ -1,17 +1,44 @@
 {
+  "schema_version": 1,
   "runs": [
+    {
+      "run_date": "2026-04-29",
+      "success": true,
+      "daily_api_cost_usd": 0.26467925,
+      "batch_count": 0,
+      "validated_ticker_count": 145,
+      "validation_failure_count": 6,
+      "schema_violation_count": 0,
+      "fact_warning_count": 5,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 3,
+      "hallucination_ratio": 0.0207
+    },
+    {
+      "run_date": "2026-04-28",
+      "success": true,
+      "daily_api_cost_usd": 0.278106,
+      "batch_count": 0,
+      "validated_ticker_count": 146,
+      "validation_failure_count": 7,
+      "schema_violation_count": 0,
+      "fact_warning_count": 4,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 4,
+      "hallucination_ratio": 0.0274
+    },
     {
       "run_date": "2026-04-27",
       "success": true,
-      "daily_api_cost_usd": 0.237562,
+      "daily_api_cost_usd": 0.2762833,
       "batch_count": 0,
-      "validated_ticker_count": 140,
-      "validation_failure_count": 8,
+      "validated_ticker_count": 150,
+      "validation_failure_count": 7,
       "schema_violation_count": 0,
-      "fact_warning_count": 9,
+      "fact_warning_count": 4,
       "consistency_warning_count": 0,
-      "hallucination_warning_count": 1,
-      "hallucination_ratio": 0.0071
+      "hallucination_warning_count": 4,
+      "hallucination_ratio": 0.0267
     },
     {
       "run_date": "2026-04-24",
@@ -184,16 +211,16 @@
     }
   ],
   "latest": {
-    "run_date": "2026-04-27",
+    "run_date": "2026-04-29",
     "success": true,
-    "daily_api_cost_usd": 0.237562,
+    "daily_api_cost_usd": 0.26467925,
     "batch_count": 0,
-    "validated_ticker_count": 140,
-    "validation_failure_count": 8,
+    "validated_ticker_count": 145,
+    "validation_failure_count": 6,
     "schema_violation_count": 0,
-    "fact_warning_count": 9,
+    "fact_warning_count": 5,
     "consistency_warning_count": 0,
-    "hallucination_warning_count": 1,
-    "hallucination_ratio": 0.0071
+    "hallucination_warning_count": 3,
+    "hallucination_ratio": 0.0207
   }
 }

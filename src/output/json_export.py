@@ -5,6 +5,7 @@ import csv
 import json
 import shutil
 from datetime import date
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
 
@@ -329,21 +330,21 @@ def _serialize_analysis(
             "sec_filing_tags": collect_sec_filing_tags(analysis.news_references),
             "sec_filings": sort_sec_filings(collect_sec_filings(analysis.news_references)),
         }
+    news_references = _serialize_news_references(analysis.news_references)
+    key_news_source_titles = [
+        ref["title"]
+        for ref in news_references[:len(analysis.key_news)]
+        if str(ref.get("title", "")).strip()
+    ]
     result: dict[str, Any] = {
         "ticker": analysis.ticker,
         "name": analysis.name,
         "date": analysis.date,
         "summary": analysis.summary,
         "key_news": analysis.key_news,
-        "news_references": [
-            {
-                "title": ref.title,
-                "source": ref.source,
-                "published_at": ref.published_at,
-                "link": ref.link,
-            }
-            for ref in analysis.news_references
-        ],
+        "key_news_source_titles": key_news_source_titles,
+        "key_news_reference_indices": list(range(len(key_news_source_titles))),
+        "news_references": news_references,
         "financial_highlights": analysis.financial_highlights,
         "risks_or_watchpoints": analysis.risks_or_watchpoints,
         "signal_or_takeaway": analysis.signal_or_takeaway,
@@ -371,6 +372,32 @@ def _serialize_analysis(
     if decision is not None:
         result["decision"] = _serialize_decision(decision, analysis_consensus=getattr(analysis, "analysis_consensus", {}))
     return result
+
+
+def _serialize_news_references(news_references: list[Any]) -> list[dict[str, str]]:
+    return [
+        {
+            "title": str(getattr(ref, "title", "") or ""),
+            "source": str(getattr(ref, "source", "") or ""),
+            "published_at": _normalize_published_at(str(getattr(ref, "published_at", "") or "")),
+            "link": str(getattr(ref, "link", "") or ""),
+        }
+        for ref in news_references
+    ]
+
+
+def _normalize_published_at(value: str) -> str:
+    text = value.strip()
+    if not text:
+        return ""
+    try:
+        return date.fromisoformat(text[:10]).isoformat()
+    except ValueError:
+        pass
+    try:
+        return parsedate_to_datetime(text).date().isoformat()
+    except (TypeError, ValueError, IndexError, OverflowError):
+        return text
 
 
 def _serialize_market_regime(regime: MarketRegime | None) -> dict[str, Any]:

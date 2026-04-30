@@ -40,6 +40,12 @@ class TestD2(unittest.TestCase):
         result = D2CommitteeAgreement().run(ds)
         self.assertEqual(result.severity, "fail")
 
+    def test_info_when_no_committee_decisions_are_evaluated(self):
+        ds = make_dataset(tickers=("AAPL",), end=date(2026, 4, 28), logs=())
+        result = D2CommitteeAgreement().run(ds)
+        self.assertEqual(result.severity, "info")
+        self.assertEqual(result.metrics["sample_count"], 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

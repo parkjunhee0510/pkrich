@@ -55,7 +55,7 @@ async function fetchJson<T>(url: string, refreshToken: number): Promise<T | null
 // The day is identified by vix=N/A AND market_overview[0].change=N/A AND
 // market_regime.confidence=0. Without this guard, the dashboard would
 // pick the empty day as latest and show every metric as N/A.
-function isEmptyDay(day: any): boolean {
+function isEmptyDay(day: Pick<DailyEntry, 'macro_context' | 'market_overview' | 'market_regime'>): boolean {
   const vix = day?.macro_context?.vix?.level
   const mo = (day?.market_overview ?? [])[0]?.change
   const conf = day?.market_regime?.confidence

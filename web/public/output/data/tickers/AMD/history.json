@@ -180,7 +180,7 @@
       ],
       "news_tone": {
         "label": "bullish",
-        "score": 2.0
+        "score": 2
       },
       "trade_frame": {
         "entry_price": "현재가 245.04 또는 눌림 시 234.19 USD",
@@ -415,7 +415,7 @@
       ],
       "news_tone": {
         "label": "bullish",
-        "score": 2.0
+        "score": 2
       },
       "trade_frame": {
         "entry_price": "현재가 245.04 또는 눌림 시 234.19 USD",
@@ -655,7 +655,7 @@
         "label": "bullish",
         "confidence": 4,
         "reasoning": "실적 서프라이즈 연속성과 EPS 추정치 급등이 긍정적이지만, 과매수와 고평가가 단기 경계 요인입니다.",
-        "score": 4.0
+        "score": 4
       },
       "trade_frame": {
         "entry_price": "현재가 245.04달러 또는 233.34-239.73달러 눌림 시",
@@ -947,7 +947,7 @@
         "label": "neutral",
         "confidence": 3,
         "reasoning": "AI 수요와 강한 주가 모멘텀이 긍정적이지만, 1분기 약세 전망과 PER 94.21x, RSI 70.8 과열이 동시에 존재합니다.",
-        "score": 0.0
+        "score": 0
       },
       "trade_frame": {
         "entry_price": "현재가 246.83 USD 또는 233.34-236.50 USD 눌림 시",
@@ -1076,9 +1076,9 @@
         "reason": "모멘텀 양호 (+18점) / 시장 환경 양호 (+15점) / 펀더멘털 양호 (+10점)",
         "valid_until": "2026-05-05",
         "factors": {
-          "valuation": 6.0,
-          "momentum": 18.0,
-          "catalyst_recency": 5.0,
+          "valuation": 6,
+          "momentum": 18,
+          "catalyst_recency": 5,
           "signal_track_record": 0,
           "news_tone": 0,
           "regime_adjustment": 15,
@@ -1279,7 +1279,7 @@
         "label": "neutral",
         "confidence": 4,
         "reasoning": "AI 수요에 대한 기대는 강하지만, 1분기 약세 전망과 최근 컨센서스 하향 조정이 있어 단기적으로는 과열 경계가 필요합니다.",
-        "score": 0.0
+        "score": 0
       },
       "trade_frame": {
         "entry_price": "현재가 255.07 USD 또는 245.00-252.41 USD 눌림 시",
@@ -1406,13 +1406,13 @@
         "reason": "모멘텀 호재 (+17점) / 시장 환경 호재 (+15점) / 펀더멘털 호재 (+10점)",
         "valid_until": "2026-05-05",
         "factors": {
-          "valuation": 6.0,
-          "momentum": 17.0,
-          "catalyst_recency": 5.0,
+          "valuation": 6,
+          "momentum": 17,
+          "catalyst_recency": 5,
           "signal_track_record": 0,
           "news_tone": 0,
           "regime_adjustment": 15,
-          "earnings_pattern": 0.0,
+          "earnings_pattern": 0,
           "fundamentals": 10
         }
       }
@@ -1735,16 +1735,16 @@
         "reason": "섹터 대비 +23.6% / SMA50·SMA200 위 / 리스크온 환경에서 공격주 선호 / 선행 EPS 성장 +316.5% / 기관 보유 72.2%",
         "valid_until": "2026-05-05",
         "factors": {
-          "catalyst_recency": 5.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 10.0,
-          "momentum": 17.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": -6.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 0.0,
-          "valuation": 8.0
+          "catalyst_recency": 5,
+          "earnings_pattern": 0,
+          "fundamentals": 10,
+          "momentum": 17,
+          "news_tone": 0,
+          "peer_rank": 0,
+          "portfolio_risk": -6,
+          "regime_adjustment": 15,
+          "signal_track_record": 0,
+          "valuation": 8
         },
         "ensemble_agreement": "single"
       }
@@ -2082,16 +2082,16 @@
         "reason": "섹터 대비 +24.1% / SMA50·SMA200 위 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (3/3)",
         "valid_until": "2026-05-05",
         "factors": {
-          "catalyst_recency": 5.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 10.0,
-          "momentum": 17.0,
-          "news_tone": 0.0,
-          "peer_rank": 0.0,
-          "portfolio_risk": -6.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 8.0
+          "catalyst_recency": 5,
+          "earnings_pattern": 0,
+          "fundamentals": 10,
+          "momentum": 17,
+          "news_tone": 0,
+          "peer_rank": 0,
+          "portfolio_risk": -6,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 8
         },
         "ensemble_agreement": "agree",
         "final_consensus": "agree"
@@ -2440,17 +2440,17 @@
         "reason": "섹터 대비 +22.2% / SMA50·SMA200 위 / 리스크온 환경에서 공격주 선호 / 최근 시그널 승률 100% (4/4)",
         "valid_until": "2026-05-05",
         "factors": {
-          "catalyst_recency": 10.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 10.0,
-          "macro_event": -5.0,
-          "momentum": 17.0,
-          "news_tone": 0.0,
-          "peer_rank": 5.0,
-          "portfolio_risk": -6.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 8.0
+          "catalyst_recency": 10,
+          "earnings_pattern": 0,
+          "fundamentals": 10,
+          "macro_event": -5,
+          "momentum": 17,
+          "news_tone": 0,
+          "peer_rank": 5,
+          "portfolio_risk": -6,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 8
         },
         "ensemble_agreement": "agree",
         "final_consensus": "agree"
@@ -2789,18 +2789,18 @@
         "reason": "섹터 대비 +27.4% / SMA50·SMA200 위 / 최근 시그널 승률 100% (5/5) / 리스크온 환경에서 공격주 선호",
         "valid_until": "2026-05-05",
         "factors": {
-          "catalyst_recency": 10.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 10.0,
-          "macro_event": -8.0,
-          "macro_regime": 5.0,
-          "momentum": 17.0,
-          "news_tone": 5.0,
-          "peer_rank": 5.0,
-          "portfolio_risk": -6.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 8.0
+          "catalyst_recency": 10,
+          "earnings_pattern": 0,
+          "fundamentals": 10,
+          "macro_event": -8,
+          "macro_regime": 5,
+          "momentum": 17,
+          "news_tone": 5,
+          "peer_rank": 5,
+          "portfolio_risk": -6,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 8
         },
         "ensemble_agreement": "single",
         "final_consensus": "single"
@@ -3113,7 +3113,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "AI 수요와 2030년까지의 장기 이익 성장 기대는 강하지만, 현재 주가는 52주 고점 부근과 RSI 과열 구간에 있어 단기 추가 상승 여력보다 변동성 리스크가 큽니다. 실적 전까지는 촉매 지속성은 유효하나 밸류에이션 부담과 목표가 상회 구간을 감안하면 추격매수보다는 실적 확인 후 재평가가 적절합니다.",
             "valid": true,
@@ -3125,7 +3125,7 @@
             "profile": "economy",
             "stance": "reduce",
             "action": "avoid",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "PER 115.8x와 P/B 7.85x로 기대가 과도하게 반영됐고, 애널리스트 목표가도 현재가보다 낮아 밸류에이션 부담과 하방 비대칭이 큽니다. 실적은 최근 개선됐지만 TTM EPS 2.62와 ROE 6.9%, FCF Yield 1.9%를 감안하면 이익의 질 대비 가격이 너무 높아 단기 조정 위험이 큽니다.",
             "valid": true,
@@ -3137,7 +3137,7 @@
             "profile": "economy",
             "stance": "reduce",
             "action": "avoid",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "현재 가격은 52주 고점 부근이며 RSI 과열과 급등 이후 되돌림 위험이 커서 단기 추격매수는 불리합니다. 핵심 무효화는 50일선 215.30 하회이며, 이탈 시 상승 추세 훼손 가능성이 높아집니다.",
             "valid": true,
@@ -3149,7 +3149,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "금리 하락 기대와 AI 성장 모멘텀이 기술주 전반을 지지하고 있어 거시 환경은 우호적입니다. 다만 AMD는 52주 고점 부근에서 과열과 높은 밸류에이션 부담이 커, 실적 전까지는 추세 추종보다 관망이 적절합니다.",
             "valid": true,
@@ -3207,18 +3207,18 @@
         "reason": "섹터 대비 +31.6% / SMA50·SMA200 위 / 상대 거래량 1.32배 / 최근 시그널 승률 100% (6/6) / 리스크온 환경에서 공격주 선호",
         "valid_until": "2026-05-05",
         "factors": {
-          "catalyst_recency": 10.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 10.0,
-          "macro_event": -5.0,
-          "macro_regime": 5.0,
-          "momentum": 19.0,
-          "news_tone": 5.0,
-          "peer_rank": 8.0,
-          "portfolio_risk": -6.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 8.0
+          "catalyst_recency": 10,
+          "earnings_pattern": 0,
+          "fundamentals": 10,
+          "macro_event": -5,
+          "macro_regime": 5,
+          "momentum": 19,
+          "news_tone": 5,
+          "peer_rank": 8,
+          "portfolio_risk": -6,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 8
         },
         "factor_reasoning": {
           "catalyst_recency": "실적 D-12",
@@ -3238,8 +3238,8 @@
         "final_consensus": "single",
         "raw_conviction": 75,
         "confidence_meta": {
-          "data_quality": 1.0,
-          "evidence_coverage": 1.0,
+          "data_quality": 1,
+          "evidence_coverage": 1,
           "evidence_consistency": 0.6,
           "model_agreement": 0.6,
           "confidence_gate": 0.86
@@ -3563,7 +3563,7 @@
             "profile": "economy",
             "stance": "buy",
             "action": "buy",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "AMD는 2025-Q4 매출 10.27B와 EPS 0.92로 컨센서스에 근접했고, 최근 3개 분기 매출이 7.44B→7.68B→9.25B→10.27B로 가속되고 있어 AI 칩 수요가 실적에 반영되는 흐름이 보입니다. 다만 PER 117.4x와 30일 +38.62% 급등, 52주 고점 310.22달러 근접은 단기 추격 리스크가 있어 2026-05-05 실적에서 추가 상향이 확인될 때까지는 buy가 적절합니다.",
             "valid": true,
@@ -3575,7 +3575,7 @@
             "profile": "economy",
             "stance": "reduce",
             "action": "avoid",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "PER 117.4x와 P/B 7.90x는 ROE 6.9%, ROIC 5.5% 대비 너무 비싸고, FCF Yield 1.9%는 현금창출 대비 멀티플 부담이 큽니다. 목표가 292.39 USD 대비 현재가 305.33 USD로 업사이드가 -4.2%인데도 RSI 83.6, 52W High 310.22 USD 근처라 실적 전까지는 상방보다 조정 리스크가 더 커 보입니다.",
             "valid": true,
@@ -3587,7 +3587,7 @@
             "profile": "economy",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "현재가 305.33은 52주 고점 310.22의 98%까지 올라와 있고 RSI 83.6으로 과열 구간이라, 310.22 돌파 실패 시 294.35와 1.5×ATR 기준 321.80 사이에서 먼저 변동성 되돌림을 경계해야 합니다. 다만 명확한 추세 훼손은 50일선 218.89 이탈이므로, 그 전까지는 약세 경고는 가능해도 손절형 강한 반대는 아닙니다.",
             "valid": true,
@@ -3599,7 +3599,7 @@
             "profile": "economy",
             "stance": "buy",
             "action": "buy",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "AMD는 305.33달러로 200D SMA 205.55와 50D SMA 218.89를 크게 상회해 리스크온 레짐에서 장기금리 하락과 달러 약세에 가장 민감한 고베타 반도체 모멘텀주로 볼 수 있습니다. 다만 52W High 310.22달러의 98% 구간이고 P/E 117.43, P/B 7.90로 밸류에이션 압축 위험이 커서, 국채금리 반등이나 섹터 로테이션이 나오면 상대강도(+24.67% vs Sector ETF)가 빠르게 훼손될 수 있습니다.",
             "valid": true,
@@ -3657,18 +3657,18 @@
         "reason": "섹터 대비 +24.7% / SMA50·SMA200 위 / 최근 시그널 승률 100% (6/6) / 리스크온 환경에서 공격주 선호 / 데이터 품질과 모델 판단 차이를 반영해 70점에서 65점으로 보수 조정",
         "valid_until": "2026-05-05",
         "factors": {
-          "catalyst_recency": 10.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 10.0,
-          "macro_event": -5.0,
-          "macro_regime": 5.0,
-          "momentum": 17.0,
-          "news_tone": 0.0,
-          "peer_rank": 5.0,
-          "portfolio_risk": -6.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 8.0
+          "catalyst_recency": 10,
+          "earnings_pattern": 0,
+          "fundamentals": 10,
+          "macro_event": -5,
+          "macro_regime": 5,
+          "momentum": 17,
+          "news_tone": 0,
+          "peer_rank": 5,
+          "portfolio_risk": -6,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 8
         },
         "factor_reasoning": {
           "catalyst_recency": "실적 D-11",
@@ -3689,7 +3689,7 @@
         "raw_conviction": 70,
         "confidence_meta": {
           "data_quality": 0.84,
-          "evidence_coverage": 1.0,
+          "evidence_coverage": 1,
           "evidence_consistency": 0.54,
           "model_agreement": 0.9,
           "confidence_gate": 0.829
@@ -4022,7 +4022,7 @@
             "profile": "economy",
             "stance": "buy",
             "action": "buy",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "AMD는 현재가 347.81달러로 30일 +72.19%, 52주 고점 352.99달러의 98%까지 올라 단기 과열 부담은 있지만, AI 칩 수요에 따른 4분기 매출 가이던스 상향이 핵심 상방 촉매입니다. 다만 실적 발표가 8일 남았고 SMA50 221.57달러 대비 괴리가 커서, 추세 추격보다는 5/5 AMC 실적에서 가이던스와 EPS 가속이 확인될 때 추가 확장 여지가 커 보입니다.",
             "valid": true,
@@ -4034,7 +4034,7 @@
             "profile": "economy",
             "stance": "reduce",
             "action": "avoid",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "현재가 347.81달러는 애널리스트 목표가 295.76달러 대비 15.0% 높고, 선행 PER 133.26배·P/B 9.00배라서 기대가 이미 많이 선반영됐습니다. 30일간 +72.19% 급등한 뒤 RSI 88.9, 52주 고점 352.99달러의 98% 근처라서 실적 전까지는 상방보다 221.57달러(SMA50) 혹은 목표가 회귀 리스크가 더 큽니다.",
             "valid": true,
@@ -4046,7 +4046,7 @@
             "profile": "deep",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "현재가 347.81달러는 52주 고점 352.99달러의 98%로, RSI(14) 88.9 과열과 2.15x 거래대금이 겹쳐 단기 되돌림 리스크가 큽니다. 하방 불이탈 기준은 50D SMA 221.57달러지만, 그 전에는 334.54달러 일중 저점 이탈과 305.33달러 구간 붕괴가 먼저 추세 약화 신호로 보이며, 2026-05-05 실적 전까지는 600달러 PUT 집중이 상단 저항/변동성 확대 경고로 작동합니다.",
             "valid": true,
@@ -4058,7 +4058,7 @@
             "profile": "deep",
             "stance": "watch",
             "action": "watch",
-            "confidence": 0.0,
+            "confidence": 0,
             "strong_objection": false,
             "summary": "AMD는 347.81달러로 200D SMA 206.60 대비 +68.35%, 50D SMA 221.57 대비 +56.97%에 있어 금리 하락·리스크온 환경의 베타 수혜가 이미 크게 선반영된 상태입니다. 다만 133.26배의 Trailing P/E와 9.00배의 P/B는 장기금리 재상승이나 달러 강세, 성장주 로테이션 약화에 매우 취약해 52W High 352.99 근처에서는 추격보다 대기 관점이 적절합니다.",
             "valid": true,
@@ -4116,19 +4116,19 @@
         "reason": "섹터 대비 +48.9% / SMA50·SMA200 위 / 상대 거래량 2.15배 / 최근 시그널 승률 100% (7/7) / 리스크온 환경에서 공격주 선호",
         "valid_until": "2026-05-05",
         "factors": {
-          "catalyst_recency": 10.0,
-          "earnings_pattern": 0.0,
-          "fundamentals": 10.0,
-          "macro_event": -5.0,
-          "macro_regime": 5.0,
-          "momentum": 19.0,
-          "news_tone": 0.0,
-          "peer_rank": 8.0,
-          "policy_tailwind": -2.0,
-          "portfolio_risk": -6.0,
-          "regime_adjustment": 15.0,
-          "signal_track_record": 15.0,
-          "valuation": 4.0
+          "catalyst_recency": 10,
+          "earnings_pattern": 0,
+          "fundamentals": 10,
+          "macro_event": -5,
+          "macro_regime": 5,
+          "momentum": 19,
+          "news_tone": 0,
+          "peer_rank": 8,
+          "policy_tailwind": -2,
+          "portfolio_risk": -6,
+          "regime_adjustment": 15,
+          "signal_track_record": 15,
+          "valuation": 4
         },
         "factor_reasoning": {
           "catalyst_recency": "실적 D-8",
@@ -4148,6 +4148,934 @@
         "ensemble_agreement": "agree",
         "final_consensus": "agree",
         "raw_conviction": 69,
+        "confidence_meta": {
+          "data_quality": 1,
+          "evidence_coverage": 1,
+          "evidence_consistency": 0.54,
+          "model_agreement": 0.9,
+          "confidence_gate": 0.893
+        }
+      }
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices, Inc.",
+      "summary": "현재 주가는 30일 기준 +65.67%로 급등했고 52주 고점의 93% 부근에 있어 과열 부담이 큽니다. 다음 촉매는 2026-05-05 실적 발표이며, 직전 실적은 기대를 상회하는 흐름이었습니다.",
+      "key_news": [
+        "4분기 매출 가이던스가 예상 상회",
+        "강한 AI 칩 수요에 상승",
+        "SEC에 주주총회 위임장 제출",
+        "SEC에 8-K 중요 공시 제출"
+      ],
+      "key_news_source_titles": [
+        "[기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+        "AMD forecasts fourth-quarter revenue above estimates on strong AI chip demand - Reuters",
+        "Intel forecasts second-quarter revenue above estimates, shares jump 19% - Reuters",
+        "[주주총회] ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출"
+      ],
+      "key_news_reference_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "news_references": [
+        {
+          "title": "[기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "source": "SEC EDGAR",
+          "published_at": "2026-02-24",
+          "link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm"
+        },
+        {
+          "title": "AMD forecasts fourth-quarter revenue above estimates on strong AI chip demand - Reuters",
+          "source": "Reuters",
+          "published_at": "2025-11-04",
+          "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNS0g1dEZaNHBMZHpORFRlMTJ0S1E2T3o5c05IRHpDd1Z2Q1pjNTd2S0R3TS02bFp3RDFGVUdkUkdrbzUtZzBpY3lzdUVWV29LSldVOXI1dlQyX28xZ3hPazN3ejhGOVRINkxQd2hEY3hxdzdaWmZPS2xfNDJpeFZCR1J4RG1LV1BvQWRjUzBfOGxfU25WUHJtaGFDNTZNZw?oc=5"
+        },
+        {
+          "title": "Intel forecasts second-quarter revenue above estimates, shares jump 19% - Reuters",
+          "source": "Reuters",
+          "published_at": "2026-04-23",
+          "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPRG9SNXFudndRNktiSzBjWF9sZVY1X0RBeU56b1pySXIxc2JXNkd0Q0FVNm54UFFTVWh6MGI4MTNna2hIbXJsenNYV0h1VUNjb0Q3c2JuUGt1Yloxc2hKTm9tN0g2dmJGYW42V3p0d1UwUVd1QUNVcDZFSlQ0bTBmbFBvWDVNb3VjX0wtVXhXR3FWRzdNTlRvcS1ldXBKMXB1TmNoSDdkLWxnT0tsWGZB?oc=5"
+        },
+        {
+          "title": "[주주총회] ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+          "source": "SEC EDGAR",
+          "published_at": "2026-03-27",
+          "link": "https://www.sec.gov/Archives/edgar/data/2488/000119312526129057/d85856ddef14a.htm"
+        },
+        {
+          "title": "Wall Street drifts around its records as AMD rallies - AP News",
+          "source": "AP News",
+          "published_at": "2025-11-12",
+          "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNSGtOUzVUcDladWtzZS1WQ1N2aGQ1MFFDZVBfZFZXZ0g1WW9lRlJkVG1vRnhpblgwZF9ULUdzc0ppYXIzOVE0dnNwU2JocG1xZmYzT3VxOFBZRWpwSUZoNDVGdVFzZzV1cEtVTVktT1o3Q3dCOFZhdC12TUJBQWxNTUtNdWFjM2tmNVhOblVhRzEwZTRSNVFmT01kYw?oc=5"
+        }
+      ],
+      "financial_highlights": [
+        "PER 128.2x / valuation score 2/10",
+        "Forward EPS 11.01, TTM EPS 2.61",
+        "EPS Growth +2.17% YoY",
+        "RS vs Sector ETF +42.08%",
+        "RSI 80.2 / overbought"
+      ],
+      "risks_or_watchpoints": [
+        "RSI(14) 80.2(과매수) 상태에서 2026-05-05 실적 발표 전까지 334.63 USD가 221.57 USD(SMA50) 방향으로 되돌림을 보이면 조정 리스크",
+        "현재가 334.63 USD가 52W High 352.99에 근접한 구간에서 2026-05-01 옵션 만기 전 변동성 급증 리스크",
+        "Put OI +2.9% 및 PCR 1.36x가 유지되면 단기 방어적 포지셔닝 확대 리스크",
+        "추천 변경일 2026-04-01의 Buy(downgrading) 상태에서 30D +65.67% 상승분 되돌림이 나오면 추격매수 리스크"
+      ],
+      "signal_or_takeaway": "중립 경계 — 30일 +65.67% 급등과 2026-05-05 실적 전 과열 부담 | 진입 트리거 334.63 지지 확인 | 목표 352.99/356.71달러 | 손절 221.57달러",
+      "data_snapshot": {
+        "Price": "334.63 USD",
+        "Daily Change": "-3.79%",
+        "Market Cap": "545.58B",
+        "Trailing P/E": "128.21",
+        "EPS": "2.61",
+        "52W High": "352.99",
+        "52W Low": "91.87",
+        "50D SMA": "221.57",
+        "200D SMA": "206.60",
+        "Volume": "50.37M",
+        "3M Avg Volume": "38.19M",
+        "Price/Book": "8.66",
+        "Dividend Yield": "N/A",
+        "Sector": "Technology",
+        "Open": "346.56",
+        "High": "349.09",
+        "Low": "328.81",
+        "Close": "334.63",
+        "RS vs Sector ETF": "+42.08%"
+      },
+      "fundamentals": {
+        "market_cap": "545.58B",
+        "trailing_pe": "128.21",
+        "eps": "2.61",
+        "forward_eps": "11.01",
+        "earnings_growth": "+2.17% YoY",
+        "price_to_book": "8.66",
+        "dividend_yield": "N/A",
+        "volume": "50.37M",
+        "avg_volume_3m": "38.19M",
+        "52w_high": "352.99",
+        "52w_low": "91.87",
+        "short_float_pct": "2.20%",
+        "short_ratio": "1.08일",
+        "analyst_target_price": "295.76 USD",
+        "analyst_recommendation": "Buy",
+        "analyst_count": "46명",
+        "held_by_insiders": "0.43%",
+        "held_by_institutions": "72.11%",
+        "implied_volatility": "N/A"
+      },
+      "earnings_setup": {
+        "forward_eps": "11.01 USD/share",
+        "ttm_eps": "2.61 USD/share",
+        "forward_vs_ttm": "+321.84%",
+        "earnings_growth": "+2.17% YoY",
+        "latest_estimated_eps": "1.32 USD/share",
+        "latest_surprise_pct": "+0.16%",
+        "latest_beat_miss": "beat",
+        "next_earnings_event": "2026-05-05 실적 발표 (D-7 · AMC)"
+      },
+      "earnings_surprise_history": {
+        "consecutive_beats": 0,
+        "consecutive_misses": 0,
+        "beat_rate": "N/A",
+        "avg_surprise_pct": "N/A",
+        "pattern": "insufficient_data",
+        "post_earnings_hint": "실적 서프라이즈 데이터 부족으로 패턴 판단 불가",
+        "quarters_analyzed": 1
+      },
+      "earnings_pattern": {
+        "beat_streak": 1,
+        "surprise_trend": "stable",
+        "avg_surprise_pct": "+0.0%",
+        "quarters_analyzed": 4,
+        "pattern_note": "최근 1개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
+      },
+      "price_action": {
+        "atr_14d": "14.72",
+        "atr_percent": "4.40%",
+        "relative_volume": "1.32x",
+        "gap_percent": "-0.36%",
+        "price_vs_sma50": "+51.02%",
+        "price_vs_sma200": "+61.97%",
+        "week52_position": "93%",
+        "rs_vs_spy": "N/A",
+        "rs_vs_sector_etf": "+42.08%"
+      },
+      "quarterly_financials": [
+        {
+          "fiscal_date": "2025-12-31",
+          "quarter": "2025-Q4",
+          "revenue": "10.27B",
+          "operating_income": "1.75B",
+          "eps": "0.92",
+          "estimated_eps": "1.32",
+          "surprise_pct": "+0.16%",
+          "beat_miss": "beat"
+        },
+        {
+          "fiscal_date": "2025-09-30",
+          "quarter": "2025-Q3",
+          "revenue": "9.25B",
+          "operating_income": "1.27B",
+          "eps": "0.75",
+          "estimated_eps": "1.17",
+          "surprise_pct": "+0.02%",
+          "beat_miss": "in-line"
+        },
+        {
+          "fiscal_date": "2025-06-30",
+          "quarter": "2025-Q2",
+          "revenue": "7.68B",
+          "operating_income": "-134,000,000",
+          "eps": "0.54",
+          "estimated_eps": "0.48",
+          "surprise_pct": "-0.01%",
+          "beat_miss": "in-line"
+        },
+        {
+          "fiscal_date": "2025-03-31",
+          "quarter": "2025-Q1",
+          "revenue": "7.44B",
+          "operating_income": "806.00M",
+          "eps": "0.44",
+          "estimated_eps": "0.93",
+          "surprise_pct": "+0.03%",
+          "beat_miss": "in-line"
+        }
+      ],
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "7",
+          "timing": "AMC"
+        }
+      ],
+      "news_tone": {
+        "label": "bullish",
+        "confidence": 2,
+        "reasoning": "AI 칩 수요에 따른 가이던스 상향과 주가 상승 관련 보도가 우세합니다."
+      },
+      "trade_frame": {
+        "entry_price": "현재가 334.63 또는 눌림 시 319.91 USD",
+        "stop_loss": "SMA50 221.57 USD",
+        "target_1": "356.71 USD (1.5×ATR)",
+        "target_2": "애널리스트 목표 295.76 USD",
+        "risk_reward_ratio": "0.2R",
+        "position_size_note": "$59,403 계좌 1% 리스크 기준 약 40주 (ATR $14.72 기반)",
+        "bull_scenario": "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다.",
+        "base_scenario": "334.63 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
+        "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
+        "invalidation_price": "50일 이동평균선인 221.57 USD 아래로 밀리면 약세 시나리오 확인",
+        "watch_period": "2026-05-05 실적 발표 전까지"
+      },
+      "options_summary": {
+        "expiry": "2026-05-01",
+        "atm_call_iv": "77.7%",
+        "atm_put_iv": "77.5%",
+        "put_call_ratio": "1.36x",
+        "iv_percentile_30d": "12th",
+        "tone": "neutral",
+        "unusual_activity": "PUT $250, vol 709, OI 대비 289% ; PUT $590, vol 100, OI 대비 200% ; PUT $540, vol 76, OI 대비 217%",
+        "oi_change": "콜 OI N/A / 풋 OI +2.9%"
+      },
+      "signal_history": [
+        {
+          "date": "2026-04-28",
+          "direction": "neutral",
+          "llm_direction": "neutral",
+          "catalyst": "일반 이슈",
+          "return_5d": "N/A",
+          "note": "334.63 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-27",
+          "direction": "bull",
+          "llm_direction": "bull",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "334.63 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-24",
+          "direction": "bull",
+          "llm_direction": "bull",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "347.81 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
+        },
+        {
+          "date": "2026-04-23",
+          "direction": "neutral",
+          "llm_direction": "neutral",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "305.33 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-22",
+          "direction": "bull",
+          "llm_direction": "neutral",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "303.46 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
+        }
+      ],
+      "sector_comparison": {
+        "summary": "Technology 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
+        "pe_ratio": {
+          "company": "128.21",
+          "peer_average": "48.79x",
+          "difference": null
+        },
+        "rs_vs_spy": {
+          "company": "N/A",
+          "peer_average": "N/A",
+          "difference": null
+        },
+        "price_change_30d": {
+          "company": "+65.67%",
+          "peer_average": "21.09%",
+          "difference": "+44.58"
+        }
+      },
+      "peer_rank": {
+        "per_pctl": 0,
+        "rs_pctl": 83,
+        "roe_pctl": 17,
+        "revenue_growth_pctl": 50,
+        "summary": "PER 하위 0% (저평가), 모멘텀 상위 17%"
+      },
+      "valuation_score": {
+        "score": "2/10",
+        "factors": [
+          "PER 128.2x",
+          "목표가 대비 업사이드 -11.6%",
+          "ROE 6.9%",
+          "FCF Yield 1.9%"
+        ],
+        "assessment": "현재 가격 기준 밸류에이션 부담이 큽니다."
+      },
+      "analysis_consensus": {
+        "status": "not_applicable",
+        "direction_agreement": null,
+        "selection_reason": "cap_exceeded",
+        "third_review_completed": false,
+        "final_consensus": "single"
+      },
+      "committee_analysis": {
+        "status": "economy_only",
+        "agreement_status": "mixed",
+        "deep_review_triggered": false,
+        "deep_review_reasons": [],
+        "roles": {
+          "growth_analyst": {
+            "role": "growth_analyst",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "4분기 매출 가이던스 상회와 AI 칩 수요는 분명한 상방 촉매지만, PER 128.2x로 업종 평균 48.79x 대비 과도하고 30일 +65.67% 급등 뒤 RSI 80.2로 과열입니다. 다음 실적은 2026-05-05 AMC로 촉매가 가까우나, EPS 성장률이 +2.17%에 그쳐 현재는 추격매수보다 실적 재가속 확인 대기입니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "value_skeptic": {
+            "role": "value_skeptic",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "avoid",
+            "action": "avoid",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "PER 128.2x와 P/B 8.66x는 EPS 성장률 +2.17%와 ROE 6.9%에 비해 과도하며, FCF Yield 1.9%도 현재 밸류에이션을 지탱하기엔 부족합니다. 컨센서스 목표가 295.76 USD 대비 현재가 334.63 USD는 -11.6% 하방 괴리이고, RSI 80.2와 30D +65.67% 급등까지 감안하면 실적 전까지 기대수익보다 조정 위험이 더 큽니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "risk_manager": {
+            "role": "risk_manager",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "현재가 334.63은 52주 고점 352.99의 93% 수준이고 50D SMA 221.57, 200D SMA 206.60 위에 있어 추세는 훼손되지 않았지만 RSI(14) 80.2 과열과 2026-05-05 실적/2026-05-01 옵션 만기 전 변동성 급증이 하방 리스크를 키웁니다. 1차 무효화는 50D SMA 221.57 하회이며, 이 레벨을 깨면 단기 조정이 아니라 추세 훼손으로 해석할 수 있어 그 전까지는 보유 관찰이 적절합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "macro_strategist": {
+            "role": "macro_strategist",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "reduce",
+            "action": "avoid",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "AMD는 200D SMA 206.60 대비 +61.97%, 50D SMA 221.57 대비 +51.02%로 금리 하락·리스크온 환경을 강하게 선반영한 상태라, 매크로가 조금만 흔들려도 멀티플 압축 압력이 큽니다. 특히 Trailing P/E 128.21이 섹터 평균 48.79x를 크게 상회하고 30일 +65.67% 급등으로 52주 고점의 93%에 있어, 7일 뒤 실적과 함께 미 국채금리/달러 강세가 재차 나오면 상대강도 42.08% 우위가 빠르게 되돌려질 수 있습니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "pm": {
+            "role": "pm",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.86,
+            "strong_objection": false,
+            "summary": "4분기 매출 가이던스 상회와 AI 칩 수요는 긍정적이지만, PER 128.2x·P/B 8.66x·FCF Yield 1.9%는 30일 +65.67% 급등과 RSI 80.2 과열 구간에서 진입 부담을 키웁니다. 2026-05-05 AMC 실적과 2026-05-01 옵션 만기 전후 변동성 확대가 예상되므로, 현 구간은 추격매수보다 334.63 USD 부근 지지 확인 또는 221.57 USD 이탈 여부를 보는 관찰이 더 적절합니다. 반대 근거로는 애널리스트 46명 Buy와 목표가 295.76 USD가 현재가 334.63 USD보다 11.6% 낮아도, 강한 모멘텀 자체는 추가 상방을 완전히 배제하지 못합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          }
+        }
+      },
+      "period_changes": {
+        "7d": "+21.71%",
+        "30d": "+65.67%"
+      },
+      "sec_filing_tags": [
+        "기타 공시",
+        "주주총회"
+      ],
+      "sec_filings": [
+        {
+          "tag": "주주총회",
+          "title": "ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+          "form_type": "DEF 14A",
+          "item_number": "",
+          "catalyst_type": "medium",
+          "importance_score": 100,
+          "published_at": "2026-03-27",
+          "link": "https://www.sec.gov/Archives/edgar/data/2488/000119312526129057/d85856ddef14a.htm",
+          "source": "SEC EDGAR"
+        },
+        {
+          "tag": "기타 공시",
+          "title": "ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "form_type": "8-K",
+          "item_number": "",
+          "catalyst_type": "medium",
+          "importance_score": 120,
+          "published_at": "2026-02-24",
+          "link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
+          "source": "SEC EDGAR"
+        }
+      ],
+      "decision": {
+        "action": "buy",
+        "conviction": 69,
+        "reason": "섹터 대비 +42.1% / SMA50·SMA200 위 / 상대 거래량 1.32배 / 실적 D-7 / 최근 시그널 승률 100% (9/9)",
+        "valid_until": "2026-05-05",
+        "factors": {
+          "catalyst_recency": 15.0,
+          "earnings_pattern": 0.0,
+          "fundamentals": 10.0,
+          "macro_event": -5.0,
+          "macro_regime": 5.0,
+          "momentum": 19.0,
+          "news_tone": 5.0,
+          "peer_rank": 8.0,
+          "policy_tailwind": -5.0,
+          "portfolio_risk": -6.0,
+          "regime_adjustment": 15.0,
+          "signal_track_record": 15.0,
+          "valuation": 4.0
+        },
+        "factor_reasoning": {
+          "catalyst_recency": "실적 D-7",
+          "earnings_pattern": "연속 상회 1분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.0%",
+          "fundamentals": "선행 EPS 성장 +321.8% / 기관 보유 72.1%",
+          "macro_event": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
+          "macro_regime": "risk_on 레짐에서 technology 섹터 편향 +5",
+          "momentum": "섹터 대비 +42.1% / SMA50·SMA200 위 / 상대 거래량 1.32배",
+          "news_tone": "강세 뉴스지만 가격 확인은 제한적",
+          "peer_rank": "섹터 peer 대비 저평가이면서 상대 모멘텀이 강합니다",
+          "policy_tailwind": "정책 임팩트 -0.59 — AMD는 'export_control_china' 노출이 명시돼 있으며 중국 매출 비중이 15%다. BIS EAR 체계 강화는 중국향 고성능 반도체 판매 제약으로 직접 부정적이다.",
+          "portfolio_risk": "Technology 섹터 비중 57.4%로 과집중 상태",
+          "regime_adjustment": "리스크온 환경에서 공격주 선호",
+          "signal_track_record": "최근 시그널 승률 100% (9/9)",
+          "valuation": "현재 가격 기준 밸류에이션 부담이 큽니다."
+        },
+        "ensemble_agreement": "single",
+        "final_consensus": "single",
+        "raw_conviction": 73,
+        "confidence_meta": {
+          "data_quality": 1.0,
+          "evidence_coverage": 1.0,
+          "evidence_consistency": 0.6,
+          "model_agreement": 0.6,
+          "confidence_gate": 0.86
+        }
+      }
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices, Inc.",
+      "summary": "주가는 323.21달러로 30일 기준 +64.87%이며 SMA50(224.15)·SMA200(207.55) 대비 크게 높아 단기 과열 구간에 가깝습니다. 다음 촉매는 2026-05-05 실적 발표(D-6)이며, 그 전까지는 307.61달러 진입 기준과 224.15달러 손절선 사이에서 변동성 소화가 핵심입니다.",
+      "key_news": [
+        "실적 D-6: AI 칩 수요와 다음 분기 가이던스가 핵심",
+        "이전 분기 매출 전망 상향, AI 수요 호재",
+        "첫 분기 매출 약세 전망으로 변동성 확대",
+        "SEC 8-K 공시: 추가 재료 확인 필요"
+      ],
+      "key_news_source_titles": [
+        "[기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+        "AMD forecasts fourth-quarter revenue above estimates on strong AI chip demand - Reuters",
+        "AMD predicts weaker first-quarter sales, shares plunge on Nvidia comparisons - Reuters",
+        "[주주총회] ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출"
+      ],
+      "key_news_reference_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "news_references": [
+        {
+          "title": "[기타 공시] ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "source": "SEC EDGAR",
+          "published_at": "2026-02-24",
+          "link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm"
+        },
+        {
+          "title": "AMD forecasts fourth-quarter revenue above estimates on strong AI chip demand - Reuters",
+          "source": "Reuters",
+          "published_at": "2025-11-04",
+          "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNS0g1dEZaNHBMZHpORFRlMTJ0S1E2T3o5c05IRHpDd1Z2Q1pjNTd2S0R3TS02bFp3RDFGVUdkUkdrbzUtZzBpY3lzdUVWV29LSldVOXI1dlQyX28xZ3hPazN3ejhGOVRINkxQd2hEY3hxdzdaWmZPS2xfNDJpeFZCR1J4RG1LV1BvQWRjUzBfOGxfU25WUHJtaGFDNTZNZw?oc=5"
+        },
+        {
+          "title": "AMD predicts weaker first-quarter sales, shares plunge on Nvidia comparisons - Reuters",
+          "source": "Reuters",
+          "published_at": "2026-02-03",
+          "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNd1Rtc282V2NCQUdIdFctSDJpQll2bmlvbWJhRm40OGlOaTBVb0xNTVZFczJQNVl2Zy1Yekp5WTRlR2tKSlU3WXpRMzhsUDNramM1X0hLZmNjY2hBMkIwamtvWTNpUS1oM1F0WWlBTlExXzIwcjlEWDk2cmVhUjFFLXRpR3hWdEh3dUFMSUxSdDhHdkIzY3prUkxNaDhvcEJoX3g2Y0lEYjFyZw?oc=5"
+        },
+        {
+          "title": "[주주총회] ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+          "source": "SEC EDGAR",
+          "published_at": "2026-03-27",
+          "link": "https://www.sec.gov/Archives/edgar/data/2488/000119312526129057/d85856ddef14a.htm"
+        },
+        {
+          "title": "Wall Street drifts around its records as AMD rallies - AP News",
+          "source": "AP News",
+          "published_at": "2025-11-12",
+          "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNSGtOUzVUcDladWtzZS1WQ1N2aGQ1MFFDZVBfZFZXZ0g1WW9lRlJkVG1vRnhpblgwZF9ULUdzc0ppYXIzOVE0dnNwU2JocG1xZmYzT3VxOFBZRWpwSUZoNDVGdVFzZzV1cEtVTVktT1o3Q3dCOFZhdC12TUJBQWxNTUtNdWFjM2tmNVhOblVhRzEwZTRSNVFmT01kYw?oc=5"
+        }
+      ],
+      "financial_highlights": [
+        "PER 123.8x, valuation score 4/10",
+        "Forward EPS 11.05, TTM EPS 2.61, EPS 성장률 +2.17% YoY",
+        "ROE 6.9%, ROIC 5.5%",
+        "FCF Yield 1.9%, ND/EBITDA -0.1x, CR 2.85",
+        "RS vs Sector ETF +41.07%, RSI(14) 73.5, MACD 30.23/22.74"
+      ],
+      "risks_or_watchpoints": [
+        "가격이 224.15 USD(SMA50) 아래로 이탈하면 약세 시나리오 확인.",
+        "RSI(14) 73.5로 과매수 구간이므로 323.21 USD 근처에서 반락 여부를 감시.",
+        "2026-05-05 실적 발표 전까지 307.61 USD 눌림 시 추세 재점검 필요.",
+        "PCR 1.37x와 풋 OI -60.6%가 함께 나타나므로 옵션 포지셔닝 급변 여부를 감시."
+      ],
+      "signal_or_takeaway": "중립 관찰 — 실적 D-6 앞둔 고변동성 구간과 과열 부담이 공존 | 진입 트리거 307.61 지지 확인 | 목표 346.61/352.99달러 | 손절 224.15달러",
+      "data_snapshot": {
+        "Price": "323.21 USD",
+        "Daily Change": "-3.41%",
+        "Market Cap": "526.97B",
+        "Trailing P/E": "123.84",
+        "EPS": "2.61",
+        "52W High": "352.99",
+        "52W Low": "91.87",
+        "50D SMA": "224.15",
+        "200D SMA": "207.55",
+        "Volume": "42.03M",
+        "3M Avg Volume": "38.58M",
+        "Price/Book": "8.36",
+        "Dividend Yield": "N/A",
+        "Sector": "Technology",
+        "Open": "311.88",
+        "High": "327.50",
+        "Low": "310.00",
+        "Close": "323.21",
+        "RS vs Sector ETF": "+41.07%"
+      },
+      "fundamentals": {
+        "market_cap": "526.97B",
+        "trailing_pe": "123.84",
+        "eps": "2.61",
+        "forward_eps": "11.05",
+        "earnings_growth": "+2.17% YoY",
+        "price_to_book": "8.36",
+        "dividend_yield": "N/A",
+        "volume": "42.03M",
+        "avg_volume_3m": "38.58M",
+        "52w_high": "352.99",
+        "52w_low": "91.87",
+        "short_float_pct": "2.20%",
+        "short_ratio": "1.08일",
+        "analyst_target_price": "295.76 USD",
+        "analyst_recommendation": "Buy",
+        "analyst_count": "46명",
+        "held_by_insiders": "0.43%",
+        "held_by_institutions": "72.11%",
+        "implied_volatility": "N/A"
+      },
+      "earnings_setup": {
+        "forward_eps": "11.05 USD/share",
+        "ttm_eps": "2.61 USD/share",
+        "forward_vs_ttm": "+323.37%",
+        "earnings_growth": "+2.17% YoY",
+        "latest_estimated_eps": "1.32 USD/share",
+        "latest_surprise_pct": "+0.16%",
+        "latest_beat_miss": "beat",
+        "next_earnings_event": "2026-05-05 실적 발표 (D-6 · AMC)"
+      },
+      "earnings_surprise_history": {
+        "consecutive_beats": 0,
+        "consecutive_misses": 0,
+        "beat_rate": "N/A",
+        "avg_surprise_pct": "N/A",
+        "pattern": "insufficient_data",
+        "post_earnings_hint": "실적 서프라이즈 데이터 부족으로 패턴 판단 불가",
+        "quarters_analyzed": 1
+      },
+      "earnings_pattern": {
+        "beat_streak": 1,
+        "surprise_trend": "stable",
+        "avg_surprise_pct": "+0.0%",
+        "quarters_analyzed": 4,
+        "pattern_note": "최근 1개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
+      },
+      "price_action": {
+        "atr_14d": "15.60",
+        "atr_percent": "4.83%",
+        "relative_volume": "1.09x",
+        "gap_percent": "-6.76%",
+        "price_vs_sma50": "+44.20%",
+        "price_vs_sma200": "+55.73%",
+        "week52_position": "89%",
+        "rs_vs_spy": "N/A",
+        "rs_vs_sector_etf": "+41.07%"
+      },
+      "quarterly_financials": [
+        {
+          "fiscal_date": "2025-12-31",
+          "quarter": "2025-Q4",
+          "revenue": "10.27B",
+          "operating_income": "1.75B",
+          "eps": "0.92",
+          "estimated_eps": "1.32",
+          "surprise_pct": "+0.16%",
+          "beat_miss": "beat"
+        },
+        {
+          "fiscal_date": "2025-09-30",
+          "quarter": "2025-Q3",
+          "revenue": "9.25B",
+          "operating_income": "1.27B",
+          "eps": "0.75",
+          "estimated_eps": "1.17",
+          "surprise_pct": "+0.02%",
+          "beat_miss": "in-line"
+        },
+        {
+          "fiscal_date": "2025-06-30",
+          "quarter": "2025-Q2",
+          "revenue": "7.68B",
+          "operating_income": "-134,000,000",
+          "eps": "0.54",
+          "estimated_eps": "0.48",
+          "surprise_pct": "-0.01%",
+          "beat_miss": "in-line"
+        },
+        {
+          "fiscal_date": "2025-03-31",
+          "quarter": "2025-Q1",
+          "revenue": "7.44B",
+          "operating_income": "806.00M",
+          "eps": "0.44",
+          "estimated_eps": "0.93",
+          "surprise_pct": "+0.03%",
+          "beat_miss": "in-line"
+        }
+      ],
+      "upcoming_events": [
+        {
+          "type": "earnings",
+          "label": "실적 발표",
+          "date": "2026-05-05",
+          "days_until": "6",
+          "timing": "AMC"
+        }
+      ],
+      "news_tone": {
+        "label": "중립-변동성",
+        "confidence": 4,
+        "reasoning": "AI 수요 기대는 강하지만, 직전 약한 가이던스와 풋 우위 흐름이 있어 실적 전 변동성 중심의 중립 톤입니다."
+      },
+      "trade_frame": {
+        "entry_price": "현재가 323.21 또는 눌림 시 307.61 USD",
+        "stop_loss": "SMA50 224.15 USD",
+        "target_1": "346.61 USD (1.5×ATR)",
+        "target_2": "애널리스트 목표 295.76 USD",
+        "risk_reward_ratio": "0.2R",
+        "position_size_note": "$59,425 계좌 1% 리스크 기준 약 38주 (ATR $15.60 기반)",
+        "bull_scenario": "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다.",
+        "base_scenario": "323.21 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
+        "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
+        "invalidation_price": "50일 이동평균선인 224.15 USD 아래로 밀리면 약세 시나리오 확인",
+        "watch_period": "2026-05-05 실적 발표 전까지"
+      },
+      "options_summary": {
+        "expiry": "2026-05-01",
+        "atm_call_iv": "79.8%",
+        "atm_put_iv": "78.2%",
+        "put_call_ratio": "1.37x",
+        "iv_percentile_30d": "14th",
+        "tone": "neutral",
+        "unusual_activity": "PUT $350, vol 500, OI 대비 403% ; PUT $590, vol 100, OI 대비 200% ; PUT $540, vol 52, OI 대비 96%",
+        "oi_change": "콜 OI N/A / 풋 OI -60.6%"
+      },
+      "signal_history": [
+        {
+          "date": "2026-04-28",
+          "direction": "neutral",
+          "llm_direction": "neutral",
+          "catalyst": "일반 이슈",
+          "return_5d": "N/A",
+          "note": "334.63 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-27",
+          "direction": "bull",
+          "llm_direction": "bull",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "334.63 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-24",
+          "direction": "bull",
+          "llm_direction": "bull",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "347.81 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
+        },
+        {
+          "date": "2026-04-23",
+          "direction": "neutral",
+          "llm_direction": "neutral",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "305.33 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+        },
+        {
+          "date": "2026-04-22",
+          "direction": "bull",
+          "llm_direction": "neutral",
+          "catalyst": "기타 공시",
+          "return_5d": "N/A",
+          "note": "303.46 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
+        }
+      ],
+      "sector_comparison": {
+        "summary": "Technology 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
+        "pe_ratio": {
+          "company": "123.84",
+          "peer_average": "48.79x",
+          "difference": null
+        },
+        "rs_vs_spy": {
+          "company": "N/A",
+          "peer_average": "N/A",
+          "difference": null
+        },
+        "price_change_30d": {
+          "company": "+64.87%",
+          "peer_average": "21.09%",
+          "difference": "+43.78"
+        }
+      },
+      "peer_rank": {
+        "per_pctl": 0,
+        "rs_pctl": 83,
+        "roe_pctl": 17,
+        "revenue_growth_pctl": 50,
+        "summary": "PER 하위 0% (저평가), 모멘텀 상위 17%"
+      },
+      "valuation_score": {
+        "score": "4/10",
+        "factors": [
+          "PER 123.8x",
+          "목표가 대비 업사이드 -8.5%",
+          "ROE 6.9%",
+          "FCF Yield 1.9%"
+        ],
+        "assessment": "현재 가격 기준 밸류에이션 부담이 큽니다."
+      },
+      "analysis_consensus": {
+        "status": "agreed",
+        "economy_action": "buy",
+        "economy_conviction": 68,
+        "economy_reason": "섹터 대비 +41.1% / SMA50·SMA200 위 / 실적 D-6 / 최근 시그널 승률 100% (9/9)",
+        "deep_action": "buy",
+        "deep_conviction": 68,
+        "deep_reason": "섹터 대비 +41.1% / SMA50·SMA200 위 / 실적 D-6 / 최근 시그널 승률 100% (9/9)",
+        "tie_break_action": null,
+        "tie_break_conviction": null,
+        "tie_break_reason": "",
+        "direction_agreement": true,
+        "conflicted": false,
+        "confidence_delta": 5,
+        "selection_reason": "selected",
+        "third_review_completed": false,
+        "final_consensus": "agree",
+        "final_action": "buy"
+      },
+      "committee_analysis": {
+        "status": "economy_only",
+        "agreement_status": "contested",
+        "deep_review_triggered": false,
+        "deep_review_reasons": [],
+        "roles": {
+          "growth_analyst": {
+            "role": "growth_analyst",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "buy",
+            "action": "buy",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "AMD는 30일 +64.87%, 섹터 대비 +41.07%로 이미 강한 기대감이 반영돼 있고 RSI 73.5, PER 123.84배로 추격 매수 부담은 큽니다. 다만 2025-Q4 매출 10.27B와 EPS 0.92로 연속 방어에 성공했고, 2026-05-05 실적(D-6) 전까지 AI 칩 수요/가이던스가 다음 상향 촉매라서 실적 확인 전 ‘buy’는 유지할 만합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "value_skeptic": {
+            "role": "value_skeptic",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "reduce",
+            "action": "avoid",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "PER 123.8x, P/B 8.36x, FCF Yield 1.9%로 밸류에이션 부담이 매우 크고, ROE 6.9%·ROIC 5.5% 대비 가격이 과도합니다. 컨센서스 목표가 295.76달러도 현 주가 323.21달러보다 -8.5% 낮고, RSI 73.5와 52주 고점 352.99달러 근처라는 점을 감안하면 실적(D-6) 전후로 224.15달러(SMA50) 재시험 위험이 있어 기대수익보다 하방 비대칭이 더 큽니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "risk_manager": {
+            "role": "risk_manager",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "현재가 323.21은 52주 고점 352.99의 89% 수준이고 SMA50 224.15, SMA200 207.55 위에 있어 추세는 유지되지만 RSI 73.5로 과열 구간입니다. 하방 핵심 무효화는 224.15 이탈이며, 그 전에 307.61 하회 시 5/5 실적 전 재검증이 필요합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "macro_strategist": {
+            "role": "macro_strategist",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.0,
+            "strong_objection": false,
+            "summary": "AMD는 323.21달러로 50D SMA 224.15와 200D SMA 207.55를 크게 상회해 현재는 리스크온·AI 모멘텀에 가장 민감한 고베타 구간입니다. 다만 Trailing P/E 123.84가 섹터 평균 48.79x를 크게 웃돌고 30일 +64.87% 급등 이후라, 금리 재상승·달러 강세·장기금리 변동성 확대 시 멀티플 압박이 커질 수 있어 2026-05-05 실적 전까지는 추격매수보다 관찰이 적절합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          },
+          "pm": {
+            "role": "pm",
+            "round": "economy",
+            "profile": "economy",
+            "stance": "watch",
+            "action": "watch",
+            "confidence": 0.74,
+            "strong_objection": false,
+            "summary": "컨센서스는 buy지만 현재 주가 323.21달러가 52주 고점 352.99달러의 89%이고, 30일 +64.87% 급등 뒤 RSI(14) 73.5와 PER 123.84x가 겹쳐 추가 상승보다 D-6 실적 전 변동성 리스크가 더 큽니다. SMA50 224.15달러와 SMA200 207.55달러 위라는 추세는 강하지만, 컨센서스 목표가 295.76달러가 현 주가 대비 -8.5%라 신규 매수의 기대수익은 제한적입니다. 따라서 추세 훼손(307.61달러 이탈) 전까지는 관찰이 적절합니다.",
+            "valid": true,
+            "invalid_reason": ""
+          }
+        }
+      },
+      "period_changes": {
+        "7d": "+13.61%",
+        "30d": "+60.01%"
+      },
+      "sec_filing_tags": [
+        "기타 공시",
+        "주주총회"
+      ],
+      "sec_filings": [
+        {
+          "tag": "주주총회",
+          "title": "ADVANCED MICRO DEVICES INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+          "form_type": "DEF 14A",
+          "item_number": "",
+          "catalyst_type": "medium",
+          "importance_score": 100,
+          "published_at": "2026-03-27",
+          "link": "https://www.sec.gov/Archives/edgar/data/2488/000119312526129057/d85856ddef14a.htm",
+          "source": "SEC EDGAR"
+        },
+        {
+          "tag": "기타 공시",
+          "title": "ADVANCED MICRO DEVICES INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+          "form_type": "8-K",
+          "item_number": "",
+          "catalyst_type": "medium",
+          "importance_score": 120,
+          "published_at": "2026-02-24",
+          "link": "https://www.sec.gov/Archives/edgar/data/2488/000000248826000045/amd-20260223.htm",
+          "source": "SEC EDGAR"
+        }
+      ],
+      "decision": {
+        "action": "buy",
+        "conviction": 68,
+        "reason": "섹터 대비 +41.1% / SMA50·SMA200 위 / 실적 D-6 / 최근 시그널 승률 100% (9/9)",
+        "valid_until": "2026-05-05",
+        "factors": {
+          "catalyst_recency": 15.0,
+          "earnings_pattern": 0.0,
+          "fundamentals": 10.0,
+          "macro_event": -5.0,
+          "macro_regime": 5.0,
+          "momentum": 17.0,
+          "news_tone": 0.0,
+          "peer_rank": 8.0,
+          "policy_tailwind": -5.0,
+          "portfolio_risk": -6.0,
+          "regime_adjustment": 15.0,
+          "signal_track_record": 15.0,
+          "valuation": 8.0
+        },
+        "factor_reasoning": {
+          "catalyst_recency": "실적 D-6",
+          "earnings_pattern": "연속 상회 1분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.0%",
+          "fundamentals": "선행 EPS 성장 +323.4% / 기관 보유 72.1%",
+          "macro_event": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
+          "macro_regime": "risk_on 레짐에서 technology 섹터 편향 +5",
+          "momentum": "섹터 대비 +41.1% / SMA50·SMA200 위",
+          "news_tone": "뉴스 톤이 중립",
+          "peer_rank": "섹터 peer 대비 저평가이면서 상대 모멘텀이 강합니다",
+          "policy_tailwind": "정책 임팩트 -0.56 — export_control_china 노출이 직접 명시돼 있고 반도체·첨단기술에 대한 EAR 운영은 중국 매출 비중 15% 업체에 직접 부담이다.",
+          "portfolio_risk": "Technology 섹터 비중 57.4%로 과집중 상태",
+          "regime_adjustment": "리스크온 환경에서 공격주 선호",
+          "signal_track_record": "최근 시그널 승률 100% (9/9)",
+          "valuation": "현재 가격 기준 밸류에이션 부담이 큽니다."
+        },
+        "ensemble_agreement": "agree",
+        "final_consensus": "agree",
+        "raw_conviction": 71,
         "confidence_meta": {
           "data_quality": 1.0,
           "evidence_coverage": 1.0,

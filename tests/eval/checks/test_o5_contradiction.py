@@ -26,6 +26,12 @@ class TestO5(unittest.TestCase):
         result = O5Contradiction().run(ds)
         self.assertEqual(result.severity, "fail")
 
+    def test_info_when_no_contradiction_records_are_evaluated(self):
+        ds = make_dataset(tickers=("AAPL",), end=date(2026, 4, 28))
+        result = O5Contradiction().run(ds)
+        self.assertEqual(result.severity, "info")
+        self.assertEqual(result.metrics["sample_count"], 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

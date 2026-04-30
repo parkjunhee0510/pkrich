@@ -35,6 +35,7 @@ class R1PipelineSummary(BaseCheck):
             pass_rate=1.0 - min(rate, 1.0),
             findings=tuple(findings),
             metrics={"fallback_rate": rate,
+                     "sample_count": float(len(dataset.summaries)),
                      "total_daily_cost_usd": sum(cost_series)},
             recommendation=(
                 "Inspect retry logic in llm_runtime; high fallback often = schema parse failures."

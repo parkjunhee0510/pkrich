@@ -259,7 +259,7 @@ function OpenAiUsageCard({ summary }: { summary: ApiStatusSummary }) {
             </span>
           ))
         ) : (
-          <span className="api-provider-field-chip">이번 실행에서는 fallback 없이 정적 분석만 사용됨</span>
+          <span className="api-provider-field-chip">이번 실행의 모델 기록이 없어 사용 모델을 표시할 수 없음</span>
         )}
         {quality?.run_date ? (
           <span className="api-provider-field-chip">

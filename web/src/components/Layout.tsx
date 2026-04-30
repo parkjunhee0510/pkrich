@@ -29,6 +29,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const [isNavOpen, setIsNavOpen] = useState(false)
   const [isMoreOpen, setIsMoreOpen] = useState(false)
   const moreRef = useRef<HTMLDivElement | null>(null)
+  const previousPathnameRef = useRef(location.pathname)
 
   const isMoreActive = MORE_NAV.some((item) => isRouteActive(location.pathname, item.to))
 
@@ -38,8 +39,13 @@ export function Layout({ children }: { children: ReactNode }) {
   const todayLabel = `${weekdays[today.getDay()]} · ${months[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`
 
   useEffect(() => {
-    setIsNavOpen(false)
-    setIsMoreOpen(false)
+    if (previousPathnameRef.current === location.pathname) return
+    previousPathnameRef.current = location.pathname
+
+    queueMicrotask(() => {
+      setIsNavOpen(false)
+      setIsMoreOpen(false)
+    })
   }, [location.pathname])
 
   useEffect(() => {

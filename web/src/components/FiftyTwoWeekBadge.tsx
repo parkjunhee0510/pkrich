@@ -1,16 +1,8 @@
 import type { SectorsPricePoint } from '../hooks/useSectorsData'
+import { computeFiftyTwoWeekPosition } from '../utils/fiftyTwoWeek'
 
 interface Props {
   history: SectorsPricePoint[]
-}
-
-interface Position {
-  high: number
-  low: number
-  current: number
-  pctFromHigh: number  // negative when below high
-  pctFromLow: number   // positive when above low
-  pctRange: number     // 0 = at low, 100 = at high
 }
 
 /**
@@ -20,7 +12,7 @@ interface Position {
  * simply reflects the series extent.
  */
 export function FiftyTwoWeekBadge({ history }: Props) {
-  const pos = computePosition(history)
+  const pos = computeFiftyTwoWeekPosition(history)
   if (!pos) return null
 
   const tone = classifyTone(pos.pctRange)
@@ -52,39 +44,8 @@ export function FiftyTwoWeekBadge({ history }: Props) {
   )
 }
 
-function computePosition(history: SectorsPricePoint[]): Position | null {
-  if (history.length < 2) return null
-  const closes = history.map((p) => p.close).filter((c) => Number.isFinite(c) && c > 0)
-  if (closes.length < 2) return null
-  const high = Math.max(...closes)
-  const low = Math.min(...closes)
-  const current = closes[closes.length - 1]
-  if (high <= low) return null
-  const pctFromHigh = ((current - high) / high) * 100
-  const pctFromLow = ((current - low) / low) * 100
-  const pctRange = ((current - low) / (high - low)) * 100
-  return { high, low, current, pctFromHigh, pctFromLow, pctRange }
-}
-
 function classifyTone(pctRange: number): 'strong' | 'neutral' | 'weak' {
   if (pctRange >= 75) return 'strong'
   if (pctRange <= 25) return 'weak'
   return 'neutral'
-}
-
-// Helper for aggregating sector-level breadth on /sectors list cards.
-export function countFiftyTwoStrength(
-  histories: SectorsPricePoint[][],
-): { strong: number; weak: number; total: number } {
-  let strong = 0
-  let weak = 0
-  let total = 0
-  for (const h of histories) {
-    const p = computePosition(h)
-    if (!p) continue
-    total += 1
-    if (p.pctRange >= 75) strong += 1
-    if (p.pctRange <= 25) weak += 1
-  }
-  return { strong, weak, total }
 }

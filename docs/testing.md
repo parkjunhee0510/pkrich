@@ -50,11 +50,18 @@ Pipeline must run end-to-end.
 * Prefer integration testing
 * Validate real pipeline behavior
 * When implementation changes behavior or contracts, update related docs in the same change set
+* For output schema changes, add shape or serialization coverage before updating generated fixtures
+* For audit checks, cover both evaluable samples and insufficient-data paths
 
 ## Notable Test Modules
 
-* `tests/test_macro_v2.py` — macro v2 pipeline (surprise, events, narrative)
-* `tests/test_macro_event_match.py` — macro event matching helpers
-* `tests/test_model_config.py` — module-specific model profiles and batch sizes
-* `tests/test_decision_factors.py` — factor scoring including macro regime/event factors
-* `tests/test_decision_registry.py` — factor registry resolution
+* `tests/test_macro_v2.py` - macro v2 pipeline (surprise, events, narrative)
+* `tests/test_macro_event_match.py` - macro event matching helpers
+* `tests/test_model_config.py` - module-specific model profiles and batch sizes
+* `tests/test_decision_factors.py` - factor scoring including macro regime/event factors
+* `tests/test_decision_registry.py` - factor registry resolution
+* `tests/test_output.py` - output serialization, including news reference provenance fields
+* `tests/test_output_schema.py` - generated JSON shape stability and web-public operational copies
+* `tests/test_pipeline_quality_wiring.py` - pipeline wiring for quality outputs and API status run-date behavior
+* `tests/eval/` - LLM audit data loading, replay, report rendering, and check-specific thresholds
+* `tests/test_codex_*hook*.py` and `tests/test_codex_summarize_session.py` - local Codex hook regression coverage

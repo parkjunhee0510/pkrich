@@ -280,7 +280,7 @@ class CommitteeAnalysisTests(unittest.TestCase):
 
         result = run_committee_analysis(_analysis(), run_role=runner)
 
-        self.assertEqual(
+        self.assertEqual(   
             [call[:2] for call in calls],
             [
                 ("growth_analyst", "economy"),
