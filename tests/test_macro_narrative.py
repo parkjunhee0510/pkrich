@@ -22,10 +22,15 @@ def test_build_macro_narrative_records_fallback_evidence(tmp_path, monkeypatch) 
 
     assert len(calls) == 1
     assert calls[0]["scope"] == "run"
+    assert calls[0]["stage"] == "analyzer"
     assert calls[0]["module"] == "macro_narrative"
+    assert calls[0]["run_date"] == "2026-04-30"
     assert calls[0]["cache_status"] == "fallback"
     assert calls[0]["source"] == "fallback"
+    assert calls[0]["model"] == "gpt-5.4"
+    assert str(calls[0]["macro_prompt_payload_hash"]).startswith("sha256:")
     assert str(calls[0]["macro_context_hash"]).startswith("sha256:")
+    assert str(calls[0]["market_regime_hash"]).startswith("sha256:")
 
 
 def test_build_macro_narrative_records_cache_hit_evidence(tmp_path, monkeypatch) -> None:
@@ -56,8 +61,17 @@ def test_build_macro_narrative_records_cache_hit_evidence(tmp_path, monkeypatch)
     build_macro_narrative({"vix": {"level": "18"}}, MarketRegime(regime="neutral"), date(2026, 4, 30))
 
     assert len(calls) == 1
+    assert calls[0]["scope"] == "run"
+    assert calls[0]["stage"] == "analyzer"
+    assert calls[0]["module"] == "macro_narrative"
+    assert calls[0]["run_date"] == "2026-04-30"
     assert calls[0]["cache_status"] == "hit"
-    assert calls[0]["source"] == "llm"
+    assert calls[0]["source"] == "cache"
+    assert calls[0]["cached_source"] == "llm"
+    assert calls[0]["model"] == "gpt-5.4"
+    assert str(calls[0]["macro_prompt_payload_hash"]).startswith("sha256:")
+    assert str(calls[0]["macro_context_hash"]).startswith("sha256:")
+    assert str(calls[0]["market_regime_hash"]).startswith("sha256:")
 
 
 def test_build_macro_narrative_ignores_evidence_emit_failures(tmp_path, monkeypatch) -> None:

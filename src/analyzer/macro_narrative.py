@@ -73,7 +73,8 @@ def build_macro_narrative(
             prompt_payload=payload,
             run_date=run_date,
             cache_status="hit",
-            source=str(cached.get("source", "cache")),
+            source="cache",
+            cached_source=str(cached.get("source", "")),
         )
         return cached
 
@@ -100,6 +101,7 @@ def build_macro_narrative(
 
     if not narrative:
         narrative = _fallback(market_regime)
+        cache_status = "fallback"
     else:
         narrative.setdefault("source", "llm")
         narrative.setdefault("model", _MODEL)
@@ -147,6 +149,7 @@ def _emit_macro_evidence(
     run_date: date,
     cache_status: str,
     source: str,
+    cached_source: str = "",
 ) -> None:
     try:
         macro_hash, macro_present = evidence_hash(macro_context)
@@ -159,24 +162,24 @@ def _emit_macro_evidence(
             }
         )
         prompt_hash, prompt_present = evidence_hash(prompt_payload)
-        write_evidence_record(
-            {
-                "run_date": run_date.isoformat(),
-                "stage": "analyzer",
-                "scope": "run",
-                "module": "macro_narrative",
-                "macro_prompt_payload_hash": prompt_hash,
-                "macro_prompt_payload_present": prompt_present,
-                "macro_context_hash": macro_hash,
-                "macro_context_present": macro_present,
-                "market_regime_hash": regime_hash,
-                "market_regime_present": regime_present,
-                "cache_status": cache_status,
-                "source": source,
-                "model": _MODEL,
-            },
-            run_date=run_date,
-        )
+        record = {
+            "run_date": run_date.isoformat(),
+            "stage": "analyzer",
+            "scope": "run",
+            "module": "macro_narrative",
+            "macro_prompt_payload_hash": prompt_hash,
+            "macro_prompt_payload_present": prompt_present,
+            "macro_context_hash": macro_hash,
+            "macro_context_present": macro_present,
+            "market_regime_hash": regime_hash,
+            "market_regime_present": regime_present,
+            "cache_status": cache_status,
+            "source": source,
+            "model": _MODEL,
+        }
+        if cached_source:
+            record["cached_source"] = cached_source
+        write_evidence_record(record, run_date=run_date)
     except Exception:
         logger.debug("macro_narrative evidence emit failed", exc_info=True)
 
