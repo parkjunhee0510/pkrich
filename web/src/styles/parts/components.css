@@ -1504,6 +1504,382 @@
 .sector-gainer { color: var(--pos); font-family: var(--font-mono); }
 .sector-loser  { color: var(--neg); font-family: var(--font-mono); }
 
+/* ========== Market Mood Sector Briefing ========== */
+/* stylelint-disable scale-unlimited/declaration-strict-value */
+.market-mood-sector-briefing {
+  margin: 1.25rem 0;
+  color: var(--ink);
+}
+
+.market-mood-briefing-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.market-mood-regime-card,
+.market-mood-lane,
+.market-mood-comparison-panel,
+.market-mood-evidence-panel,
+.market-mood-empty {
+  background: var(--paper);
+  border: var(--rule-weight) solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.market-mood-regime-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.85rem 0.95rem;
+  min-width: 0;
+}
+
+.market-mood-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.16rem 0.45rem;
+  background: var(--cozy-gold-soft);
+  border: 1px solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.market-mood-regime-row {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.market-mood-regime-row h2 {
+  margin: 0;
+  font-size: 1.18rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-confidence {
+  flex: 0 0 auto;
+  padding: 0.18rem 0.45rem;
+  background: var(--bone);
+  border: 1px solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.market-mood-regime-copy {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-driver-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.market-mood-driver-chip {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 0.16rem 0.45rem;
+  background: var(--bone);
+  border: 1px solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-lanes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.market-mood-lane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.75rem;
+  border-top-width: 5px;
+}
+
+.market-mood-lane-focus { border-top-color: var(--cozy-mint); }
+.market-mood-lane-watch { border-top-color: var(--cozy-peach); }
+
+.market-mood-lane h3,
+.market-mood-comparison-panel h3,
+.market-mood-evidence-panel h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.market-mood-lane-focus h3::before {
+  content: "";
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.35rem;
+  background: var(--cozy-mint);
+  border: 1px solid var(--ink);
+}
+
+.market-mood-lane-watch h3::before {
+  content: "";
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.35rem;
+  background: var(--cozy-peach);
+  border: 1px solid var(--ink);
+}
+
+.market-mood-sector-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.market-mood-lane-empty {
+  margin: 0;
+  padding: 0.65rem;
+  background: var(--bone);
+  border: 1px dashed var(--ink);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-sector-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  padding: 0.65rem;
+  background: var(--bone);
+  border: 1px solid var(--ink);
+  min-width: 0;
+}
+
+.market-mood-sector-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.market-mood-sector-main p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-sector-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.market-mood-sector-title-row h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-fit-pill {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 0.12rem 0.38rem;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-ticker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.market-mood-ticker-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.55rem;
+  padding: 0.12rem 0.42rem;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  transition: background 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  white-space: nowrap;
+}
+
+.market-mood-ticker-chip:hover {
+  background: var(--caution-block);
+  box-shadow: var(--shadow-hard-sm);
+  transform: translate(-1px,-1px);
+}
+
+.market-mood-sector-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 0.1rem;
+  min-width: 4.2rem;
+  font-family: var(--font-mono);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.market-mood-sector-metric strong {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+.market-mood-sector-metric span {
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  line-height: 1.2;
+}
+
+.market-mood-empty {
+  padding: 1rem;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-support-grid {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1.1fr) minmax(220px, 0.9fr);
+  gap: 0.75rem;
+}
+
+.market-mood-comparison-panel,
+.market-mood-evidence-panel {
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.market-mood-comparison-table {
+  display: grid;
+  gap: 0;
+  margin-top: 0.55rem;
+  overflow-x: auto;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+.market-mood-comparison-row {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 1.25fr) minmax(4.5rem, 0.7fr) minmax(4.5rem, 0.7fr) minmax(8rem, 1fr);
+  min-width: 520px;
+  border-bottom: 1px dashed var(--ink-soft);
+}
+
+.market-mood-comparison-row:last-child { border-bottom: 0; }
+
+.market-mood-comparison-row span {
+  min-width: 0;
+  padding: 0.42rem 0.5rem;
+  border-right: 1px solid var(--ink);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.market-mood-comparison-row span:last-child { border-right: 0; }
+
+.market-mood-comparison-head {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.market-mood-comparison-head span {
+  border-right-color: var(--paper);
+  font-size: 0.7rem;
+}
+
+.market-mood-evidence-panel ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0.55rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.market-mood-evidence-panel li {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .market-mood-briefing-grid,
+  .market-mood-lanes,
+  .market-mood-support-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .market-mood-support-grid {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .market-mood-regime-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .market-mood-sector-item {
+    grid-template-columns: 1fr;
+  }
+
+  .market-mood-sector-metric {
+    align-items: flex-start;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .market-mood-comparison-row {
+    min-width: 460px;
+  }
+}
+/* stylelint-enable scale-unlimited/declaration-strict-value */
+
 /* ========== Dashboard Quick Bar / Automation ========== */
 .dashboard-quick-bar {
   display: flex; flex-direction: column; gap: 0.7rem;
