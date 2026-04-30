@@ -52,31 +52,6 @@ vi.mock('../hooks/useDashboardData', () => ({
   }),
 }))
 
-vi.mock('../hooks/useLocalResearchAutomation', () => ({
-  useLocalResearchAutomation: () => ({
-    status: {
-      available: false,
-      running: false,
-      stage: 'idle',
-      stageLabel: '대기',
-      message: '로컬 자동화 비활성',
-      lastTicker: null,
-      startedAt: null,
-      finishedAt: null,
-      updatedAt: null,
-      lastResult: 'idle',
-    },
-    available: false,
-    pendingAction: null,
-    addTickerToWatchlist: vi.fn(),
-    runResearch: vi.fn(),
-  }),
-}))
-
-vi.mock('../components/PmDailyQueue', () => ({
-  PmDailyQueue: () => <div data-testid="pm-daily-queue" />,
-}))
-
 vi.mock('../components/TraderDashboardPanels', () => ({
   TodaySetupBoard: () => <div data-testid="today-setup-board" />,
   EarningsBoard: () => <div data-testid="earnings-board" />,
@@ -162,6 +137,9 @@ describe('Dashboard market mood briefing', () => {
     expect(screen.getByText('주목 섹터')).toBeInTheDocument()
     expect(screen.getByText('주의 섹터')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'NVDA' })).toBeInTheDocument()
+    expect(screen.queryByText('로컬 리서치 자동화')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('pm-daily-queue')).not.toBeInTheDocument()
+    expect(screen.queryByText('오늘의 우선순위')).not.toBeInTheDocument()
   })
 })
 

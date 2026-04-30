@@ -1880,7 +1880,7 @@
 }
 /* stylelint-enable scale-unlimited/declaration-strict-value */
 
-/* ========== Dashboard Quick Bar / Automation ========== */
+/* ========== Dashboard Quick Bar ========== */
 .dashboard-quick-bar {
   display: flex; flex-direction: column; gap: 0.7rem;
   padding: 0.8rem 0.95rem;
@@ -1902,30 +1902,6 @@
 .ticker-summary-section p {
   font-size: 0.94rem;
   line-height: 1.55;
-}
-
-.dashboard-automation-panel {
-  padding: 1rem 1.1rem;
-  background: var(--paper);
-  border: var(--rule-weight) solid var(--ink);
-  box-shadow: var(--shadow-hard);
-  display: flex; flex-direction: column; gap: 0.65rem;
-}
-.dashboard-automation-copy strong { font-family: var(--font-display); font-size: 1.05rem; }
-.dashboard-automation-copy p { font-size: 0.85rem; color: var(--ink-soft); }
-.dashboard-automation-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-.dashboard-automation-option { display: inline-flex; align-items: center; gap: 0.3rem; font-family: var(--font-mono); font-size: 0.78rem; }
-.dashboard-automation-option input { accent-color: var(--hazard); }
-
-.dashboard-automation-hint { font-size: 0.75rem; color: var(--ink-soft); font-family: var(--font-mono); }
-
-.dashboard-ticker-input {
-  padding: 0.45rem 0.6rem;
-  background: var(--bone);
-  border: 1.5px solid var(--ink);
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
 }
 
 .primary-action-button, .secondary-action-button {

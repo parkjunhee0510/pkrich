@@ -1,12 +1,10 @@
 ﻿import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { MacroContextBar } from '../components/MacroContextBar'
 import { MacroNarrativePanel } from '../components/MacroNarrativePanel'
 import { MarketOverview } from '../components/MarketOverview'
 import { MarketMoodSectorBriefing } from '../components/MarketMoodSectorBriefing'
-import { PmDailyQueue } from '../components/PmDailyQueue'
 import { DashboardSkeleton } from '../components/Skeleton'
 import {
   CatalystFeed,
@@ -16,7 +14,6 @@ import {
 } from '../components/TraderDashboardPanels'
 import { WatchlistTable } from '../components/WatchlistTable'
 import { useDashboardData } from '../hooks/useDashboardData'
-import { useLocalResearchAutomation } from '../hooks/useLocalResearchAutomation'
 import type { TickerAnalysisData, WeeklyReportSection } from '../types'
 import { buildMarketMoodSummary, deriveSectorMoodInsights } from '../utils/sectorMood'
 import {
@@ -56,21 +53,12 @@ type TraderFilters = {
 
 type WatchlistSortMode = 'score' | 'earnings' | 'catalyst'
 type DensityMode = 'compact' | 'comfortable' | 'focus'
-type ToastTone = 'success' | 'error' | 'info'
-
-type ToastItem = {
-  id: number
-  tone: ToastTone
-  message: string
-}
 
 const PRESET_ACCOUNT_SIZES = [10000, 50000, 100000]
 
 export function Dashboard() {
-  const navigate = useNavigate()
   const { data, loading, refreshing, error, refresh } = useDashboardData({ pollIntervalMs: 60000 })
   const searchInputRef = useRef<HTMLInputElement | null>(null)
-  const tickerInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSector, setSelectedSector] = useState('ALL')
@@ -86,10 +74,6 @@ export function Dashboard() {
     return () => mq.removeEventListener('change', sync)
   }, [])
 
-  const [tickerInput, setTickerInput] = useState('')
-  const [autoRunAfterAdd, setAutoRunAfterAdd] = useState(false)
-  const [pendingNavigationTicker, setPendingNavigationTicker] = useState<string | null>(null)
-  const [toasts, setToasts] = useState<ToastItem[]>([])
   const [traderFilters, setTraderFilters] = useState<TraderFilters>({
     earningsWithin30d: false,
     rvolHigh: false,
@@ -99,40 +83,10 @@ export function Dashboard() {
     strongBuyUpside: false,
   })
 
-  function pushToast(tone: ToastTone, message: string) {
-    const id = Date.now() + Math.floor(Math.random() * 1000)
-    setToasts((current) => [...current, { id, tone, message }])
-    window.setTimeout(() => {
-      setToasts((current) => current.filter((toast) => toast.id !== id))
-    }, 3200)
-  }
-
-  const {
-    status: automationStatus,
-    available: automationAvailable,
-    pendingAction,
-    addTickerToWatchlist,
-    runResearch,
-  } = useLocalResearchAutomation({
-    onRunCompleted: () => {
-      refresh()
-      setSelectedIdx(null)
-      if (pendingNavigationTicker) {
-        const targetTicker = pendingNavigationTicker
-        setPendingNavigationTicker(null)
-        pushToast('success', `${targetTicker} 리서치가 끝나서 상세페이지로 이동했습니다.`)
-        navigate(`/ticker/${targetTicker}`)
-      } else {
-        pushToast('success', '리서치 실행이 완료되었습니다. 최신 결과를 불러왔습니다.')
-      }
-    },
-  })
-
   const days = data?.days ?? []
   const rawIdx = selectedIdx ?? Math.max(days.length - 1, 0)
   const idx = days.length > 0 ? Math.min(rawIdx, days.length - 1) : 0
   const day = days[idx] ?? { date: '', market_overview: [], tickers: [] }
-  const previousDay = idx > 0 ? days[idx - 1] : null
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
   const sectors = useMemo(
@@ -171,10 +125,6 @@ export function Dashboard() {
   const earningsBoardSections = useMemo(() => buildEarningsBoardSections(day.tickers), [day.tickers])
   const catalystFeedSections = useMemo(() => buildCatalystFeedSections(day.tickers), [day.tickers])
   const signalHighlights = useMemo(() => buildSignalPerformanceHighlights(data?.signal_stats), [data?.signal_stats])
-  const dashboardPriorityCards = useMemo(
-    () => buildDashboardPriorityCards(day.tickers, sortedWatchlistTickers, previousDay?.tickers ?? []),
-    [day.tickers, previousDay?.tickers, sortedWatchlistTickers],
-  )
   const sectorMood = useMemo(
     () =>
       deriveSectorMoodInsights({
@@ -218,9 +168,6 @@ export function Dashboard() {
         if (searchQuery) {
           setSearchQuery('')
         }
-        if (tickerInput) {
-          setTickerInput('')
-        }
         return
       }
 
@@ -232,68 +179,14 @@ export function Dashboard() {
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [refresh, searchQuery, tickerInput])
+  }, [refresh, searchQuery])
 
   if (loading) return <DashboardSkeleton />
   if (error) return <ErrorState message={error} />
   if (!data || data.days.length === 0) return <p className="status">No data available.</p>
 
-  async function handleAddTicker() {
-    const normalizedTicker = normalizeTickerInput(tickerInput)
-    if (!normalizedTicker) {
-      pushToast('error', '티커 형식이 올바르지 않습니다. 영문 대문자, 숫자, 점(.) 또는 하이픈(-)만 사용할 수 있습니다.')
-      return
-    }
-
-    const result = await addTickerToWatchlist(normalizedTicker)
-    if (!result.ok) {
-      pushToast('error', result.message)
-      return
-    }
-
-    setTickerInput('')
-    setSearchQuery(result.ticker)
-
-    if (result.added) {
-      setPendingNavigationTicker(result.ticker)
-      if (autoRunAfterAdd) {
-        pushToast('info', `${result.ticker}를 추가했습니다. 바로 리서치를 실행합니다.`)
-        const runResult = await runResearch()
-        if (!runResult.ok) {
-          pushToast('error', runResult.message)
-        }
-      } else {
-        pushToast('success', `${result.ticker}를 watchlist에 추가했습니다. 리서치를 실행하면 상세페이지로 이동합니다.`)
-      }
-      return
-    }
-
-    setPendingNavigationTicker(null)
-    pushToast('info', `${result.ticker}는 이미 watchlist에 있어서 상세페이지로 바로 이동합니다.`)
-    navigate(`/ticker/${result.ticker}`)
-  }
-
-  async function handleRunResearch() {
-    const result = await runResearch()
-    if (!result.ok) {
-      pushToast('error', result.message)
-      return
-    }
-    pushToast('info', '리서치를 시작했습니다. 완료되면 자동으로 새 결과를 불러옵니다.')
-  }
-
   return (
     <div className="dashboard" data-density={density}>
-      {toasts.length > 0 && (
-        <div className="dashboard-toast-stack" aria-live="polite" aria-atomic="true">
-          {toasts.map((toast) => (
-            <div key={toast.id} className={`dashboard-toast dashboard-toast-${toast.tone}`}>
-              {toast.message}
-            </div>
-          ))}
-        </div>
-      )}
-
       <div className="dashboard-header">
         <div className="dashboard-header-main">
           <h2>부자 되고 싶어요 · {day.date}</h2>
@@ -303,7 +196,6 @@ export function Dashboard() {
             <span className="dashboard-stat-chip">매수 {decisionCounts.buy}개</span>
             <span className="dashboard-stat-chip">관찰 {decisionCounts.watch}개</span>
             <span className="dashboard-stat-chip">회피 {decisionCounts.avoid}개</span>
-            <span className="dashboard-stat-chip">판단 갈림 {dashboardPriorityCards.conflictCount}건</span>
             <span className="dashboard-stat-chip">
               섹터: {selectedSector === 'ALL' ? '전체' : (SECTOR_LABELS[selectedSector] ?? selectedSector)}
             </span>
@@ -325,66 +217,6 @@ export function Dashboard() {
       </div>
 
       <div className="dashboard-quick-bar">
-        <div className="dashboard-automation-panel">
-          <div className="dashboard-automation-copy">
-            <strong>로컬 리서치 자동화</strong>
-            <p>티커를 watchlist에 추가하고 기존 배치 파이프라인을 바로 실행할 수 있습니다.</p>
-          </div>
-
-          {automationAvailable ? (
-            <>
-              <div className="dashboard-automation-controls">
-                <input
-                  ref={tickerInputRef}
-                  className="dashboard-search dashboard-ticker-input"
-                  type="text"
-                  inputMode="text"
-                  autoCapitalize="characters"
-                  placeholder="예: TSLA"
-                  value={tickerInput}
-                  onChange={(event) => setTickerInput(event.target.value.toUpperCase())}
-                  disabled={automationStatus.running || pendingAction === 'add'}
-                />
-                <button
-                  type="button"
-                  className="primary-action-button"
-                  onClick={handleAddTicker}
-                  disabled={!tickerInput.trim() || automationStatus.running || pendingAction === 'add'}
-                >
-                  {pendingAction === 'add' ? '추가 중...' : '티커 추가'}
-                </button>
-                <button
-                  type="button"
-                  className="secondary-action-button"
-                  onClick={handleRunResearch}
-                  disabled={automationStatus.running || pendingAction === 'run'}
-                >
-                  {automationStatus.running || pendingAction === 'run' ? '리서치 실행 중...' : '리서치 실행'}
-                </button>
-              </div>
-              <label className="dashboard-automation-option">
-                <input
-                  type="checkbox"
-                  checked={autoRunAfterAdd}
-                  onChange={(event) => setAutoRunAfterAdd(event.target.checked)}
-                  disabled={automationStatus.running || pendingAction === 'add' || pendingAction === 'run'}
-                />
-                <span>새 티커를 추가하면 바로 리서치를 실행합니다.</span>
-              </label>
-              <p className="dashboard-automation-hint">입력 형식: 영문 대문자 시작, 숫자/점/하이픈 허용. 예: TSLA, BRK-B, BF.B</p>
-              <div className={`dashboard-automation-status stage-${automationStatus.stage}`}>
-                <span className="dashboard-automation-stage">{automationStatus.stageLabel}</span>
-                <p>{automationStatus.message}</p>
-              </div>
-            </>
-          ) : (
-            <div className="dashboard-automation-status stage-idle">
-              <span className="dashboard-automation-stage">로컬 전용</span>
-              <p>이 기능은 `npm run dev`로 띄운 로컬 개발 서버에서만 사용할 수 있습니다.</p>
-            </div>
-          )}
-        </div>
-
         <div className="dashboard-controls">
           <input
             ref={searchInputRef}
@@ -514,37 +346,6 @@ export function Dashboard() {
 
       {refreshing && <p className="dashboard-refresh-note">최신 output을 다시 불러오는 중입니다.</p>}
 
-      <PmDailyQueue pmView={day.pm_view} />
-
-      <section className="dashboard-priority-section">
-        <div className="section-header-with-kicker">
-          <div>
-            <h3>오늘의 우선순위</h3>
-            <p className="section-kicker">스크롤 전에 지금 바로 확인할 항목만 압축했습니다. 눈여겨볼 종목, 가까운 일정, 판단이 갈린 종목을 먼저 보고 아래 목록으로 내려가면 됩니다.</p>
-          </div>
-        </div>
-        <div className="dashboard-priority-grid">
-          <PriorityCard
-            title="우선 확인 종목"
-            kicker={`TOP ${dashboardPriorityCards.focusItems.length}`}
-            items={dashboardPriorityCards.focusItems}
-            emptyMessage="지금 우선순위로 띄울 종목이 없습니다."
-          />
-          <PriorityCard
-            title="이벤트 임박"
-            kicker={`D-7 이내 ${dashboardPriorityCards.eventItems.length}건`}
-            items={dashboardPriorityCards.eventItems}
-            emptyMessage="가까운 주요 이벤트가 없습니다."
-          />
-          <PriorityCard
-            title="판단이 갈린 종목"
-            kicker={dashboardPriorityCards.conflictCount > 0 ? `${dashboardPriorityCards.conflictCount}건` : '안정'}
-            items={dashboardPriorityCards.consensusItems}
-            emptyMessage="판단이 크게 갈린 종목이 없습니다."
-          />
-        </div>
-      </section>
-
       <TodaySetupBoard cards={topSetupCards} />
 
       <DashboardAccordionSection
@@ -628,62 +429,6 @@ export function Dashboard() {
   )
 }
 
-type PriorityItem = {
-  label: string
-  value: string
-  note: string
-  tone?: 'up' | 'down' | 'new' | 'neutral'
-  badges?: Array<{
-    label: string
-    tone: 'up' | 'down' | 'new' | 'neutral'
-  }>
-}
-
-function PriorityCard({
-  title,
-  kicker,
-  items,
-  emptyMessage,
-}: {
-  title: string
-  kicker: string
-  items: PriorityItem[]
-  emptyMessage: string
-}) {
-  return (
-    <article className="dashboard-priority-card">
-      <div className="dashboard-priority-head">
-        <span className="dashboard-priority-kicker">{kicker}</span>
-        <strong>{title}</strong>
-      </div>
-      {items.length > 0 ? (
-        <ul className="dashboard-priority-list">
-          {items.map((item) => (
-            <li key={`${title}-${item.label}-${item.value}`} className={`priority-tone-${item.tone ?? 'neutral'}`}>
-              <div className={`dashboard-priority-label-row priority-tone-${item.tone ?? 'neutral'}`}>
-                <span>{item.label}</span>
-                <strong>{item.value}</strong>
-              </div>
-              {item.badges && item.badges.length > 0 ? (
-                <div className="dashboard-priority-badges">
-                  {item.badges.map((badge) => (
-                    <span key={`${item.label}-${badge.label}`} className={`dashboard-priority-badge priority-tone-${badge.tone}`}>
-                      {badge.label}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-              <p>{item.note}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="dashboard-priority-empty">{emptyMessage}</p>
-      )}
-    </article>
-  )
-}
-
 function DashboardAccordionSection({
   title,
   summary,
@@ -709,11 +454,6 @@ function DashboardAccordionSection({
       <div className="dashboard-accordion-body">{children}</div>
     </details>
   )
-}
-
-function normalizeTickerInput(value: string): string {
-  const normalized = value.trim().toUpperCase()
-  return /^[A-Z][A-Z0-9.-]{0,14}$/.test(normalized) ? normalized : ''
 }
 
 function WeeklyReportCard({
@@ -772,238 +512,6 @@ function countDecisions(tickers: TickerAnalysisData[]): { buy: number; watch: nu
     },
     { buy: 0, watch: 0, avoid: 0 },
   )
-}
-
-function buildDashboardPriorityCards(
-  allTickers: TickerAnalysisData[],
-  sortedTickers: TickerAnalysisData[],
-  previousTickers: TickerAnalysisData[],
-): {
-  focusItems: PriorityItem[]
-  eventItems: PriorityItem[]
-  consensusItems: PriorityItem[]
-  conflictCount: number
-} {
-  const previousTickerMap = new Map(previousTickers.map((ticker) => [ticker.ticker, ticker]))
-  const focusItems: PriorityItem[] = sortedTickers.slice(0, 3).map((ticker, index) => ({
-    label: `${index + 1}. ${ticker.ticker}`,
-    value: buildPriorityValue(ticker, previousTickerMap.get(ticker.ticker)),
-    note: buildPriorityReason(ticker, previousTickerMap.get(ticker.ticker)),
-    tone: buildPriorityTone(ticker, previousTickerMap.get(ticker.ticker)),
-    badges: buildPriorityBadges(ticker, previousTickerMap.get(ticker.ticker)),
-  }))
-
-  const eventItems: PriorityItem[] = allTickers
-    .flatMap((ticker) =>
-      (ticker.upcoming_events ?? []).map((event) => ({
-        ticker: ticker.ticker,
-        event,
-      })),
-    )
-    .filter(({ event }) => {
-      const daysUntil = parseEventDays(event.days_until)
-      return Number.isFinite(daysUntil) && daysUntil <= 7
-    })
-    .sort((left, right) => parseEventDays(left.event.days_until) - parseEventDays(right.event.days_until))
-    .slice(0, 3)
-    .map(({ ticker, event }) => ({
-      label: ticker,
-      value: `${event.label} · D-${event.days_until}`,
-      note: buildEventPriorityReason(
-        event,
-        previousTickerMap.get(ticker)?.upcoming_events?.find((item) => item.type === event.type),
-      ),
-      tone: buildEventTone(
-        event,
-        previousTickerMap.get(ticker)?.upcoming_events?.find((item) => item.type === event.type),
-      ),
-      badges: buildEventBadges(
-        event,
-        previousTickerMap.get(ticker)?.upcoming_events?.find((item) => item.type === event.type),
-      ),
-    }))
-
-  const conflicted = allTickers.filter(
-    (ticker) => ticker.analysis_consensus?.status === 'conflicted' || ticker.analysis_consensus?.status === 'resolved',
-  )
-  const consensusItems: PriorityItem[] = conflicted.slice(0, 3).map((ticker) => ({
-    label: ticker.ticker,
-    value: ticker.analysis_consensus?.status === 'resolved' ? '3차 검토 완료' : '판단 불일치',
-    note: ticker.analysis_consensus?.selection_reason ?? ticker.decision?.reason ?? '추가 검토 필요',
-    tone: ticker.analysis_consensus?.status === 'resolved' ? 'up' : 'down',
-    badges: [
-      {
-        label: ticker.analysis_consensus?.status === 'resolved' ? '검토 완료' : '판단 갈림',
-        tone: ticker.analysis_consensus?.status === 'resolved' ? 'up' : 'down',
-      },
-    ],
-  }))
-
-  return {
-    focusItems,
-    eventItems,
-    consensusItems,
-    conflictCount: conflicted.length,
-  }
-}
-
-function buildPriorityValue(current: TickerAnalysisData, previous?: TickerAnalysisData): string {
-  const conviction = current.decision?.conviction ?? computeSetupScore(current).score
-  const previousConviction = previous?.decision?.conviction
-  const delta = typeof previousConviction === 'number' ? conviction - previousConviction : null
-  const deltaLabel = delta === null || delta === 0 ? '' : ` · ${formatDelta(delta)}`
-  return `${translateAction(current.decision?.action)} · ${conviction}점${deltaLabel}`
-}
-
-function buildPriorityReason(current: TickerAnalysisData, previous?: TickerAnalysisData): string {
-  const reasons: string[] = []
-  const currentAction = current.decision?.action
-  const previousAction = previous?.decision?.action
-  if (previousAction && currentAction && previousAction !== currentAction) {
-    reasons.push(`액션 ${translateAction(previousAction)} → ${translateAction(currentAction)}`)
-  }
-
-  const conviction = current.decision?.conviction
-  const previousConviction = previous?.decision?.conviction
-  if (typeof conviction === 'number' && typeof previousConviction === 'number' && conviction !== previousConviction) {
-    reasons.push(`확신도 ${formatDelta(conviction - previousConviction)}`)
-  }
-
-  const currentEvent = getNextEarningsEvent(current)
-  const previousEvent = previous ? getNextEarningsEvent(previous) : undefined
-  if (currentEvent) {
-    const currentDays = parseEventDays(currentEvent.days_until)
-    const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
-    if (Number.isFinite(currentDays) && (!Number.isFinite(previousDays) || currentDays < previousDays)) {
-      reasons.push(`이벤트 ${currentEvent.label} D-${currentEvent.days_until}`)
-    }
-  }
-
-  const baseline = current.signal_or_takeaway || current.summary
-  return reasons.length > 0 ? `${reasons.join(' · ')} · ${baseline}` : baseline
-}
-
-function buildPriorityBadges(
-  current: TickerAnalysisData,
-  previous?: TickerAnalysisData,
-): Array<{ label: string; tone: 'up' | 'down' | 'new' | 'neutral' }> {
-  const badges: Array<{ label: string; tone: 'up' | 'down' | 'new' | 'neutral' }> = []
-  const currentAction = current.decision?.action
-  const previousAction = previous?.decision?.action
-  if (!previous && currentAction) {
-    badges.push({ label: '새 항목', tone: 'new' })
-  }
-  if (previousAction && currentAction && previousAction !== currentAction) {
-    badges.push({
-      label: `${translateAction(previousAction)}→${translateAction(currentAction)}`,
-      tone: currentAction === 'buy' || previousAction === 'avoid' ? 'up' : 'down',
-    })
-  }
-
-  const conviction = current.decision?.conviction
-  const previousConviction = previous?.decision?.conviction
-  if (typeof conviction === 'number' && typeof previousConviction === 'number' && conviction !== previousConviction) {
-    badges.push({
-      label: `확신도 ${formatDelta(conviction - previousConviction)}`,
-      tone: conviction > previousConviction ? 'up' : 'down',
-    })
-  }
-
-  const currentEvent = getNextEarningsEvent(current)
-  const previousEvent = previous ? getNextEarningsEvent(previous) : undefined
-  if (currentEvent) {
-    const currentDays = parseEventDays(currentEvent.days_until)
-    const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
-    if (Number.isFinite(currentDays) && !Number.isFinite(previousDays)) {
-      badges.push({ label: '새 이벤트', tone: 'new' })
-    } else if (Number.isFinite(currentDays) && Number.isFinite(previousDays) && currentDays < previousDays) {
-      badges.push({ label: `이벤트 D-${currentEvent.days_until}`, tone: 'up' })
-    }
-  }
-  return badges.slice(0, 3)
-}
-
-function buildPriorityTone(
-  current: TickerAnalysisData,
-  previous?: TickerAnalysisData,
-): 'up' | 'down' | 'new' | 'neutral' {
-  const currentAction = current.decision?.action
-  const previousAction = previous?.decision?.action
-  if (!previous && (currentAction || current.signal_or_takeaway)) {
-    return 'new'
-  }
-  if (previousAction && currentAction && previousAction !== currentAction) {
-    if (currentAction === 'buy' || previousAction === 'avoid') return 'up'
-    if (currentAction === 'avoid' || previousAction === 'buy') return 'down'
-  }
-  const conviction = current.decision?.conviction
-  const previousConviction = previous?.decision?.conviction
-  if (typeof conviction === 'number' && typeof previousConviction === 'number') {
-    if (conviction > previousConviction) return 'up'
-    if (conviction < previousConviction) return 'down'
-  }
-  return 'neutral'
-}
-
-function buildEventPriorityReason(
-  currentEvent: { date: string; days_until: string; timing?: string },
-  previousEvent?: { days_until: string },
-): string {
-  const details = [currentEvent.date]
-  if (currentEvent.timing) {
-    details.push(currentEvent.timing)
-  }
-  const currentDays = parseEventDays(currentEvent.days_until)
-  const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
-  if (Number.isFinite(currentDays) && Number.isFinite(previousDays) && currentDays !== previousDays) {
-    details.push(`전일 대비 ${formatDelta(previousDays - currentDays)}일`)
-  } else if (Number.isFinite(currentDays) && !Number.isFinite(previousDays)) {
-    details.push('오늘 새로 포착')
-  }
-  return details.join(' · ')
-}
-
-function buildEventTone(
-  currentEvent: { days_until: string },
-  previousEvent?: { days_until: string },
-): 'up' | 'down' | 'new' | 'neutral' {
-  const currentDays = parseEventDays(currentEvent.days_until)
-  const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
-  if (Number.isFinite(currentDays) && !Number.isFinite(previousDays)) {
-    return 'new'
-  }
-  if (Number.isFinite(currentDays) && Number.isFinite(previousDays) && currentDays < previousDays) {
-    return 'up'
-  }
-  return 'neutral'
-}
-
-function buildEventBadges(
-  currentEvent: { days_until: string },
-  previousEvent?: { days_until: string },
-): Array<{ label: string; tone: 'up' | 'down' | 'new' | 'neutral' }> {
-  const badges: Array<{ label: string; tone: 'up' | 'down' | 'new' | 'neutral' }> = []
-  const currentDays = parseEventDays(currentEvent.days_until)
-  const previousDays = previousEvent ? parseEventDays(previousEvent.days_until) : Number.POSITIVE_INFINITY
-  if (Number.isFinite(currentDays) && !Number.isFinite(previousDays)) {
-    badges.push({ label: '새 이벤트', tone: 'new' })
-  } else if (Number.isFinite(currentDays) && Number.isFinite(previousDays) && currentDays < previousDays) {
-    badges.push({ label: `${previousDays - currentDays}일 당겨짐`, tone: 'up' })
-  }
-  if (Number.isFinite(currentDays) && currentDays <= 1) {
-    badges.push({ label: '오늘/내일', tone: 'down' })
-  }
-  return badges
-}
-
-function formatDelta(delta: number): string {
-  return `${delta > 0 ? '↑' : '↓'}${Math.abs(delta)}`
-}
-
-function translateAction(action?: string): string {
-  if (action === 'buy') return '매수'
-  if (action === 'avoid') return '회피'
-  return '관찰'
 }
 
 function applyTraderFilters(ticker: TickerAnalysisData, filters: TraderFilters): boolean {
