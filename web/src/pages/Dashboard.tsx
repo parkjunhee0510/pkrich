@@ -5,9 +5,8 @@ import { ErrorState } from '../components/ErrorState'
 import { MacroContextBar } from '../components/MacroContextBar'
 import { MacroNarrativePanel } from '../components/MacroNarrativePanel'
 import { MarketOverview } from '../components/MarketOverview'
-import { MarketRegimeBanner } from '../components/MarketRegimeBanner'
+import { MarketMoodSectorBriefing } from '../components/MarketMoodSectorBriefing'
 import { PmDailyQueue } from '../components/PmDailyQueue'
-import { SectorSummary } from '../components/SectorSummary'
 import { DashboardSkeleton } from '../components/Skeleton'
 import {
   CatalystFeed,
@@ -19,6 +18,7 @@ import { WatchlistTable } from '../components/WatchlistTable'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useLocalResearchAutomation } from '../hooks/useLocalResearchAutomation'
 import type { TickerAnalysisData, WeeklyReportSection } from '../types'
+import { buildMarketMoodSummary, deriveSectorMoodInsights } from '../utils/sectorMood'
 import {
   buildCatalystFeedSections,
   buildEarningsBoardSections,
@@ -174,6 +174,15 @@ export function Dashboard() {
   const dashboardPriorityCards = useMemo(
     () => buildDashboardPriorityCards(day.tickers, sortedWatchlistTickers, previousDay?.tickers ?? []),
     [day.tickers, previousDay?.tickers, sortedWatchlistTickers],
+  )
+  const sectorMood = useMemo(
+    () =>
+      deriveSectorMoodInsights({
+        tickers: day.tickers,
+        marketRegime: day.market_regime,
+        macroContext: day.macro_context,
+      }),
+    [day.tickers, day.market_regime, day.macro_context],
   )
   const decisionCounts = useMemo(() => countDecisions(day.tickers), [day.tickers])
   const emptyState = useMemo(
@@ -551,14 +560,17 @@ export function Dashboard() {
 
       <DashboardAccordionSection
         title="오늘 시장 분위기"
-        summary={`${day.market_regime?.regime ?? '시장 분위기 정보 없음'} · 매크로와 섹터 흐름`}
+        summary={buildMarketMoodSummary(day.market_regime, sectorMood)}
         defaultOpen
       >
-        <MarketRegimeBanner regime={day.market_regime} />
+        <MarketMoodSectorBriefing
+          marketRegime={day.market_regime}
+          macroContext={day.macro_context}
+          sectorMood={sectorMood}
+        />
         <MacroNarrativePanel narrative={day.macro_context?.macro_narrative} regime={day.market_regime} />
         <MacroContextBar macroContext={day.macro_context} />
         <MarketOverview entries={day.market_overview} />
-        <SectorSummary tickers={day.tickers} />
       </DashboardAccordionSection>
 
       {(data.weekly_summary?.weekly_report || data.weekly_summary?.weekly_insight) ? (
