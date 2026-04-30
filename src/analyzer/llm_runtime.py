@@ -7,6 +7,11 @@ from dataclasses import replace
 from typing import Any
 
 from src.analyzer.base import AnalysisContext, ModuleResult, StructuredLLMModule
+from src.analyzer.evidence_manifest import (
+    evidence_hash,
+    prompt_template_hash,
+    write_evidence_record,
+)
 from src.analyzer.prompts import PromptContext, PromptTemplate, get_prompt_template
 from src.analyzer.validator import ResponseValidator
 from src.utils.cost_tracker import calculate_response_cost
@@ -365,6 +370,57 @@ def _execute_batch_request(
         )
 
 
+def _market_regime_payload(ctx: AnalysisContext) -> Any:
+    if not isinstance(ctx.macro_context, dict):
+        return None
+    return ctx.macro_context.get("market_regime")
+
+
+def _emit_structured_batch_evidence(
+    *,
+    module: StructuredLLMModule,
+    ctx: AnalysisContext,
+    model_profile: Any,
+    prompt_template: PromptTemplate,
+    batch_payload: list[dict[str, Any]],
+    batch_tickers: list[str],
+) -> None:
+    del batch_payload
+    macro_hash, macro_present = evidence_hash(ctx.macro_context)
+    regime_hash, regime_present = evidence_hash(_market_regime_payload(ctx))
+    template_hash = prompt_template_hash(prompt_template)
+    for ticker in batch_tickers:
+        raw_hash, raw_present = evidence_hash(ctx.raw_payload_by_ticker.get(ticker))
+        fallback_hash, fallback_present = evidence_hash(ctx.fallback_payload_by_ticker.get(ticker))
+        upstream_hash, upstream_present = evidence_hash(ctx.intermediate_results.get(ticker))
+        write_evidence_record(
+            {
+                "run_date": ctx.run_date.isoformat(),
+                "stage": "analyzer",
+                "scope": "ticker",
+                "module": module.name,
+                "ticker": ticker,
+                "batch_tickers": list(batch_tickers),
+                "execution_mode": str(ctx.metadata.get("execution_mode", "full")),
+                "model": model_profile.model,
+                "model_profile": model_profile.name,
+                "prompt_version": prompt_template.version,
+                "raw_payload_hash": raw_hash,
+                "fallback_payload_hash": fallback_hash,
+                "upstream_payload_hash": upstream_hash,
+                "macro_context_hash": macro_hash,
+                "market_regime_hash": regime_hash,
+                "prompt_template_hash": template_hash,
+                "raw_payload_present": raw_present,
+                "fallback_payload_present": fallback_present,
+                "upstream_payload_present": upstream_present,
+                "macro_context_present": macro_present,
+                "market_regime_present": regime_present,
+            },
+            run_date=ctx.run_date,
+        )
+
+
 def _request_structured_batch(
     client: Any,
     module: StructuredLLMModule,
@@ -375,6 +431,14 @@ def _request_structured_batch(
     batch_tickers: list[str],
 ) -> dict[str, dict[str, Any]]:
     batch_payload = module.build_batch_payload(ctx, batch_tickers)
+    _emit_structured_batch_evidence(
+        module=module,
+        ctx=ctx,
+        model_profile=model_profile,
+        prompt_template=prompt_template,
+        batch_payload=batch_payload,
+        batch_tickers=batch_tickers,
+    )
     response = client.responses.create(
         model=model_profile.model,
         max_output_tokens=model_profile.max_output_tokens,

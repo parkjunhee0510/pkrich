@@ -254,6 +254,53 @@ class MissingTickerRetryTests(unittest.TestCase):
             "research_v1:fake_structured",
         )
 
+    def test_records_evidence_manifest_for_structured_batch(self) -> None:
+        fake_client = _FakeOpenAIClient(
+            [_FakeResponse({"tickers": [{"ticker": "AAPL", "summary": "llm:AAPL"}, {"ticker": "MSFT", "summary": "llm:MSFT"}]})]
+        )
+        self.ctx = AnalysisContext(
+            watchlist=[SimpleNamespace(ticker="AAPL"), SimpleNamespace(ticker="MSFT")],
+            collected={},
+            news_map={},
+            run_date=date(2026, 4, 21),
+            macro_context={"vix": {"level": "18"}, "market_regime": {"regime": "neutral"}},
+            model_profile=ModelProfile(
+                name="economy",
+                model="gpt-5.4-mini",
+                prompt_version="research_v1",
+                context_window=400000,
+                max_output_tokens=32000,
+                monthly_cost_estimate_usd=0.0,
+                input_cost_per_1m_tokens=0.0,
+                cached_input_cost_per_1m_tokens=0.0,
+                output_cost_per_1m_tokens=0.0,
+            ),
+            metadata={"execution_mode": "full"},
+            raw_payload_by_ticker={"AAPL": {"price": 100}, "MSFT": {"price": 200}},
+            fallback_payload_by_ticker={"AAPL": {"summary": "fallback:AAPL"}, "MSFT": {"summary": "fallback:MSFT"}},
+            intermediate_results={"AAPL": {"trade_frame": {"entry": "100"}}, "MSFT": {"trade_frame": {"entry": "200"}}},
+        )
+
+        with patch("src.analyzer.llm_runtime.write_evidence_record") as writer:
+            result = self._run_with_responses([], client=fake_client)
+
+        self.assertEqual(result.results_by_ticker["AAPL"]["summary"], "llm:AAPL")
+        self.assertEqual(writer.call_count, 2)
+        first_record = writer.call_args_list[0].args[0]
+        self.assertEqual(first_record["scope"], "ticker")
+        self.assertEqual(first_record["stage"], "analyzer")
+        self.assertEqual(first_record["module"], "fake_structured")
+        self.assertEqual(first_record["ticker"], "AAPL")
+        self.assertEqual(first_record["batch_tickers"], ["AAPL", "MSFT"])
+        self.assertEqual(first_record["execution_mode"], "full")
+        self.assertEqual(first_record["model_profile"], "economy")
+        self.assertEqual(first_record["prompt_version"], "research_v1")
+        self.assertTrue(first_record["macro_context_present"])
+        self.assertTrue(first_record["market_regime_present"])
+        self.assertTrue(first_record["upstream_payload_present"])
+        self.assertTrue(first_record["raw_payload_hash"].startswith("sha256:"))
+        self.assertTrue(first_record["prompt_template_hash"].startswith("sha256:"))
+
     def test_retries_single_ticker_after_fact_warning_and_recovers(self) -> None:
         fake_client = _FakeOpenAIClient(
             [

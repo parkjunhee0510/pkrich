@@ -84,6 +84,7 @@ class AnalysisOrchestrator:
             portfolio_account_size=portfolio_account_size,
             model_profile=self.model_profile or load_model_profile(),
             logger=self.logger,
+            metadata={"execution_mode": execution_mode},
             available_inputs={
                 "price",
                 "fundamentals",
