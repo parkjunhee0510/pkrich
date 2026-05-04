@@ -66,6 +66,7 @@ def make_dataset(
     daily_overrides: Mapping[str, Mapping[date, dict]] | None = None,
     logs: Sequence[PipelineEvent] = (),
     summary_overrides: Mapping[date, dict] | None = None,
+    llm_evidence_overrides: Mapping[date, Sequence[dict[str, Any]]] | None = None,
     model_profile: str = "economy",
 ) -> AuditDataset:
     start = end - timedelta(days=window_days - 1)
@@ -81,6 +82,10 @@ def make_dataset(
     for d in days:
         override = (summary_overrides or {}).get(d)
         summaries[d] = override or make_summary(d)
+    llm_evidence: dict[date, tuple[dict[str, Any], ...]] = {}
+    for d in days:
+        rows = (llm_evidence_overrides or {}).get(d, ())
+        llm_evidence[d] = tuple(dict(row) for row in rows)
     return AuditDataset(
         window_start=start,
         window_end=end,
@@ -88,5 +93,6 @@ def make_dataset(
         daily=daily,
         logs=tuple(logs),
         summaries=summaries,
+        llm_evidence=llm_evidence,
         model_profile=model_profile,
     )

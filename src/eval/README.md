@@ -57,8 +57,11 @@ JSON reports include:
 | D3 | signal_volatility |
 | R1 | pipeline_summary |
 | R2 | retry_distribution |
+| R3 | evidence_consistency |
 
 Thresholds live in `src/eval/config.py`. Adjust them there only; do not hard-code thresholds inside checks.
+
+R3 reads `output/data/llm_evidence/<DATE>.jsonl` and verifies that comparable economy, deep, tie-break, and committee records share the same source evidence hashes. It reports `info` for runs created before evidence manifests existed.
 
 ## Tests
 

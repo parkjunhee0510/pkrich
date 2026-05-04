@@ -26,6 +26,19 @@ class TestLoadWindow(unittest.TestCase):
             "model_usage": {"per_ticker_tokens": {"AAPL": 3000}, "total_tokens": 3000},
             "daily_api_cost_usd": 0.10,
         }))
+        evidence_dir = self.tmp / "output" / "data" / "llm_evidence"
+        evidence_dir.mkdir(parents=True)
+        (evidence_dir / "2026-04-28.jsonl").write_text(
+            json.dumps({
+                "schema_version": 1,
+                "run_date": "2026-04-28",
+                "scope": "ticker",
+                "module": "signal_takeaway_module",
+                "ticker": "AAPL",
+                "raw_payload_hash": "sha256:raw",
+            }) + "\n",
+            encoding="utf-8",
+        )
 
     def tearDown(self) -> None:
         shutil.rmtree(self.tmp, ignore_errors=True)
@@ -38,6 +51,16 @@ class TestLoadWindow(unittest.TestCase):
         self.assertEqual(ds.tickers, ("AAPL",))
         self.assertIn(date(2026, 4, 28), ds.daily["AAPL"])
         self.assertEqual(ds.summaries[date(2026, 4, 28)]["fallback_count"], 0)
+
+    def test_load_window_includes_llm_evidence(self):
+        ds = load_window(
+            root=self.tmp, end=date(2026, 4, 28), window_days=1,
+            tickers=["AAPL"], model_profile="economy",
+        )
+
+        rows = ds.llm_evidence[date(2026, 4, 28)]
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["module"], "signal_takeaway_module")
 
     def test_load_window_missing_day_is_none(self):
         ds = load_window(
@@ -74,7 +97,7 @@ class TestAuditDatasetIsFrozen(unittest.TestCase):
     def test_frozen(self):
         ds = AuditDataset(
             window_start=date(2026, 4, 28), window_end=date(2026, 4, 28),
-            tickers=("AAPL",), daily={}, logs=(), summaries={}, model_profile="economy",
+            tickers=("AAPL",), daily={}, logs=(), summaries={}, llm_evidence={}, model_profile="economy",
         )
         with self.assertRaises(Exception):
             ds.tickers = ("MSFT",)  # type: ignore[misc]

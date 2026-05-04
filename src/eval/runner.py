@@ -86,6 +86,9 @@ def _build_check(check_id: str, cfg: "RunnerConfig") -> BaseCheck:
     if check_id == "R2":
         from src.eval.checks.r2_retry_distribution import R2RetryDistribution
         return R2RetryDistribution()
+    if check_id == "R3":
+        from src.eval.checks.r3_evidence_consistency import R3EvidenceConsistency
+        return R3EvidenceConsistency()
     if check_id == "D1":
         if cfg.skip_replay:
             class _Skipped(BaseCheck):

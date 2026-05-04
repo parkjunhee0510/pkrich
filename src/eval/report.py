@@ -25,6 +25,7 @@ CHECK_DIMENSIONS = {
     "D3": "signal_volatility",
     "R1": "pipeline_summary",
     "R2": "retry_distribution",
+    "R3": "evidence_consistency",
 }
 
 

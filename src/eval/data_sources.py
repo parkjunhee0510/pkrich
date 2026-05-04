@@ -26,6 +26,7 @@ class AuditDataset:
     daily: Mapping[str, Mapping[date, dict]]
     logs: tuple[PipelineEvent, ...]
     summaries: Mapping[date, dict]
+    llm_evidence: Mapping[date, tuple[dict[str, Any], ...]]
     model_profile: str
 
 
@@ -109,6 +110,11 @@ def load_window(
         rows = _read_jsonl(log_root / f"{d.isoformat()}.jsonl")
         logs.extend(_events_from_jsonl(rows, d))
 
+    llm_evidence: dict[date, tuple[dict[str, Any], ...]] = {}
+    evidence_root = root / "output" / "data" / "llm_evidence"
+    for d in days:
+        llm_evidence[d] = tuple(_read_jsonl(evidence_root / f"{d.isoformat()}.jsonl"))
+
     return AuditDataset(
         window_start=start,
         window_end=end,
@@ -116,5 +122,6 @@ def load_window(
         daily=daily,
         logs=tuple(logs),
         summaries=summaries,
+        llm_evidence=llm_evidence,
         model_profile=model_profile,
     )

@@ -12,7 +12,7 @@ ALL_CHECK_IDS: tuple[str, ...] = (
     "I1", "I2", "I3", "I4",
     "O1", "O2", "O3", "O4", "O5",
     "D1", "D2", "D3",
-    "R1", "R2",
+    "R1", "R2", "R3",
 )
 
 
@@ -39,6 +39,7 @@ DEFAULT_THRESHOLDS: dict[str, dict[str, Thresholds]] = {
     "D3": {"signal_std": Thresholds(0.25, 0.40, "lower_is_better")},
     "R1": {"fallback_rate": Thresholds(0.05, 0.15, "lower_is_better")},
     "R2": {"retry_per_ticker": Thresholds(2, 5, "lower_is_better")},
+    "R3": {"mismatch_count": Thresholds(0, 0, "lower_is_better")},
 }
 
 

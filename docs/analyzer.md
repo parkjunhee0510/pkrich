@@ -91,6 +91,14 @@ Structured LLM modules:
 * Per-module model profile and batch-size selection in `src/utils/model_config.py`
 * `llm_runtime.py` enforces a missing-ticker retry budget so partial batches are recovered without runaway cost
 
+## LLM Evidence Manifest
+
+Before provider calls, analyzer LLM paths emit best-effort evidence manifest records under `output/data/llm_evidence/<run_date>.jsonl`. Records contain hashes and metadata only; they must not contain raw prompts, full payloads, model responses, API keys, or sensitive environment values.
+
+Ticker-level structured modules record `raw_payload_hash`, `fallback_payload_hash`, `upstream_payload_hash`, `macro_context_hash`, `market_regime_hash`, and `prompt_template_hash` per ticker. Economy, deep, and tie-break runs may differ by model profile or prompt version, but comparable ticker records for the same run should share raw, macro, and regime hashes.
+
+Committee, macro narrative, policy impact, and weekly insight paths record scope-specific evidence hashes. Manifest writes are best-effort and must not fail the daily pipeline.
+
 ## Rules
 
 * No direct external API calls

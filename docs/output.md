@@ -53,12 +53,15 @@ Current `pm_view` fields:
 * routing outcome
 * A/B test results
 * LLM audit reports under `docs/reports/llm-audit-YYYY-MM-DD.md` and `output/data/llm_audit/`
+* LLM evidence manifests under `output/data/llm_evidence/<DATE>.jsonl`
 
 `analysis_quality.json` includes the shared `schema_version`, `runs[]`, and `latest`. When a `web/` app exists beside `output/`, the writer also syncs this file to `web/public/output/data/analysis_quality.json` so the static dashboard reads the same operational payload as the pipeline output.
 
 `api_status.json` is written for the requested calendar run date. This is intentionally distinct from the effective market date detected from price history, because API freshness and scheduled run status are calendar-run concerns.
 
 LLM audit JSON reports include check dimensions, threshold metadata, sample counts, severity counts including `info`, and replay cost when D1 replay is enabled. Markdown reports include an executive summary, verdict matrix, per-check details, and methodology notes.
+
+LLM evidence manifests are operational JSONL artifacts used by the eval audit layer. They contain stable hashes and call metadata only, not raw prompts or model responses. They are not copied into `web/public/output/data/` by default.
 
 ## Requirements
 
