@@ -4,15 +4,18 @@ import json
 import os
 import time
 from collections import Counter
+from datetime import date
 from typing import Any, Callable
 
 from src.analyzer.committee_prompt import (
+    _analysis_payload,
     build_growth_analyst_prompt,
     build_macro_strategist_prompt,
     build_pm_prompt,
     build_risk_manager_prompt,
     build_value_skeptic_prompt,
 )
+from src.analyzer.evidence_manifest import evidence_hash, write_evidence_record
 from src.types import TickerAnalysis
 from src.utils.cost_tracker import calculate_response_cost
 from src.utils.model_config import (
@@ -120,6 +123,12 @@ def run_committee_analysis(
         max_summary_sentences=committee_config.max_summary_sentences_for_pm,
         role_outputs={role: roles[role] for role in PRE_PM_ROLES},
     )
+    _emit_committee_evidence(
+        role="pm",
+        profile_name=committee_config.economy_model,
+        prompt=pm_economy_prompt,
+        analysis=analysis,
+    )
     pm_economy = _normalize_role_output(
         "pm",
         role_runner("pm", committee_config.economy_model, pm_economy_prompt),
@@ -157,6 +166,12 @@ def run_committee_analysis(
             profile_name=committee_config.deep_model,
             max_summary_sentences=committee_config.max_summary_sentences_for_pm,
             role_outputs={role: roles[role] for role in PRE_PM_ROLES},
+        )
+        _emit_committee_evidence(
+            role="pm",
+            profile_name=committee_config.deep_model,
+            prompt=pm_deep_prompt,
+            analysis=analysis,
         )
         pm_deep = _normalize_role_output(
             "pm",
@@ -226,6 +241,12 @@ def _run_role_batch(
             max_summary_sentences=max_summary_sentences_for_pm if role == "pm" else max_summary_sentences_per_role,
             role_outputs={},
         )
+        _emit_committee_evidence(
+            role=role,
+            profile_name=profile_name,
+            prompt=prompt,
+            analysis=analysis,
+        )
         outputs[role] = _normalize_role_output(
             role,
             role_runner(role, profile_name, prompt),
@@ -253,6 +274,79 @@ def _build_role_prompt(
         max_summary_sentences=max_summary_sentences,
         role_outputs=role_outputs,
     )
+
+
+def _run_date_for_analysis(analysis: TickerAnalysis | dict[str, Any]) -> str:
+    raw = analysis.get("date") if isinstance(analysis, dict) else getattr(analysis, "date", "")
+    try:
+        return date.fromisoformat(str(raw)).isoformat()
+    except (TypeError, ValueError):
+        return date.today().isoformat()
+
+
+def _emit_committee_evidence(
+    *,
+    role: str,
+    profile_name: str,
+    prompt: dict[str, Any],
+    analysis: TickerAnalysis | dict[str, Any],
+) -> None:
+    try:
+        full_payload = _analysis_payload(analysis)
+        context = prompt.get("context") if isinstance(prompt, dict) else {}
+        if not isinstance(context, dict):
+            context = {}
+        ticker_context = context.get("ticker", {})
+        role_outputs = context.get("role_outputs", {})
+        analysis_hash, analysis_present = evidence_hash(full_payload)
+        role_hash, role_present = evidence_hash(ticker_context)
+        prior_hash, prior_present = evidence_hash(role_outputs)
+        template_hash, template_present = evidence_hash(
+            {
+                "role": role,
+                "system": prompt.get("system", ""),
+                "contract": prompt.get("contract", {}),
+            }
+        )
+        macro_hash, macro_present = evidence_hash(None)
+        regime_hash, regime_present = evidence_hash(None)
+        run_date = _run_date_for_analysis(analysis)
+        write_evidence_record(
+            {
+                "run_date": run_date,
+                "stage": "committee",
+                "scope": "committee_role",
+                "module": f"committee_{role}",
+                "ticker": str(full_payload.get("ticker", "")),
+                "role": role,
+                "round": str(prompt.get("round", "")),
+                "model_profile": profile_name,
+                "analysis_payload_hash": analysis_hash,
+                "analysis_payload_present": analysis_present,
+                "role_payload_hash": role_hash,
+                "role_payload_present": role_present,
+                "prior_role_outputs_hash": prior_hash,
+                "prior_role_outputs_present": prior_present,
+                "prompt_template_hash": template_hash,
+                "prompt_template_present": template_present,
+                "macro_context_hash": macro_hash,
+                "macro_context_present": macro_present,
+                "market_regime_hash": regime_hash,
+                "market_regime_present": regime_present,
+            },
+            run_date=run_date,
+        )
+    except Exception:
+        try:
+            record_pipeline_event(
+                "analyzer",
+                "warning",
+                "committee_evidence_emit_failed",
+                role=role,
+                model_profile=profile_name,
+            )
+        except Exception:
+            pass
 
 
 def _normalize_role_output(

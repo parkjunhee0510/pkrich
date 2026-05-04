@@ -33,6 +33,13 @@ def _analysis() -> TickerAnalysis:
 
 
 class CommitteeAnalysisTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._evidence_writer_patch = patch("src.analyzer.committee.write_evidence_record")
+        self._evidence_writer_patch.start()
+
+    def tearDown(self) -> None:
+        self._evidence_writer_patch.stop()
+
     def test_five_level_stance_maps_to_existing_action_scale(self) -> None:
         self.assertEqual(committee_stance_to_action("strong_buy"), "buy")
         self.assertEqual(committee_stance_to_action("BUY"), "buy")
@@ -185,6 +192,33 @@ class CommitteeAnalysisTests(unittest.TestCase):
             {"growth_analyst", "value_skeptic", "risk_manager", "macro_strategist"},
         )
         self.assertEqual(result["roles"]["pm"]["summary"], "pm summary")
+
+    def test_run_committee_analysis_records_role_evidence(self) -> None:
+        def runner(role: str, profile: str, prompt: dict[str, object]) -> dict[str, object]:
+            return {
+                "role": role,
+                "profile": profile,
+                "stance": "watch",
+                "confidence": 0.80 if role == "pm" else 0.60,
+                "strong_objection": False,
+                "summary": f"{role} summary",
+            }
+
+        with patch("src.analyzer.committee.write_evidence_record") as writer:
+            run_committee_analysis(_analysis(), run_role=runner)
+
+        self.assertEqual(writer.call_count, 5)
+        first_record = writer.call_args_list[0].args[0]
+        self.assertEqual(first_record["scope"], "committee_role")
+        self.assertEqual(first_record["stage"], "committee")
+        self.assertEqual(first_record["module"], "committee_growth_analyst")
+        self.assertEqual(first_record["ticker"], "AAPL")
+        self.assertEqual(first_record["role"], "growth_analyst")
+        self.assertEqual(first_record["round"], "economy")
+        self.assertTrue(first_record["analysis_payload_hash"].startswith("sha256:"))
+        self.assertTrue(first_record["role_payload_hash"].startswith("sha256:"))
+        self.assertFalse(first_record["macro_context_present"])
+        self.assertFalse(first_record["market_regime_present"])
 
     def test_committee_prompt_contract_exposes_required_fields(self) -> None:
         from src.analyzer.committee_prompt import build_pm_prompt
@@ -444,6 +478,13 @@ class CommitteeAnalysisTests(unittest.TestCase):
 
 
 class CommitteeRetryAndSlimTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._evidence_writer_patch = patch("src.analyzer.committee.write_evidence_record")
+        self._evidence_writer_patch.start()
+
+    def tearDown(self) -> None:
+        self._evidence_writer_patch.stop()
+
     def test_default_runner_retries_on_rate_limit_then_succeeds(self) -> None:
         class _RateLimitError(Exception):
             status_code = 429
