@@ -18,6 +18,7 @@ import json
 import time
 from datetime import datetime, timezone
 
+from src.analyzer.evidence_manifest import evidence_hash, write_evidence_record
 from src.types import POLICY_CATEGORIES, PolicyEvent, PolicyImpactReport, TickerImpact
 from src.utils.token_budget import count_tokens, split_into_chunks
 from src.utils.pipeline_logging import record_pipeline_event
@@ -231,6 +232,63 @@ def _coerce_impact(item: dict, allowed_tickers: set[str]) -> TickerImpact | None
     )
 
 
+def _policy_run_date(today: str | None) -> str:
+    if today:
+        return today
+    return datetime.now(timezone.utc).date().isoformat()
+
+
+def _emit_policy_chunk_evidence(
+    *,
+    events_chunk: list[PolicyEvent],
+    compact_candidates: list[dict],
+    category_to_sectors: dict,
+    model_profile: str,
+    today: str | None,
+) -> None:
+    try:
+        events_hash, events_present = evidence_hash(
+            [
+                {
+                    "id": event.id,
+                    "category": event.category,
+                    "headline": event.headline,
+                    "summary": event.summary,
+                }
+                for event in events_chunk
+            ]
+        )
+        candidates_hash, candidates_present = evidence_hash(compact_candidates)
+        sectors_hash, sectors_present = evidence_hash(category_to_sectors)
+        run_date = _policy_run_date(today)
+        write_evidence_record(
+            {
+                "run_date": run_date,
+                "stage": "policy",
+                "scope": "policy_chunk",
+                "module": "policy_impact",
+                "model_profile": model_profile,
+                "events_hash": events_hash,
+                "events_present": events_present,
+                "candidate_tickers_hash": candidates_hash,
+                "candidate_tickers_present": candidates_present,
+                "category_to_sectors_hash": sectors_hash,
+                "category_to_sectors_present": sectors_present,
+            },
+            run_date=run_date,
+        )
+    except Exception:
+        try:
+            record_pipeline_event(
+                "policy.analyzer",
+                "warning",
+                "policy_evidence_emit_failed",
+                model_profile=model_profile,
+            )
+        except Exception:
+            pass
+
+
 def map_impacts(
     events: list[PolicyEvent],
     ticker_ctx: dict,
@@ -279,6 +337,13 @@ def map_impacts(
             # Token counting failure should not abort — keep going.
             pass
 
+        _emit_policy_chunk_evidence(
+            events_chunk=chunk_events,
+            compact_candidates=compact,
+            category_to_sectors=category_to_sectors,
+            model_profile=model_profile,
+            today=today,
+        )
         try:
             raw = _openai_map(chunk_events, compact, model_profile)
         except Exception as exc:

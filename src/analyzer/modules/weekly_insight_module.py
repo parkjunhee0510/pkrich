@@ -6,10 +6,62 @@ from datetime import date
 from typing import Any
 
 from src.analyzer.base import AnalysisContext, AnalysisModule, ModuleResult
+from src.analyzer.evidence_manifest import evidence_hash, prompt_template_hash, write_evidence_record
 from src.analyzer.prompts import PromptContext, get_prompt_template
 from src.utils.env import load_dotenv
 from src.utils.model_config import load_model_profile, response_temperature_kwargs
 from src.utils.pipeline_logging import record_pipeline_event
+
+
+def _weekly_market_regime(ctx: AnalysisContext) -> Any:
+    if isinstance(ctx.macro_context, dict):
+        return ctx.macro_context.get("market_regime")
+    weekly_inputs = ctx.metadata.get("weekly_inputs", {})
+    if isinstance(weekly_inputs, dict):
+        return weekly_inputs.get("market_regime")
+    return None
+
+
+def _emit_weekly_evidence(
+    *,
+    ctx: AnalysisContext,
+    weekly_inputs: dict[str, Any],
+    model_profile: Any,
+    prompt_template: Any,
+) -> None:
+    try:
+        weekly_hash, weekly_present = evidence_hash(weekly_inputs)
+        macro_hash, macro_present = evidence_hash(ctx.macro_context)
+        regime_hash, regime_present = evidence_hash(_weekly_market_regime(ctx))
+        write_evidence_record(
+            {
+                "run_date": ctx.run_date.isoformat(),
+                "stage": "analyzer",
+                "scope": "weekly",
+                "module": "weekly_insight_module",
+                "weekly_inputs_hash": weekly_hash,
+                "weekly_inputs_present": weekly_present,
+                "macro_context_hash": macro_hash,
+                "macro_context_present": macro_present,
+                "market_regime_hash": regime_hash,
+                "market_regime_present": regime_present,
+                "model": model_profile.model,
+                "model_profile": model_profile.name,
+                "prompt_version": prompt_template.version,
+                "prompt_template_hash": prompt_template_hash(prompt_template),
+            },
+            run_date=ctx.run_date,
+        )
+    except Exception:
+        try:
+            record_pipeline_event(
+                "analyzer",
+                "warning",
+                "weekly_evidence_emit_failed",
+                module="weekly_insight_module",
+            )
+        except Exception:
+            pass
 
 
 class WeeklyInsightModule(AnalysisModule):
@@ -41,6 +93,12 @@ class WeeklyInsightModule(AnalysisModule):
             from openai import OpenAI
 
             client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            _emit_weekly_evidence(
+                ctx=ctx,
+                weekly_inputs=weekly_inputs,
+                model_profile=model_profile,
+                prompt_template=prompt_template,
+            )
             response = client.responses.create(
                 model=model_profile.model,
                 max_output_tokens=min(model_profile.max_output_tokens, 1800),

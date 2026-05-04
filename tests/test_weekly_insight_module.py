@@ -33,6 +33,13 @@ class _FakeWeeklyOpenAIClient:
 
 
 class WeeklyInsightModuleTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._evidence_writer_patch = patch("src.analyzer.modules.weekly_insight_module.write_evidence_record")
+        self._evidence_writer_patch.start()
+
+    def tearDown(self) -> None:
+        self._evidence_writer_patch.stop()
+
     def _weekly_inputs(self) -> dict[str, object]:
         return {
             "iso_year": 2026,
@@ -102,6 +109,44 @@ class WeeklyInsightModuleTests(unittest.TestCase):
             module.analyze(ctx)
 
         self.assertNotIn("temperature", fake_client.responses.calls[0])
+
+    def test_module_records_weekly_evidence_before_llm_call(self) -> None:
+        module = WeeklyInsightModule()
+        ctx = AnalysisContext(
+            watchlist=[],
+            collected={},
+            news_map={},
+            run_date=date(2026, 4, 16),
+            macro_context={"market_regime": {"regime": "neutral"}},
+            model_profile=load_model_profile(profile_name="economy"),
+            metadata={"weekly_inputs": self._weekly_inputs()},
+        )
+        response_text = (
+            '{"headline":"주간 헤드라인","summary":"주간 요약입니다.","market_environment":{"summary":"시장 요약","details":["세부 1"]},'
+            '"top_movers":{"summary":"상위 이동 종목","items":[{"ticker":"AAPL","name":"Apple Inc.","weekly_change":"+4.2%","catalyst":"AI 기대","decision_change":"buy (68)"}]},'
+            '"signal_review":{"summary":"시그널 점검","details":["승률 우세"]},"risk_points":{"summary":"리스크 요약","items":["CPI 확인"]},'
+            '"next_week_action_plan":{"summary":"다음 주 액션","items":["AAPL 추적"]},"portfolio_suggestions":{"summary":"포트폴리오 제안","items":["기술주 비중 점검"]}}'
+        )
+        fake_client = _FakeWeeklyOpenAIClient(_FakeWeeklyResponse(response_text))
+        fake_openai = types.ModuleType("openai")
+        fake_openai.OpenAI = lambda api_key=None: fake_client
+
+        with (
+            patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=False),
+            patch.dict(sys.modules, {"openai": fake_openai}),
+            patch("src.analyzer.modules.weekly_insight_module.write_evidence_record") as writer,
+        ):
+            module.analyze(ctx)
+
+        writer.assert_called_once()
+        record = writer.call_args.args[0]
+        self.assertEqual(record["scope"], "weekly")
+        self.assertEqual(record["module"], "weekly_insight_module")
+        self.assertEqual(record["model_profile"], "economy")
+        self.assertEqual(record["prompt_version"], "research_v1")
+        self.assertTrue(record["weekly_inputs_hash"].startswith("sha256:"))
+        self.assertTrue(record["macro_context_present"])
+        self.assertTrue(record["market_regime_present"])
 
 
 if __name__ == "__main__":

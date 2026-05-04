@@ -69,6 +69,39 @@ class TestAggregate(unittest.TestCase):
 
 
 class TestMap(unittest.TestCase):
+    def setUp(self):
+        self._evidence_writer_patch = patch("src.analyzer.policy_impact.write_evidence_record")
+        self._evidence_writer_patch.start()
+
+    def tearDown(self):
+        self._evidence_writer_patch.stop()
+
+    @patch("src.analyzer.policy_impact._openai_map")
+    @patch("src.analyzer.policy_impact.write_evidence_record")
+    def test_map_records_policy_chunk_evidence(self, mock_writer, mock_map):
+        mock_map.return_value = {"evt1": []}
+        ticker_ctx = {
+            "NVDA": {"sector": "semiconductor", "business": "gpu", "exposure": ["china"], "china_revenue_pct": 17}
+        }
+
+        map_impacts(
+            events=[_evt()],
+            ticker_ctx=ticker_ctx,
+            category_to_sectors={"export_control": ["semiconductor"]},
+            chunk_size=25,
+            model_profile="deep",
+            today="2026-04-30",
+        )
+
+        mock_writer.assert_called_once()
+        record = mock_writer.call_args.args[0]
+        self.assertEqual(record["scope"], "policy_chunk")
+        self.assertEqual(record["stage"], "policy")
+        self.assertEqual(record["module"], "policy_impact")
+        self.assertEqual(record["model_profile"], "deep")
+        self.assertTrue(record["events_hash"].startswith("sha256:"))
+        self.assertTrue(record["candidate_tickers_hash"].startswith("sha256:"))
+
     @patch("src.analyzer.policy_impact._openai_map")
     def test_map_chunks_large_candidate_lists(self, mock_map):
         mock_map.return_value = {"evt1": []}
