@@ -309,6 +309,11 @@
 .macro-event-card.impact-high {
   border-top: 4px solid var(--hazard);
   border-top-color: var(--hazard) !important;
+  color: var(--cozy-ink) !important;
+}
+.macro-event-card.impact-high .macro-event-type,
+.macro-event-card.impact-high small {
+  color: var(--cozy-ink-2);
 }
 .macro-event-card.impact-medium {
   border-top: 4px solid var(--caution);
