@@ -11,6 +11,7 @@ import json
 import os
 from dataclasses import asdict
 
+from src.output.schema import SCHEMA_VERSION
 from src.types import PolicyImpactReport
 
 
@@ -21,6 +22,7 @@ def write_policy_impact_json(report: PolicyImpactReport, path: str) -> None:
         os.makedirs(parent, exist_ok=True)
 
     payload = {
+        "schema_version": SCHEMA_VERSION,
         "date": report.date,
         "events": [asdict(e) for e in report.events],
         "impacts_by_event": {

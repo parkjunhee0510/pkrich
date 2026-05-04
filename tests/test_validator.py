@@ -163,6 +163,57 @@ class ResponseValidatorTests(unittest.TestCase):
         self.assertEqual(result.sanitized_response["signal_or_takeaway"], "중립 관찰")
         self.assertEqual(result.counts["fact_warning"], 2)
 
+    def test_does_not_warn_when_far_stop_is_allowed_support_level(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {"signal_or_takeaway": "매수 관찰 — 실적 기대 반영 | 진입 트리거 360.54 확인 | 목표 378.48/400.00 | 손절 SMA50(235.38 USD)"},
+            {"signal_or_takeaway": "string"},
+            {
+                "raw_payload": {
+                    "price": 360.54,
+                    "sma_50": "235.38",
+                    "sma_200": "210.00",
+                    "week52_high": "400.00",
+                    "week52_low": "120.00",
+                    "price_action": {"atr_14d": "12.00"},
+                    "positioning": {"analyst_target_price": "378.48 USD"},
+                },
+                "fallback": {"signal_or_takeaway": "중립 관찰"},
+                "intermediate": {
+                    "trade_frame": {
+                        "target_1": "378.48",
+                        "target_2": "400.00",
+                        "stop_loss": "235.38",
+                        "invalidation_price": "235.38",
+                    }
+                },
+            },
+        )
+
+        self.assertEqual(
+            result.sanitized_response["signal_or_takeaway"],
+            "매수 관찰 — 실적 기대 반영 | 진입 트리거 360.54 확인 | 목표 378.48/400.00 | 손절 SMA50(235.38 USD)",
+        )
+        self.assertNotIn("fact_warning", result.counts)
+
+    def test_allows_na_target_pair_when_prompt_requests_no_guessing(self) -> None:
+        validator = ResponseValidator()
+        result = validator.validate(
+            {"signal_or_takeaway": "매수 관찰 — 근거 부족 | 진입 트리거 N/A | 목표 N/A/N/A | 손절 N/A"},
+            {"signal_or_takeaway": "string"},
+            {
+                "raw_payload": {"price": 100.0},
+                "fallback": {"signal_or_takeaway": "중립 관찰"},
+                "intermediate": {},
+            },
+        )
+
+        self.assertEqual(
+            result.sanitized_response["signal_or_takeaway"],
+            "매수 관찰 — 근거 부족 | 진입 트리거 N/A | 목표 N/A/N/A | 손절 N/A",
+        )
+        self.assertNotIn("fact_warning", result.counts)
+
     def test_replaces_key_news_on_unmatched_title_like_item(self) -> None:
         validator = ResponseValidator()
         result = validator.validate(

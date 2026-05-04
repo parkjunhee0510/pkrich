@@ -363,6 +363,37 @@ class CommitteeAnalysisTests(unittest.TestCase):
         self.assertNotIn("raw", result["roles"]["pm"])
         self.assertEqual(result["roles"]["pm"]["invalid_reason"], "")
 
+    def test_budget_guard_shadow_logs_but_allows_deep_committee_review(self) -> None:
+        calls: list[tuple[str, str]] = []
+
+        def runner(role: str, profile: str, prompt: dict[str, object]) -> dict[str, object]:
+            del prompt
+            calls.append((role, profile))
+            if role == "pm" and profile == "economy":
+                return {
+                    "role": role,
+                    "profile": profile,
+                    "stance": "watch",
+                    "confidence": 0.10,
+                    "strong_objection": False,
+                    "summary": "pm economy low confidence",
+                }
+            return {
+                "role": role,
+                "profile": profile,
+                "stance": "watch",
+                "confidence": 0.70,
+                "strong_objection": False,
+                "summary": f"{role} {profile}",
+            }
+
+        with patch("src.analyzer.committee.record_pipeline_event") as record_event:
+            result = run_committee_analysis(_analysis(), run_role=runner)
+
+        self.assertEqual(result["status"], "deep_reviewed")
+        self.assertIn(("pm", "deep"), calls)
+        self.assertTrue(any(call.args[2] == "budget_guard_decision" for call in record_event.call_args_list))
+
     def test_invalid_role_output_is_flagged_explicitly(self) -> None:
         def runner(role: str, profile: str, prompt: dict[str, object]) -> dict[str, object]:
             if role == "pm":

@@ -125,6 +125,8 @@ def _decide_ticker(
     if not _force_raw_confidence():
         meta = evaluate_confidence_meta(
             analysis=analysis,
+            data=data,
+            run_date=run_date,
             regime=regime,
             factor_scores_by_name=factor_scores_by_name,
             macro_context=signal_stats.get("_macro_context"),
@@ -134,6 +136,10 @@ def _decide_ticker(
         )
         confidence_meta = meta.to_dict()
         conviction = calculate_final_conviction(raw_conviction, meta)
+        confidence_meta["data_quality_gate"] = _build_data_quality_gate_meta(
+            action_before_gate="buy" if conviction >= thresholds.get("buy", 65) else "watch",
+            data_quality_score=float(confidence_meta.get("data_quality_score", 1.0) or 1.0),
+        )
         if _confidence_adjustment_is_material(raw_conviction, conviction):
             confidence_note = _build_confidence_note(raw_conviction, conviction)
         logger.debug(
@@ -200,6 +206,17 @@ def _build_confidence_note(raw_conviction: int, final_conviction: int) -> str:
 
 def _confidence_adjustment_is_material(raw_conviction: int, final_conviction: int) -> bool:
     return abs(raw_conviction - final_conviction) >= 5
+
+
+def _build_data_quality_gate_meta(*, action_before_gate: str, data_quality_score: float) -> dict[str, object]:
+    threshold = 0.6
+    would_cap = data_quality_score < threshold and action_before_gate == "buy"
+    return {
+        "mode": "shadow",
+        "threshold": threshold,
+        "max_action_if_enforced": "watch",
+        "would_cap_action": would_cap,
+    }
 
 
 def _compute_valid_until(analysis: TickerAnalysis, run_date: date, config: dict[str, Any]) -> str:

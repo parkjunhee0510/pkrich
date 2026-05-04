@@ -215,6 +215,49 @@ class AnalysisEnsembleTests(unittest.TestCase):
             {"AAPL": {"hallucination_warning_count": 1, "fallback_used": True}},
         )
 
+    def test_budget_guard_shadow_logs_but_does_not_skip_deep(self) -> None:
+        economy_orchestrator = _FakeOrchestrator([_make_analysis("AAPL", summary="economy-aapl", signal="watch")])
+        deep_orchestrator = _FakeOrchestrator(
+            [],
+            llm_only_results=[_make_analysis("AAPL", summary="deep-aapl", signal="buy")],
+        )
+        ensemble = AnalysisEnsemble(
+            economy_orchestrator,
+            deep_orchestrator,
+            None,
+            EnsembleConfig(
+                enabled=True,
+                trigger_range=(25, 75),
+                second_model="deep",
+                second_prompt="research_v2",
+                third_model="deep",
+                third_prompt="research_v2",
+                max_daily_ensemble=5,
+            ),
+        )
+
+        with (
+            patch(
+                "src.analyzer.ensemble.generate_decisions",
+                side_effect=[
+                    [TickerDecision(ticker="AAPL", action="watch", conviction=50, reason="economy")],
+                    [TickerDecision(ticker="AAPL", action="watch", conviction=55, reason="deep")],
+                    [TickerDecision(ticker="AAPL", action="watch", conviction=55, reason="final")],
+                ],
+            ),
+            patch("src.analyzer.ensemble.record_pipeline_event") as record_event,
+        ):
+            ensemble.analyze_with_consensus(
+                [WatchlistItem(ticker="AAPL", name="Apple")],
+                {"AAPL": _make_collected("AAPL")},
+                {},
+                date(2026, 4, 16),
+                market_regime=MarketRegime(regime="neutral"),
+            )
+
+        self.assertEqual(deep_orchestrator.calls[0]["execution_mode"], "llm_only")
+        self.assertTrue(any(call.args[2] == "budget_guard_decision" for call in record_event.call_args_list))
+
     def test_ensemble_quality_summary_uses_tie_break_then_deep_then_economy_precedence(self) -> None:
         economy_orchestrator = _FakeOrchestrator(
             [

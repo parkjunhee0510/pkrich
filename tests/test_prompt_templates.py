@@ -147,6 +147,19 @@ class PromptTemplateTests(unittest.TestCase):
         self.assertIn("데이터에 없는 숫자", user_text)
         self.assertIn("'—' 또는 'N/A'", user_text)
         self.assertIn("must_use_values", user_text)
+        self.assertIn("매수", user_text)
+        self.assertIn("resistance_levels", user_text)
+        self.assertIn("support_levels", user_text)
+
+    def test_news_template_rejects_english_headline_paraphrases(self) -> None:
+        for version in ("research_v1", "research_v2"):
+            template = get_prompt_template(version, "news_analysis_module")
+            ctx = PromptContext(run_date=date(2026, 4, 16))
+
+            user_text = template.render_user([{"ticker": "AAPL", "news": []}], ctx)
+
+            self.assertIn("영문 헤드라인을 재작성", user_text)
+            self.assertIn("그대로 복사", user_text)
 
     def test_narrative_template_includes_no_invention_guardrails(self) -> None:
         template = get_prompt_template("research_v2", "research_narrative_module")

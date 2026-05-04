@@ -69,6 +69,22 @@ class FallbackSignalTests(unittest.TestCase):
         signal = _build_fallback_signal(_market(change=4.5, price_vs_sma50="+5.0%", rs_vs_spy="+3.0%"), _news())
         self.assertIn("매수 관찰", signal)
         self.assertIn("진입 트리거", signal)
+        self.assertIn("목표", signal)
+        self.assertIn("손절", signal)
+
+    def test_fallback_signal_includes_target_pair(self) -> None:
+        signal = _build_fallback_signal(
+            _market(
+                price=150.0,
+                change=4.5,
+                price_vs_sma50="+5.0%",
+                rs_vs_spy="+3.0%",
+                analyst_target_price="170.00 USD",
+            ),
+            _news(),
+        )
+
+        self.assertRegex(signal, r"목표 \d+\.\d+/\d+\.\d+")
         self.assertIn("손절", signal)
 
     def test_flat_signal_uses_neutral_observation(self) -> None:

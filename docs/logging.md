@@ -30,6 +30,8 @@ The logging pipeline currently feeds:
 * cost logs
 * routing outcome summaries
 
+BudgetGuard decisions are recorded as `budget_guard_decision` events. These events are informational in default shadow mode and are summarized in `output/data/cost_log.json`.
+
 ## Requirements
 
 * Record critical lifecycle events

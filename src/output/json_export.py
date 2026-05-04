@@ -93,7 +93,7 @@ def write_json_outputs(
         data_dir / "price_history.csv",
         price_history_rows,
     )
-    backtest_payload = (
+    backtest_payload = _with_schema_version(
         backtest_summary
         if backtest_summary is not None
         else build_backtest_summary(data_dir / "signal_tracker.csv")
@@ -107,7 +107,7 @@ def write_json_outputs(
     _write_tuning_report_json(data_dir)
     _write_validation_warnings_json(data_dir)
     write_direction_alignment_output(output_root=root)
-    monthly_payload = (
+    monthly_payload = _with_schema_version(
         monthly_summary
         if monthly_summary is not None
         else load_monthly_summary(run_date, output_root=root)
@@ -496,6 +496,12 @@ def _load_price_history_rows_from_csv(csv_path: Path) -> list[dict[str, str]]:
             {key.lstrip("\ufeff") if key else "": value for key, value in row.items() if key}
             for row in reader
         ]
+
+
+def _with_schema_version(payload: dict[str, Any]) -> dict[str, Any]:
+    if payload.get("schema_version") == SCHEMA_VERSION:
+        return dict(payload)
+    return {"schema_version": SCHEMA_VERSION, **payload}
 
 
 def _write_ticker_timelines_json(path: Path, days: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:

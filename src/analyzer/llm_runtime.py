@@ -700,6 +700,8 @@ def _build_stricter_prompt_template(prompt_template: PromptTemplate) -> PromptTe
         "\n\n[VALIDATION RETRY RULES]\n"
         "- 이번 재시도에서는 입력 payload에 있는 값만 그대로 사용하세요.\n"
         "- 숫자, 이벤트 날짜, 인물명, 가격 레벨은 추측하거나 보정하지 마세요.\n"
+        "- key_news는 한국어 요약으로 쓰고, 영문 제목을 보존해야 하면 입력 title을 그대로 복사하세요.\n"
+        "- signal_or_takeaway의 목표/손절은 must_use_values에 있는 값만 쓰고, 없으면 목표 N/A/N/A 또는 손절 N/A를 쓰세요.\n"
         "- 근거가 없으면 '—' 또는 'N/A'를 쓰세요.\n"
     )
     return replace(

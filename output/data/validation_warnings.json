@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "window_days": 14,
-  "generated_at": "2026-04-30",
+  "generated_at": "2026-05-04",
   "categories": [
     "schema_violation_count",
     "fact_warning_count",
@@ -11,34 +11,12 @@
   ],
   "totals": {
     "schema_violation_count": 0,
-    "fact_warning_count": 82,
-    "consistency_warning_count": 3,
-    "hallucination_warning_count": 65,
+    "fact_warning_count": 75,
+    "consistency_warning_count": 4,
+    "hallucination_warning_count": 56,
     "dropped_unsupported_count": 0
   },
   "series": [
-    {
-      "date": "2026-04-17",
-      "batch_count": 0,
-      "validated_ticker_count": 104,
-      "validation_failure_count": 10,
-      "schema_violation_count": 0,
-      "fact_warning_count": 7,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 3,
-      "dropped_unsupported_count": 0
-    },
-    {
-      "date": "2026-04-20",
-      "batch_count": 0,
-      "validated_ticker_count": 64,
-      "validation_failure_count": 14,
-      "schema_violation_count": 0,
-      "fact_warning_count": 7,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 15,
-      "dropped_unsupported_count": 0
-    },
     {
       "date": "2026-04-21",
       "batch_count": 0,
@@ -125,6 +103,17 @@
       "fact_warning_count": 8,
       "consistency_warning_count": 0,
       "hallucination_warning_count": 7,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-05-04",
+      "batch_count": 0,
+      "validated_ticker_count": 147,
+      "validation_failure_count": 11,
+      "schema_violation_count": 0,
+      "fact_warning_count": 7,
+      "consistency_warning_count": 1,
+      "hallucination_warning_count": 9,
       "dropped_unsupported_count": 0
     }
   ]

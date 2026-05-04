@@ -4,6 +4,35 @@
     "latest": {
       "__type__": "object",
       "keys": {
+        "budget_guard": {
+          "__type__": "object",
+          "keys": {
+            "blocked_count": {
+              "__type__": "int"
+            },
+            "decision_counts": {
+              "__type__": "object",
+              "keys": {}
+            },
+            "guarded_paths": {
+              "__type__": "object",
+              "keys": {}
+            },
+            "mode": {
+              "__type__": "str"
+            },
+            "profile_counts": {
+              "__type__": "object",
+              "keys": {}
+            },
+            "total_estimated_incremental_cost_usd": {
+              "__type__": "float"
+            },
+            "would_block_count": {
+              "__type__": "int"
+            }
+          }
+        },
         "deep_pass_value": {
           "__type__": "object",
           "keys": {
@@ -133,6 +162,35 @@
       "item": {
         "__type__": "object",
         "keys": {
+          "budget_guard": {
+            "__type__": "object",
+            "keys": {
+              "blocked_count": {
+                "__type__": "int"
+              },
+              "decision_counts": {
+                "__type__": "object",
+                "keys": {}
+              },
+              "guarded_paths": {
+                "__type__": "object",
+                "keys": {}
+              },
+              "mode": {
+                "__type__": "str"
+              },
+              "profile_counts": {
+                "__type__": "object",
+                "keys": {}
+              },
+              "total_estimated_incremental_cost_usd": {
+                "__type__": "float"
+              },
+              "would_block_count": {
+                "__type__": "int"
+              }
+            }
+          },
           "deep_pass_value": {
             "__type__": "object",
             "keys": {

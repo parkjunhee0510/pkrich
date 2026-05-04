@@ -219,6 +219,7 @@ PROMPT_SET = {
         user_template=(
             "각 티커의 뉴스 헤드라인을 짧게 요약하고 전체 뉴스 톤을 분류해주세요.\n"
             "key_news는 입력 뉴스 순서를 최대한 유지하고, 각 항목은 15단어 이하의 짧은 한국어 요약으로 작성합니다.\n"
+            "영문 헤드라인을 재작성해 새 영어 제목처럼 만들지 마세요. 영어로 보존해야 하면 입력 title을 그대로 복사하고, 그 외에는 한국어로 요약하세요.\n"
             "news_tone.reasoning은 한 문장으로 작성합니다.\n\n"
             + _ANTI_HALLUCINATION_USER_RULE
             + "\n"
@@ -288,7 +289,9 @@ PROMPT_SET = {
             "각 티커에 대해 최종 시그널 한 줄을 작성해주세요. 방향은 매수 관찰, 매수 우선, 매수 유지, 중립 관찰, 중립 경계, 매도 경계, 매도 관찰, 매도 유지, 매도 중 하나여야 합니다.\n\n"
             + _ANTI_HALLUCINATION_USER_RULE
             + "payload 안의 must_use_values는 반드시 따라야 하는 화이트리스트입니다.\n"
-            + "목표와 손절은 must_use_values.support_levels / resistance_levels에 있는 값 중에서 정확히 일치하는 값만 선택하세요.\n"
+            + "매수/중립 방향의 목표는 must_use_values.resistance_levels에서만, 손절은 must_use_values.support_levels에서만 선택하세요.\n"
+            + "매도 방향의 목표는 must_use_values.support_levels에서만, 손절은 must_use_values.resistance_levels에서만 선택하세요.\n"
+            + "사용 가능한 값이 없으면 목표 N/A/N/A 또는 손절 N/A를 쓰고 새 가격을 만들지 마세요.\n"
             + "must_use_values에 없는 가격, 이벤트 날짜, 기술적 레벨은 창작하지 마세요.\n"
             + "근거 없는 값은 반드시 '—' 또는 'N/A'로 두고, 빈칸을 추측으로 채우지 마세요.\n\n"
             "{batch_payload_json}"

@@ -114,6 +114,36 @@ class OutputSchemaTests(unittest.TestCase):
         expected = load_snapshot_fixture(_FIXTURE_DIR / "index.shape.json")
         self.assertEqual(normalize_json_shape(payload), expected)
 
+    def test_policy_impact_json_includes_schema_version(self) -> None:
+        from src.output.policy_json import write_policy_impact_json
+        from src.types import PolicyImpactReport
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "output" / "data" / "policy_impact.json"
+            write_policy_impact_json(PolicyImpactReport(date="2026-05-04"), str(path))
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
+
+    def test_write_json_outputs_versions_monthly_and_backtest_payloads(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "output"
+            write_json_outputs(
+                [_sample_analysis()],
+                date(2026, 5, 4),
+                output_root=output_root,
+                backtest_summary={"status": "sample"},
+                monthly_summary={"month": "2026-05", "status": "sample"},
+            )
+
+            backtest = json.loads((output_root / "data" / "backtest_summary.json").read_text(encoding="utf-8"))
+            monthly = json.loads((output_root / "data" / "monthly_summary.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(backtest["schema_version"], SCHEMA_VERSION)
+        self.assertEqual(monthly["schema_version"], SCHEMA_VERSION)
+        self.assertEqual(backtest["status"], "sample")
+        self.assertEqual(monthly["status"], "sample")
+
     def test_dashboard_history_matches_shadow_decision_snapshot_shape(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_root = Path(temp_dir) / "output"

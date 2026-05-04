@@ -2,6 +2,19 @@
   "schema_version": 1,
   "runs": [
     {
+      "run_date": "2026-05-04",
+      "success": true,
+      "daily_api_cost_usd": 0.24459485,
+      "batch_count": 0,
+      "validated_ticker_count": 147,
+      "validation_failure_count": 11,
+      "schema_violation_count": 0,
+      "fact_warning_count": 7,
+      "consistency_warning_count": 1,
+      "hallucination_warning_count": 9,
+      "hallucination_ratio": 0.0612
+    },
+    {
       "run_date": "2026-04-30",
       "success": true,
       "daily_api_cost_usd": 0.2780637,
@@ -224,16 +237,16 @@
     }
   ],
   "latest": {
-    "run_date": "2026-04-30",
+    "run_date": "2026-05-04",
     "success": true,
-    "daily_api_cost_usd": 0.2780637,
+    "daily_api_cost_usd": 0.24459485,
     "batch_count": 0,
-    "validated_ticker_count": 159,
-    "validation_failure_count": 9,
+    "validated_ticker_count": 147,
+    "validation_failure_count": 11,
     "schema_violation_count": 0,
-    "fact_warning_count": 8,
-    "consistency_warning_count": 0,
-    "hallucination_warning_count": 7,
-    "hallucination_ratio": 0.044
+    "fact_warning_count": 7,
+    "consistency_warning_count": 1,
+    "hallucination_warning_count": 9,
+    "hallucination_ratio": 0.0612
   }
 }

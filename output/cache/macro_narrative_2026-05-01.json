@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "headline": "연준 동결·유가 변수 속 완만한 리스크온, 과열 신호는 경계",
+  "three_themes": [
+    "연준은 4월 29일 금리를 동결했고, 스냅샷상 10년물 4.38%·달러 98.16은 긴축 재가속보다 관망 국면을 시사합니다. ([federalreserve.gov](https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm?utm_source=openai))",
+    "3월 PCE 물가는 전년비 3.5%, 소비는 전월비 0.9%로 확인돼 디스인플레 정체와 수요 회복이 공존합니다. 서프라이즈 점수의 인플레 중립·노동 둔화와도 맞물립니다. ([bea.gov](https://www.bea.gov/data/personal-consumption-expenditures-price-index?utm_source=openai))",
+    "ISM 제조업 PMI는 52.7로 확장세를 유지했지만 ECB는 중동 전쟁발 에너지 충격을 경고했습니다. 구리 강세·WTI 100달러대는 성장보다 비용 압력 재점화를 뜻합니다. ([ismworld.org](https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/pmi/april/?utm_source=openai))"
+  ],
+  "risk_map": "상방은 성장·유동성, 하방은 유가·물가 재가열입니다. SPY RSI 81.2 과열, VIX 16.99 안정이라 급락보다 변동성 재확대 리스크를 봅니다.",
+  "what_changed_this_week": "연준 동결, 3월 PCE 3.5%, 소비 0.9%, ISM 제조업 52.7, ECB의 에너지발 인플레 경계가 겹치며 금리인하 기대는 다소 후퇴했습니다.",
+  "key_headlines": [
+    {
+      "title": "연준, 4월 FOMC에서 기준금리 동결",
+      "source": "Federal Reserve",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
+      "takeaway": "연준은 금리를 유지하며 추가 데이터 확인에 무게를 뒀습니다."
+    },
+    {
+      "title": "미국 3월 PCE 물가, 전년비 3.5%",
+      "source": "BEA",
+      "url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
+      "takeaway": "디스인플레이션이 정체되며 조기 인하 기대를 제약했습니다."
+    },
+    {
+      "title": "미국 3월 소비지출, 전월비 0.9% 증가",
+      "source": "BEA",
+      "url": "https://www.bea.gov/data/consumer-spending/main",
+      "takeaway": "소비가 예상보다 견조해 성장 둔화 우려를 일부 완화했습니다."
+    },
+    {
+      "title": "4월 ISM 제조업 PMI 52.7로 확장 유지",
+      "source": "ISM",
+      "url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/pmi/april/",
+      "takeaway": "제조업은 확장을 이어갔지만 가격 압력과 고용 위축이 병존했습니다."
+    },
+    {
+      "title": "ECB, 금리 동결하며 중동발 에너지 충격 경고",
+      "source": "ECB",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260430~81b7179e6f.en.html",
+      "takeaway": "유럽은 성장 하방과 인플레 상방이 동시에 커지는 스태그플레이션형 압박입니다."
+    }
+  ],
+  "source": "llm",
+  "model": "gpt-5.4"
+}

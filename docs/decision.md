@@ -15,6 +15,12 @@
 * `final_conviction` is the source of truth for `TickerDecision.conviction` and action thresholds; `raw_conviction` remains available for comparison
 * Hidden rollback env `DECISION_CONFIDENCE_FORCE_RAW=1` restores the raw conviction/action path
 
+## Data Quality Score
+
+The decision layer owns the final `data_quality_score` used by confidence adjustment. The score combines analyzer validation, price freshness, news coverage, source diversity, fallback depth, missing fundamentals, and macro context availability.
+
+The initial gate is shadow-only. `confidence_meta.data_quality_gate` records whether a low score would cap a `buy` to `watch`, but default official action behavior remains driven by the existing conviction and confidence calculation. Output and web code serialize this metadata without recomputing it.
+
 ## Key Components
 
 * `DecisionFactor`

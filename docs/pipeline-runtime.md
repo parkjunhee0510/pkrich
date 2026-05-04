@@ -38,6 +38,7 @@ Current responsibilities:
 * Produce ticker-level analysis payloads plus portfolio-level results such as `portfolio_risk`
 * Produce macro narrative and per-ticker macro sensitivity
 * Run multi-model consensus through `AnalysisEnsemble`
+* Record BudgetGuard shadow decisions before guarded optional deep LLM paths
 * Apply validator hallucination guards through `validator.py` and `signal_levels.py`
 
 Current analyzer stack:
@@ -51,26 +52,27 @@ Current ensemble flow:
 * Only selected tickers receive deep LLM-only re-analysis
 * If economy and deep disagree, an optional third review can run
 * Final analysis source is `third_review > deep > economy`
+* BudgetGuard is shadow-only by default and does not skip these routes unless explicitly switched to enforce mode
 
-### 3b. Decide
+### 3b. Decision
 
 Owned by `decision/`.
 
-Current responsibilities:
-* Classify market regime and sub-regime
-* Run registered factors including macro regime and macro event factors
-* Score conviction and generate buy/watch/avoid actions
-* Surface `factor_reasoning` for downstream output consumption
+Responsibilities:
+* Consume the run-level market regime detected earlier in the run
+* Generate factor scores, conviction, confidence metadata, and official `buy` / `watch` / `avoid`
+* Keep official actions rule-based even when upstream analysis used LLMs
 
 ### 4. State
 
 Owned by `state/` and datastore-backed utilities.
 
 Current responsibilities:
-* Update tracked signal returns
-* Apply triple-barrier signal labeling
+* Run a pre-decision state refresh that updates realized returns for prior signals from stored price history
+* Apply triple-barrier signal labeling before decision generation
+* Load `signal_stats` for decision inputs
 * Record new daily signals from analyses and decisions
-* Recompute signal statistics used by the decision layer and outputs
+* Reload signal statistics for output and future runs
 
 ### 5. Output
 
@@ -82,7 +84,7 @@ Current responsibilities:
 * Write portfolio, weekly summary, routing, quality, and cost artifacts
 * Emit auxiliary outputs such as sector explorer payloads and intraday refresh payloads
 * Write API status for the calendar run date, even when market data resolves to an earlier effective market date
-* Sync `analysis_quality.json` into `web/public/output/data/` when the static web app is present
+* Treat `output/data` as the source of truth and sync selected web-facing payloads into `web/public/output/data/` when the static web app is present
 
 Important output families:
 * `output/data/index.json`

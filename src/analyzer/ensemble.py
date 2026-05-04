@@ -17,7 +17,9 @@ from src.types import (
     TickerDecision,
     WatchlistItem,
 )
-from src.utils.model_config import EnsembleConfig
+from src.utils.budget_guard import evaluate_budget_guard, estimate_profile_call_cost
+from src.utils.model_config import EnsembleConfig, load_budget_guard_config, load_model_profile
+from src.utils.pipeline_logging import get_pipeline_logger, record_pipeline_event
 
 
 @dataclass(frozen=True)
@@ -121,6 +123,14 @@ class AnalysisEnsemble:
         deep_quality_summary_by_ticker: dict[str, dict[str, Any]] = {}
         tie_break_quality_summary_by_ticker: dict[str, dict[str, Any]] = {}
 
+        if target_tickers and not _budget_guard_allows(
+            "ensemble_deep",
+            self.config.second_model,
+            selected_count=len(target_tickers),
+        ):
+            diagnostics["budget_guard_skipped_deep"] = target_tickers
+            target_tickers = []
+
         if target_tickers:
             target_watchlist = [item for item in watchlist if item.ticker in target_tickers]
             target_collected = {ticker: collected[ticker] for ticker in target_tickers if ticker in collected}
@@ -173,6 +183,14 @@ class AnalysisEnsemble:
                 if _is_conflicted_pair(economy_decision_map.get(ticker), deep_decision_map.get(ticker))
             ]
             diagnostics["third_review_tickers"] = conflicted_tickers
+
+            if conflicted_tickers and not _budget_guard_allows(
+                "ensemble_tie_break",
+                self.config.third_model,
+                selected_count=len(conflicted_tickers),
+            ):
+                diagnostics["budget_guard_skipped_tie_break"] = conflicted_tickers
+                conflicted_tickers = []
 
             if conflicted_tickers and self.tie_break_orchestrator is not None:
                 tie_break_watchlist = [item for item in watchlist if item.ticker in conflicted_tickers]
@@ -331,6 +349,27 @@ def _select_target_tickers(
 
     ranked = sorted(eligible_tickers, key=_sort_key)
     return ranked[: config.max_daily_ensemble]
+
+
+def _budget_guard_allows(path: str, profile_name: str, *, selected_count: int) -> bool:
+    config = load_budget_guard_config()
+    profile = load_model_profile(profile_name=profile_name)
+    estimated_cost = estimate_profile_call_cost(
+        input_tokens=selected_count * 6000,
+        output_tokens=selected_count * min(profile.max_output_tokens, 4000),
+        input_cost_per_1m=profile.input_cost_per_1m_tokens,
+        output_cost_per_1m=profile.output_cost_per_1m_tokens,
+    )
+    logger = get_pipeline_logger()
+    decision = evaluate_budget_guard(
+        config=config,
+        path=path,
+        profile=profile_name,
+        estimated_incremental_cost_usd=estimated_cost,
+        run_cost_so_far_usd=float(getattr(logger, "daily_api_cost_usd", 0.0) if logger else 0.0),
+    )
+    record_pipeline_event("analyzer", "info", "budget_guard_decision", **decision.to_log_fields())
+    return decision.allowed
 
 
 def _direction_bucket(action: str | None) -> str:

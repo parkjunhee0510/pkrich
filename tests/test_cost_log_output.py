@@ -62,6 +62,20 @@ class CostLogOutputTests(unittest.TestCase):
                                 "ensemble_conflicted_count": 2,
                             }
                         ),
+                        json.dumps(
+                            {
+                                "event": "budget_guard_decision",
+                                "mode": "shadow",
+                                "path": "ensemble_deep",
+                                "profile": "deep",
+                                "decision": "would_block",
+                                "allowed": True,
+                                "would_block": True,
+                                "estimated_incremental_cost_usd": 0.28,
+                                "run_cost_so_far_usd": 0.20,
+                                "daily_cap_usd": 0.25,
+                            }
+                        ),
                     ]
                 ),
                 encoding="utf-8",
@@ -80,6 +94,9 @@ class CostLogOutputTests(unittest.TestCase):
             self.assertAlmostEqual(latest["profiles"]["deep"]["cost_usd"], 0.30)
             self.assertAlmostEqual(latest["profiles"]["deep"]["cache_hit_ratio"], 0.25)
             self.assertEqual(latest["routing"]["selected_count"], 3)
+            self.assertEqual(latest["budget_guard"]["mode"], "shadow")
+            self.assertEqual(latest["budget_guard"]["decision_counts"]["would_block"], 1)
+            self.assertEqual(latest["budget_guard"]["guarded_paths"]["ensemble_deep"], "would_block")
             self.assertEqual(latest["deep_pass_value"]["selected_ticker_count"], 3)
             self.assertTrue((output_root / "data" / "cost_log.json").exists())
 

@@ -17,14 +17,16 @@ from src.analyzer.committee_prompt import (
 )
 from src.analyzer.evidence_manifest import evidence_hash, write_evidence_record
 from src.types import TickerAnalysis
+from src.utils.budget_guard import evaluate_budget_guard, estimate_profile_call_cost
 from src.utils.cost_tracker import calculate_response_cost
 from src.utils.model_config import (
     CommitteeConfig,
+    load_budget_guard_config,
     load_committee_config,
     load_model_profile,
     response_temperature_kwargs,
 )
-from src.utils.pipeline_logging import record_pipeline_event
+from src.utils.pipeline_logging import get_pipeline_logger, record_pipeline_event
 
 
 COMMITTEE_ROLES = ("growth_analyst", "value_skeptic", "risk_manager", "macro_strategist", "pm")
@@ -147,7 +149,9 @@ def run_committee_analysis(
         pm_threshold=committee_config.pm_low_confidence_threshold,
     )
 
-    if deep_review["triggered"]:
+    deep_review_executed = False
+    if deep_review["triggered"] and _budget_guard_allows_committee_deep(committee_config.deep_model):
+        deep_review_executed = True
         deep_roles = _run_role_batch(
             analysis,
             roles=DEEP_REVIEW_ROLES,
@@ -183,7 +187,7 @@ def run_committee_analysis(
         roles["pm"] = pm_deep
 
     agreement_status = derive_agreement_status(roles)
-    status = "deep_reviewed" if deep_review["triggered"] else "economy_only"
+    status = "deep_reviewed" if deep_review_executed else "economy_only"
 
     return {
         **default_committee_analysis(),
@@ -219,6 +223,27 @@ def _deep_review_metadata(
         "pm_confidence": pm_confidence,
         "pm_threshold": pm_threshold,
     }
+
+
+def _budget_guard_allows_committee_deep(profile_name: str) -> bool:
+    config = load_budget_guard_config()
+    profile = load_model_profile(profile_name=profile_name)
+    estimated_cost = estimate_profile_call_cost(
+        input_tokens=18000,
+        output_tokens=min(profile.max_output_tokens, 6000),
+        input_cost_per_1m=profile.input_cost_per_1m_tokens,
+        output_cost_per_1m=profile.output_cost_per_1m_tokens,
+    )
+    logger = get_pipeline_logger()
+    decision = evaluate_budget_guard(
+        config=config,
+        path="committee_deep",
+        profile=profile_name,
+        estimated_incremental_cost_usd=estimated_cost,
+        run_cost_so_far_usd=float(getattr(logger, "daily_api_cost_usd", 0.0) if logger else 0.0),
+    )
+    record_pipeline_event("analyzer", "info", "budget_guard_decision", **decision.to_log_fields())
+    return decision.allowed
 
 
 def _run_role_batch(

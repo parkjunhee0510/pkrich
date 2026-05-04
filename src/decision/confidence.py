@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
+from datetime import date
 from typing import Any
 
 from src.decision.base import FactorScore
-from src.types import MarketRegime, TickerAnalysis
+from src.decision.data_quality import DataQualityResult, calculate_data_quality_result
+from src.types import CollectedTickerData, MarketRegime, TickerAnalysis
 
 
 @dataclass(frozen=True)
@@ -14,42 +16,35 @@ class ConfidenceMeta:
     evidence_consistency: float
     model_agreement: float
     confidence_gate: float
+    data_quality_result: DataQualityResult
 
-    def to_dict(self) -> dict[str, float]:
-        return {key: float(value) for key, value in asdict(self).items()}
+    def to_dict(self) -> dict[str, object]:
+        payload: dict[str, object] = {
+            "data_quality": self.data_quality,
+            "evidence_coverage": self.evidence_coverage,
+            "evidence_consistency": self.evidence_consistency,
+            "model_agreement": self.model_agreement,
+            "confidence_gate": self.confidence_gate,
+        }
+        payload.update(self.data_quality_result.to_meta())
+        return payload
 
 
 def calculate_data_quality(
     analysis: TickerAnalysis,
     quality_summary: dict[str, Any] | None = None,
+    *,
+    data: CollectedTickerData | None = None,
+    run_date: date | None = None,
+    macro_context: dict[str, Any] | None = None,
 ) -> float:
-    quality_summary = quality_summary or {}
-    critical_total = int(quality_summary.get("critical_field_total", 0) or 0)
-    missing_critical = int(quality_summary.get("missing_critical_fields", 0) or 0)
-    if critical_total > 0:
-        missing_ratio = min(1.0, missing_critical / critical_total)
-    else:
-        critical_fields = [
-            analysis.summary,
-            analysis.signal_or_takeaway,
-            analysis.data_snapshot.get("Price", ""),
-            analysis.data_snapshot.get("Sector", ""),
-            analysis.key_news[0] if analysis.key_news else "",
-            analysis.financial_highlights[0] if analysis.financial_highlights else "",
-        ]
-        missing_count = sum(1 for value in critical_fields if _is_missing(value))
-        missing_ratio = missing_count / len(critical_fields)
-
-    score = 1.0
-    score -= 0.30 * missing_ratio
-    score -= 0.08 * min(3, int(quality_summary.get("fact_warning_count", 0) or 0))
-    score -= 0.08 * min(3, int(quality_summary.get("consistency_warning_count", 0) or 0))
-    score -= 0.18 * min(2, int(quality_summary.get("hallucination_warning_count", 0) or 0))
-    if bool(quality_summary.get("fallback_used", False)):
-        score -= 0.08
-    if bool(quality_summary.get("encoding_issue_detected", False)):
-        score -= 0.12
-    return _clamp(score)
+    return calculate_data_quality_result(
+        analysis=analysis,
+        data=data,
+        run_date=run_date,
+        quality_summary=quality_summary,
+        macro_context=macro_context,
+    ).score
 
 
 def calculate_evidence_coverage(
@@ -139,6 +134,8 @@ def calculate_final_conviction(raw_conviction: int, meta: ConfidenceMeta) -> int
 def evaluate_confidence_meta(
     *,
     analysis: TickerAnalysis,
+    data: CollectedTickerData | None = None,
+    run_date: date | None = None,
     regime: MarketRegime,
     factor_scores_by_name: dict[str, FactorScore],
     macro_context: dict[str, Any] | None,
@@ -146,7 +143,14 @@ def evaluate_confidence_meta(
     analysis_consensus: dict[str, Any] | None,
     quality_summary: dict[str, Any] | None,
 ) -> ConfidenceMeta:
-    data_quality = calculate_data_quality(analysis, quality_summary)
+    data_quality_result = calculate_data_quality_result(
+        analysis=analysis,
+        data=data,
+        run_date=run_date,
+        quality_summary=quality_summary,
+        macro_context=macro_context,
+    )
+    data_quality = data_quality_result.score
     evidence_coverage = calculate_evidence_coverage(analysis, macro_context, portfolio_risk)
     evidence_consistency = calculate_evidence_consistency(
         analysis,
@@ -161,6 +165,7 @@ def evaluate_confidence_meta(
         evidence_consistency=evidence_consistency,
         model_agreement=model_agreement,
         confidence_gate=0.0,
+        data_quality_result=data_quality_result,
     )
     return ConfidenceMeta(
         data_quality=data_quality,
@@ -168,12 +173,8 @@ def evaluate_confidence_meta(
         evidence_consistency=evidence_consistency,
         model_agreement=model_agreement,
         confidence_gate=calculate_confidence_gate(partial_meta),
+        data_quality_result=data_quality_result,
     )
-
-
-def _is_missing(value: Any) -> bool:
-    text = str(value or "").strip().lower()
-    return text in {"", "n/a", "na", "none", "unknown"}
 
 
 def _clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:

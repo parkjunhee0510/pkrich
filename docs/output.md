@@ -63,6 +63,18 @@ LLM audit JSON reports include check dimensions, threshold metadata, sample coun
 
 LLM evidence manifests are operational JSONL artifacts used by the eval audit layer. They contain stable hashes and call metadata only, not raw prompts or model responses. They are not copied into `web/public/output/data/` by default.
 
+## Schema Version Contract
+
+Machine-readable JSON outputs use `src/output/schema.py::SCHEMA_VERSION` as the output consumer contract version. Root JSON payloads intended for dashboard, API, audit, or automation consumers should include `schema_version` unless they are JSONL records, third-party caches, or legacy compatibility files with a documented exception.
+
+`schema_version` describes output shape, not model version, prompt version, pipeline algorithm version, or data freshness. Backward-compatible additive fields do not require a version bump.
+
+## Web Sync Policy
+
+`output/data` is the source of truth. `web/public/output/data` is a mirror for the static frontend and local Vite development. `web/dist/output/data` is a best-effort mirror only when a build output tree already exists.
+
+Sync failures are logged as output events and should not recompute decisions, mutate state, or make the web layer a source of pipeline logic. Raw logs, caches, SQLite files, and LLM evidence manifests are excluded from the default web mirror.
+
 ## Requirements
 
 * Deterministic output structure

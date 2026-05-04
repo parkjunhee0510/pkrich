@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from src.collector.sector_scan import SectorSnapshot
+from src.output.schema import SCHEMA_VERSION
 
 
 def write_sectors_json(
@@ -27,7 +28,7 @@ def write_sectors_json(
     path = data_dir / "sectors.json"
 
     payload: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": SCHEMA_VERSION,
         "updated_at": run_date.isoformat(),
         "sectors": [_sector_to_dict(sector) for sector in sectors],
     }

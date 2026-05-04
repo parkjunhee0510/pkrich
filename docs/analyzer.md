@@ -49,6 +49,7 @@ Core pieces:
 * Economy profile analyzes the full watchlist first
 * Selected tickers receive deeper LLM-only re-analysis
 * Conflicts may trigger a third review
+* BudgetGuard records shadow decisions before deep and tie-break routes
 * Final analysis payload remains schema-compatible with the rest of the pipeline
 
 ### Committee Flow
@@ -57,6 +58,7 @@ Core pieces:
 * Roles are `growth_analyst`, `value_skeptic`, `risk_manager`, `macro_strategist`, and `pm`
 * Round 1 uses the configured committee economy profile for all roles
 * Low PM confidence or strong Risk/Macro objections trigger selective deep reruns for `risk_manager`, `macro_strategist`, and `pm`
+* BudgetGuard records a shadow decision before selective deep committee reruns
 * Committee output is stored on `TickerAnalysis.committee_analysis` for downstream output only
 * Committee role calls use a per-role strict JSON schema on the Responses API
 * Parser fallback also accepts common alias fields such as `recommendation`/`rationale`/`confidence_score` and fenced JSON text when the model output shape drifts
@@ -86,9 +88,17 @@ Structured LLM modules:
 * Fact warnings for unverifiable claims
 * Pattern enforcement via `signal_levels.py`
 
+For `signal_or_takeaway`, validation follows dedicated signal rules rather than
+the generic numeric mismatch scanner. Target and stop values that match
+`must_use_values` are allowed even when they are far from current price, and
+`N/A/N/A` targets are accepted when the prompt explicitly asks the model not to
+guess missing levels. Fallback signals must use the same structured
+`진입 트리거 ... | 목표 A/B | 손절 ...` shape.
+
 ## Model Profiles And Runtime
 
 * Per-module model profile and batch-size selection in `src/utils/model_config.py`
+* `budget_guard` config in `config/models.yaml` controls shadow/enforce behavior for guarded optional LLM paths
 * `llm_runtime.py` enforces a missing-ticker retry budget so partial batches are recovered without runaway cost
 
 ## LLM Evidence Manifest

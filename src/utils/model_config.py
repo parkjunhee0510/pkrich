@@ -5,6 +5,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
+from src.utils.budget_guard import BudgetGuardConfig, budget_guard_config_from_mapping
 from src.utils.config import load_yaml_mapping
 from src.utils.pipeline_logging import record_pipeline_event
 
@@ -29,6 +30,14 @@ _DEFAULT_CONFIG: dict[str, Any] = {
         'third_model': 'deep',
         'third_prompt': 'research_v2',
         'max_daily_ensemble': 5,
+    },
+    'budget_guard': {
+        'mode': 'shadow',
+        'daily_cap_usd': 0.25,
+        'monthly_cap_usd': 5.0,
+        'on_exceed': 'log_only',
+        'guarded_profiles': ['standard', 'deep'],
+        'guarded_paths': ['ensemble_deep', 'ensemble_tie_break', 'committee_deep', 'macro_narrative', 'policy_impact'],
     },
     'profiles': {
         'economy': {
@@ -279,6 +288,11 @@ def load_committee_config(path: str = 'config/models.yaml') -> CommitteeConfig:
         max_summary_sentences_per_role=max_summary_sentences_per_role,
         max_summary_sentences_for_pm=max_summary_sentences_for_pm,
     )
+
+
+def load_budget_guard_config(path: str = 'config/models.yaml') -> BudgetGuardConfig:
+    config = _load_model_config(path)
+    return budget_guard_config_from_mapping(config.get('budget_guard', {}) or {})
 
 
 def safe_input_token_budget(profile: ModelProfile) -> int:

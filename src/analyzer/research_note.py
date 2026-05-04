@@ -1651,7 +1651,7 @@ def _difference_text(company_value: str, peer_value: str) -> str | None:
 
 def _build_fallback_signal(market: CollectedTickerData, ticker_news: list[NewsItem]) -> str:
     if market.price is None:
-        return '중립 관찰 — 가격 데이터 미수집 | 진입존 확인 불가 / 무효화 데이터 수집 필요'
+        return '중립 관찰 — 가격 데이터 미수집 | 진입 트리거 N/A | 목표 N/A/N/A | 손절 N/A'
 
     direction = '중립 관찰'
     catalyst = '특이 재료 부재'
@@ -1726,15 +1726,85 @@ def _build_fallback_signal(market: CollectedTickerData, ticker_news: list[NewsIt
     rr_text = ""
     atr_value = _parse_float_from_text(market.atr_14d)
     sma50_value = _parse_float_from_text(market.sma_50)
+    target_pair, first_target = _build_fallback_signal_targets(market, direction)
     if market.price is not None and atr_value is not None and atr_value > 0:
         stop_val = sma50_value if sma50_value is not None else (market.price - 2 * atr_value)
-        target_val = market.price + 1.5 * atr_value
+        target_val = first_target if first_target is not None else market.price + 1.5 * atr_value
         risk = market.price - stop_val
         reward = target_val - market.price
         if risk > 0 and reward > 0:
             rr_text = f" (R:R {reward / risk:.1f}R)"
 
-    return f'{direction} — {catalyst} | 진입 트리거 {entry_zone} | 손절 {invalidation}{rr_text}'
+    return f'{direction} — {catalyst} | 진입 트리거 {entry_zone} | 목표 {target_pair} | 손절 {invalidation}{rr_text}'
+
+
+def _build_fallback_signal_targets(market: CollectedTickerData, direction: str) -> tuple[str, float | None]:
+    if market.price is None:
+        return "N/A/N/A", None
+
+    price = market.price
+    atr_value = _parse_float_from_text(market.atr_14d)
+    analyst_target = _parse_float_from_text(market.analyst_target_price)
+    w52_high = _parse_float_from_text(market.week52_high)
+    w52_low = _parse_float_from_text(market.week52_low)
+    sma50_value = _parse_float_from_text(market.sma_50)
+    sma200_value = _parse_float_from_text(market.sma_200)
+
+    if direction.startswith("매도"):
+        candidates = [
+            price - 1.5 * atr_value if atr_value is not None and atr_value > 0 else None,
+            sma50_value,
+            sma200_value,
+            w52_low,
+            price - 2.5 * atr_value if atr_value is not None and atr_value > 0 else None,
+        ]
+        values = _dedupe_signal_target_levels(candidates, price=price, side="down")
+        if len(values) < 2 and atr_value is not None and atr_value > 0:
+            values = _dedupe_signal_target_levels(
+                [*values, price - 1.5 * atr_value, price - 2.5 * atr_value],
+                price=price,
+                side="down",
+            )
+        if len(values) < 2:
+            return "N/A/N/A", values[0] if values else None
+        return f"{values[0]:.2f}/{values[1]:.2f}", values[0]
+
+    candidates = [
+        price + 1.5 * atr_value if atr_value is not None and atr_value > 0 else None,
+        analyst_target,
+        w52_high,
+        price + 2.5 * atr_value if atr_value is not None and atr_value > 0 else None,
+    ]
+    values = _dedupe_signal_target_levels(candidates, price=price, side="up")
+    if len(values) < 2 and atr_value is not None and atr_value > 0:
+        values = _dedupe_signal_target_levels(
+            [*values, price + 1.5 * atr_value, price + 2.5 * atr_value],
+            price=price,
+            side="up",
+        )
+    if len(values) < 2:
+        return "N/A/N/A", values[0] if values else None
+    return f"{values[0]:.2f}/{values[1]:.2f}", values[0]
+
+
+def _dedupe_signal_target_levels(
+    candidates: list[float | None],
+    *,
+    price: float,
+    side: str,
+) -> list[float]:
+    values: list[float] = []
+    for candidate in candidates:
+        if candidate is None or candidate <= 0:
+            continue
+        if side == "up" and candidate <= price * 1.002:
+            continue
+        if side == "down" and candidate >= price * 0.998:
+            continue
+        if any(abs(candidate - known) <= max(abs(known), 1.0) * 0.002 for known in values):
+            continue
+        values.append(candidate)
+    return sorted(values, reverse=side == "down")[:2]
 
 
 def _build_fallback_trade_frame(

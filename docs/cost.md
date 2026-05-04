@@ -19,6 +19,24 @@ Maintain minimal operational cost while preserving output quality.
 * Committee roles default to the configured `economy` profile
 * Only escalated `risk_manager`, `macro_strategist`, and `pm` rerun with the configured `deep` profile
 
+## BudgetGuard
+
+`config/models.yaml` defines a `budget_guard` block for optional expensive LLM paths.
+
+Current guarded paths:
+
+* `ensemble_deep`
+* `ensemble_tie_break`
+* `committee_deep`
+* `macro_narrative`
+* `policy_impact`
+
+Current default mode is `shadow`. In shadow mode, BudgetGuard estimates incremental cost, records a `budget_guard_decision` pipeline event, and reports whether the daily cap would have blocked the path, but it does not skip the LLM call. This keeps cost-risk visibility high without changing official output behavior.
+
+`enforce` mode is reserved for a later operational decision. In enforce mode, guarded optional paths may skip deep or optional work when the estimated run cost exceeds `daily_cap_usd`.
+
+`output/data/cost_log.json` includes BudgetGuard decision counts, guarded path outcomes, profile counts, and total estimated incremental guarded cost. This is telemetry only; it is not a billing ledger.
+
 ## Data Strategy
 
 * Prefer free APIs

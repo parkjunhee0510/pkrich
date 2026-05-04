@@ -23,6 +23,7 @@ PROMPT_SET = {
         user_template=(
             "각 티커의 헤드라인을 촉매 우선순위로 짧게 요약하고 전체 뉴스 톤을 분류해주세요.\n"
             "중복 이벤트는 반복 설명하지 말고, key_news는 최대 5개로 유지해주세요.\n\n"
+            "영문 헤드라인을 재작성해 새 영어 제목처럼 만들지 마세요. 영어로 보존해야 하면 입력 title을 그대로 복사하고, 그 외에는 한국어로 요약하세요.\n\n"
             + _ANTI_HALLUCINATION_USER_RULE
             + "\n"
             "{batch_payload_json}"
@@ -90,7 +91,9 @@ PROMPT_SET = {
             "각 티커에 대해 최종 시그널 한 줄을 작성해주세요. 진입 트리거, 목표가, 손절가가 빠지면 안 됩니다.\n\n"
             + _ANTI_HALLUCINATION_USER_RULE
             + "payload 안의 must_use_values는 반드시 따라야 하는 화이트리스트입니다.\n"
-            + "목표와 손절은 must_use_values.support_levels / resistance_levels에서 정확히 일치하는 값만 골라 쓰세요.\n"
+            + "매수/중립 방향의 목표는 must_use_values.resistance_levels에서만, 손절은 must_use_values.support_levels에서만 선택하세요.\n"
+            + "매도 방향의 목표는 must_use_values.support_levels에서만, 손절은 must_use_values.resistance_levels에서만 선택하세요.\n"
+            + "사용 가능한 값이 없으면 목표 N/A/N/A 또는 손절 N/A를 쓰고 새 가격을 만들지 마세요.\n"
             + "must_use_values에 없는 가격, 이벤트 날짜, 기술적 레벨은 추측하거나 새로 만들지 마세요.\n"
             + "근거 없는 값은 반드시 '—' 또는 'N/A'로 두고, 추측으로 채우지 마세요.\n\n"
             "{batch_payload_json}"

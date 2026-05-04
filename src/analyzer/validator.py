@@ -78,6 +78,8 @@ class ResponseValidator:
                 sanitized["key_news"] = fallback["key_news"]
 
         for field_name in sorted(sanitized.keys()):
+            if field_name == "signal_or_takeaway":
+                continue
             mismatch = _find_fact_mismatch(sanitized.get(field_name), raw_payload, intermediate)
             if mismatch is None:
                 continue
@@ -112,12 +114,23 @@ class ResponseValidator:
                     signal_replaced = True
             if not signal_replaced:
                 current_price = _extract_current_price(raw_payload, intermediate)
-                price_issues = _find_signal_price_issues(signal_text, current_price=current_price)
+                allowed_levels = allowed_signal_levels(
+                    raw_payload,
+                    intermediate.get("trade_frame", {}),
+                    _signal_direction(signal_text),
+                )
+                price_issues = _find_signal_price_issues(
+                    signal_text,
+                    current_price=current_price,
+                    allowed_targets=allowed_levels.get("targets", []),
+                    allowed_stop=allowed_levels.get("stop", []),
+                )
                 price_issues.extend(
                     _find_signal_whitelist_issues(
                         signal_text,
                         raw_payload=raw_payload,
                         intermediate=intermediate,
+                        allowed=allowed_levels,
                     )
                 )
                 for issue in price_issues:
@@ -325,12 +338,19 @@ def _normalize_text(value: str) -> str:
 
 
 _TARGET_SEGMENT_RE = re.compile(r"목표[^|]*?([\d.,]+)\s*/\s*([\d.,]+)")
-_STOP_SEGMENT_RE = re.compile(r"손절[^|]*?([\d.,]+)")
+_TARGET_SEGMENT_TEXT_RE = re.compile(r"목표(?P<segment>[^|]*)")
+_STOP_SEGMENT_RE = re.compile(r"손절(?P<segment>[^|]*)")
 _LONG_TOKENS = ("매수 관찰", "매수 유지", "매수 우선")
 _SHORT_TOKENS = ("매도 경계", "매도 관찰", "매도 유지", "매도")
 
 
-def _find_signal_price_issues(signal_text: str, *, current_price: float | None = None) -> list[str]:
+def _find_signal_price_issues(
+    signal_text: str,
+    *,
+    current_price: float | None = None,
+    allowed_targets: list[float] | None = None,
+    allowed_stop: list[float] | None = None,
+) -> list[str]:
     """Detect internal price-logic errors in a signal string.
 
     The module prompt enforces the shape
@@ -349,7 +369,7 @@ def _find_signal_price_issues(signal_text: str, *, current_price: float | None =
     issues: list[str] = []
     targets = _extract_targets(text)
     stop = _extract_stop(text)
-    if "목표" in text and targets is None:
+    if "목표" in text and targets is None and not _target_segment_allows_missing(text):
         issues.append("targets must use slash-delimited pair")
     if targets:
         t1, t2 = targets
@@ -364,11 +384,20 @@ def _find_signal_price_issues(signal_text: str, *, current_price: float | None =
         elif direction == "short" and stop <= t1:
             issues.append(f"stop {stop} not above first target {t1} for short")
     if current_price is not None and current_price > 0:
-        if stop is not None and abs(stop - current_price) / current_price > 0.15:
+        allowed_target_values = allowed_targets or []
+        allowed_stop_values = allowed_stop or []
+        if (
+            stop is not None
+            and abs(stop - current_price) / current_price > 0.15
+            and not _is_allowed_level(stop, allowed_stop_values)
+        ):
             issues.append(f"stop {stop} outside 15% band from current price {current_price}")
         if targets:
             for target in targets:
-                if abs(target - current_price) / current_price > 0.30:
+                if (
+                    abs(target - current_price) / current_price > 0.30
+                    and not _is_allowed_level(target, allowed_target_values)
+                ):
                     issues.append(f"target {target} outside 30% band from current price {current_price}")
     return issues
 
@@ -378,6 +407,7 @@ def _find_signal_whitelist_issues(
     *,
     raw_payload: dict[str, Any],
     intermediate: dict[str, Any],
+    allowed: dict[str, list[float]] | None = None,
 ) -> list[str]:
     text = str(signal_text or "")
     if not text.strip():
@@ -387,7 +417,7 @@ def _find_signal_whitelist_issues(
     stop = _extract_stop(text)
     if targets is None and stop is None:
         return []
-    allowed = allowed_signal_levels(raw_payload, intermediate.get("trade_frame", {}), direction)
+    allowed = allowed or allowed_signal_levels(raw_payload, intermediate.get("trade_frame", {}), direction)
     issues: list[str] = []
     allowed_targets = allowed.get("targets", [])
     allowed_stop = allowed.get("stop", [])
@@ -407,6 +437,24 @@ def _find_signal_whitelist_issues(
                 + (f" (nearest {nearest})" if nearest is not None else "")
             )
     return issues
+
+
+def _target_segment_allows_missing(text: str) -> bool:
+    match = _TARGET_SEGMENT_TEXT_RE.search(text)
+    if not match:
+        return False
+    compact = match.group("segment").strip().upper().replace(" ", "").replace("N/A", "NA")
+    if not compact:
+        return False
+    return all(part in {"N/A", "NA", "—", "-"} for part in compact.split("/"))
+
+
+def _is_allowed_level(value: float, allowed_values: list[float]) -> bool:
+    for allowed in allowed_values:
+        baseline = abs(allowed) if allowed != 0 else 1.0
+        if abs(value - allowed) / baseline < 0.005:
+            return True
+    return False
 
 
 def _signal_direction(text: str) -> str | None:
@@ -434,7 +482,14 @@ def _extract_stop(text: str) -> float | None:
     match = _STOP_SEGMENT_RE.search(text)
     if not match:
         return None
-    return _to_float(match.group(1))
+    values = [
+        value
+        for value in (_to_float(raw.group(0)) for raw in _NUMBER_TOKEN.finditer(match.group("segment")))
+        if value is not None
+    ]
+    if not values:
+        return None
+    return values[-1]
 
 
 def _to_float(raw: str) -> float | None:

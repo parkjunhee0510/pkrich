@@ -60,12 +60,15 @@ def _make_analysis(**overrides: object) -> TickerAnalysis:
 def _fake_shadow_meta() -> SimpleNamespace:
     payload = {
         "data_quality": 0.25,
+        "data_quality_score": 0.25,
+        "data_quality_components": {"analyzer_validation": 0.25},
+        "confidence_penalty": 0.75,
         "evidence_coverage": 0.25,
         "evidence_consistency": 0.25,
         "model_agreement": 0.25,
         "confidence_gate": 0.25,
     }
-    return SimpleNamespace(confidence_gate=0.25, to_dict=lambda: payload)
+    return SimpleNamespace(confidence_gate=0.25, to_dict=lambda: dict(payload))
 
 
 class TestGenerateDecisions(unittest.TestCase):
@@ -188,6 +191,20 @@ class TestDecideTicker(unittest.TestCase):
             decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
 
         self.assertEqual(decision.action, "watch")
+
+    def test_shadow_data_quality_gate_metadata_does_not_change_action_by_itself(self) -> None:
+        analysis = _make_analysis()
+        with (
+            patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}),
+            patch("src.decision.decision_layer.evaluate_confidence_meta", return_value=_fake_shadow_meta()),
+            patch("src.decision.scorer.ConvictionScorer.calculate", return_value=84),
+            patch("src.decision.decision_layer.calculate_final_conviction", return_value=84),
+        ):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        self.assertEqual(decision.action, "buy")
+        self.assertEqual(decision.confidence_meta["data_quality_gate"]["mode"], "shadow")
+        self.assertTrue(decision.confidence_meta["data_quality_gate"]["would_cap_action"])
 
     def test_reason_mentions_confidence_adjustment(self) -> None:
         analysis = _make_analysis()

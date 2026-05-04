@@ -18,6 +18,7 @@
 * `ticker_macro_beta.py`: ticker-level macro beta estimation
 * `macro_event_match.py`: macro event matching helpers used by macro v2 factors
 * `model_config.py`: module-specific model profiles and batch sizes
+* `budget_guard.py`: shared BudgetGuard config parsing, optional LLM path cost estimates, and shadow/enforce decisions
 
 ## Must Not
 

@@ -2,6 +2,63 @@
   "schema_version": 1,
   "runs": [
     {
+      "run_date": "2026-05-04",
+      "success": true,
+      "total_cost_usd": 0.24459485,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.0824791,
+          "tokens": 61079,
+          "input_tokens": 56445,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 56445,
+          "cache_hit_ratio": 0.0,
+          "calls": 14,
+          "models": {
+            "gpt-5.4-mini": 14
+          }
+        },
+        "economy": {
+          "cost_usd": 0.09440575,
+          "tokens": 259232,
+          "input_tokens": 242319,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 242319,
+          "cache_hit_ratio": 0.0,
+          "calls": 71,
+          "models": {
+            "gpt-5.4-mini": 71
+          }
+        },
+        "standard": {
+          "cost_usd": 0.06771,
+          "tokens": 42646,
+          "input_tokens": 41000,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 41000,
+          "cache_hit_ratio": 0.0,
+          "calls": 10,
+          "models": {
+            "gpt-5.4-mini": 10
+          }
+        }
+      },
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 11,
+        "selected_count": 5,
+        "skipped_due_to_cap_count": 6,
+        "conflicted_count": 0
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.0824791,
+        "selected_ticker_count": 5,
+        "cost_per_selected_ticker_usd": 0.016496,
+        "share_of_total_cost": 0.3372,
+        "worth_it_hint": "efficient"
+      }
+    },
+    {
       "run_date": "2026-04-30",
       "success": true,
       "total_cost_usd": 0.2780637,
@@ -728,44 +785,44 @@
     }
   ],
   "latest": {
-    "run_date": "2026-04-30",
+    "run_date": "2026-05-04",
     "success": true,
-    "total_cost_usd": 0.2780637,
+    "total_cost_usd": 0.24459485,
     "profiles": {
       "deep": {
-        "cost_usd": 0.0875787,
-        "tokens": 64800,
-        "input_tokens": 59349,
-        "cached_input_tokens": 3072,
-        "uncached_input_tokens": 56277,
-        "cache_hit_ratio": 0.0518,
-        "calls": 15,
+        "cost_usd": 0.0824791,
+        "tokens": 61079,
+        "input_tokens": 56445,
+        "cached_input_tokens": 0,
+        "uncached_input_tokens": 56445,
+        "cache_hit_ratio": 0.0,
+        "calls": 14,
         "models": {
-          "gpt-5.4-mini": 15
+          "gpt-5.4-mini": 14
         }
       },
       "economy": {
-        "cost_usd": 0.0975275,
-        "tokens": 273294,
-        "input_tokens": 256606,
+        "cost_usd": 0.09440575,
+        "tokens": 259232,
+        "input_tokens": 242319,
         "cached_input_tokens": 0,
-        "uncached_input_tokens": 256606,
+        "uncached_input_tokens": 242319,
         "cache_hit_ratio": 0.0,
-        "calls": 72,
+        "calls": 71,
         "models": {
-          "gpt-5.4-mini": 72
+          "gpt-5.4-mini": 71
         }
       },
       "standard": {
-        "cost_usd": 0.0929575,
-        "tokens": 58896,
-        "input_tokens": 56686,
+        "cost_usd": 0.06771,
+        "tokens": 42646,
+        "input_tokens": 41000,
         "cached_input_tokens": 0,
-        "uncached_input_tokens": 56686,
+        "uncached_input_tokens": 41000,
         "cache_hit_ratio": 0.0,
-        "calls": 16,
+        "calls": 10,
         "models": {
-          "gpt-5.4-mini": 16
+          "gpt-5.4-mini": 10
         }
       }
     },
@@ -774,14 +831,14 @@
       "eligible_count": 11,
       "selected_count": 5,
       "skipped_due_to_cap_count": 6,
-      "conflicted_count": 1
+      "conflicted_count": 0
     },
     "deep_pass_value": {
-      "deep_cost_usd": 0.0875787,
+      "deep_cost_usd": 0.0824791,
       "selected_ticker_count": 5,
-      "cost_per_selected_ticker_usd": 0.017516,
-      "share_of_total_cost": 0.315,
-      "worth_it_hint": "conflict_review_value"
+      "cost_per_selected_ticker_usd": 0.016496,
+      "share_of_total_cost": 0.3372,
+      "worth_it_hint": "efficient"
     }
   }
 }

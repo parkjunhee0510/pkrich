@@ -132,24 +132,53 @@ class TestDecisionConfidence(unittest.TestCase):
         self.assertEqual(decision.confidence_meta, {})
 
     def test_confidence_meta_serializes_to_expected_keys(self) -> None:
+        from src.decision.data_quality import DataQualityResult
+
+        data_quality_result = DataQualityResult(
+            score=0.8,
+            components={
+                "analyzer_validation": 0.8,
+                "price_freshness": 0.9,
+                "news_coverage": 0.7,
+                "missing_fundamentals": 0.8,
+                "source_diversity": 0.6,
+                "fallback_depth": 1.0,
+                "macro_context_age": 0.7,
+            },
+            confidence_penalty=0.2,
+        )
         meta = ConfidenceMeta(
             data_quality=0.8,
             evidence_coverage=0.7,
             evidence_consistency=0.6,
             model_agreement=0.9,
             confidence_gate=0.75,
+            data_quality_result=data_quality_result,
         )
 
-        self.assertEqual(
-            meta.to_dict(),
-            {
-                "data_quality": 0.8,
-                "evidence_coverage": 0.7,
-                "evidence_consistency": 0.6,
-                "model_agreement": 0.9,
-                "confidence_gate": 0.75,
-            },
+        payload = meta.to_dict()
+        self.assertEqual(payload["data_quality"], 0.8)
+        self.assertEqual(payload["data_quality_score"], 0.8)
+        self.assertEqual(payload["confidence_penalty"], 0.2)
+        self.assertEqual(payload["data_quality_components"], data_quality_result.components)
+
+    def test_evaluate_confidence_meta_exposes_data_quality_score(self) -> None:
+        meta = evaluate_confidence_meta(
+            analysis=self.analysis,
+            data=None,
+            run_date=None,
+            regime=self.regime,
+            factor_scores_by_name=self.factor_scores,
+            macro_context=None,
+            portfolio_risk=None,
+            analysis_consensus=None,
+            quality_summary=None,
         )
+
+        payload = meta.to_dict()
+        self.assertIn("data_quality_score", payload)
+        self.assertIn("data_quality_components", payload)
+        self.assertIn("confidence_penalty", payload)
 
 
 if __name__ == "__main__":

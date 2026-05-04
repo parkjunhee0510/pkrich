@@ -51,6 +51,7 @@ def _load_cost_runs(logs_root: Path, *, limit: int) -> list[dict[str, Any]]:
         profile_input_tokens = event_payload["profile_input_tokens"]
         profile_cached_input_tokens = event_payload["profile_cached_input_tokens"]
         routing = event_payload["routing"]
+        budget_guard = event_payload["budget_guard"]
 
         deep_cost = float(profile_costs.get("deep", 0.0) or 0.0)
         deep_selected = int(routing.get("selected_count", 0) or 0)
@@ -82,6 +83,7 @@ def _load_cost_runs(logs_root: Path, *, limit: int) -> list[dict[str, Any]]:
                     for profile, cost in sorted(profile_costs.items())
                 },
                 "routing": routing,
+                "budget_guard": budget_guard,
                 "deep_pass_value": {
                     "deep_cost_usd": round(deep_cost, 8),
                     "selected_ticker_count": deep_selected,
@@ -114,6 +116,15 @@ def _load_event_metrics(jsonl_path: Path) -> dict[str, Any]:
         "skipped_due_to_cap_count": 0,
         "conflicted_count": 0,
     }
+    budget_guard: dict[str, Any] = {
+        "mode": "off",
+        "decision_counts": defaultdict(int),
+        "guarded_paths": {},
+        "profile_counts": defaultdict(int),
+        "would_block_count": 0,
+        "blocked_count": 0,
+        "total_estimated_incremental_cost_usd": 0.0,
+    }
 
     if not jsonl_path.exists():
         return {
@@ -124,6 +135,7 @@ def _load_event_metrics(jsonl_path: Path) -> dict[str, Any]:
             "profile_calls": profile_calls,
             "profile_models": profile_models,
             "routing": routing,
+            "budget_guard": _finalize_budget_guard(budget_guard),
         }
 
     for raw_line in jsonl_path.read_text(encoding="utf-8").splitlines():
@@ -152,6 +164,25 @@ def _load_event_metrics(jsonl_path: Path) -> dict[str, Any]:
                 "skipped_due_to_cap_count": int(row.get("ensemble_skipped_due_to_cap", 0) or 0),
                 "conflicted_count": int(row.get("ensemble_conflicted_count", 0) or 0),
             }
+        elif event == "budget_guard_decision":
+            mode = str(row.get("mode", "")).strip()
+            if mode:
+                budget_guard["mode"] = mode
+            decision = str(row.get("decision", "allow")).strip() or "allow"
+            budget_guard["decision_counts"][decision] += 1
+            path = str(row.get("path", "")).strip()
+            if path:
+                budget_guard["guarded_paths"][path] = decision
+            profile = str(row.get("profile", "")).strip()
+            if profile:
+                budget_guard["profile_counts"][profile] += 1
+            budget_guard["total_estimated_incremental_cost_usd"] += float(
+                row.get("estimated_incremental_cost_usd", 0.0) or 0.0
+            )
+            if bool(row.get("would_block", False)):
+                budget_guard["would_block_count"] += 1
+            if not bool(row.get("allowed", True)):
+                budget_guard["blocked_count"] += 1
 
     return {
         "profile_costs": profile_costs,
@@ -161,6 +192,22 @@ def _load_event_metrics(jsonl_path: Path) -> dict[str, Any]:
         "profile_calls": profile_calls,
         "profile_models": profile_models,
         "routing": routing,
+        "budget_guard": _finalize_budget_guard(budget_guard),
+    }
+
+
+def _finalize_budget_guard(budget_guard: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "mode": budget_guard.get("mode", "off"),
+        "decision_counts": dict(sorted(budget_guard.get("decision_counts", {}).items())),
+        "guarded_paths": dict(sorted(budget_guard.get("guarded_paths", {}).items())),
+        "profile_counts": dict(sorted(budget_guard.get("profile_counts", {}).items())),
+        "would_block_count": int(budget_guard.get("would_block_count", 0) or 0),
+        "blocked_count": int(budget_guard.get("blocked_count", 0) or 0),
+        "total_estimated_incremental_cost_usd": round(
+            float(budget_guard.get("total_estimated_incremental_cost_usd", 0.0) or 0.0),
+            8,
+        ),
     }
 
 
