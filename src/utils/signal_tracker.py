@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import re
 from datetime import date, timedelta
 from pathlib import Path
@@ -19,6 +20,14 @@ FIELDNAMES = [
     "catalyst_tag",
     "news_tone",
     "trade_frame_scenario",
+    "conviction",
+    "raw_conviction",
+    "action",
+    "regime",
+    "sub_regime",
+    "factors_json",
+    "factor_reasoning_json",
+    "confidence_meta_json",
     "return_1d",
     "return_5d",
     "return_20d",
@@ -31,6 +40,11 @@ FIELDNAMES = [
     "barrier_return",
     "barrier_date",
 ]
+JSON_METADATA_FIELDNAMES = {
+    "factors_json",
+    "factor_reasoning_json",
+    "confidence_meta_json",
+}
 _NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*\.?\d*")
 _BULLISH_TERMS = ("상승", "강세", "반등", "회복", "돌파", "bull")
 _BEARISH_TERMS = ("하락", "약세", "조정", "이탈", "리스크", "bear")
@@ -41,8 +55,14 @@ def record_signals(
     run_date: date,
     price_lookup: dict[str, float],
     csv_path: Path,
+    *,
+    decisions: list[Any] | None = None,
+    market_regime: Any | None = None,
 ) -> None:
     rows = _load_rows(csv_path)
+    decisions_by_ticker = _decision_by_ticker(decisions)
+    regime = str(getattr(market_regime, "regime", "") or "").strip()
+    sub_regime = str(getattr(market_regime, "sub_regime", "") or "").strip()
     replacement_keys = {(run_date.isoformat(), analysis.ticker) for analysis in analyses}
     retained = [row for row in rows if (row.get("signal_date"), row.get("ticker")) not in replacement_keys]
 
@@ -53,6 +73,7 @@ def record_signals(
         signal_direction = _classify_signal_direction(analysis)
         filings = collect_sec_filings(analysis.news_references)
         primary_filing = filings[0] if filings else {}
+        decision = decisions_by_ticker.get(analysis.ticker.strip().upper())
         retained.append(
             {
                 "signal_date": run_date.isoformat(),
@@ -64,6 +85,18 @@ def record_signals(
                 "catalyst_tag": str(primary_filing.get("tag", "") or "일반 이슈"),
                 "news_tone": str(analysis.news_tone.get("label", "neutral")),
                 "trade_frame_scenario": str(analysis.trade_frame.get("base_scenario", "") or analysis.signal_or_takeaway),
+                "conviction": str(getattr(decision, "conviction", "") if decision is not None else ""),
+                "raw_conviction": str(getattr(decision, "raw_conviction", "") if decision is not None else ""),
+                "action": str(getattr(decision, "action", "") if decision is not None else ""),
+                "regime": regime,
+                "sub_regime": sub_regime,
+                "factors_json": _safe_json_dumps(getattr(decision, "factors", {}) if decision is not None else {}),
+                "factor_reasoning_json": _safe_json_dumps(
+                    getattr(decision, "factor_reasoning", {}) if decision is not None else {}
+                ),
+                "confidence_meta_json": _safe_json_dumps(
+                    getattr(decision, "confidence_meta", {}) if decision is not None else {}
+                ),
                 "return_1d": row_default(),
                 "return_5d": row_default(),
                 "return_20d": row_default(),
@@ -411,6 +444,24 @@ def row_default() -> str:
     return "N/A"
 
 
+def _safe_json_dumps(value: Any) -> str:
+    if value is None:
+        return "{}"
+    try:
+        return json.dumps(value, ensure_ascii=False, sort_keys=True)
+    except (TypeError, ValueError):
+        return "{}"
+
+
+def _decision_by_ticker(decisions: list[Any] | None) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for decision in decisions or []:
+        ticker = str(getattr(decision, "ticker", "")).strip().upper()
+        if ticker:
+            result[ticker] = decision
+    return result
+
+
 def _classify_signal_direction(analysis: TickerAnalysis) -> str:
     signal_text = analysis.signal_or_takeaway.lower()
     text = f"{analysis.signal_or_takeaway} {analysis.trade_frame.get('base_scenario', '')}".lower()
@@ -495,13 +546,26 @@ def _write_rows(csv_path: Path, rows: list[dict[str, str]]) -> None:
     # Normalize each row to the current FIELDNAMES shape so older CSVs
     # without the triple-barrier columns can be rewritten cleanly.
     normalized_rows = [
-        {name: row.get(name, "") for name in FIELDNAMES}
+        {name: _normalized_field_value(row, name) for name in FIELDNAMES}
         for row in ordered_rows
     ]
     with csv_path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=FIELDNAMES)
         writer.writeheader()
         writer.writerows(normalized_rows)
+
+
+def _normalized_field_value(row: dict[str, str], field_name: str) -> str:
+    value = row.get(field_name, _field_default(field_name))
+    if field_name in JSON_METADATA_FIELDNAMES and not str(value).strip():
+        return "{}"
+    return str(value)
+
+
+def _field_default(field_name: str) -> str:
+    if field_name in JSON_METADATA_FIELDNAMES:
+        return "{}"
+    return ""
 
 
 def _parse_date(raw_value: str) -> date | None:

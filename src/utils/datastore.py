@@ -62,7 +62,14 @@ class Datastore(ABC):
     ) -> None:
         from src.utils.signal_tracker import record_signals
 
-        record_signals(analyses, run_date, price_lookup, self.signal_csv_path)
+        record_signals(
+            analyses,
+            run_date,
+            price_lookup,
+            self.signal_csv_path,
+            decisions=decisions,
+            market_regime=market_regime,
+        )
 
     def update_signal_returns(
         self,

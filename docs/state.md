@@ -15,6 +15,7 @@ Maintain reproducible derived state across pipeline runs.
 ### Signal Tracking
 
 * Record newly generated signals per ticker and run date
+* Persist decision metadata such as action, conviction, raw conviction, regime, sub-regime, factor scores, factor reasoning, and confidence metadata for downstream performance analytics
 * Update `1d`, `5d`, and `20d` return windows from stored price history
 * Maintain signal statistics used by the decision layer, backtests, and admin views
 

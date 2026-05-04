@@ -41,6 +41,7 @@ from src.collector.price import collect_market_data, collect_market_overview
 from src.collector.sector_scan import scan_sectors
 from src.collector.shadow_compare import run_shadow_comparison
 from src.output.alert import evaluate_alert_rules
+from src.output.analysis_performance import write_analysis_performance_output
 from src.output.analysis_quality import write_analysis_quality_output
 from src.output.api_status import write_api_status_outputs
 from src.output.ab_test import write_ab_test_results
@@ -377,6 +378,21 @@ def run_pipeline(run_date: date | None = None) -> None:
             decisions=decisions,
             market_regime=market_regime,
         )
+        try:
+            write_analysis_performance_output(
+                output_root=Path("output"),
+                run_date=effective_date,
+                decisions=decisions,
+                market_regime=market_regime,
+                signal_rows=datastore.load_signal_rows_data(),
+            )
+        except Exception as exc:
+            record_pipeline_event(
+                "output",
+                "warning",
+                "analysis_performance_output_failed",
+                error=str(exc),
+            )
         signal_stats = datastore.load_signal_stats_data()
 
         direct_period_changes = {

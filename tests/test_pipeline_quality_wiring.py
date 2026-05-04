@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 from contextlib import ExitStack
 from datetime import date
+from pathlib import Path
 from unittest.mock import patch
 
 from src.analyzer.ensemble import EnsembleResult
@@ -76,12 +77,17 @@ class PipelineQualityWiringTests(unittest.TestCase):
             stack.enter_context(
                 patch("src.pipeline.attach_portfolio_macro_sensitivity", side_effect=lambda macro, *_args: macro)
             )
+            stack.enter_context(patch("src.analyzer.macro_narrative.build_macro_narrative", return_value={}))
+            stack.enter_context(patch("src.analyzer.committee.write_evidence_record"))
             stack.enter_context(patch("src.pipeline.load_peer_candidates", return_value={}))
             stack.enter_context(patch("src.pipeline.detect_market_regime", return_value=MarketRegime()))
             mock_build_ensemble = stack.enter_context(patch("src.pipeline._build_analysis_ensemble"))
             stack.enter_context(patch("src.pipeline.persist_peer_selections"))
             stack.enter_context(patch("src.pipeline._persist_routing_log"))
             stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
+            mock_write_analysis_performance = stack.enter_context(
+                patch("src.pipeline.write_analysis_performance_output")
+            )
             stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
             stack.enter_context(patch("src.pipeline.write_ab_test_results"))
             stack.enter_context(patch("src.pipeline._run_sector_scan"))
@@ -102,6 +108,8 @@ class PipelineQualityWiringTests(unittest.TestCase):
             datastore.load_signal_stats_data.return_value = {}
             datastore.update_signal_returns.return_value = 0
             datastore.record_signals.return_value = None
+            signal_rows = [{"ticker": "AAPL", "signal_date": "2026-04-28"}]
+            datastore.load_signal_rows_data.return_value = signal_rows
             datastore.record_analysis_run.return_value = None
             mock_build_ensemble.return_value.analyze_with_consensus.return_value = EnsembleResult(
                 analyses=[_analysis("AAPL")],
@@ -117,6 +125,101 @@ class PipelineQualityWiringTests(unittest.TestCase):
             run_pipeline(run_date=date(2026, 4, 29))
 
         self.assertEqual(mock_write_api_status.call_args.args[0], date(2026, 4, 29))
+        mock_write_analysis_performance.assert_called_once()
+        self.assertEqual(mock_write_analysis_performance.call_args.kwargs["output_root"], Path("output"))
+        self.assertEqual(mock_write_analysis_performance.call_args.kwargs["run_date"], date(2026, 4, 28))
+        self.assertEqual(mock_write_analysis_performance.call_args.kwargs["signal_rows"], signal_rows)
+
+    def test_run_pipeline_continues_when_analysis_performance_output_fails(self) -> None:
+        watchlist = [WatchlistItem(ticker="AAPL", name="Apple")]
+        collected = {
+            "AAPL": CollectedTickerData(
+                ticker="AAPL",
+                name="Apple",
+                sector="Technology",
+                price=100.0,
+                change_percent=1.0,
+                currency="USD",
+                market_cap="1T",
+                pe_ratio="20",
+                summary_note="",
+            )
+        }
+
+        with ExitStack() as stack:
+            stack.enter_context(patch("src.pipeline.load_dotenv"))
+            stack.enter_context(patch("src.pipeline.start_pipeline_logging"))
+            mock_record_event = stack.enter_context(patch("src.pipeline.record_pipeline_event"))
+            stack.enter_context(patch("src.pipeline.finalize_pipeline_logging"))
+            stack.enter_context(patch("src.pipeline.load_watchlist", return_value=watchlist))
+            stack.enter_context(patch("src.pipeline.load_portfolio", return_value=[]))
+            mock_datastore_factory = stack.enter_context(patch("src.pipeline.get_datastore"))
+            stack.enter_context(
+                patch("src.pipeline._collect_market_context", return_value=(collected, date(2026, 4, 28), [], [], {}))
+            )
+            stack.enter_context(patch("src.pipeline.collect_news_for_watchlist", return_value={}))
+            stack.enter_context(patch("src.pipeline.calculate_portfolio_summary", return_value=None))
+            stack.enter_context(
+                patch("src.pipeline.attach_portfolio_macro_sensitivity", side_effect=lambda macro, *_args: macro)
+            )
+            stack.enter_context(patch("src.analyzer.macro_narrative.build_macro_narrative", return_value={}))
+            stack.enter_context(patch("src.analyzer.committee.write_evidence_record"))
+            stack.enter_context(patch("src.pipeline.load_peer_candidates", return_value={}))
+            stack.enter_context(patch("src.pipeline.detect_market_regime", return_value=MarketRegime()))
+            mock_build_ensemble = stack.enter_context(patch("src.pipeline._build_analysis_ensemble"))
+            stack.enter_context(patch("src.pipeline.persist_peer_selections"))
+            stack.enter_context(patch("src.pipeline._persist_routing_log"))
+            mock_write_outputs = stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
+            stack.enter_context(
+                patch(
+                    "src.pipeline.write_analysis_performance_output",
+                    side_effect=RuntimeError("shadow write failed"),
+                )
+            )
+            stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
+            stack.enter_context(patch("src.pipeline.write_ab_test_results"))
+            stack.enter_context(patch("src.pipeline._run_sector_scan"))
+            stack.enter_context(patch("src.pipeline.send_daily_summary"))
+            stack.enter_context(patch("src.pipeline.evaluate_alert_rules", return_value=[]))
+            stack.enter_context(patch("src.pipeline.send_signal_alerts"))
+            stack.enter_context(patch("src.pipeline.write_analysis_quality_output"))
+            stack.enter_context(patch("src.pipeline.write_cost_log_output"))
+            stack.enter_context(patch("src.pipeline.write_routing_outcome_output"))
+            stack.enter_context(patch("src.pipeline.write_api_status_outputs"))
+            stack.enter_context(patch("src.pipeline._write_validation_warnings_json"))
+            stack.enter_context(patch("src.pipeline.generate_decisions", return_value=[_decision("AAPL")]))
+            stack.enter_context(
+                patch("src.pipeline.apply_consensus_to_decisions", side_effect=lambda decisions, _consensus: decisions)
+            )
+            datastore = mock_datastore_factory.return_value
+            datastore.load_recent_signals_data.return_value = []
+            datastore.load_signal_stats_data.return_value = {}
+            datastore.update_signal_returns.return_value = 0
+            datastore.record_signals.return_value = None
+            datastore.load_signal_rows_data.return_value = [{"ticker": "AAPL", "signal_date": "2026-04-28"}]
+            datastore.record_analysis_run.return_value = None
+            mock_build_ensemble.return_value.analyze_with_consensus.return_value = EnsembleResult(
+                analyses=[_analysis("AAPL")],
+                economy_analyses_by_ticker={"AAPL": _analysis("AAPL")},
+                deep_analyses_by_ticker={},
+                consensus_by_ticker={},
+                quality_summary_by_ticker={},
+                portfolio_result={"portfolio_risk": {}},
+                diagnostics={},
+                final_decisions=[_decision("AAPL")],
+            )
+
+            run_pipeline(run_date=date(2026, 4, 29))
+
+        mock_write_outputs.assert_called_once()
+        mock_record_event.assert_any_call(
+            "output",
+            "warning",
+            "analysis_performance_output_failed",
+            error="shadow write failed",
+        )
+        datastore.record_analysis_run.assert_called_once()
+        self.assertEqual(datastore.record_analysis_run.call_args.kwargs["success"], True)
 
     def test_run_pipeline_passes_consensus_and_quality_summaries_into_decision_generation(self) -> None:
         watchlist = [WatchlistItem(ticker="AAPL", name="Apple")]
@@ -168,12 +271,15 @@ class PipelineQualityWiringTests(unittest.TestCase):
             stack.enter_context(
                 patch("src.pipeline.attach_portfolio_macro_sensitivity", side_effect=lambda macro, *_args: macro)
             )
+            stack.enter_context(patch("src.analyzer.macro_narrative.build_macro_narrative", return_value={}))
+            stack.enter_context(patch("src.analyzer.committee.write_evidence_record"))
             stack.enter_context(patch("src.pipeline.load_peer_candidates", return_value={}))
             stack.enter_context(patch("src.pipeline.detect_market_regime", return_value=MarketRegime()))
             mock_build_ensemble = stack.enter_context(patch("src.pipeline._build_analysis_ensemble"))
             stack.enter_context(patch("src.pipeline.persist_peer_selections"))
             stack.enter_context(patch("src.pipeline._persist_routing_log"))
             stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
+            stack.enter_context(patch("src.pipeline.write_analysis_performance_output"))
             stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
             stack.enter_context(patch("src.pipeline.write_ab_test_results"))
             stack.enter_context(patch("src.pipeline._run_sector_scan"))
@@ -285,12 +391,15 @@ class PipelineQualityWiringTests(unittest.TestCase):
             stack.enter_context(
                 patch("src.pipeline.attach_portfolio_macro_sensitivity", side_effect=lambda macro, *_args: macro)
             )
+            stack.enter_context(patch("src.analyzer.macro_narrative.build_macro_narrative", return_value={}))
+            stack.enter_context(patch("src.analyzer.committee.write_evidence_record"))
             stack.enter_context(patch("src.pipeline.load_peer_candidates", return_value={}))
             stack.enter_context(patch("src.pipeline.detect_market_regime", return_value=MarketRegime()))
             mock_build_ensemble = stack.enter_context(patch("src.pipeline._build_analysis_ensemble"))
             stack.enter_context(patch("src.pipeline.persist_peer_selections"))
             stack.enter_context(patch("src.pipeline._persist_routing_log"))
             stack.enter_context(patch("src.pipeline.write_outputs", side_effect=_capture_write_outputs))
+            stack.enter_context(patch("src.pipeline.write_analysis_performance_output"))
             stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
             stack.enter_context(patch("src.pipeline.write_ab_test_results"))
             stack.enter_context(patch("src.pipeline._run_sector_scan"))

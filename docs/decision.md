@@ -21,6 +21,12 @@ The decision layer owns the final `data_quality_score` used by confidence adjust
 
 The initial gate is shadow-only. `confidence_meta.data_quality_gate` records whether a low score would cap a `buy` to `watch`, but default official action behavior remains driven by the existing conviction and confidence calculation. Output and web code serialize this metadata without recomputing it.
 
+## Action Change Reasons
+
+Action change reasons are deterministic explanatory metadata for output analytics. They compare each current `TickerDecision` with the most recent prior tracked signal row for the same ticker, including previous action, conviction, regime, top factor, and confidence metadata.
+
+This comparison is observational only. It must not mutate `TickerDecision`, recalculate action thresholds, alter conviction, or feed back into official decision generation. Output writers may serialize the reasons after decisions are finalized and signal rows are recorded.
+
 ## Key Components
 
 * `DecisionFactor`

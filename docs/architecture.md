@@ -227,6 +227,7 @@ Primary artifact families:
 - `output/data/tickers/<TICKER>/history.json`
 - `output/data/api_status.json`
 - `output/data/analysis_quality.json`
+- `output/data/analysis_performance.json`
 - `output/data/cost_log.json`
 - `output/data/routing_outcome.json`
 - `output/data/llm_evidence/<DATE>.jsonl`

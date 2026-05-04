@@ -49,11 +49,14 @@ Current `pm_view` fields:
 
 * API status
 * analysis quality
+* analysis performance
 * cost log
 * routing outcome
 * A/B test results
 * LLM audit reports under `docs/reports/llm-audit-YYYY-MM-DD.md` and `output/data/llm_audit/`
 * LLM evidence manifests under `output/data/llm_evidence/<DATE>.jsonl`
+
+`analysis_performance.json` is a shadow analytics artifact written to `output/data/analysis_performance.json`. It summarizes stored signal performance, conviction calibration, regime performance, factor attribution, and ticker action-change reasons from current decisions compared with prior tracked signal rows. It must consume finalized decisions and stored signal rows only; it must not recompute, mutate, reinterpret, or override the official `TickerDecision` action or conviction. When a `web/` app exists beside `output/`, the writer also syncs this file to `web/public/output/data/analysis_performance.json` for static dashboard consumption.
 
 `analysis_quality.json` includes the shared `schema_version`, `runs[]`, and `latest`. When a `web/` app exists beside `output/`, the writer also syncs this file to `web/public/output/data/analysis_quality.json` so the static dashboard reads the same operational payload as the pipeline output.
 

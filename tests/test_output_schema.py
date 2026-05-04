@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 import tempfile
 import unittest
@@ -7,12 +8,14 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
+from src.output.analysis_performance import write_analysis_performance_output
 from src.output.analysis_quality import write_analysis_quality_output
 from src.output.api_status import build_api_status_payload
 from src.output.cost_log import write_cost_log_output
 from src.output.json_export import write_json_outputs
 from src.output.schema import SCHEMA_VERSION
-from src.types import PortfolioPosition, PortfolioSummary, TickerAnalysis, TickerDecision, WatchlistItem
+from src.types import MarketRegime, PortfolioPosition, PortfolioSummary, TickerAnalysis, TickerDecision, WatchlistItem
+from src.utils.signal_tracker import FIELDNAMES
 from tests.helpers.output_snapshot import load_snapshot_fixture, normalize_json_shape
 from tests.test_output import _sample_analysis
 
@@ -78,6 +81,69 @@ def _pm_schema_portfolio() -> PortfolioSummary:
 
 
 class OutputSchemaTests(unittest.TestCase):
+    def test_analysis_performance_json_matches_snapshot_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "output"
+            csv_path = output_root / "data" / "signal_tracker.csv"
+            csv_path.parent.mkdir(parents=True, exist_ok=True)
+            with csv_path.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=FIELDNAMES)
+                writer.writeheader()
+                writer.writerow(
+                    {
+                        "signal_date": "2026-04-30",
+                        "ticker": "AAPL",
+                        "signal_type": "takeaway",
+                        "signal_direction": "bull",
+                        "llm_direction": "bull",
+                        "signal_price": "100.00",
+                        "catalyst_tag": "earnings",
+                        "news_tone": "bullish",
+                        "trade_frame_scenario": "Services growth and margin expansion",
+                        "conviction": "58",
+                        "raw_conviction": "64",
+                        "action": "watch",
+                        "regime": "neutral",
+                        "sub_regime": "balanced",
+                        "factors_json": json.dumps({"momentum": 0.2, "valuation": -0.1}),
+                        "factor_reasoning_json": json.dumps({"momentum": "positive trend"}),
+                        "confidence_meta_json": json.dumps({"data_quality_score": 0.72}),
+                        "return_1d": "+1.00%",
+                        "return_5d": "+2.50%",
+                        "return_20d": "N/A",
+                        "evaluated_1d": "True",
+                        "evaluated_5d": "True",
+                        "evaluated_20d": "False",
+                        "barrier_label": "take_profit",
+                        "barrier_hit_day": "3",
+                        "barrier_return": "+2.50%",
+                        "barrier_date": "2026-05-01",
+                    }
+                )
+
+            payload = write_analysis_performance_output(
+                output_root=output_root,
+                run_date=date(2026, 5, 1),
+                decisions=[
+                    TickerDecision(
+                        ticker="AAPL",
+                        action="buy",
+                        conviction=68,
+                        raw_conviction=70,
+                        reason="improved factor setup",
+                        valid_until="2026-05-08",
+                        factors={"momentum": 1.4, "valuation": -0.2},
+                        factor_reasoning={"momentum": "positive trend"},
+                        confidence_meta={"data_quality_score": 0.82},
+                    )
+                ],
+                market_regime=MarketRegime(regime="risk_on", sub_regime="growth", confidence=0.71),
+            )
+
+        self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
+        expected = load_snapshot_fixture(_FIXTURE_DIR / "analysis_performance.shape.json")
+        self.assertEqual(normalize_json_shape(payload), expected)
+
     def test_dashboard_legacy_matches_snapshot_shape_with_pm_view(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             output_root = Path(temp_dir) / "output"

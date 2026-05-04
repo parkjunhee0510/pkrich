@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import tempfile
 import unittest
 from datetime import date
@@ -143,6 +144,128 @@ class SignalTrackerTests(unittest.TestCase):
             self.assertEqual(history[0]["date"], "2026-04-01")
             self.assertEqual(history[0]["direction"], "bull")
             self.assertEqual(history[0]["return_5d"], "+5.00%")
+
+    def test_record_signals_persists_decision_metadata(self) -> None:
+        from src.types import MarketRegime, TickerDecision
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "signal_tracker.csv"
+            decision = TickerDecision(
+                ticker="AAPL",
+                action="buy",
+                conviction=72,
+                raw_conviction=80,
+                factors={"momentum": 1.5, "valuation": -0.5},
+                factor_reasoning={"momentum": "price trend improved"},
+                confidence_meta={"data_quality_score": 0.88},
+            )
+            regime = MarketRegime(regime="risk_on", sub_regime="growth", confidence=70)
+
+            record_signals(
+                [_analysis()],
+                date(2026, 4, 8),
+                {"AAPL": 100.0},
+                csv_path,
+                decisions=[decision],
+                market_regime=regime,
+            )
+
+            rows = list(csv.DictReader(csv_path.open("r", encoding="utf-8-sig", newline="")))
+
+        self.assertEqual(rows[0]["action"], "buy")
+        self.assertEqual(rows[0]["conviction"], "72")
+        self.assertEqual(rows[0]["raw_conviction"], "80")
+        self.assertEqual(rows[0]["regime"], "risk_on")
+        self.assertEqual(rows[0]["sub_regime"], "growth")
+        self.assertEqual(json.loads(rows[0]["factors_json"]), {"momentum": 1.5, "valuation": -0.5})
+        self.assertEqual(json.loads(rows[0]["factor_reasoning_json"]), {"momentum": "price trend improved"})
+        self.assertEqual(json.loads(rows[0]["confidence_meta_json"]), {"data_quality_score": 0.88})
+
+    def test_record_signals_uses_empty_json_for_circular_decision_metadata(self) -> None:
+        from src.types import TickerDecision
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "signal_tracker.csv"
+            circular_meta: dict[str, object] = {}
+            circular_meta["self"] = circular_meta
+            decision = TickerDecision(
+                ticker="AAPL",
+                action="buy",
+                conviction=72,
+                raw_conviction=80,
+                confidence_meta=circular_meta,
+            )
+
+            record_signals(
+                [_analysis()],
+                date(2026, 4, 8),
+                {"AAPL": 100.0},
+                csv_path,
+                decisions=[decision],
+            )
+
+            rows = list(csv.DictReader(csv_path.open("r", encoding="utf-8-sig", newline="")))
+
+        self.assertEqual(rows[0]["confidence_meta_json"], "{}")
+
+    def test_record_signals_rewrites_legacy_rows_with_json_metadata_defaults(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "signal_tracker.csv"
+            legacy_fieldnames = [
+                "signal_date",
+                "ticker",
+                "signal_type",
+                "signal_direction",
+                "llm_direction",
+                "signal_price",
+                "catalyst_tag",
+                "news_tone",
+                "trade_frame_scenario",
+                "return_1d",
+                "return_5d",
+                "return_20d",
+                "evaluated_1d",
+                "evaluated_5d",
+                "evaluated_20d",
+                "barrier_label",
+                "barrier_hit_day",
+                "barrier_return",
+                "barrier_date",
+            ]
+            with csv_path.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=legacy_fieldnames)
+                writer.writeheader()
+                writer.writerow(
+                    {
+                        "signal_date": "2026-04-01",
+                        "ticker": "MSFT",
+                        "signal_type": "takeaway",
+                        "signal_direction": "bull",
+                        "llm_direction": "bull",
+                        "signal_price": "100.00",
+                        "catalyst_tag": "legacy",
+                        "news_tone": "bullish",
+                        "trade_frame_scenario": "legacy row",
+                        "return_1d": "N/A",
+                        "return_5d": "N/A",
+                        "return_20d": "N/A",
+                        "evaluated_1d": "False",
+                        "evaluated_5d": "False",
+                        "evaluated_20d": "False",
+                        "barrier_label": "pending",
+                        "barrier_hit_day": "",
+                        "barrier_return": "",
+                        "barrier_date": "",
+                    }
+                )
+
+            record_signals([_analysis()], date(2026, 4, 8), {"AAPL": 100.0}, csv_path)
+            rows = list(csv.DictReader(csv_path.open("r", encoding="utf-8-sig", newline="")))
+
+        legacy_row = next(row for row in rows if row["ticker"] == "MSFT")
+        self.assertEqual(legacy_row["factors_json"], "{}")
+        self.assertEqual(legacy_row["factor_reasoning_json"], "{}")
+        self.assertEqual(legacy_row["confidence_meta_json"], "{}")
 
 
 if __name__ == "__main__":
