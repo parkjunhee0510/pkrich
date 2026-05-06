@@ -48,8 +48,10 @@ Core pieces:
 
 * Economy profile analyzes the full watchlist first
 * Selected tickers receive deeper LLM-only re-analysis
+* Selection is driven by the configured conviction trigger range; `portfolio_priority` can force current holdings into the deep-pass candidate set
 * Conflicts may trigger a third review
 * BudgetGuard records shadow decisions before deep and tie-break routes
+* Optional routing logs record each ticker's selection reason, portfolio flag, action, and conviction
 * Final analysis payload remains schema-compatible with the rest of the pipeline
 
 ### Committee Flow

@@ -17,6 +17,7 @@ Maintain reproducible derived state across pipeline runs.
 * Record newly generated signals per ticker and run date
 * Update `1d`, `5d`, and `20d` return windows from stored price history
 * Maintain signal statistics used by the decision layer, backtests, and admin views
+* Output `state_metadata` should make timing explicit: decision-time signal statistics do not include current-run signals, while output-time signal statistics may include them after `record_signals`
 
 ### Outcome Labeling
 

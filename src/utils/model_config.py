@@ -30,6 +30,8 @@ _DEFAULT_CONFIG: dict[str, Any] = {
         'third_model': 'deep',
         'third_prompt': 'research_v2',
         'max_daily_ensemble': 5,
+        'portfolio_priority': False,
+        'emit_routing_log': False,
     },
     'budget_guard': {
         'mode': 'shadow',
@@ -100,6 +102,8 @@ class EnsembleConfig:
     third_model: str
     third_prompt: str
     max_daily_ensemble: int
+    portfolio_priority: bool = False
+    emit_routing_log: bool = False
 
 
 @dataclass(frozen=True)
@@ -252,6 +256,8 @@ def load_ensemble_config(path: str = 'config/models.yaml') -> EnsembleConfig:
         third_model=third_model,
         third_prompt=third_prompt,
         max_daily_ensemble=max_daily_ensemble,
+        portfolio_priority=bool(ensemble.get('portfolio_priority', False)),
+        emit_routing_log=bool(ensemble.get('emit_routing_log', False)),
     )
 
 

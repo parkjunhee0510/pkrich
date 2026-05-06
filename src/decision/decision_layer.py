@@ -118,8 +118,9 @@ def _decide_ticker(
     weighted_values = scorer.weighted_values(factor_scores_by_name, regime.regime)
     raw_conviction = scorer.calculate(factor_scores_by_name, regime.regime)
     conviction = raw_conviction
-    confidence_meta: dict[str, float] = {}
+    confidence_meta: dict[str, object] = {}
     confidence_note = ""
+    data_quality_gate_note = ""
 
     thresholds = config.get("thresholds", {})
     if not _force_raw_confidence():
@@ -136,10 +137,6 @@ def _decide_ticker(
         )
         confidence_meta = meta.to_dict()
         conviction = calculate_final_conviction(raw_conviction, meta)
-        confidence_meta["data_quality_gate"] = _build_data_quality_gate_meta(
-            action_before_gate="buy" if conviction >= thresholds.get("buy", 65) else "watch",
-            data_quality_score=float(confidence_meta.get("data_quality_score", 1.0) or 1.0),
-        )
         if _confidence_adjustment_is_material(raw_conviction, conviction):
             confidence_note = _build_confidence_note(raw_conviction, conviction)
         logger.debug(
@@ -160,9 +157,25 @@ def _decide_ticker(
     else:
         action = "watch"
 
+    if confidence_meta:
+        data_quality_score = float(confidence_meta.get("data_quality_score", 1.0) or 1.0)
+        data_quality_gate = _build_data_quality_gate_meta(
+            action_before_gate=action,
+            data_quality_score=data_quality_score,
+        )
+        confidence_meta["data_quality_gate"] = data_quality_gate
+        if data_quality_gate["mode"] == "enforce" and data_quality_gate["would_cap_action"]:
+            action = str(data_quality_gate["max_action_if_enforced"])
+            data_quality_gate_note = _build_data_quality_gate_note(
+                data_quality_score=data_quality_score,
+                threshold=float(data_quality_gate["threshold"]),
+            )
+
     reason = _build_reason(factor_scores_by_name, weighted_values)
     if confidence_note:
         reason = f"{reason} / {confidence_note}"
+    if data_quality_gate_note:
+        reason = f"{reason} / {data_quality_gate_note}"
     valid_until = _compute_valid_until(analysis, run_date, config)
 
     factor_reasoning = {
@@ -212,11 +225,25 @@ def _build_data_quality_gate_meta(*, action_before_gate: str, data_quality_score
     threshold = 0.6
     would_cap = data_quality_score < threshold and action_before_gate == "buy"
     return {
-        "mode": "shadow",
+        "mode": _data_quality_gate_mode(),
         "threshold": threshold,
         "max_action_if_enforced": "watch",
         "would_cap_action": would_cap,
     }
+
+
+def _data_quality_gate_mode() -> str:
+    raw_mode = os.getenv("DECISION_DATA_QUALITY_GATE_MODE", "shadow").strip().lower()
+    if raw_mode in {"1", "true", "on", "yes", "enforce", "enforced"}:
+        return "enforce"
+    return "shadow"
+
+
+def _build_data_quality_gate_note(*, data_quality_score: float, threshold: float) -> str:
+    return (
+        f"데이터 품질 게이트 적용: data_quality_score "
+        f"{data_quality_score:.2f} < {threshold:.2f}라서 buy를 watch로 제한"
+    )
 
 
 def _compute_valid_until(analysis: TickerAnalysis, run_date: date, config: dict[str, Any]) -> str:

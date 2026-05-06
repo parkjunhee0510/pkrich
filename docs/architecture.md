@@ -186,7 +186,7 @@ Decision output owns:
 
 Decision logic is rule-based even when upstream analysis uses LLMs.
 
-The data-quality gate is currently shadow-only. It records whether low quality would cap a `buy` to `watch`, but it does not change the official action until explicitly promoted from shadow mode.
+The data-quality gate is shadow-only by default. It records whether low quality would cap a `buy` to `watch`, and `DECISION_DATA_QUALITY_GATE_MODE=enforce` can promote that cap into official action behavior.
 
 ### State
 

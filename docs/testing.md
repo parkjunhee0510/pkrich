@@ -20,6 +20,7 @@ Pipeline must run end-to-end.
 
 * Files generated correctly
 * Formats valid
+* `python -m src.cli.output_health_check` passes when generated artifacts or web-public data are committed
 
 ### State
 

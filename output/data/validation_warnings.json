@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "window_days": 14,
-  "generated_at": "2026-05-04",
+  "generated_at": "2026-05-06",
   "categories": [
     "schema_violation_count",
     "fact_warning_count",
@@ -11,34 +11,12 @@
   ],
   "totals": {
     "schema_violation_count": 0,
-    "fact_warning_count": 75,
-    "consistency_warning_count": 4,
-    "hallucination_warning_count": 56,
+    "fact_warning_count": 54,
+    "consistency_warning_count": 5,
+    "hallucination_warning_count": 48,
     "dropped_unsupported_count": 0
   },
   "series": [
-    {
-      "date": "2026-04-21",
-      "batch_count": 0,
-      "validated_ticker_count": 68,
-      "validation_failure_count": 20,
-      "schema_violation_count": 0,
-      "fact_warning_count": 20,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 3,
-      "dropped_unsupported_count": 0
-    },
-    {
-      "date": "2026-04-22",
-      "batch_count": 0,
-      "validated_ticker_count": 90,
-      "validation_failure_count": 13,
-      "schema_violation_count": 0,
-      "fact_warning_count": 7,
-      "consistency_warning_count": 2,
-      "hallucination_warning_count": 15,
-      "dropped_unsupported_count": 0
-    },
     {
       "date": "2026-04-23",
       "batch_count": 0,
@@ -108,12 +86,23 @@
     {
       "date": "2026-05-04",
       "batch_count": 0,
-      "validated_ticker_count": 147,
-      "validation_failure_count": 11,
+      "validated_ticker_count": 285,
+      "validation_failure_count": 18,
+      "schema_violation_count": 0,
+      "fact_warning_count": 6,
+      "consistency_warning_count": 2,
+      "hallucination_warning_count": 15,
+      "dropped_unsupported_count": 0
+    },
+    {
+      "date": "2026-05-06",
+      "batch_count": 0,
+      "validated_ticker_count": 278,
+      "validation_failure_count": 13,
       "schema_violation_count": 0,
       "fact_warning_count": 7,
-      "consistency_warning_count": 1,
-      "hallucination_warning_count": 9,
+      "consistency_warning_count": 2,
+      "hallucination_warning_count": 4,
       "dropped_unsupported_count": 0
     }
   ]

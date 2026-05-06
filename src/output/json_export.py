@@ -24,7 +24,9 @@ from src.output.pm_view import build_pm_view
 from src.output.schema import SCHEMA_VERSION
 from src.output.sharded_export import write_sharded_outputs
 from src.output.direction_alignment import write_direction_alignment_output
+from src.output.web_sync_contract import OPTIONAL_WEB_SYNC_FILENAMES, WEB_SYNC_FILENAMES
 from src.types import MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
+from src.utils.datastore import get_datastore
 from src.utils.env import is_env_flag_enabled
 from src.utils.fs_sync import retry_io
 from src.utils.pipeline_logging import record_pipeline_event
@@ -51,6 +53,7 @@ def write_json_outputs(
     monthly_summary: dict[str, Any] | None = None,
     derived_by_ticker: dict[str, dict[str, Any]] | None = None,
     price_history_rows: list[dict[str, str]] | None = None,
+    state_metadata: dict[str, Any] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
     root = output_root or Path("output")
     data_dir = root / "data"
@@ -58,6 +61,11 @@ def write_json_outputs(
 
     decision_map = {d.ticker: d for d in (decisions or [])}
     emit_legacy_dashboard = is_env_flag_enabled("EMIT_LEGACY_DASHBOARD", default=False)
+    effective_price_history_rows = (
+        price_history_rows
+        if price_history_rows is not None
+        else _load_price_history_rows(data_dir / "price_history.csv")
+    )
     weekly_summary_payload = {
         "schema_version": SCHEMA_VERSION,
         "iso_year": weekly_summary.iso_year if weekly_summary else run_date.isocalendar()[0],
@@ -84,14 +92,15 @@ def write_json_outputs(
         market_regime=market_regime,
         decision_map=decision_map,
         derived_by_ticker=derived_by_ticker,
-        price_history_rows=price_history_rows,
+        price_history_rows=effective_price_history_rows,
         emit_legacy_dashboard=emit_legacy_dashboard,
         weekly_summary_payload=weekly_summary_payload,
+        state_metadata=state_metadata or {},
     )
     _write_price_history_exports(
         data_dir / "price_history.json",
         data_dir / "price_history.csv",
-        price_history_rows,
+        effective_price_history_rows,
     )
     backtest_payload = _with_schema_version(
         backtest_summary
@@ -123,6 +132,7 @@ def write_json_outputs(
             merged_days,
             signal_stats=signal_stats or {},
             weekly_summary=weekly_summary_payload,
+            state_metadata=state_metadata or {},
         )
     # Keep the React app's `public/output/data/*` in sync with the latest exports.
     # `data_dir` is expected to be `<repo>/output/data`, so the repo root is `data_dir.parent.parent`.
@@ -148,6 +158,7 @@ def _write_dashboard_jsons(
     price_history_rows: list[dict[str, str]] | None = None,
     emit_legacy_dashboard: bool = False,
     weekly_summary_payload: dict[str, Any] | None = None,
+    state_metadata: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     existing_days: list[dict[str, Any]] = []
     source_path = history_path if history_path.exists() else latest_path
@@ -159,6 +170,7 @@ def _write_dashboard_jsons(
             existing_days = []
 
     dm = decision_map or {}
+    state_metadata = state_metadata or {}
     new_day = {
         "date": run_date.isoformat(),
         "market_overview": market_overview,
@@ -183,6 +195,8 @@ def _write_dashboard_jsons(
             for a in analyses
         ],
     }
+    if state_metadata:
+        new_day["state_metadata"] = state_metadata
 
     merged = [d for d in existing_days if d.get("date") != run_date.isoformat()]
     merged.append(new_day)
@@ -227,6 +241,9 @@ def _write_dashboard_jsons(
         "signal_stats": serializable_signal_stats,
         "weekly_summary": weekly_summary_payload,
     }
+    if state_metadata:
+        latest_payload["state_metadata"] = state_metadata
+        history_payload["state_metadata"] = state_metadata
 
     if emit_legacy_dashboard:
         latest_path.write_text(json.dumps(latest_payload, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -463,7 +480,7 @@ def _write_price_history_exports(
     csv_path: Path,
     rows: list[dict[str, str]] | None,
 ) -> None:
-    effective_rows = rows if rows is not None else _load_price_history_rows_from_csv(csv_path)
+    effective_rows = rows if rows is not None else _load_price_history_rows(csv_path)
     json_path.write_text(json.dumps(effective_rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
     with csv_path.open("w", encoding="utf-8", newline="") as handle:
@@ -485,6 +502,23 @@ def _write_price_history_exports(
         ])
         writer.writeheader()
         writer.writerows(effective_rows)
+
+
+def _load_price_history_rows(csv_path: Path) -> list[dict[str, str]]:
+    sqlite_rows = _load_price_history_rows_from_sqlite(csv_path.with_suffix(".sqlite"))
+    if sqlite_rows:
+        return sqlite_rows
+    return _load_price_history_rows_from_csv(csv_path)
+
+
+def _load_price_history_rows_from_sqlite(sqlite_path: Path) -> list[dict[str, str]]:
+    if not sqlite_path.exists():
+        return []
+    try:
+        datastore = get_datastore(output_root=sqlite_path.parent.parent, backend="sqlite")
+        return datastore.query_prices()
+    except Exception:
+        return []
 
 
 def _load_price_history_rows_from_csv(csv_path: Path) -> list[dict[str, str]]:
@@ -729,28 +763,9 @@ def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:
             )
 
     filenames = [
-        "dashboard_history.json",
-        "api_status.json",
-        "api_ticker_matrix.json",
-        "api_ticker_matrix.csv",
-        "analysis_quality.json",
-        "cost_log.json",
-        "routing_outcome.json",
-        "direction_alignment.json",
-        "ab_test_results.json",
-        "price_history.json",
-        "ticker_timelines.json",
-        "backtest_summary.json",
-        "monthly_summary.json",
-        "sectors.json",
-        "factor_audit.json",
-        "signal_quality.json",
-        "policy_impact.json",
-        "index.json",
+        *OPTIONAL_WEB_SYNC_FILENAMES,
+        *WEB_SYNC_FILENAMES,
     ]
-    dashboard_json = data_dir / "dashboard.json"
-    if dashboard_json.exists():
-        filenames.insert(0, "dashboard.json")
 
     copied = 0
     failed = 0

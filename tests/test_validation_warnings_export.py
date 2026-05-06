@@ -8,7 +8,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from unittest import mock
 
-from src.output.json_export import _write_validation_warnings_json
+from src.output.json_export import _sync_web_public_data, _write_validation_warnings_json
 
 
 def _write_summary(logs_root: Path, day: date, **quality: int) -> None:
@@ -94,6 +94,31 @@ class ValidationWarningsExportTests(unittest.TestCase):
             payload = json.loads((data_dir / "validation_warnings.json").read_text())
             # Corrupt file silently skipped — series just empty for that day.
             self.assertEqual(payload["series"], [])
+
+
+    def test_validation_warnings_syncs_to_web_public_mirror(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_root = Path(tmp)
+            data_dir = project_root / "output" / "data"
+            web_data_dir = project_root / "web" / "public" / "output" / "data"
+            data_dir.mkdir(parents=True)
+            (project_root / "web").mkdir()
+            payload = {
+                "schema_version": 1,
+                "window_days": 14,
+                "generated_at": "2026-05-04T00:00:00",
+                "categories": {},
+                "totals": {},
+                "series": [],
+            }
+            source_path = data_dir / "validation_warnings.json"
+            source_path.write_text(json.dumps(payload), encoding="utf-8")
+
+            _sync_web_public_data(data_dir, project_root)
+
+            mirror_path = web_data_dir / "validation_warnings.json"
+            self.assertTrue(mirror_path.exists())
+            self.assertEqual(source_path.read_bytes(), mirror_path.read_bytes())
 
 
 class DroppedUnsupportedLoggerTests(unittest.TestCase):

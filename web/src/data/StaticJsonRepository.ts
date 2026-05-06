@@ -5,6 +5,7 @@ const BASE = import.meta.env.BASE_URL
 const INDEX_URL = `${BASE}output/data/index.json`
 const DASHBOARD_URL = `${BASE}output/data/dashboard.json`
 const DASHBOARD_HISTORY_URL = `${BASE}output/data/dashboard_history.json`
+const SUPPORTED_SCHEMA_VERSION = 1
 
 interface LatestShard {
   schema_version: number
@@ -28,6 +29,7 @@ interface DashboardIndexPayload {
   pm_view?: DashboardData['days'][number]['pm_view']
   portfolio_summary?: DashboardData['days'][number]['portfolio_summary']
   portfolio_risk?: DashboardData['days'][number]['portfolio_risk']
+  state_metadata?: DashboardData['state_metadata']
   signal_stats?: DashboardData['signal_stats']
   weekly_summary?: DashboardData['weekly_summary']
   tickers: TickerAnalysisData[]
@@ -36,6 +38,7 @@ interface DashboardIndexPayload {
 interface DashboardHistoryPayload {
   schema_version: number
   days: DashboardData['days']
+  state_metadata?: DashboardData['state_metadata']
   signal_stats?: DashboardData['signal_stats']
   weekly_summary?: DashboardData['weekly_summary']
 }
@@ -48,6 +51,10 @@ async function fetchJson<T>(url: string, refreshToken: number): Promise<T | null
   } catch {
     return null
   }
+}
+
+function hasSupportedSchemaVersion<T extends { schema_version?: number }>(payload: T | null): payload is T {
+  return payload?.schema_version === SUPPORTED_SCHEMA_VERSION
 }
 
 // Skip days where the pipeline only wrote a fallback shell (no real
@@ -76,6 +83,7 @@ export class StaticJsonRepository implements DashboardRepository {
         pm_view: latestIndex.pm_view ?? null,
         portfolio_summary: latestIndex.portfolio_summary ?? null,
         portfolio_risk: latestIndex.portfolio_risk ?? null,
+        state_metadata: latestIndex.state_metadata,
         tickers: Array.isArray(latestIndex.tickers) ? latestIndex.tickers : [],
       }
 
@@ -89,6 +97,7 @@ export class StaticJsonRepository implements DashboardRepository {
       return {
         schema_version: latestIndex.schema_version,
         days: mergedDays,
+        state_metadata: latestIndex.state_metadata ?? history?.state_metadata,
         signal_stats: latestIndex.signal_stats ?? history?.signal_stats ?? { recent_signals: [], summary_by_direction: {} },
         weekly_summary: latestIndex.weekly_summary ?? history?.weekly_summary,
       }
@@ -96,10 +105,11 @@ export class StaticJsonRepository implements DashboardRepository {
 
     if (history?.days?.length) {
       const cleanDays = history.days.filter((day) => !isEmptyDay(day))
-      if (cleanDays.length === 0) return { schema_version: history.schema_version, days: [], signal_stats: history.signal_stats ?? { recent_signals: [], summary_by_direction: {} }, weekly_summary: history.weekly_summary }
+      if (cleanDays.length === 0) return { schema_version: history.schema_version, days: [], state_metadata: history.state_metadata, signal_stats: history.signal_stats ?? { recent_signals: [], summary_by_direction: {} }, weekly_summary: history.weekly_summary }
       return {
         schema_version: history.schema_version,
         days: cleanDays,
+        state_metadata: history.state_metadata,
         signal_stats: history.signal_stats ?? { recent_signals: [], summary_by_direction: {} },
         weekly_summary: history.weekly_summary,
       }
@@ -110,10 +120,10 @@ export class StaticJsonRepository implements DashboardRepository {
 
   private async loadDashboardIndex(refreshToken: number): Promise<DashboardIndexPayload | null> {
     const latestIndex = await fetchJson<DashboardIndexPayload>(INDEX_URL, refreshToken)
-    if (latestIndex) return latestIndex
+    if (hasSupportedSchemaVersion(latestIndex)) return latestIndex
 
     const legacyDashboard = await fetchJson<DashboardHistoryPayload & DashboardIndexPayload>(DASHBOARD_URL, refreshToken)
-    if (legacyDashboard?.tickers) {
+    if (hasSupportedSchemaVersion(legacyDashboard) && legacyDashboard.tickers) {
       return legacyDashboard as DashboardIndexPayload
     }
 
@@ -122,12 +132,12 @@ export class StaticJsonRepository implements DashboardRepository {
 
   private async loadDashboardHistory(refreshToken: number): Promise<DashboardHistoryPayload | null> {
     const history = await fetchJson<DashboardHistoryPayload>(DASHBOARD_HISTORY_URL, refreshToken)
-    if (history?.days?.length) {
+    if (hasSupportedSchemaVersion(history) && history.days.length) {
       return history
     }
 
     const legacyDashboard = await fetchJson<DashboardHistoryPayload>(DASHBOARD_URL, refreshToken)
-    if (legacyDashboard?.days?.length) {
+    if (hasSupportedSchemaVersion(legacyDashboard) && legacyDashboard.days?.length) {
       return legacyDashboard
     }
 

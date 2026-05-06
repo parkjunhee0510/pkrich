@@ -82,6 +82,7 @@ def write_outputs(
     portfolio_risk: dict[str, Any] | None = None,
     market_regime: MarketRegime | None = None,
     decisions: list[TickerDecision] | None = None,
+    state_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     output_root = Path("output")
     daily_dir = output_root / "daily"
@@ -121,6 +122,7 @@ def write_outputs(
         weekly_summary=weekly_summary,
         market_regime=market_regime,
         decisions=decisions,
+        state_metadata=state_metadata,
     )
 
     daily_path = daily_dir / f"{run_date.isoformat()}.md"

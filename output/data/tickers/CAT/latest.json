@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "date": "2026-05-06",
+  "date": "2026-05-05",
   "ticker": "CAT",
   "payload": {
     "ticker": "CAT",
     "name": "Caterpillar Inc.",
-    "date": "2026-05-01",
-    "summary": "주가는 889.67달러로 30일 기준 +24.28%이며 52주 고점 905.00달러의 97% 구간까지 올라와 단기 과열 신호를 함께 봐야 합니다. 다음 촉매는 향후 5거래일 내 흐름과 공시/실적 관련 재료이며, 호르무즈 해협 차질로 유가와 해상 물류 변동성이 커질 수 있다는 거시 요인을 짧게 반영할 필요가 있습니다.",
+    "date": "2026-05-05",
+    "summary": "주가는 904.59달러로 52주 신고가 908.89달러 바로 아래이며, 30일간 +25.66% 상승해 단기 과열 신호(RSI 73.8)가 보입니다. 다음 촉매는 2026-05-19 배당 지급일 전까지의 추세 지속 여부와 2026-08-04 실적 발표(D-90)이며, 호르무즈 해협 차질은 유가·해상 물류 변동성을 통해 관련 산업에만 제한적으로 영향을 줄 수 있습니다.",
     "key_news": [
-      "[기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-      "[주주총회] CATERPILLAR INC, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
-      "Caterpillar Inc. Q1 2026 Earnings Call Summary - Yahoo Finance",
-      "Morgan Stanley Doubles Caterpillar Price Target to $915: Is This the Most Underrated Industrial of 2026? - Yahoo Finance",
-      "Caterpillar rides strong AI power demand to a big earnings beat — and a stock surge - MarketWatch"
+      "8-K 중요 사항 공시 제출",
+      "DEF 14A 주주총회 관련 위임장 설명서 제출",
+      "Q1 2026 실적 발표 요약",
+      "애널리스트가 목표가를 915달러로 상향",
+      "AI 전력 수요 수혜로 실적 서프라이즈 및 주가 급등"
     ],
     "key_news_source_titles": [
       "[기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
@@ -61,51 +61,51 @@
       }
     ],
     "financial_highlights": [
-      "PER 44.2x, valuation_score 5/10",
-      "Forward EPS 29.08, TTM EPS 20.11",
-      "EPS Growth +30.20% YoY",
-      "RS vs Sector ETF +18.67%",
-      "SMA50 750.34달러, SMA200 591.03달러"
+      "현재가 904.59달러, 30D +25.66%, 일간 +3.41%",
+      "52W High 908.89달러, 52W Position 99%",
+      "SMA50 752.64달러 대비 +20.19%, SMA200 593.31달러 대비 +52.46%",
+      "ATR(14) 26.87달러, ATR% 2.97%",
+      "RSI(14) 73.8, MACD 39.15/31.67"
     ],
     "risks_or_watchpoints": [
-      "RSI(14) 75.1이므로 과열 구간에서 886.83~905.00 USD 저항 반응 감시",
-      "가격이 750.34 USD(SMA50) 아래로 밀리면 추세 훼손 신호로 판단",
-      "옵션 만기 2026-05-08 전까지 PCR 1.56x와 PUT $800, $890, $960 수요가 더 늘면 하방 경계 강화",
-      "52주 고점 905.00 USD 돌파 실패가 반복되면 889.67 USD 부근의 횡보/되돌림 가능성 확인"
+      "RSI(14) 73.8로 과열 구간이므로 73 아래로 꺾이면 단기 추세 둔화 신호로 감시",
+      "주가가 52W High 908.89 USD와 현재가 904.59 USD에 매우 근접하므로 908.89 상향 돌파 실패 시 되돌림 리스크 확대",
+      "이탈 기준인 SMA50 752.64 USD 하회 시 약세 시나리오 확인",
+      "이상 옵션 PUT $960, PUT $890, PUT $1340가 존재하므로 904.59 USD 위에서 유지되지 못하고 하방 체결이 늘면 방어 수요 우위로 전환 감시"
     ],
-    "signal_or_takeaway": "중립 관찰 — [기타 공시] CATERPILLAR INC, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 863.08–916.26 | 손절 SMA50(750.34 USD) (R:R 0.3R)",
+    "signal_or_takeaway": "매도 경계 — RSI 과열과 52주 신고가 인접, 실적 D-90까지 추세 지속 여부 관찰 | 진입 트리거 908.89 상향 돌파 실패 또는 752.64 이탈 확인 | 목표 752.64/593.31달러 | 손절 944.90달러",
     "data_snapshot": {
-      "Price": "926.93 USD",
-      "Daily Change": "+2.47%",
-      "Market Cap": "426.94B",
-      "Trailing P/E": "46.16",
+      "Price": "904.59 USD",
+      "Daily Change": "+3.41%",
+      "Market Cap": "416.65B",
+      "Trailing P/E": "45.05",
       "EPS": "20.08",
-      "52W High": "930.47",
+      "52W High": "908.89",
       "52W Low": "318.11",
-      "50D SMA": "755.60",
-      "200D SMA": "595.77",
-      "Volume": "2627462",
+      "50D SMA": "752.64",
+      "200D SMA": "593.31",
+      "Volume": "2.53M",
       "3M Avg Volume": "2.65M",
-      "Price/Book": "23.02",
+      "Price/Book": "22.46",
       "Dividend Yield": "0.67%",
       "Sector": "Industrials",
-      "Open": "913.50",
-      "High": "930.47",
-      "Low": "905.38",
-      "Close": "926.93",
-      "RS vs Sector ETF": "+18.67%"
+      "Open": "888.10",
+      "High": "908.90",
+      "Low": "888.10",
+      "Close": "904.59",
+      "RS vs Sector ETF": "+20.92%"
     },
     "fundamentals": {
-      "market_cap": "426.94B",
-      "trailing_pe": "46.16",
+      "market_cap": "416.65B",
+      "trailing_pe": "45.05",
       "eps": "20.08",
-      "forward_eps": "29.31",
+      "forward_eps": "29.20",
       "earnings_growth": "+30.20% YoY",
-      "price_to_book": "23.02",
+      "price_to_book": "22.46",
       "dividend_yield": "0.67%",
-      "volume": "2627462",
+      "volume": "2.53M",
       "avg_volume_3m": "2.65M",
-      "52w_high": "930.47",
+      "52w_high": "908.89",
       "52w_low": "318.11",
       "short_float_pct": "1.64%",
       "short_ratio": "3.27일",
@@ -113,18 +113,18 @@
       "analyst_recommendation": "Buy",
       "analyst_count": "26명",
       "held_by_insiders": "0.22%",
-      "held_by_institutions": "73.74%",
+      "held_by_institutions": "73.68%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
-      "forward_eps": "29.08 USD/share",
-      "ttm_eps": "20.11 USD/share",
-      "forward_vs_ttm": "+44.60%",
+      "forward_eps": "29.20 USD/share",
+      "ttm_eps": "20.08 USD/share",
+      "forward_vs_ttm": "+45.42%",
       "earnings_growth": "+30.20% YoY",
       "latest_estimated_eps": "4.64 USD/share",
       "latest_surprise_pct": "+0.19%",
       "latest_beat_miss": "beat",
-      "next_earnings_event": "N/A"
+      "next_earnings_event": "2026-08-04 실적 발표 (D-90 · BMO)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 3,
@@ -143,15 +143,15 @@
       "pattern_note": "최근 3개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "27.41",
-      "atr_percent": "2.96%",
-      "relative_volume": "0.99x",
-      "gap_percent": "+0.98%",
-      "price_vs_sma50": "+22.67%",
-      "price_vs_sma200": "+55.59%",
+      "atr_14d": "26.87",
+      "atr_percent": "2.97%",
+      "relative_volume": "0.95x",
+      "gap_percent": "+1.52%",
+      "price_vs_sma50": "+20.19%",
+      "price_vs_sma200": "+52.46%",
       "week52_position": "99%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+21.31%"
+      "rs_vs_sector_etf": "+20.92%"
     },
     "quarterly_financials": [
       {
@@ -195,36 +195,59 @@
         "beat_miss": "in-line"
       }
     ],
-    "upcoming_events": [],
+    "upcoming_events": [
+      {
+        "type": "dividend",
+        "label": "배당 지급일",
+        "date": "2026-05-19",
+        "days_until": "13",
+        "timing": ""
+      },
+      {
+        "type": "earnings",
+        "label": "실적 발표",
+        "date": "2026-08-04",
+        "days_until": "90",
+        "timing": "BMO"
+      }
+    ],
     "news_tone": {
-      "label": "매우 긍정",
-      "confidence": 4,
-      "reasoning": "실적 서프라이즈와 AI 전력 수요가 핵심 상방 촉매다. 최근 주가도 강세이며 기술적으로도 과열권이지만 뉴스 흐름은 확실히 우호적이다."
+      "label": "긍정",
+      "confidence": 2,
+      "reasoning": "실적 서프라이즈와 주가 급등, 목표가 상향이 핵심 촉매다. 공시와 주주총회 문서는 중립적이지만 영향은 제한적이다."
     },
     "trade_frame": {
-      "entry_price": "현재가 889.67 또는 눌림 시 863.08 USD",
-      "stop_loss": "SMA50 750.34 USD",
-      "target_1": "929.55 USD (1.5×ATR)",
-      "target_2": "애널리스트 목표 865.83 USD",
+      "entry_price": "현재가 904.59 또는 눌림 시 877.72 USD",
+      "stop_loss": "SMA50 752.64 USD",
+      "target_1": "944.90 USD (1.5×ATR)",
+      "target_2": "애널리스트 목표 882.94 USD",
       "risk_reward_ratio": "0.3R",
-      "position_size_note": "$62,552 계좌 1% 리스크 기준 약 23주 (ATR $26.59 기반)",
-      "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-      "base_scenario": "889.67 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+      "position_size_note": "$63,302 계좌 1% 리스크 기준 약 23주 (ATR $26.87 기반)",
+      "bull_scenario": "강한 모멘텀이 유지되면 최근 고점 영역 재돌파 시도가 나올 수 있습니다.",
+      "base_scenario": "904.59 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-      "invalidation_price": "50일 이동평균선인 750.34 USD 아래로 밀리면 약세 시나리오 확인",
-      "watch_period": "향후 5거래일"
+      "invalidation_price": "50일 이동평균선인 752.64 USD 아래로 밀리면 약세 시나리오 확인",
+      "watch_period": "2026-05-19 배당 지급일 전까지"
     },
     "options_summary": {
       "expiry": "2026-05-08",
-      "atm_call_iv": "40.4%",
-      "atm_put_iv": "36.0%",
-      "put_call_ratio": "1.79x",
-      "iv_percentile_30d": "3th",
+      "atm_call_iv": "0.2%",
+      "atm_put_iv": "0.0%",
+      "iv_percentile_30d": "36th",
+      "put_call_ratio": "N/A",
       "tone": "neutral",
-      "unusual_activity": "PUT $800, vol 104, OI 대비 151% ; PUT $960, vol 29, OI 대비 100% ; PUT $890, vol 31, OI 대비 103%",
+      "unusual_activity": "PUT $960, vol 29, OI 대비 100% ; PUT $890, vol 31, OI 대비 103% ; PUT $1340, vol 8, OI 대비 100%",
       "oi_change": "N/A"
     },
     "signal_history": [
+      {
+        "date": "2026-05-01",
+        "direction": "bull",
+        "llm_direction": "bull",
+        "catalyst": "기타 공시",
+        "return_5d": "N/A",
+        "note": "889.67 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
       {
         "date": "2026-04-29",
         "direction": "bull",
@@ -254,22 +277,14 @@
         "direction": "bull",
         "llm_direction": "bull",
         "catalyst": "기타 공시",
-        "return_5d": "N/A",
+        "return_5d": "+7.09%",
         "note": "830.79 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-23",
-        "direction": "bull",
-        "llm_direction": "neutral",
-        "catalyst": "기타 공시",
-        "return_5d": "N/A",
-        "note": "835.24 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
       }
     ],
     "sector_comparison": {
       "summary": "Industrials 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "44.24",
+        "company": "45.05",
         "peer_average": "25.52x",
         "difference": null
       },
@@ -279,9 +294,9 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "+24.28%",
+        "company": "+25.66%",
         "peer_average": "7.26%",
-        "difference": "+17.02"
+        "difference": "+18.40"
       }
     },
     "peer_rank": {
@@ -293,8 +308,8 @@
     "valuation_score": {
       "score": "5/10",
       "factors": [
-        "PER 44.2x",
-        "목표가 대비 업사이드 -2.7%"
+        "PER 45.0x",
+        "목표가 대비 업사이드 -2.4%"
       ],
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
@@ -302,10 +317,10 @@
       "status": "agreed",
       "economy_action": "watch",
       "economy_conviction": 64,
-      "economy_reason": "섹터 대비 +18.7% / SMA50·SMA200 위 / 최근 시그널 승률 100% (10/10) / 리스크온 환경의 중립 업종",
+      "economy_reason": "섹터 대비 +20.9% / SMA50·SMA200 위 / 최근 시그널 승률 100% (12/12) / 리스크온 환경의 중립 업종",
       "deep_action": "watch",
       "deep_conviction": 62,
-      "deep_reason": "섹터 대비 +18.7% / SMA50·SMA200 위 / 최근 시그널 승률 100% (10/10) / 리스크온 환경의 중립 업종",
+      "deep_reason": "섹터 대비 +20.9% / SMA50·SMA200 위 / 최근 시그널 승률 100% (12/12) / 리스크온 환경의 중립 업종",
       "tie_break_action": null,
       "tie_break_conviction": null,
       "tie_break_reason": "",
@@ -331,7 +346,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "Q1 2026 EPS 5.47이 컨센서스 4.64를 상회했고, 최근 4개 분기 중 3개가 beat로 실적 모멘텀은 확인되지만, PER 44.2x와 30일 +24.28% 상승으로 기대가 많이 선반영됐습니다. AI 전력 수요가 강한 상방 촉매이지만 현재는 52주 고점 905.00달러의 97% 구간까지 올라와 있어, 추가 업사이드가 실적으로 더 검증될 때까지는 추격매수보다 관찰이 적절합니다.",
+          "summary": "Q1 2026 EPS가 5.47달러로 예상치 4.64달러를 상회했고, 최근 3개 분기 연속 beat로 이익 모멘텀은 분명하지만 현재가 904.59달러는 52주 고점 908.89달러의 99% 수준이라 상승 여력 대비 추격 부담이 큽니다. AI 전력 수요 수혜와 2026-08-04 실적까지 촉매는 남아 있으나, RSI 73.8과 30일 +25.66% 급등을 감안하면 지금은 실적 가속 확인 전 대기하는 것이 적절합니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -339,11 +354,11 @@
           "role": "value_skeptic",
           "round": "economy",
           "profile": "economy",
-          "stance": "watch",
-          "action": "watch",
+          "stance": "reduce",
+          "action": "avoid",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "PER 44.2x와 P/B 19.42x는 EPS 성장 +30.20%를 감안해도 이미 높은 기대를 선반영했고, 애널리스트 목표가 865.83달러도 현재가 889.67달러보다 -2.7% 낮아 업사이드가 사실상 막혀 있습니다. RSI(14) 75.1, 52주 고점 905.00달러의 97% 구간, 그리고 2026-05-08 만기 전 PCR 1.56x와 800/890/960 풋 수요는 단기 조정 리스크가 더 크다는 신호라 현 수준 추격은 부담스럽습니다.",
+          "summary": "CAT은 현재가 904.59달러가 목표가 882.94달러를 2.4% 상회하고, PER 45.05배·P/B 22.46배로 이미 밸류에이션이 과열돼 있습니다. 30일 +25.66% 급등 뒤 RSI 73.8, 52주 고점 908.89달러 근처(99%)라 업사이드보다 52주 고점 이탈 시 되돌림 리스크가 더 커 보여 비중 축소가 맞습니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -355,7 +370,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "현재가 889.67은 52주 고점 905.00의 97% 구간이고 RSI(14) 75.1로 과열이라 886.83~905.00 저항에서 밀리면 먼저 조정 시나리오를 봐야 합니다. 핵심 무효화는 SMA50 750.34 이탈이며, 그 전까지는 추세 훼손보다는 고점권 횡보/되돌림 리스크로 해석합니다.",
+          "summary": "현재가 904.59는 52주 고점 908.89에 매우 근접하고 RSI(14) 73.8로 과열 구간이라, 908.89 돌파 실패 시 단기 되돌림이 먼저 열립니다. 하방 핵심 무효화는 SMA50 752.64 이탈이며, 그 전에는 890와 882.94, 877.72를 잇는 눌림목 방어가 깨질 때 추세 훼손이 가속될 수 있습니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -363,11 +378,11 @@
           "role": "macro_strategist",
           "round": "economy",
           "profile": "economy",
-          "stance": "reduce",
-          "action": "avoid",
+          "stance": "watch",
+          "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "CAT은 50D SMA 750.34와 200D SMA 591.03을 각각 +18.57%, +50.53% 상회하지만, 52W High 905.00 대비 97% 구간이라 금리 하락·리스크온이 지속되지 않으면 멀티플 압축에 취약합니다. Industrials 피어 평균 P/E 25.52x 대비 44.24x, 30일 +24.28%로 과열이어서 달러 강세·유가 재상승·장기금리 반등이 겹치면 상대강도(+18.67%)가 빠르게 훼손될 수 있습니다.",
+          "summary": "CAT은 200D SMA 593.31, 50D SMA 752.64를 크게 상회하며 52W High 908.89 바로 아래라 리스크온·산업재 로테이션의 수혜가 이미 가격에 반영된 상태입니다. 다만 Trailing P/E 45.05가 섹터 평균 25.52x를 크게 웃돌아 금리 재상승이나 달러 강세로 멀티플 압박이 오면 상대강도(+20.92% vs sector) 유지가 흔들릴 수 있어, 유가·금리·경기민감 섹터 선호가 계속되는지 확인이 필요합니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -377,17 +392,17 @@
           "profile": "economy",
           "stance": "watch",
           "action": "watch",
-          "confidence": 68.0,
+          "confidence": 67.0,
           "strong_objection": false,
-          "summary": "대부분 의견이 watch로 수렴했고, 현재가 889.67달러는 52주 고점 905.00달러의 97% 구간이며 RSI(14) 75.1로 과열 신호가 분명합니다. 다만 RS 대비 섹터 +18.67%, 50일선 750.34달러 및 200일선 591.03달러 위, EPS 성장 +30.20%와 애널리스트 목표가 865.83달러가 펀더멘털을 지지하므로 즉시 축소보다 5거래일 내 886.83~905.00달러 저항과 750.34달러 이탈 여부를 확인하는 대기 판단이 적절합니다. 반대 근거는 PER 44.2x와 P/B 19.42x로 밸류에이션 여유가 작고, 목표가 865.83달러가 현재가보다 -2.7% 낮아 업사이드가 제한적이라는 점입니다.",
+          "summary": "CAT는 현재가 904.59달러로 52주 고점 908.89달러의 99%에 있고, 30일 +25.66% 상승과 RSI 73.8이 겹쳐 추격매수보다는 관찰이 맞습니다. 다만 EPS 5.47달러가 예상 4.64달러를 상회했고 연속 실적 서프라이즈와 AI 전력 수요 수혜는 긍정적이지만, PER 45.05배와 P/B 22.46배는 섹터 평균 PER 25.52배 대비 부담이 커 상승여력보다 변동성 관리가 우선입니다. 반대 근거는 50일선 752.64달러 및 200일선 593.31달러 위에 있어 추세 자체는 강하다는 점입니다.",
           "valid": true,
           "invalid_reason": ""
         }
       }
     },
     "period_changes": {
-      "7d": "+14.43%",
-      "30d": "+28.76%"
+      "7d": "+10.60%",
+      "30d": "+26.36%"
     },
     "sec_filing_tags": [
       "기타 공시",
@@ -419,9 +434,9 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 59,
-      "reason": "섹터 대비 +18.7% / SMA50·SMA200 위 / 최근 시그널 승률 100% (11/11) / 리스크온 환경의 중립 업종 / 데이터 품질과 모델 판단 차이를 반영해 66점에서 59점으로 보수 조정",
-      "valid_until": "2026-05-08",
+      "conviction": 63,
+      "reason": "섹터 대비 +20.9% / SMA50·SMA200 위 / 최근 시그널 승률 100% (13/13) / 리스크온 환경의 중립 업종",
+      "valid_until": "2026-05-12",
       "factors": {
         "catalyst_recency": -5.0,
         "earnings_pattern": 8.0,
@@ -431,38 +446,54 @@
         "momentum": 17.0,
         "news_tone": 0.0,
         "peer_rank": 8.0,
-        "policy_tailwind": 0.0,
+        "policy_tailwind": 1.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 10.0,
         "signal_track_record": 15.0,
         "valuation": 10.0
       },
       "factor_reasoning": {
-        "catalyst_recency": "가까운 촉매가 없어 감점",
+        "catalyst_recency": "실적 D-90",
         "earnings_pattern": "연속 상회 3분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.1%",
-        "fundamentals": "선행 EPS 성장 +44.6% / 기관 보유 73.7%",
+        "fundamentals": "선행 EPS 성장 +45.4% / 기관 보유 73.7%",
         "macro_event": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
         "macro_regime": "risk_on 레짐에서 industrials 섹터 편향 +4",
-        "momentum": "섹터 대비 +18.7% / SMA50·SMA200 위",
+        "momentum": "섹터 대비 +20.9% / SMA50·SMA200 위",
         "news_tone": "뉴스 톤이 중립",
         "peer_rank": "섹터 peer 대비 저평가이면서 상대 모멘텀이 강합니다",
-        "policy_tailwind": "정책 임팩트 -0.05 — CAT는 heavy machinery 제조업체로 steel tariff 노출이 명시돼 있다. 철강·알루미늄 232관세 대상 확대는 부품·완제품 원가 상승과 공급망 부담으로 직접 부정적이다.",
+        "policy_tailwind": "정책 임팩트 +0.07 — 중장비는 철강·알루미늄 투입 비중이 높아 232관세 확대가 원가에 직접 부담이다. CAT는 'tariff_steel' 노출이 명시돼 있어 직접 부정적이다.",
         "portfolio_risk": "현재 포트폴리오 집중 리스크 감점 요인은 크지 않음",
         "regime_adjustment": "리스크온 환경의 중립 업종",
-        "signal_track_record": "최근 시그널 승률 100% (11/11)",
+        "signal_track_record": "최근 시그널 승률 100% (13/13)",
         "valuation": "대체로 적정 가치 범위에 위치합니다."
       },
       "ensemble_agreement": "agree",
       "final_consensus": "agree",
       "raw_conviction": 66,
       "confidence_meta": {
-        "data_quality": 0.58,
+        "data_quality": 0.9705,
         "evidence_coverage": 1.0,
         "evidence_consistency": 0.54,
         "model_agreement": 0.9,
-        "confidence_gate": 0.725
+        "confidence_gate": 0.8812,
+        "data_quality_score": 0.9705,
+        "data_quality_components": {
+          "analyzer_validation": 1.0,
+          "price_freshness": 1.0,
+          "news_coverage": 1.0,
+          "missing_fundamentals": 0.8333,
+          "source_diversity": 1.0,
+          "fallback_depth": 1.0,
+          "macro_context_age": 0.91
+        },
+        "confidence_penalty": 0.0295,
+        "data_quality_gate": {
+          "mode": "shadow",
+          "threshold": 0.6,
+          "max_action_if_enforced": "watch",
+          "would_cap_action": false
+        }
       }
     }
-  },
-  "intraday_refreshed_at": "2026-05-06T21:05:11"
+  }
 }

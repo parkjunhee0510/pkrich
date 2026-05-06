@@ -1,5 +1,6 @@
 ﻿import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { ActionChangeFeed } from '../components/ActionChangeFeed'
 import { ErrorState } from '../components/ErrorState'
 import { MacroContextBar } from '../components/MacroContextBar'
 import { MacroNarrativePanel } from '../components/MacroNarrativePanel'
@@ -13,8 +14,11 @@ import {
   TodaySetupBoard,
 } from '../components/TraderDashboardPanels'
 import { WatchlistTable } from '../components/WatchlistTable'
+import { TodayDecisionStrip } from '../components/TodayDecisionStrip'
 import { useDashboardData } from '../hooks/useDashboardData'
-import type { TickerAnalysisData, WeeklyReportSection } from '../types'
+import type { DailyEntry, TickerAnalysisData, WeeklyReportSection } from '../types'
+import { buildActionChangeFeed, findPreviousValidDay } from '../utils/actionChangeFeed'
+import { buildTodayDecisionStrip } from '../utils/todayDecisionStrip'
 import { buildMarketMoodSummary, deriveSectorMoodInsights } from '../utils/sectorMood'
 import {
   buildCatalystFeedSections,
@@ -55,6 +59,8 @@ type WatchlistSortMode = 'score' | 'earnings' | 'catalyst'
 type DensityMode = 'compact' | 'comfortable' | 'focus'
 
 const PRESET_ACCOUNT_SIZES = [10000, 50000, 100000]
+const EMPTY_DAYS: DailyEntry[] = []
+const EMPTY_DAY: DailyEntry = { date: '', market_overview: [], tickers: [] }
 
 export function Dashboard() {
   const { data, loading, refreshing, error, refresh } = useDashboardData({ pollIntervalMs: 60000 })
@@ -83,10 +89,19 @@ export function Dashboard() {
     strongBuyUpside: false,
   })
 
-  const days = data?.days ?? []
+  const days = data?.days ?? EMPTY_DAYS
   const rawIdx = selectedIdx ?? Math.max(days.length - 1, 0)
   const idx = days.length > 0 ? Math.min(rawIdx, days.length - 1) : 0
-  const day = days[idx] ?? { date: '', market_overview: [], tickers: [] }
+  const day = days[idx] ?? EMPTY_DAY
+  const previousDay = useMemo(() => findPreviousValidDay(days, idx), [days, idx])
+  const actionChangeFeed = useMemo(
+    () => buildActionChangeFeed(day, previousDay),
+    [day, previousDay],
+  )
+  const todayDecisionStrip = useMemo(
+    () => buildTodayDecisionStrip(day, previousDay, { feed: actionChangeFeed }),
+    [day, previousDay, actionChangeFeed],
+  )
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
   const sectors = useMemo(
@@ -345,6 +360,10 @@ export function Dashboard() {
       </div>
 
       {refreshing && <p className="dashboard-refresh-note">최신 output을 다시 불러오는 중입니다.</p>}
+
+      <TodayDecisionStrip strip={todayDecisionStrip} />
+
+      <ActionChangeFeed feed={actionChangeFeed} />
 
       <TodaySetupBoard cards={topSetupCards} />
 

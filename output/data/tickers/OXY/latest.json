@@ -1,25 +1,25 @@
 {
   "schema_version": 1,
-  "date": "2026-05-06",
+  "date": "2026-05-05",
   "ticker": "OXY",
   "payload": {
     "ticker": "OXY",
     "name": "Occidental Petroleum Corporation",
-    "date": "2026-05-01",
-    "summary": "현재 주가는 58.71달러로 30일 기준 -6.77% 하락했고, SMA50 위이지만 섹터 ETF 대비 RS는 -6.09%입니다. 다음 촉매는 2026-05-05 실적 발표(D-1)이며, 거시적으로는 호르무즈 해협 차질과 OPEC 공급 충격이 유가와 정유·E&P 심리를 자극할 수 있습니다.",
+    "date": "2026-05-05",
+    "summary": "주가는 SMA50을 2.56% 상회하지만 30일간 -5.75%로 약세이며, 옵션 흐름도 PCR 3.07로 방어적입니다. 다음 촉매는 2026-05-06 실적 발표와 유가 방향이며, 호르무즈 해협 차질이나 OPEC 공급 충격은 에너지 가격에 직접적인 영향을 줄 수 있습니다.",
     "key_news": [
-      "Exxon begins commercial CCS project with CF industries in Louisiana - Reuters",
-      "US Energy Department restores funding to carbon removal projects - Reuters",
-      "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-      "[주주총회] OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
-      "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance"
+      "탄소 제거 프로젝트 지원금 복원",
+      "10-Q 분기 실적 관련 보고서 제출",
+      "8-K 중요 사항 공시 제출",
+      "상향된 분석가 의견과 유가 상승 순풍 후 밸류에이션 점검",
+      "1년 랠리 후 과도한 상승 여부 제기"
     ],
     "key_news_source_titles": [
+      "[실적] OCCIDENTAL PETROLEUM CORP /DE/, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
       "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-      "[주주총회] OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
       "US Energy Department restores funding to carbon removal projects - Reuters",
-      "Exxon begins commercial CCS project with CF industries in Louisiana - Reuters",
-      "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance"
+      "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance",
+      "Has Occidental Petroleum (OXY) Run Too Far After Its 78% One Year Rally? - Yahoo Finance"
     ],
     "key_news_reference_indices": [
       0,
@@ -30,16 +30,16 @@
     ],
     "news_references": [
       {
-        "title": "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
+        "title": "[실적] OCCIDENTAL PETROLEUM CORP /DE/, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
         "source": "SEC EDGAR",
-        "published_at": "2026-04-10",
-        "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm"
+        "published_at": "2026-05-05",
+        "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026030584/oxy-20260331.htm"
       },
       {
-        "title": "[주주총회] OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
+        "title": "[기타 공시] OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
         "source": "SEC EDGAR",
-        "published_at": "2026-03-19",
-        "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026019816/oxy-20260319.htm"
+        "published_at": "2026-05-05",
+        "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026030567/oxy-20260505.htm"
       },
       {
         "title": "US Energy Department restores funding to carbon removal projects - Reuters",
@@ -48,63 +48,63 @@
         "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNRURIdy1QSmwxUXpsQ0R2cUJjWmJ3LWtwTzY5REswaWxSdDRHaF9Vc3VKWDYybHIzMVc2eFByQ3RFdHhyM3I1R1k1TmowNkk3Vlo4bHZjeHo3ZkhHZEgtcUJsWFpCeThmeVdhc1RUMlBzT3MwdDNTOExQLXRWNUFQOVd5RjA5WktCOEhwcldFa1dDczkyY0NqWkxmbC1XRXd1YWtNQUtUT0VsYTJaejEwNHNIY3k?oc=5"
       },
       {
-        "title": "Exxon begins commercial CCS project with CF industries in Louisiana - Reuters",
-        "source": "Reuters",
-        "published_at": "2026-01-26",
-        "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNMWE3VFJxekNHMWozR3RLV2YyX1Z1MEdNemtkNVpBSjJvRjBZd2p6N1Vwd0lCRmtyaU1kcnpWNF81MGUya3g1cjRna1h5YUFrX1ZDOHdIZHVOVW1XeWV6REIxUWgwT0NRU2hZd3dHLWpFajVXbi1NckJTWTdJZENHdWU5ZG5uOHA4eEt5TkFwRjk2S01xSHl5X052djR1QnFEX0p2aFJ0Tlc5d3BpQmpMbTFHdWpSNU5uODBOT2lRMkxKZEN1dWpEQzlB?oc=5"
-      },
-      {
         "title": "A Look At Occidental Petroleum (OXY) Valuation After Analyst Upgrades And Higher Oil Price Tailwinds - Yahoo Finance",
         "source": "Yahoo Finance",
         "published_at": "2026-03-17",
         "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPeFVBMmNBRWNMb2NINkY4X0JkbnREamV1Tjg5N3VjcVo5akRKVk9xaV82cmJkY211SkoxQVVndTZZczIzV2xBdURqcjJKUnpsSVA0LUJRTkRUT1Q2bC1UY3hMV1NheHJ3U2tlRUh3YXNpUUJ4NFA3UWYwb3VGTVB1SUp2Zm1aT0F6QlZPd1lB?oc=5"
+      },
+      {
+        "title": "Has Occidental Petroleum (OXY) Run Too Far After Its 78% One Year Rally? - Yahoo Finance",
+        "source": "Yahoo Finance",
+        "published_at": "2026-04-07",
+        "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxNYjZXVTlIby12QWdfQ3hxM09ua2E0bWNyTGZSc2t3QlRIOTBMaEt1bFRIYU81WThTVC1ZYUtwWi1vanozZ3llUUJuZk4xa0dIbjJHWWVLRkxmbkFjb19NUk93N0ltbkZadkFxT0xkMDgzUUZIdk5GV0VkODBjaXJYdWxfcmJtS1BmSFdnQk9BZjZ6MGZrS3l4OVJMUy1xdw?oc=5"
       }
     ],
     "financial_highlights": [
-      "PER 43.5x, peer PER 하위 0%",
-      "30D -6.77% | SMA50 대비 +1.76% | SMA200 대비 +24.53%",
-      "Forward EPS 3.58 | TTM EPS 1.35 | EPS 성장 +78.12% YoY",
-      "RS vs Sector ETF -6.09%",
-      "Short Float 0.02%"
+      "PER 44.0x; PER 0퍼센타일",
+      "Forward EPS 3.64",
+      "TTM EPS 1.35 / EPS 성장 +78.12% YoY",
+      "PCR 3.07 (bearish)",
+      "RS vs Sector ETF -5.36%"
     ],
     "risks_or_watchpoints": [
-      "2026-05-05 실적 발표(D-1) 전까지 현재가가 57.69 USD(SMA50) 아래로 밀리면 약세 시나리오 확인.",
-      "현재가가 61.59 USD(1.5×ATR) 또는 63.88 USD(애널리스트 목표가)를 돌파하지 못하고 58.71 USD 부근에서 재차 밀리면 반등 실패 리스크.",
-      "2026-05-08 만기 옵션에서 PUT $62, vol 271, OI 대비 417% 및 PUT $58, vol 303, OI 대비 142% 같은 풋 우위 흐름이 유지되면 하방 변동성 확대 가능성.",
-      "RS vs Sector ETF가 -6.09%인 상태가 지속되거나 악화되면 업종 대비 상대강도 부진 리스크."
+      "종가가 57.86 USD(SMA50) 아래로 내려가면 약세 시나리오 확인",
+      "2026-05-06 실적 발표 전후로 PCR 3.07의 높은 풋 우위를 점검",
+      "2026-05-08 만기 옵션의 PUT $62, PUT $58, PUT $85 이상거래 지속 여부 확인",
+      "30D 수익률 -5.75%가 개선되지 않으면 섹터 대비 약세 지속 점검"
     ],
-    "signal_or_takeaway": "매수 관찰 — 2026-05-05 실적 D-1과 유가·정유 심리 자극 가능성, 다만 SMA50 이탈 시 약세 전환 위험 | 진입 트리거 61.59 상향 돌파 | 목표 63.88/67.45달러 | 손절 57.69달러",
+    "signal_or_takeaway": "중립 경계 — 실적과 유가 방향성 확인 대기 | 진입 트리거 59.34 지지 확인 | 목표 62.06/64.33달러 | 손절 57.86달러",
     "data_snapshot": {
-      "Price": "55.12 USD",
-      "Daily Change": "-7.11%",
-      "Market Cap": "54.66B",
-      "Trailing P/E": "74.49",
-      "EPS": "0.74",
+      "Price": "59.34 USD",
+      "Daily Change": "-1.54%",
+      "Market Cap": "58.85B",
+      "Trailing P/E": "43.96",
+      "EPS": "1.35",
       "52W High": "67.45",
       "52W Low": "38.72",
-      "50D SMA": "58.00",
-      "200D SMA": "47.31",
-      "Volume": "19781930",
-      "3M Avg Volume": "16.99M",
-      "Price/Book": "1.96",
+      "50D SMA": "57.86",
+      "200D SMA": "47.23",
+      "Volume": "9.14M",
+      "3M Avg Volume": "17.12M",
+      "Price/Book": "2.11",
       "Dividend Yield": "1.75%",
       "Sector": "Energy",
-      "Open": "55.52",
-      "High": "56.69",
-      "Low": "54.74",
-      "Close": "55.12",
-      "RS vs Sector ETF": "-6.09%"
+      "Open": "59.63",
+      "High": "60.03",
+      "Low": "59.17",
+      "Close": "59.34",
+      "RS vs Sector ETF": "-5.36%"
     },
     "fundamentals": {
-      "market_cap": "54.66B",
-      "trailing_pe": "74.49",
-      "eps": "0.74",
-      "forward_eps": "3.63",
+      "market_cap": "58.85B",
+      "trailing_pe": "43.96",
+      "eps": "1.35",
+      "forward_eps": "3.64",
       "earnings_growth": "+78.12% YoY",
-      "price_to_book": "1.96",
+      "price_to_book": "2.11",
       "dividend_yield": "1.75%",
-      "volume": "19781930",
-      "avg_volume_3m": "16.99M",
+      "volume": "9.14M",
+      "avg_volume_3m": "17.12M",
       "52w_high": "67.45",
       "52w_low": "38.72",
       "short_float_pct": "0.02%",
@@ -117,14 +117,14 @@
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
-      "forward_eps": "3.58 USD/share",
+      "forward_eps": "3.64 USD/share",
       "ttm_eps": "1.35 USD/share",
-      "forward_vs_ttm": "+165.19%",
+      "forward_vs_ttm": "+169.63%",
       "earnings_growth": "+78.12% YoY",
       "latest_estimated_eps": "0.18 USD/share",
       "latest_surprise_pct": "+0.77%",
       "latest_beat_miss": "beat",
-      "next_earnings_event": "2026-05-05 실적 발표 (D-1 · AMC)"
+      "next_earnings_event": "2026-05-06 실적 발표 (D-0)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 4,
@@ -143,15 +143,15 @@
       "pattern_note": "최근 4개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.3%"
     },
     "price_action": {
-      "atr_14d": "2.04",
-      "atr_percent": "3.69%",
-      "relative_volume": "1.16x",
-      "gap_percent": "-6.44%",
-      "price_vs_sma50": "-4.96%",
-      "price_vs_sma200": "+16.52%",
-      "week52_position": "57%",
+      "atr_14d": "1.81",
+      "atr_percent": "3.05%",
+      "relative_volume": "0.53x",
+      "gap_percent": "-1.07%",
+      "price_vs_sma50": "+2.56%",
+      "price_vs_sma200": "+25.65%",
+      "week52_position": "72%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-7.96%"
+      "rs_vs_sector_etf": "-5.36%"
     },
     "quarterly_financials": [
       {
@@ -199,40 +199,48 @@
       {
         "type": "earnings",
         "label": "실적 발표",
-        "date": "2026-05-05",
-        "days_until": "1",
-        "timing": "AMC"
+        "date": "2026-05-06",
+        "days_until": "0",
+        "timing": ""
       }
     ],
     "news_tone": {
-      "label": "bullish",
-      "confidence": 1,
-      "reasoning": "탄소 포집 프로젝트와 정책 자금 복원, 유가 호재 관련 보도가 있어 전반적으로 긍정적입니다."
+      "label": "neutral",
+      "confidence": 2,
+      "reasoning": "지원금 복원과 유가 순풍이 있으나, 랠리 부담과 밸류에이션 논쟁이 함께 있습니다."
     },
     "trade_frame": {
-      "entry_price": "현재가 58.71 또는 눌림 시 56.79 USD",
-      "stop_loss": "SMA50 57.69 USD",
-      "target_1": "61.59 USD (1.5×ATR)",
-      "target_2": "애널리스트 목표 63.88 USD",
-      "risk_reward_ratio": "2.8R",
-      "position_size_note": "$62,552 계좌 1% 리스크 기준 약 325주 (ATR $1.92 기반)",
-      "bull_scenario": "과매도 반등이 나오려면 거래량 동반 반등과 함께 50일선 회복이 필요합니다.",
-      "base_scenario": "58.71 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다.",
+      "entry_price": "현재가 59.34 또는 눌림 시 57.53 USD",
+      "stop_loss": "SMA50 57.86 USD",
+      "target_1": "62.06 USD (1.5×ATR)",
+      "target_2": "애널리스트 목표 64.33 USD",
+      "risk_reward_ratio": "1.8R",
+      "position_size_note": "$63,302 계좌 1% 리스크 기준 약 349주 (ATR $1.81 기반)",
+      "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
+      "base_scenario": "59.34 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-      "invalidation_price": "50일 이동평균선인 57.69 USD 아래로 밀리면 약세 시나리오 확인",
-      "watch_period": "2026-05-05 실적 발표 전까지"
+      "invalidation_price": "50일 이동평균선인 57.86 USD 아래로 밀리면 약세 시나리오 확인",
+      "watch_period": "2026-05-06 실적 발표 전까지"
     },
     "options_summary": {
       "expiry": "2026-05-08",
-      "atm_call_iv": "42.6%",
-      "atm_put_iv": "44.6%",
-      "put_call_ratio": "0.19x",
-      "iv_percentile_30d": "6th",
+      "atm_call_iv": "0.0%",
+      "atm_put_iv": "1.6%",
+      "iv_percentile_30d": "47th",
+      "put_call_ratio": "3.07",
       "tone": "bearish",
-      "unusual_activity": "PUT $62, vol 271, OI 대비 417% ; PUT $58, vol 303, OI 대비 142% ; CALL $60, vol 172, OI 대비 31%",
+      "unusual_activity": "PUT $62, vol 271, OI 대비 417% ; PUT $58, vol 303, OI 대비 142% ; PUT $85, vol 83, OI 대비 66%",
       "oi_change": "N/A"
     },
     "signal_history": [
+      {
+        "date": "2026-05-01",
+        "direction": "bull",
+        "llm_direction": "bull",
+        "catalyst": "기타 공시",
+        "return_5d": "N/A",
+        "note": "58.71 USD 인근에서 반등 시도와 재차 흔들림이 반복될 가능성이 큽니다."
+      },
       {
         "date": "2026-04-29",
         "direction": "bull",
@@ -262,22 +270,14 @@
         "direction": "bull",
         "llm_direction": "bull",
         "catalyst": "기타 공시",
-        "return_5d": "N/A",
+        "return_5d": "+2.78%",
         "note": "57.12 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-23",
-        "direction": "neutral",
-        "llm_direction": "neutral",
-        "catalyst": "기타 공시",
-        "return_5d": "N/A",
-        "note": "57.83 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
       }
     ],
     "sector_comparison": {
       "summary": "Energy 피어 3개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "43.49",
+        "company": "43.96",
         "peer_average": "22.33x",
         "difference": null
       },
@@ -287,9 +287,9 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "-6.77%",
+        "company": "-5.75%",
         "peer_average": "-3.52%",
-        "difference": "-3.25"
+        "difference": "-2.23"
       }
     },
     "peer_rank": {
@@ -302,8 +302,8 @@
     "valuation_score": {
       "score": "5/10",
       "factors": [
-        "PER 43.5x",
-        "목표가 대비 업사이드 +8.8%"
+        "PER 44.0x",
+        "목표가 대비 업사이드 +8.4%"
       ],
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
@@ -328,7 +328,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "EPS는 YoY +78.12%로 가파르게 개선되고 최근 4개 분기 중 3개는 컨센서스 상회했지만, 30D -6.77%에 RS vs Sector ETF -6.09%로 성장 모멘텀은 아직 약합니다. 2026-05-05 AMC 실적이 단기 촉매이긴 하나 PER 43.5x가 peer 대비 상위 0%라서 실적 가속이 확인되기 전까지는 추격 매수보다 대기하는 편이 낫습니다.",
+          "summary": "EPS는 TTM 기준 +78.12% YoY로 개선됐고 최근 4개 분기 중 4번 모두 서프라이즈였지만, 최근 분기 EPS가 0.77→0.26→0.65→-0.07로 변동성이 커 성장 가시성이 아직 불안정합니다. PER 43.96배는 동종 평균 22.33배 대비 높고, 2026-05-06 실적과 유가 방향성이 확인되기 전에는 상방 촉매가 명확하지 않아 대기 판단이 맞습니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -340,7 +340,7 @@
           "action": "avoid",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "PER 43.5x는 peer 하위 0%로, 동종 대비 저평가가 아니라 오히려 고평가 구간입니다. 또한 현재가 58.71달러는 애널리스트 목표가 63.88달러 대비 업사이드가 8.8%뿐인데, 30일 -6.77% 하락과 RS vs Sector ETF -6.09% 부진을 감안하면 기대수익 대비 하방 리스크가 더 큽니다. EPS는 YoY +78.12%로 좋아 보이지만 TTM EPS 1.35 대비 Forward EPS 3.58의 점프는 아직 검증 전이며, P/B 2.09와 2026-05-05 실적(D-1)·2026-05-08 옵션 만기 앞 변동성 확대를 고려하면 이익의 질과 재평가 여력 모두 보수적으로 봐야 합니다.",
+          "summary": "PER 44.0x는 동종업계 하위 0% 수준의 저평가가 아니라 오히려 실적 기대를 과도하게 선반영한 구간으로 보입니다. 목표주가 64.33 USD 대비 현재 업사이드는 8.4%뿐인데, 30일 수익률은 -5.75%로 모멘텀이 약하고 PCR 3.07, RS vs Sector ETF -5.36%까지 감안하면 밸류에이션 대비 하방이 더 큽니다. 또한 TTM EPS 1.35와 Forward EPS 3.64의 괴리가 커서 이익의 질이 실제 현금흐름으로 확인되기 전까지는 추격매수보다 비중 축소가 맞습니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -352,7 +352,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "하방 시나리오는 명확합니다: 57.69(SMA50) 이탈 시 약세 시나리오가 확인되고, 52주 고점 67.45 대비 아직 13% 이상 낮아 반등 여지도 있지만 현재 RS vs Sector ETF가 -6.09%라 상대강도 훼손이 먼저 보입니다. 반대로 58.71 부근을 지키더라도 61.59(1.5×ATR)와 63.88까지 회복하지 못하면 실적 전 재차 밀림 위험이 남아 있어, 2026-05-05 실적 전까지는 관망이 더 적절합니다.",
+          "summary": "현재가는 59.34로 SMA50 57.86 위이지만 52주 고점 67.45 대비 11.9% 낮고, RSI 수치가 없어 과열 확인은 불가하나 30일 수익률 -5.75%와 RS vs Sector ETF -5.36%로 상대강도 약화가 먼저 보입니다. 하방 시나리오는 실적 전후로 57.86(SMA50) 이탈 시이며, 이 경우 52주 저점 38.72 방향의 약세 해석이 가능해지고 50D 복귀 실패가 핵심 thesis break입니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -364,7 +364,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "유가 민감도는 높지만 현재는 50D SMA 57.69 위에 1.76%만 올라 있어 모멘텀이 강하지 않고, 섹터 ETF 대비 RS가 -6.09%라 에너지 강세 레짐의 베타를 충분히 못 따라가고 있습니다. 200D SMA 47.14 대비 +24.53%라 장기 추세는 우호적이지만, 다음 이벤트가 2026-05-05 실적이라 금리·달러·유가 변동이 커질 때 단기 상대강도 훼손 가능성을 감안해 관찰이 맞습니다.",
+          "summary": "Energy 섹터 대비 RS vs Sector ETF가 -5.36%로 약하고, 30일 수익률도 -5.75%로 피어 평균 -3.52%보다 부진해 위험선호 회복 국면에서의 상대강도는 아직 약합니다. 다만 주가가 200D SMA 47.23 대비 +25.65% 위, 50D SMA 57.86 대비 +2.56%라 매크로 충격이 없으면 급락보다 추세 유지 쪽이 우세하지만, 유가·달러·금리 방향이 바뀌면 레버리지된 에너지 베타가 크게 흔들릴 수 있습니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -374,23 +374,34 @@
           "profile": "economy",
           "stance": "watch",
           "action": "watch",
-          "confidence": 0.68,
+          "confidence": 0.84,
           "strong_objection": false,
-          "summary": "전반적으로 2026-05-05 AMC 실적 D-1과 2026-05-08 옵션 만기 전까지는 관망이 적절합니다. 주가는 58.71달러로 SMA50 57.69달러 위이지만 30D -6.77%, RS vs Sector ETF -6.09%로 상대강도가 약하고, PER 43.5x는 peer 22.33x 대비 부담이 큽니다. 다만 EPS 성장률 +78.12%와 200D 대비 +24.53%는 하방만 보는 관점은 아니며, 실적 확인 전까지는 매수/축소 둘 다 서두르기 어렵습니다.",
+          "summary": "2026-05-06 실적 발표가 임박했고 현재 주가 59.34는 SMA50 57.86 대비 +2.56%에 불과해, 57.86 이탈 시 약세 시나리오가 바로 열립니다. 반대로 200D SMA 47.23 대비 +25.65%로 추세 훼손은 아니며, PER 43.96x가 업종 평균 22.33x의 거의 2배라 실적이 3.64 Forward EPS를 실제로 입증하는지 확인 전까지는 추격매수보다 대기 판단이 맞습니다. 다만 30일 수익률 -5.75%와 RS vs Sector ETF -5.36%로 상대강도 둔화가 이미 나타나고 있어, 실적 전후로 변동성 확대 시 하방 리스크 점검이 우선입니다.",
           "valid": true,
           "invalid_reason": ""
         }
       }
     },
     "period_changes": {
-      "7d": "-9.28%",
-      "30d": "-12.45%"
+      "7d": "+1.25%",
+      "30d": "-5.76%"
     },
     "sec_filing_tags": [
-      "기타 공시",
-      "주주총회"
+      "실적",
+      "기타 공시"
     ],
     "sec_filings": [
+      {
+        "tag": "실적",
+        "title": "OCCIDENTAL PETROLEUM CORP /DE/, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
+        "form_type": "10-Q",
+        "item_number": "",
+        "catalyst_type": "hard",
+        "importance_score": 200,
+        "published_at": "2026-05-05",
+        "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026030584/oxy-20260331.htm",
+        "source": "SEC EDGAR"
+      },
       {
         "tag": "기타 공시",
         "title": "OCCIDENTAL PETROLEUM CORP /DE/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
@@ -398,27 +409,16 @@
         "item_number": "",
         "catalyst_type": "medium",
         "importance_score": 120,
-        "published_at": "2026-04-10",
-        "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026024581/oxy-20260410.htm",
-        "source": "SEC EDGAR"
-      },
-      {
-        "tag": "주주총회",
-        "title": "OCCIDENTAL PETROLEUM CORP /DE/, DEF 14A 주주총회 관련 위임장 설명서를 SEC에 제출",
-        "form_type": "DEF 14A",
-        "item_number": "",
-        "catalyst_type": "medium",
-        "importance_score": 100,
-        "published_at": "2026-03-19",
-        "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026019816/oxy-20260319.htm",
+        "published_at": "2026-05-05",
+        "link": "https://www.sec.gov/Archives/edgar/data/797468/000162828026030567/oxy-20260505.htm",
         "source": "SEC EDGAR"
       }
     ],
     "decision": {
       "action": "buy",
-      "conviction": 67,
-      "reason": "실적 D-1 / 최근 시그널 승률 88% (7/8) / 섹터 대비 -6.1% / SMA50·SMA200 위 / 데이터 품질과 모델 판단 차이를 반영해 76점에서 67점으로 보수 조정",
-      "valid_until": "2026-05-05",
+      "conviction": 68,
+      "reason": "실적 D-0 / 하드 촉매 2026-05-05 / 최근 시그널 승률 90% (9/10) / 섹터 대비 -5.4% / SMA50·SMA200 위 / 데이터 품질과 모델 판단 차이를 반영해 73점에서 68점으로 보수 조정",
+      "valid_until": "2026-05-06",
       "factors": {
         "catalyst_recency": 20.0,
         "earnings_pattern": 8.0,
@@ -426,40 +426,56 @@
         "macro_event": 6.0,
         "macro_regime": 2.0,
         "momentum": 9.0,
-        "news_tone": 5.0,
+        "news_tone": 0.0,
         "peer_rank": 0.0,
-        "policy_tailwind": 1.0,
+        "policy_tailwind": -2.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 10.0,
         "signal_track_record": 15.0,
         "valuation": 10.0
       },
       "factor_reasoning": {
-        "catalyst_recency": "실적 D-1",
+        "catalyst_recency": "실적 D-0 / 하드 촉매 2026-05-05",
         "earnings_pattern": "연속 상회 4분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.3%",
-        "fundamentals": "선행 EPS 성장 +165.2%",
+        "fundamentals": "선행 EPS 성장 +169.6%",
         "macro_event": "원유 공급 차질은 에너지 밸류체인에 우호적일 수 있습니다.",
         "macro_regime": "risk_on 레짐에서 energy 섹터 편향 +2",
-        "momentum": "섹터 대비 -6.1% / SMA50·SMA200 위",
-        "news_tone": "강세 뉴스지만 가격 확인은 제한적",
+        "momentum": "섹터 대비 -5.4% / SMA50·SMA200 위",
+        "news_tone": "뉴스 톤이 중립",
         "peer_rank": "peer percentile 기준 특이 우위는 제한적입니다",
-        "policy_tailwind": "정책 임팩트 +0.12 — 직접 LNG 사업 노출은 제한적이나 미국 가스 인프라 확장 기대는 업스트림 에너지 기업 전반에 수요·수송 측면의 간접 우호 요인이다.",
+        "policy_tailwind": "정책 임팩트 -0.28 — OXY는 oil_price 및 spr_release 노출이 명시되어 있다. 전략비축유 1억7200만 배럴 교환 집행 지속은 단기적으로 시장 공급 완화와 유가 하방 압력 요인으로 작용할 수 있어 E&P 중심인 OXY에 직접 부정적이다.",
         "portfolio_risk": "현재 포트폴리오 집중 리스크 감점 요인은 크지 않음",
         "regime_adjustment": "리스크온 환경의 중립 업종",
-        "signal_track_record": "최근 시그널 승률 88% (7/8)",
+        "signal_track_record": "최근 시그널 승률 90% (9/10)",
         "valuation": "대체로 적정 가치 범위에 위치합니다."
       },
       "ensemble_agreement": "single",
       "final_consensus": "single",
-      "raw_conviction": 76,
+      "raw_conviction": 73,
       "confidence_meta": {
-        "data_quality": 0.64,
+        "data_quality": 0.9705,
         "evidence_coverage": 1.0,
-        "evidence_consistency": 0.6,
+        "evidence_consistency": 0.54,
         "model_agreement": 0.6,
-        "confidence_gate": 0.716
+        "confidence_gate": 0.8362,
+        "data_quality_score": 0.9705,
+        "data_quality_components": {
+          "analyzer_validation": 1.0,
+          "price_freshness": 1.0,
+          "news_coverage": 1.0,
+          "missing_fundamentals": 0.8333,
+          "source_diversity": 1.0,
+          "fallback_depth": 1.0,
+          "macro_context_age": 0.91
+        },
+        "confidence_penalty": 0.0295,
+        "data_quality_gate": {
+          "mode": "shadow",
+          "threshold": 0.6,
+          "max_action_if_enforced": "watch",
+          "would_cap_action": false
+        }
       }
     }
-  },
-  "intraday_refreshed_at": "2026-05-06T21:05:11"
+  }
 }

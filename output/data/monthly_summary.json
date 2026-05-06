@@ -1,51 +1,52 @@
 {
+  "schema_version": 1,
   "month": "2026-05",
   "status": "ok",
-  "trading_days": 1,
+  "trading_days": 2,
   "start_date": "2026-05-01",
-  "end_date": "2026-05-01",
+  "end_date": "2026-05-05",
   "top_tickers": [
     {
-      "ticker": "AAPL",
-      "avg_daily_change": "+3.24%"
+      "ticker": "ALAB",
+      "avg_daily_change": "+5.63%"
+    },
+    {
+      "ticker": "MOD",
+      "avg_daily_change": "+4.67%"
     },
     {
       "ticker": "IONQ",
-      "avg_daily_change": "+2.39%"
+      "avg_daily_change": "+3.66%"
     },
     {
-      "ticker": "SPIR",
-      "avg_daily_change": "+1.96%"
+      "ticker": "NXT",
+      "avg_daily_change": "+3.08%"
     },
     {
-      "ticker": "AMD",
-      "avg_daily_change": "+1.71%"
-    },
-    {
-      "ticker": "T",
-      "avg_daily_change": "-0.04%"
+      "ticker": "AAPL",
+      "avg_daily_change": "+2.95%"
     }
   ],
   "top_sectors": [
     {
+      "sector": "Consumer Cyclical",
+      "avg_daily_change": "+4.67%"
+    },
+    {
       "sector": "Technology",
-      "avg_daily_change": "+2.45%"
-    },
-    {
-      "sector": "Industrials",
-      "avg_daily_change": "+0.42%"
-    },
-    {
-      "sector": "Communication Services",
-      "avg_daily_change": "-0.04%"
-    },
-    {
-      "sector": "Consumer Defensive",
-      "avg_daily_change": "-0.23%"
+      "avg_daily_change": "+3.43%"
     },
     {
       "sector": "Utilities",
-      "avg_daily_change": "-1.22%"
+      "avg_daily_change": "+0.58%"
+    },
+    {
+      "sector": "Consumer Defensive",
+      "avg_daily_change": "+0.07%"
+    },
+    {
+      "sector": "Financial Services",
+      "avg_daily_change": "-0.06%"
     }
   ]
 }

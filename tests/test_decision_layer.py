@@ -206,6 +206,27 @@ class TestDecideTicker(unittest.TestCase):
         self.assertEqual(decision.confidence_meta["data_quality_gate"]["mode"], "shadow")
         self.assertTrue(decision.confidence_meta["data_quality_gate"]["would_cap_action"])
 
+    def test_enforced_data_quality_gate_caps_low_quality_buy_to_watch(self) -> None:
+        analysis = _make_analysis()
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "DECISION_CONFIDENCE_SHADOW_MODE": "1",
+                    "DECISION_DATA_QUALITY_GATE_MODE": "enforce",
+                },
+            ),
+            patch("src.decision.decision_layer.evaluate_confidence_meta", return_value=_fake_shadow_meta()),
+            patch("src.decision.scorer.ConvictionScorer.calculate", return_value=84),
+            patch("src.decision.decision_layer.calculate_final_conviction", return_value=84),
+        ):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        self.assertEqual(decision.action, "watch")
+        self.assertEqual(decision.confidence_meta["data_quality_gate"]["mode"], "enforce")
+        self.assertTrue(decision.confidence_meta["data_quality_gate"]["would_cap_action"])
+        self.assertIn("데이터 품질 게이트", decision.reason)
+
     def test_reason_mentions_confidence_adjustment(self) -> None:
         analysis = _make_analysis()
         with (

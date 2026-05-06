@@ -58,11 +58,18 @@ def write_sharded_outputs(
     *,
     signal_stats: dict[str, Any] | None = None,
     weekly_summary: dict[str, Any] | None = None,
+    state_metadata: dict[str, Any] | None = None,
 ) -> None:
     tickers_dir = data_dir / "tickers"
     tickers_dir.mkdir(parents=True, exist_ok=True)
 
-    _write_index(data_dir / "index.json", latest_day, signal_stats=signal_stats, weekly_summary=weekly_summary)
+    _write_index(
+        data_dir / "index.json",
+        latest_day,
+        signal_stats=signal_stats,
+        weekly_summary=weekly_summary,
+        state_metadata=state_metadata,
+    )
     _write_per_ticker_files(tickers_dir, latest_day, merged_days)
 
 
@@ -72,6 +79,7 @@ def _write_index(
     *,
     signal_stats: dict[str, Any] | None = None,
     weekly_summary: dict[str, Any] | None = None,
+    state_metadata: dict[str, Any] | None = None,
 ) -> None:
     tickers_summary = [
         {key: payload.get(key) for key in _SUMMARY_KEYS if key in payload}
@@ -90,6 +98,8 @@ def _write_index(
         "weekly_summary": weekly_summary or {},
         "tickers": tickers_summary,
     }
+    if state_metadata:
+        index_payload["state_metadata"] = state_metadata
     path.write_text(
         json.dumps(index_payload, ensure_ascii=False, indent=2),
         encoding="utf-8",

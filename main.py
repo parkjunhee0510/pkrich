@@ -84,15 +84,28 @@ def _check_dependencies() -> None:
         _relaunch_with_system_python(missing)
 
 
-if __name__ == "__main__":
-    _check_dependencies()
+def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--collect-only", action="store_true", help="Run collector-only intraday refresh")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--with-sectors",
+        action="store_true",
+        help="Run sector explorer refresh after the main watchlist pipeline. Skipped by default to keep normal runs fast.",
+    )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> None:
+    _check_dependencies()
+    args = _build_parser().parse_args(argv)
 
     from src.pipeline import collect_only, run_pipeline
 
     if args.collect_only:
         collect_only()
     else:
-        run_pipeline()
+        run_pipeline(with_sectors=args.with_sectors)
+
+
+if __name__ == "__main__":
+    main()

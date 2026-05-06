@@ -158,11 +158,29 @@ export interface MacroNarrativeData {
 export interface TickerDecisionData {
   action: 'buy' | 'watch' | 'avoid'
   conviction: number
+  raw_conviction?: number
   reason: string
   valid_until: string
   factors: Record<string, number>
   factor_reasoning?: Record<string, string>
   ensemble_agreement?: 'agree' | 'conflict' | 'single'
+  final_consensus?: string
+  confidence_meta?: {
+    data_quality?: number
+    evidence_coverage?: number
+    evidence_consistency?: number
+    model_agreement?: number
+    confidence_gate?: number
+    data_quality_score?: number
+    data_quality_components?: Record<string, number>
+    confidence_penalty?: number
+    data_quality_gate?: {
+      mode?: 'shadow' | 'enforce' | string
+      threshold?: number
+      max_action_if_enforced?: 'watch' | string
+      would_cap_action?: boolean
+    }
+  }
 }
 
 export interface AnalysisConsensusData {
@@ -449,6 +467,7 @@ export interface DailyEntry {
   portfolio_risk?: PortfolioRisk | null
   portfolio_summary?: PortfolioSummaryData | null
   tickers: TickerAnalysisData[]
+  state_metadata?: StateMetadata
 }
 
 export interface WeeklyReportSection {
@@ -523,11 +542,20 @@ export interface SignalStats {
   }
 }
 
+export interface StateMetadata {
+  decision_signal_stats_as_of?: string
+  decision_signal_stats_includes_current_run?: boolean
+  output_signal_stats_as_of?: string
+  output_signal_stats_includes_current_run?: boolean
+  signal_returns_updated_before_decision?: boolean
+}
+
 export interface DashboardData {
   schema_version?: number
   days: DailyEntry[]
   signal_stats?: SignalStats
   weekly_summary?: WeeklySummaryPreview
+  state_metadata?: StateMetadata
 }
 
 export interface BacktestDirectionSummary {

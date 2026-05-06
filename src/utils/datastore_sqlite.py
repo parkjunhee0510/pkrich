@@ -13,6 +13,11 @@ from src.utils.period_changes import load_period_changes_from_rows
 from src.utils.signal_tracker import build_signal_stats_from_rows, load_signal_rows
 
 PRICE_COLUMN_DEFAULTS: dict[str, str] = {
+    'market_cap': "TEXT NOT NULL DEFAULT 'N/A'",
+    'trailing_pe': "TEXT NOT NULL DEFAULT 'N/A'",
+    'eps': "TEXT NOT NULL DEFAULT 'N/A'",
+    'high_52w': "TEXT NOT NULL DEFAULT 'N/A'",
+    'low_52w': "TEXT NOT NULL DEFAULT 'N/A'",
     'open': "TEXT NOT NULL DEFAULT 'N/A'",
     'high': "TEXT NOT NULL DEFAULT 'N/A'",
     'low': "TEXT NOT NULL DEFAULT 'N/A'",

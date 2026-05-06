@@ -2,17 +2,30 @@
   "schema_version": 1,
   "runs": [
     {
-      "run_date": "2026-05-04",
+      "run_date": "2026-05-06",
       "success": true,
-      "daily_api_cost_usd": 0.24459485,
+      "daily_api_cost_usd": 0.44996165,
       "batch_count": 0,
-      "validated_ticker_count": 147,
-      "validation_failure_count": 11,
+      "validated_ticker_count": 278,
+      "validation_failure_count": 13,
       "schema_violation_count": 0,
       "fact_warning_count": 7,
-      "consistency_warning_count": 1,
-      "hallucination_warning_count": 9,
-      "hallucination_ratio": 0.0612
+      "consistency_warning_count": 2,
+      "hallucination_warning_count": 4,
+      "hallucination_ratio": 0.0144
+    },
+    {
+      "run_date": "2026-05-04",
+      "success": true,
+      "daily_api_cost_usd": 0.4315233,
+      "batch_count": 0,
+      "validated_ticker_count": 285,
+      "validation_failure_count": 18,
+      "schema_violation_count": 0,
+      "fact_warning_count": 6,
+      "consistency_warning_count": 2,
+      "hallucination_warning_count": 15,
+      "hallucination_ratio": 0.0526
     },
     {
       "run_date": "2026-04-30",
@@ -237,16 +250,16 @@
     }
   ],
   "latest": {
-    "run_date": "2026-05-04",
+    "run_date": "2026-05-06",
     "success": true,
-    "daily_api_cost_usd": 0.24459485,
+    "daily_api_cost_usd": 0.44996165,
     "batch_count": 0,
-    "validated_ticker_count": 147,
-    "validation_failure_count": 11,
+    "validated_ticker_count": 278,
+    "validation_failure_count": 13,
     "schema_violation_count": 0,
     "fact_warning_count": 7,
-    "consistency_warning_count": 1,
-    "hallucination_warning_count": 9,
-    "hallucination_ratio": 0.0612
+    "consistency_warning_count": 2,
+    "hallucination_warning_count": 4,
+    "hallucination_ratio": 0.0144
   }
 }

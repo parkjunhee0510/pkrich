@@ -34,6 +34,8 @@ Per-ticker payloads now include:
 * `pm_view` on the latest index payload and each `dashboard_history.days[]` entry for additive PM review context on held names
 * `key_news_source_titles` and `key_news_reference_indices` alongside `key_news`, so short translated summaries remain display-friendly while citation audits can trace each item to its source headline
 
+Dashboard payloads include `state_metadata` when available. This metadata records the state timing used by the decision and output layers, including whether decision-time signal statistics included the current run.
+
 `news_references[*].published_at` is serialized as ISO date (`YYYY-MM-DD`) when the source provides an ISO or RFC822 timestamp.
 
 `pm_view` is a review-oriented payload for the web UI. It is additive and must not override the official rule-based `buy` / `watch` / `avoid` decision.
@@ -57,6 +59,8 @@ Current `pm_view` fields:
 
 `analysis_quality.json` includes the shared `schema_version`, `runs[]`, and `latest`. When a `web/` app exists beside `output/`, the writer also syncs this file to `web/public/output/data/analysis_quality.json` so the static dashboard reads the same operational payload as the pipeline output.
 
+`validation_warnings.json` is also mirrored to `web/public/output/data/validation_warnings.json` because the admin surface reads it directly. Sector explorer payloads are mirrored whenever the pipeline writes `sectors.json`, including the full pipeline sector-scan path.
+
 `api_status.json` is written for the requested calendar run date. This is intentionally distinct from the effective market date detected from price history, because API freshness and scheduled run status are calendar-run concerns.
 
 LLM audit JSON reports include check dimensions, threshold metadata, sample counts, severity counts including `info`, and replay cost when D1 replay is enabled. Markdown reports include an executive summary, verdict matrix, per-check details, and methodology notes.
@@ -74,6 +78,10 @@ Machine-readable JSON outputs use `src/output/schema.py::SCHEMA_VERSION` as the 
 `output/data` is the source of truth. `web/public/output/data` is a mirror for the static frontend and local Vite development. `web/dist/output/data` is a best-effort mirror only when a build output tree already exists.
 
 Sync failures are logged as output events and should not recompute decisions, mutate state, or make the web layer a source of pipeline logic. Raw logs, caches, SQLite files, and LLM evidence manifests are excluded from the default web mirror.
+
+Sector explorer payloads are refreshed only when the sector scan path runs, such as `python main.py --with-sectors` or the standalone sector CLI. A default `python main.py` run preserves the latest existing `output/data/sectors.json` and mirrored web copies instead of deleting or blanking them.
+
+Use `python -m src.cli.output_health_check` before committing generated artifacts. The check validates every JSON file under `output/data` and `web/public/output/data`, detects unresolved merge-conflict markers in output JSON/CSV/Markdown files, and verifies that the default web mirror files match `output/data` byte-for-byte.
 
 ## Requirements
 

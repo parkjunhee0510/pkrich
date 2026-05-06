@@ -95,6 +95,90 @@ class TokenBucketLimiter:
             return self._tokens
 
 
+class LlmRateLimiter:
+    """Thread-safe request and token limiter for LLM provider calls."""
+
+    def __init__(
+        self,
+        *,
+        requests_per_minute: int,
+        tokens_per_minute: int,
+        burst_requests: int | None = None,
+        burst_tokens: int | None = None,
+    ) -> None:
+        if requests_per_minute <= 0:
+            raise ValueError(f"requests_per_minute must be positive, got {requests_per_minute}")
+        if tokens_per_minute <= 0:
+            raise ValueError(f"tokens_per_minute must be positive, got {tokens_per_minute}")
+        self._request_rate_per_second = requests_per_minute / 60.0
+        self._token_rate_per_second = tokens_per_minute / 60.0
+        self._request_capacity = float(burst_requests or requests_per_minute)
+        self._token_capacity = float(burst_tokens or tokens_per_minute)
+        if self._request_capacity <= 0:
+            raise ValueError(f"burst_requests must be positive, got {burst_requests}")
+        if self._token_capacity <= 0:
+            raise ValueError(f"burst_tokens must be positive, got {burst_tokens}")
+        self._request_tokens = self._request_capacity
+        self._token_tokens = self._token_capacity
+        self._last_refill = time.monotonic()
+        self._lock = threading.Lock()
+
+    def _refill_locked(self) -> None:
+        now = time.monotonic()
+        elapsed = now - self._last_refill
+        if elapsed <= 0:
+            return
+        self._request_tokens = min(
+            self._request_capacity,
+            self._request_tokens + elapsed * self._request_rate_per_second,
+        )
+        self._token_tokens = min(
+            self._token_capacity,
+            self._token_tokens + elapsed * self._token_rate_per_second,
+        )
+        self._last_refill = now
+
+    def acquire(self, estimated_tokens: int = 0, timeout: float | None = None) -> bool:
+        """Acquire one request token and the estimated output/input token budget."""
+        if estimated_tokens < 0:
+            raise ValueError(f"estimated_tokens must be non-negative, got {estimated_tokens}")
+        if estimated_tokens > self._token_capacity:
+            raise ValueError(
+                f"estimated_tokens must not exceed token burst capacity "
+                f"({estimated_tokens} > {int(self._token_capacity)})"
+            )
+
+        deadline = time.monotonic() + timeout if timeout is not None else None
+        token_need = float(estimated_tokens)
+
+        while True:
+            with self._lock:
+                self._refill_locked()
+                has_request = self._request_tokens >= 1.0
+                has_tokens = token_need == 0.0 or self._token_tokens >= token_need
+                if has_request and has_tokens:
+                    self._request_tokens -= 1.0
+                    if token_need:
+                        self._token_tokens -= token_need
+                    return True
+
+                request_wait = 0.0
+                if not has_request:
+                    request_wait = (1.0 - self._request_tokens) / self._request_rate_per_second
+                token_wait = 0.0
+                if not has_tokens:
+                    token_wait = (token_need - self._token_tokens) / self._token_rate_per_second
+                wait_seconds = max(request_wait, token_wait)
+
+            if deadline is not None:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    return False
+                wait_seconds = min(wait_seconds, remaining)
+
+            time.sleep(max(0.001, wait_seconds))
+
+
 class RateLimiterHub:
     """Registry of per-provider TokenBucketLimiter instances.
 
@@ -105,6 +189,7 @@ class RateLimiterHub:
 
     def __init__(self) -> None:
         self._limiters: dict[str, TokenBucketLimiter] = {}
+        self._llm_limiters: dict[str, LlmRateLimiter] = {}
         self._lock = threading.Lock()
 
     def register(self, provider_name: str, rate_limit: RateLimit) -> TokenBucketLimiter:
@@ -137,5 +222,46 @@ class RateLimiterHub:
             return True
         return limiter.acquire(timeout=timeout)
 
+    def register_llm(
+        self,
+        provider_name: str,
+        *,
+        requests_per_minute: int,
+        tokens_per_minute: int,
+        burst_requests: int | None = None,
+        burst_tokens: int | None = None,
+    ) -> LlmRateLimiter:
+        """Register an LLM provider limiter. Idempotent like `register()`."""
+        with self._lock:
+            if provider_name in self._llm_limiters:
+                return self._llm_limiters[provider_name]
+            limiter = LlmRateLimiter(
+                requests_per_minute=requests_per_minute,
+                tokens_per_minute=tokens_per_minute,
+                burst_requests=burst_requests,
+                burst_tokens=burst_tokens,
+            )
+            self._llm_limiters[provider_name] = limiter
+            logger.debug(
+                "LLM RateLimiter registered provider=%s rpm=%d tpm=%d",
+                provider_name,
+                requests_per_minute,
+                tokens_per_minute,
+            )
+            return limiter
 
-__all__ = ["TokenBucketLimiter", "RateLimiterHub"]
+    def acquire_llm(
+        self,
+        provider_name: str,
+        *,
+        estimated_tokens: int,
+        timeout: float | None = None,
+    ) -> bool:
+        """Acquire request and token capacity for an LLM provider."""
+        with self._lock:
+            limiter = self._llm_limiters.get(provider_name)
+        if limiter is None:
+            return True
+        return limiter.acquire(estimated_tokens=estimated_tokens, timeout=timeout)
+
+__all__ = ["TokenBucketLimiter", "LlmRateLimiter", "RateLimiterHub"]

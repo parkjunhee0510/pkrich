@@ -50,7 +50,9 @@ Current analyzer stack:
 Current ensemble flow:
 * Economy profile analyzes the full watchlist first
 * Only selected tickers receive deep LLM-only re-analysis
+* Selection is based on the ensemble trigger range, with optional portfolio-priority routing for current holdings
 * If economy and deep disagree, an optional third review can run
+* Optional routing logs persist per-ticker selection reasons for later routing outcome analysis
 * Final analysis source is `third_review > deep > economy`
 * BudgetGuard is shadow-only by default and does not skip these routes unless explicitly switched to enforce mode
 
@@ -116,6 +118,16 @@ Current responsibilities:
 * Derive operational outputs such as API status, quality, and cost reports
 
 ## Feature Flags And Routing
+
+## Default Versus Full Runs
+
+`python main.py` runs the primary watchlist pipeline and finishes after watchlist outputs, web-facing JSON mirrors, alerts, and pipeline logs are complete. It does not refresh the sector explorer payload by default.
+
+`python main.py --with-sectors` runs the same primary watchlist pipeline and then refreshes the sector explorer payload through the existing sector scan path.
+
+`python main.py --collect-only` remains the intraday refresh path and does not run sector scanning, even when `--with-sectors` is also passed.
+
+Default runs emit `sector_scan_skipped` with the reason `disabled_by_default`. Full runs emit `sector_scan_completed` when the sector scan succeeds.
 
 The pipeline still contains controlled migration paths.
 

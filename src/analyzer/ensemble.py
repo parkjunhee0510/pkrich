@@ -89,12 +89,23 @@ class AnalysisEnsemble:
             macro_context=macro_context,
         )
         economy_decision_map = {decision.ticker: decision for decision in economy_decisions}
+        portfolio_tickers = _portfolio_tickers(portfolio_summary)
         eligible_tickers = [
             item.ticker
             for item in watchlist
-            if _is_ensemble_target(economy_decision_map.get(item.ticker), self.config)
+            if _is_ensemble_target(
+                economy_decision_map.get(item.ticker),
+                self.config,
+                in_portfolio=item.ticker in portfolio_tickers,
+            )
         ]
-        target_tickers = _select_target_tickers(eligible_tickers, economy_decision_map, watchlist, self.config)
+        target_tickers = _select_target_tickers(
+            eligible_tickers,
+            economy_decision_map,
+            watchlist,
+            self.config,
+            portfolio_tickers=portfolio_tickers,
+        )
         skipped_due_to_cap = [ticker for ticker in eligible_tickers if ticker not in target_tickers]
 
         deep_map: dict[str, TickerAnalysis] = {}
@@ -113,6 +124,7 @@ class AnalysisEnsemble:
             "third_model": self.config.third_model,
             "third_prompt": self.config.third_prompt,
             "ensemble_target_tickers": target_tickers,
+            "portfolio_priority": self.config.portfolio_priority,
             "economy_executed_modules": self.economy_orchestrator.diagnostics.get("executed_modules", []),
             "deep_executed_modules": [],
             "tie_break_executed_modules": [],
@@ -130,6 +142,16 @@ class AnalysisEnsemble:
         ):
             diagnostics["budget_guard_skipped_deep"] = target_tickers
             target_tickers = []
+
+        if self.config.emit_routing_log:
+            diagnostics["routing_log"] = build_routing_log(
+                watchlist,
+                economy_decision_map,
+                target_tickers=target_tickers,
+                config=self.config,
+                portfolio_tickers=portfolio_tickers,
+                run_date=run_date,
+            )
 
         if target_tickers:
             target_watchlist = [item for item in watchlist if item.ticker in target_tickers]
@@ -324,9 +346,26 @@ def apply_consensus_to_decisions(
     return updated
 
 
-def _is_ensemble_target(decision: TickerDecision | None, config: EnsembleConfig) -> bool:
+def _portfolio_tickers(portfolio_summary: PortfolioSummary | None) -> set[str]:
+    if portfolio_summary is None:
+        return set()
+    return {
+        str(position.ticker).strip()
+        for position in getattr(portfolio_summary, "positions", []) or []
+        if str(getattr(position, "ticker", "")).strip()
+    }
+
+
+def _is_ensemble_target(
+    decision: TickerDecision | None,
+    config: EnsembleConfig,
+    *,
+    in_portfolio: bool = False,
+) -> bool:
     if decision is None or not config.enabled:
         return False
+    if config.portfolio_priority and in_portfolio:
+        return True
     low, high = config.trigger_range
     return low <= decision.conviction <= high
 
@@ -336,19 +375,84 @@ def _select_target_tickers(
     decision_map: dict[str, TickerDecision],
     watchlist: list[WatchlistItem],
     config: EnsembleConfig,
+    *,
+    portfolio_tickers: set[str] | None = None,
 ) -> list[str]:
-    if not config.enabled or config.max_daily_ensemble <= 0:
+    if not config.enabled:
         return []
+    portfolio_tickers = portfolio_tickers or set()
     watchlist_order = {item.ticker: index for index, item in enumerate(watchlist)}
 
-    def _sort_key(ticker: str) -> tuple[float, float, int]:
+    def _sort_key(ticker: str) -> tuple[int, float, float, int]:
         conviction = decision_map[ticker].conviction
         edge_distance = min(abs(conviction - 35), abs(conviction - 65))
         ambiguity = abs(conviction - 50)
-        return (edge_distance, ambiguity, watchlist_order.get(ticker, 9999))
+        priority_rank = 0 if config.portfolio_priority and ticker in portfolio_tickers else 1
+        return (priority_rank, edge_distance, ambiguity, watchlist_order.get(ticker, 9999))
 
     ranked = sorted(eligible_tickers, key=_sort_key)
+    if config.max_daily_ensemble == 0:
+        return ranked
     return ranked[: config.max_daily_ensemble]
+
+
+def _classify_routing_reason(
+    decision: TickerDecision | None,
+    config: EnsembleConfig,
+    *,
+    in_portfolio: bool = False,
+) -> str:
+    if not config.enabled:
+        return "disabled"
+    if decision is None:
+        return "no_decision"
+    if config.portfolio_priority and in_portfolio:
+        return "portfolio_priority"
+    low, high = config.trigger_range
+    if decision.conviction < low:
+        return "below_range"
+    if decision.conviction > high:
+        return "above_range"
+    return "in_trigger_range"
+
+
+def build_routing_log(
+    watchlist: list[WatchlistItem],
+    decision_map: dict[str, TickerDecision],
+    *,
+    target_tickers: list[str],
+    config: EnsembleConfig,
+    portfolio_tickers: set[str] | None = None,
+    run_date: date | None = None,
+) -> dict[str, Any]:
+    portfolio_tickers = portfolio_tickers or set()
+    selected_tickers = set(target_tickers)
+    entries: list[dict[str, Any]] = []
+    for item in watchlist:
+        decision = decision_map.get(item.ticker)
+        in_portfolio = item.ticker in portfolio_tickers
+        entries.append(
+            {
+                "ticker": item.ticker,
+                "name": item.name,
+                "selected_for_deep": item.ticker in selected_tickers,
+                "in_portfolio": in_portfolio,
+                "reason": _classify_routing_reason(decision, config, in_portfolio=in_portfolio),
+                "action": decision.action if decision else None,
+                "conviction": decision.conviction if decision else None,
+            }
+        )
+    return {
+        "schema_version": 1,
+        "run_date": run_date.isoformat() if run_date else "",
+        "ensemble_enabled": config.enabled,
+        "trigger_range": list(config.trigger_range),
+        "max_daily_ensemble": config.max_daily_ensemble,
+        "portfolio_priority": config.portfolio_priority,
+        "deep_pass_count": len(selected_tickers),
+        "selected_tickers": target_tickers,
+        "tickers": entries,
+    }
 
 
 def _budget_guard_allows(path: str, profile_name: str, *, selected_count: int) -> bool:

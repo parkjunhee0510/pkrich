@@ -143,3 +143,75 @@ PLUG:
   business: "Hydrogen fuel cells and electrolyzers"
   exposure: [ira_hydrogen_45v_credit, doe_hydrogen_hub, hydrogen_safety_regulation]
   china_revenue_pct: 0
+
+COHR:
+  sector: optical_components
+  business: "Optical components and photonics for AI datacenter and telecom networks"
+  exposure: [ai_datacenter_capex, export_control_china, telecom_capex_cycle]
+  china_revenue_pct: 15
+
+ALAB:
+  sector: semiconductor
+  business: "Connectivity semiconductors for rack-scale AI infrastructure"
+  exposure: [ai_datacenter_capex, export_control_china, customer_concentration]
+  china_revenue_pct: 20
+
+MOD:
+  sector: industrials
+  business: "Thermal management and data center cooling equipment"
+  exposure: [ai_datacenter_capex, energy_efficiency_policy, industrial_capex]
+  china_revenue_pct: 5
+
+FLNC:
+  sector: clean_energy
+  business: "Grid-scale battery storage systems and energy storage services"
+  exposure: [ira_storage_credit, battery_tariff, grid_interconnection]
+  china_revenue_pct: 0
+
+ATKR:
+  sector: industrials
+  business: "Electrical conduit and infrastructure products"
+  exposure: [infrastructure_spending, tariff_steel, construction_cycle]
+  china_revenue_pct: 0
+
+NXT:
+  sector: clean_energy
+  business: "Utility-scale solar tracker systems"
+  exposure: [ira_solar_credit, solar_tariffs, interconnection_queue]
+  china_revenue_pct: 0
+
+KTOS:
+  sector: defense
+  business: "Defense drones, missile systems, space systems, and training platforms"
+  exposure: [defense_budget, drone_procurement, export_control_defense]
+  china_revenue_pct: 0
+
+AVAV:
+  sector: defense
+  business: "Small drones, loitering munitions, and unmanned systems"
+  exposure: [defense_budget, drone_procurement, export_control_defense]
+  china_revenue_pct: 0
+
+RKLB:
+  sector: aerospace
+  business: "Space launch services and satellite systems"
+  exposure: [defense_space_procurement, nasa_contracts, launch_license]
+  china_revenue_pct: 0
+
+RDW:
+  sector: aerospace
+  business: "Space infrastructure, satellite components, and defense space systems"
+  exposure: [defense_space_procurement, nasa_contracts, space_supply_chain]
+  china_revenue_pct: 0
+
+HUM:
+  sector: healthcare
+  business: "Medicare Advantage and health insurance services"
+  exposure: [cms_medicare_advantage_rates, star_ratings, healthcare_policy]
+  china_revenue_pct: 0
+
+KEY:
+  sector: financials
+  business: "Regional banking with commercial and consumer lending exposure"
+  exposure: [fed_rate_policy, bank_capital_rules, commercial_real_estate_credit]
+  china_revenue_pct: 0

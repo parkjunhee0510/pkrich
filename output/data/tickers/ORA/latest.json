@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "date": "2026-05-06",
+  "date": "2026-05-05",
   "ticker": "ORA",
   "payload": {
     "ticker": "ORA",
     "name": "Ormat Technologies, Inc.",
-    "date": "2026-05-01",
-    "summary": "현재 주가는 113.5달러로 SMA50과 SMA200 위에 있으나, RSI(14) 52.3과 RVOL 0.32x로 추세는 중립적입니다. 다음 촉매는 2026-05-06 실적 발표이며, 실적 기대와 공시 모멘텀에 따라 118.38달러와 127.09달러 구간 재시험 여부가 관건입니다.",
+    "date": "2026-05-05",
+    "summary": "주가는 SMA50과 SMA200을 각각 3.83%, 7.80% 상회하고 30일간 +4.31%로 안정적입니다. 다음 촉매는 2026-05-06 실적 발표이며, 재생에너지 유틸리티 특성상 실적과 가이던스가 핵심입니다.",
     "key_news": [
       "[기타 공시] ORMAT TECHNOLOGIES, INC., 8-K 중요 사항 공시용 보고서를 SEC에 제출",
       "[실적] ORMAT TECHNOLOGIES, INC., 10-K 연간 사업 및 재무 보고서를 SEC에 제출",
@@ -61,50 +61,50 @@
       }
     ],
     "financial_highlights": [
-      "PER 56.2x, 밸류에이션 점수 5/10",
-      "애널리스트: Buy 11명, 목표주가 127.09달러",
-      "단기 위치: SMA50 대비 +2.15%, SMA200 대비 +6.21%",
-      "RS vs Sector ETF: +0.13%, RS vs SPY(30D): N/A",
-      "EPS Growth: -24.40% YoY"
+      "PER 57.1x; PER 50퍼센타일",
+      "Forward EPS 2.58",
+      "TTM EPS 2.02 / EPS 성장 -24.40% YoY",
+      "RS vs Sector ETF +3.88%",
+      "52W Position 72%"
     ],
     "risks_or_watchpoints": [
-      "2026-05-06 실적 발표 전까지 EPS Growth -24.40% YoY가 개선되지 않으면 펀더멘털 부담 지속",
-      "Short Float 7.71%와 4.07일 커버리지가 겹쳐 실적 전후 변동성 확대 가능",
-      "SMA50 111.11 USD 하회 시 단기 추세 약화",
-      "2026-05-15 옵션 만기까지 MaxPain 105 USD가 현주가 113.50 USD 아래에 있어 하방 쏠림 체크"
+      "종가가 111.08 USD(SMA50) 아래로 내려가면 약세 시나리오 확인",
+      "2026-05-06 실적 발표 전후로 EPS Growth -24.40% YoY 부담이 완화되는지 확인",
+      "2026-05-15 만기 옵션에서 PUT $90 이상거래가 계속되면 하방 헤지 수요 확대 경계",
+      "PCR 1.67과 MaxPain $105 괴리가 유지될 경우 옵션 포지셔닝 왜곡 점검"
     ],
-    "signal_or_takeaway": "중립 관찰 — 2026-05-06 실적 전 SMA50·SMA200 상단 유지와 중립적 모멘텀, EPS Growth -24.40% YoY 부담 병존 | 진입 트리거 118.38 상향 돌파 | 목표 127.09/132.58달러 | 손절 111.11달러",
+    "signal_or_takeaway": "중립 관찰 — 실적 직전 안정적 추세 유지 | 진입 트리거 115.34 지지 확인 | 목표 120.06/127.09달러 | 손절 111.08달러",
     "data_snapshot": {
-      "Price": "114.86 USD",
-      "Daily Change": "-0.42%",
-      "Market Cap": "7.06B",
-      "Trailing P/E": "56.86",
+      "Price": "115.34 USD",
+      "Daily Change": "+0.56%",
+      "Market Cap": "7.09B",
+      "Trailing P/E": "57.10",
       "EPS": "2.02",
       "52W High": "132.58",
       "52W Low": "70.42",
-      "50D SMA": "111.09",
-      "200D SMA": "107.12",
-      "Volume": "1271846",
-      "3M Avg Volume": "862,493",
-      "Price/Book": "2.75",
+      "50D SMA": "111.08",
+      "200D SMA": "106.99",
+      "Volume": "577,746",
+      "3M Avg Volume": "865,527",
+      "Price/Book": "2.76",
       "Dividend Yield": "0.42%",
       "Sector": "Utilities",
-      "Open": "116.73",
-      "High": "117.27",
-      "Low": "114.73",
-      "Close": "114.86",
-      "RS vs Sector ETF": "+0.13%"
+      "Open": "115.60",
+      "High": "115.73",
+      "Low": "114.22",
+      "Close": "115.34",
+      "RS vs Sector ETF": "+3.88%"
     },
     "fundamentals": {
-      "market_cap": "7.06B",
-      "trailing_pe": "56.86",
+      "market_cap": "7.09B",
+      "trailing_pe": "57.10",
       "eps": "2.02",
       "forward_eps": "2.58",
       "earnings_growth": "-24.40% YoY",
-      "price_to_book": "2.75",
+      "price_to_book": "2.76",
       "dividend_yield": "0.42%",
-      "volume": "1271846",
-      "avg_volume_3m": "862,493",
+      "volume": "577,746",
+      "avg_volume_3m": "865,527",
       "52w_high": "132.58",
       "52w_low": "70.42",
       "short_float_pct": "7.71%",
@@ -113,7 +113,7 @@
       "analyst_recommendation": "Buy",
       "analyst_count": "11명",
       "held_by_insiders": "0.44%",
-      "held_by_institutions": "94.20%",
+      "held_by_institutions": "96.71%",
       "implied_volatility": "N/A"
     },
     "earnings_setup": {
@@ -124,7 +124,7 @@
       "latest_estimated_eps": "0.64 USD/share",
       "latest_surprise_pct": "+0.05%",
       "latest_beat_miss": "in-line",
-      "next_earnings_event": "2026-05-06 실적 발표 (D-2 · AMC)"
+      "next_earnings_event": "2026-05-06 실적 발표 (D-0 · AMC)"
     },
     "earnings_surprise_history": {
       "consecutive_beats": 3,
@@ -143,15 +143,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "3.13",
-      "atr_percent": "2.72%",
-      "relative_volume": "1.47x",
-      "gap_percent": "+1.21%",
-      "price_vs_sma50": "+3.40%",
-      "price_vs_sma200": "+7.22%",
-      "week52_position": "71%",
+      "atr_14d": "3.15",
+      "atr_percent": "2.73%",
+      "relative_volume": "0.67x",
+      "gap_percent": "+0.78%",
+      "price_vs_sma50": "+3.83%",
+      "price_vs_sma200": "+7.80%",
+      "week52_position": "72%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+4.88%"
+      "rs_vs_sector_etf": "+3.88%"
     },
     "quarterly_financials": [
       {
@@ -200,39 +200,47 @@
         "type": "earnings",
         "label": "실적 발표",
         "date": "2026-05-06",
-        "days_until": "2",
+        "days_until": "0",
         "timing": "AMC"
       }
     ],
     "news_tone": {
       "label": "neutral",
-      "confidence": 1,
-      "reasoning": "실적 기대와 강세 심리는 긍정적이지만, 직접적인 실적 수치나 신규 호재는 제한적입니다."
+      "confidence": 2,
+      "reasoning": "강세 심리가 이어지지만, 급등 이후 밸류에이션 부담을 묻는 기사도 있습니다."
     },
     "trade_frame": {
-      "entry_price": "현재가 113.50 또는 눌림 시 110.25 USD",
-      "stop_loss": "SMA50 111.11 USD",
-      "target_1": "118.38 USD (1.5×ATR)",
+      "entry_price": "현재가 115.34 또는 눌림 시 112.19 USD",
+      "stop_loss": "SMA50 111.08 USD",
+      "target_1": "120.06 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 127.09 USD",
-      "risk_reward_ratio": "2.0R",
-      "position_size_note": "$62,552 계좌 1% 리스크 기준 약 192주 (ATR $3.25 기반)",
+      "risk_reward_ratio": "1.1R",
+      "position_size_note": "$63,302 계좌 1% 리스크 기준 약 200주 (ATR $3.15 기반)",
       "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-      "base_scenario": "113.50 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+      "base_scenario": "115.34 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-      "invalidation_price": "50일 이동평균선인 111.11 USD 아래로 밀리면 약세 시나리오 확인",
+      "invalidation_price": "50일 이동평균선인 111.08 USD 아래로 밀리면 약세 시나리오 확인",
       "watch_period": "2026-05-06 실적 발표 전까지"
     },
     "options_summary": {
       "expiry": "2026-05-15",
-      "atm_call_iv": "56.3%",
-      "atm_put_iv": "55.8%",
-      "put_call_ratio": "0.14x",
-      "iv_percentile_30d": "35th",
-      "tone": "neutral",
-      "unusual_activity": "CALL $140, vol 25, OI 대비 100% ; PUT $90, vol 20, OI 대비 100% ; CALL $85, vol 1, OI 대비 100%",
+      "atm_call_iv": "0.0%",
+      "atm_put_iv": "0.8%",
+      "put_call_ratio": "1.17x",
+      "iv_percentile_30d": "29th",
+      "tone": "bearish",
+      "unusual_activity": "PUT $90, vol 20, OI 대비 100% ; CALL $85, vol 1, OI 대비 100% ; CALL $110, vol 1, OI 대비 100%",
       "oi_change": "N/A"
     },
     "signal_history": [
+      {
+        "date": "2026-05-01",
+        "direction": "neutral",
+        "llm_direction": "neutral",
+        "catalyst": "실적",
+        "return_5d": "N/A",
+        "note": "113.50 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
       {
         "date": "2026-04-29",
         "direction": "bull",
@@ -262,22 +270,14 @@
         "direction": "bull",
         "llm_direction": "bull",
         "catalyst": "실적",
-        "return_5d": "N/A",
+        "return_5d": "+0.12%",
         "note": "113.36 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-04-23",
-        "direction": "bull",
-        "llm_direction": "neutral",
-        "catalyst": "실적",
-        "return_5d": "N/A",
-        "note": "113.60 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
       }
     ],
     "sector_comparison": {
       "summary": "Utilities 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "56.19",
+        "company": "57.10",
         "peer_average": "79.14x",
         "difference": null
       },
@@ -287,9 +287,9 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "+0.58%",
+        "company": "+4.31%",
         "peer_average": "-11.85%",
-        "difference": "+12.43"
+        "difference": "+16.16"
       }
     },
     "peer_rank": {
@@ -301,8 +301,8 @@
     "valuation_score": {
       "score": "5/10",
       "factors": [
-        "PER 56.2x",
-        "목표가 대비 업사이드 +12.0%"
+        "PER 57.1x",
+        "목표가 대비 업사이드 +10.2%"
       ],
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
@@ -314,12 +314,10 @@
       "final_consensus": "single"
     },
     "committee_analysis": {
-      "status": "deep_reviewed",
-      "agreement_status": "aligned",
-      "deep_review_triggered": true,
-      "deep_review_reasons": [
-        "risk_strong_objection"
-      ],
+      "status": "economy_only",
+      "agreement_status": "mixed",
+      "deep_review_triggered": false,
+      "deep_review_reasons": [],
       "roles": {
         "growth_analyst": {
           "role": "growth_analyst",
@@ -329,7 +327,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "매출은 2025-Q1~Q4에 229.76M→276.04M으로 확대됐지만, EPS Growth가 -24.40% YoY이고 최근 분기 EPS 0.50은 추정치 0.64를 하회해 이익 레버리지가 아직 약합니다. 주가는 SMA50 대비 +2.15%, SMA200 대비 +6.21%로 버티고 있고 다음 촉매는 2026-05-06 실적이지만, PER 56.2x와 52주 고점 132.58달러 근처에서 업사이드 재가속 증거가 나오기 전에는 추격 매수보다 대기 전략이 맞습니다.",
+          "summary": "최근 4개 분기 중 3개 분기에서 EPS가 예상치를 상회했지만 2025-Q4는 EPS 0.50으로 추정치 0.64를 하회했고, TTM EPS 2.02 기준 EPS 성장률이 -24.40% YoY라 실적 가속이 아직 확인되지 않습니다. 52주 고점 대비 72% 위치에 있고 PER 57.1x로 밸류에이션 부담이 큰 반면, 2026-05-06 AMC 실적과 데이터센터/지열 관련 업데이트가 다음 방향성의 핵심 촉매라 결과 확인 전까지는 관망이 적절합니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -337,55 +335,55 @@
           "role": "value_skeptic",
           "round": "economy",
           "profile": "economy",
-          "stance": "watch",
-          "action": "watch",
+          "stance": "reduce",
+          "action": "avoid",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "PER 56.2x와 P/B 2.71x는 EPS 성장률 -24.40% YoY, 직전 분기 EPS 0.50가 컨센서스 0.64를 하회한 흐름과 비교하면 방어적으로 보기 어렵습니다. 목표주가 127.09달러는 현재 113.50달러 대비 +12.0% 업사이드에 불과한데, 52주 고점 132.58달러까지의 여지도 제한적이고 2026-05-15 MaxPain 105달러가 아래에 있어 실적/옵션 이벤트에서 하방 비대칭이 더 큽니다.",
+          "summary": "PER 57.1x와 P/B 2.76x는 EPS 성장 -24.40% YoY와 전혀 맞지 않아 밸류에이션이 먼저 달아난 상태로 보입니다. 애널리스트 목표가 127.09 USD도 현 주가 대비 +10.2%에 불과한데, 52W 위치 72%와 52W 고점 132.58 USD 근처라는 점을 감안하면 업사이드는 제한적이고 2026-05-06 실적에서 기대가 꺾이면 하방 비대칭이 더 큽니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "risk_manager": {
           "role": "risk_manager",
-          "round": "deep",
-          "profile": "deep",
+          "round": "economy",
+          "profile": "economy",
           "stance": "watch",
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "현재가 113.50은 SMA50 111.11과 SMA200 106.86 위에 있어 추세 훼손은 아니지만, RSI 52.3·RVOL 0.32x로 모멘텀이 약하고 5/6 실적 전까지는 하방 리스크가 우선입니다. 명확한 무효화 기준은 종가 기준 SMA50 111.11 이탈이며, 그 아래로 밀리면 106.86까지 조정 시나리오를 열어야 하고 5/15 만기 MaxPain 105가 추가 하방 자석으로 작동할 수 있습니다.",
+          "summary": "하방 시나리오는 2026-05-06 실적에서 기대가 약해지며 111.08(SMA50) 이탈 시 단기 추세 훼손으로 전환되고, 그 아래로는 106.99(SMA200)까지 조정이 열립니다. 현재 115.34는 50D/200D 위에 있지만 52주 고점 132.58 대비 72% 구간이고 RSI 수치가 없어 과열 여부 확인이 안 되므로, 111.08 종가 이탈 전까지는 관찰이 적절합니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "macro_strategist": {
           "role": "macro_strategist",
-          "round": "deep",
-          "profile": "deep",
+          "round": "economy",
+          "profile": "economy",
           "stance": "watch",
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "Utilities 섹터 내에서 30일 수익률이 +0.58%로 피어 평균 -11.85%를 크게 상회해 방어주 선호는 유효하지만, 200D SMA 106.86과 50D SMA 111.11 위의 113.50은 이미 금리 하락 기대를 상당 부분 반영한 구간입니다. 현재 52W 고점 132.58 대비 69% 위치이고 RVOL 0.32x로 추세 추종 자금이 약해, 5/6 실적 전후에는 금리 재상승·달러 강세·리스크온 회귀 시 상대적으로 압축될 여지가 커 보입니다.",
+          "summary": "Utilities 섹터 내에서 30일 +4.31%로 피어 평균 -11.85%를 크게 상회하고, 주가는 50D SMA 111.08과 200D SMA 106.99를 각각 +3.83%, +7.80% 상회해 금리 급등 구간에서도 상대강도가 유지되고 있습니다. 다만 5.06 실적(AMC) 직전이며 거래량이 0.67x로 평균을 밑도는 만큼, 금리 하락·리스크온에는 유리하지만 달러 강세나 장기금리 재상승 시 방어주 프리미엄이 빠질 수 있어 확인 전까지는 관망이 적절합니다.",
           "valid": true,
           "invalid_reason": ""
         },
         "pm": {
           "role": "pm",
-          "round": "deep",
-          "profile": "deep",
+          "round": "economy",
+          "profile": "economy",
           "stance": "watch",
           "action": "watch",
-          "confidence": 0.78,
+          "confidence": 0.84,
           "strong_objection": false,
-          "summary": "현재 주가 113.50은 SMA50 111.11과 SMA200 106.86 위에 있어 추세는 살아 있지만, PER 56.2x와 EPS Growth -24.40% YoY가 동시에 붙어 있어 실적 확인 전 밸류에이션 확신이 부족합니다. 2026-05-06 AMC 실적과 2026-05-15 MaxPain 105, 하방 무효화선 111.11을 감안하면 118.38~127.09 재시험 전까지는 관망이 더 합리적입니다. 반대 근거는 30일 수익률 +0.58%가 피어 평균 -11.85%를 크게 상회해 상대강도가 이미 우위라는 점입니다.",
+          "summary": "실적 발표가 2026-05-06 AMC로 임박한 상태에서, 주가는 115.34로 SMA50 111.08과 SMA200 106.99를 각각 상회하지만 52W 고점 132.58 대비 아직 72% 구간에 머물러 방향성 확인이 더 필요합니다. PER 57.1x와 EPS 성장률 -24.40% YoY는 밸류에이션 부담을 유지시키는 반면, 애널리스트 목표가 127.09는 현재가 대비 +10.2%로 기대치가 제한적이라도 존재합니다. 반대 근거로는 실적이 기대를 밑돌 경우 111.08 이탈 시 단기 조정이 빠르게 커질 수 있어, 발표 전에는 관망이 가장 합리적입니다.",
           "valid": true,
           "invalid_reason": ""
         }
       }
     },
     "period_changes": {
-      "7d": "+4.12%",
-      "30d": "+3.88%"
+      "7d": "+2.03%",
+      "30d": "+2.22%"
     },
     "sec_filing_tags": [
       "실적",
@@ -417,8 +415,8 @@
     ],
     "decision": {
       "action": "watch",
-      "conviction": 59,
-      "reason": "실적 D-2 / 하드 촉매 2026-02-26 / 섹터 대비 +0.1% / SMA50·SMA200 위 / 선행 EPS 성장 +27.7% / 기관 보유 96.1% / 데이터 품질과 모델 판단 차이를 반영해 65점에서 59점으로 보수 조정",
+      "conviction": 63,
+      "reason": "실적 D-0 / 하드 촉매 2026-02-26 / 섹터 대비 +3.9% / SMA50·SMA200 위 / 최근 시그널 승률 60% (6/10) / 데이터 품질과 모델 판단 차이를 반영해 68점에서 63점으로 보수 조정",
       "valid_until": "2026-05-06",
       "factors": {
         "catalyst_recency": 20.0,
@@ -426,41 +424,57 @@
         "fundamentals": 10.0,
         "macro_event": 3.0,
         "macro_regime": -3.0,
-        "momentum": 13.0,
+        "momentum": 15.0,
         "news_tone": 0.0,
         "peer_rank": 0.0,
-        "policy_tailwind": 7.0,
+        "policy_tailwind": 5.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 5.0,
-        "signal_track_record": 5.0,
+        "signal_track_record": 10.0,
         "valuation": 10.0
       },
       "factor_reasoning": {
-        "catalyst_recency": "실적 D-2 / 하드 촉매 2026-02-26",
+        "catalyst_recency": "실적 D-0 / 하드 촉매 2026-02-26",
         "earnings_pattern": "서프라이즈 추세 안정 / 평균 서프라이즈 +0.1%",
-        "fundamentals": "선행 EPS 성장 +27.7% / 기관 보유 96.1%",
+        "fundamentals": "선행 EPS 성장 +27.7% / 기관 보유 96.7%",
         "macro_event": "중동 확전 우려로 위험자산 선호가 약해지고 에너지 가격 민감도가 높아질 수 있습니다.",
         "macro_regime": "risk_on 레짐에서 utilities 섹터 편향 -3",
-        "momentum": "섹터 대비 +0.1% / SMA50·SMA200 위",
+        "momentum": "섹터 대비 +3.9% / SMA50·SMA200 위",
         "news_tone": "뉴스 톤이 중립",
         "peer_rank": "peer percentile 기준 특이 우위는 제한적입니다",
-        "policy_tailwind": "정책 임팩트 +0.87 — ORA는 ira_clean_energy_credit 노출이 직접 명시돼 있다. IRS가 45Y 등 청정전력 생산세액공제의 적용체계를 재확인해 프로젝트 수익성 가시성이 높아져 직접 긍정적이다.",
+        "policy_tailwind": "정책 임팩트 +0.64 — 청정전력 생산세액공제 체계 유지 재확인은 지열 발전 프로젝트 경제성에 직접 우호적이다. ORA는 'ira_clean_energy_credit' 노출이 있어 직접 긍정적이다.",
         "portfolio_risk": "현재 포트폴리오 집중 리스크 감점 요인은 크지 않음",
         "regime_adjustment": "리스크온 환경에서도 방어주 프리미엄 유지",
-        "signal_track_record": "최근 시그널 승률 50% (4/8)",
+        "signal_track_record": "최근 시그널 승률 60% (6/10)",
         "valuation": "대체로 적정 가치 범위에 위치합니다."
       },
       "ensemble_agreement": "single",
       "final_consensus": "single",
-      "raw_conviction": 65,
+      "raw_conviction": 68,
       "confidence_meta": {
-        "data_quality": 0.82,
+        "data_quality": 0.9255,
         "evidence_coverage": 1.0,
         "evidence_consistency": 0.54,
         "model_agreement": 0.6,
-        "confidence_gate": 0.776
+        "confidence_gate": 0.8182,
+        "data_quality_score": 0.9255,
+        "data_quality_components": {
+          "analyzer_validation": 0.82,
+          "price_freshness": 1.0,
+          "news_coverage": 1.0,
+          "missing_fundamentals": 0.8333,
+          "source_diversity": 1.0,
+          "fallback_depth": 1.0,
+          "macro_context_age": 0.91
+        },
+        "confidence_penalty": 0.0745,
+        "data_quality_gate": {
+          "mode": "shadow",
+          "threshold": 0.6,
+          "max_action_if_enforced": "watch",
+          "would_cap_action": false
+        }
       }
     }
-  },
-  "intraday_refreshed_at": "2026-05-06T21:05:11"
+  }
 }

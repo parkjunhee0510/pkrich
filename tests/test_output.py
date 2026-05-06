@@ -456,6 +456,30 @@ class OutputTests(unittest.TestCase):
                 },
             )
 
+    def test_write_json_outputs_records_state_metadata(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            output_root = Path(temp_dir) / 'output'
+            state_metadata = {
+                'decision_signal_stats_as_of': '2026-04-08',
+                'decision_signal_stats_includes_current_run': False,
+                'output_signal_stats_includes_current_run': True,
+            }
+
+            write_json_outputs(
+                [_sample_analysis()],
+                date(2026, 4, 8),
+                output_root=output_root,
+                market_overview=[],
+                state_metadata=state_metadata,
+            )
+
+            dashboard_history = json.loads((output_root / 'data' / 'dashboard_history.json').read_text(encoding='utf-8'))
+            index_payload = json.loads((output_root / 'data' / 'index.json').read_text(encoding='utf-8'))
+
+            self.assertEqual(dashboard_history['state_metadata'], state_metadata)
+            self.assertEqual(dashboard_history['days'][0]['state_metadata'], state_metadata)
+            self.assertEqual(index_payload['state_metadata'], state_metadata)
+
     def test_render_ticker_markdown_includes_period_quarterly_events_and_timeline(self) -> None:
         content = render_ticker_markdown(
             TickerAnalysis(**{**_sample_analysis().__dict__, 'committee_analysis': _sample_committee_analysis()}),
@@ -660,7 +684,7 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(dashboard['days'][0]['pm_view']['as_of'], '2026-04-08')
             self.assertEqual(dashboard['days'][0]['pm_view']['swap_candidates'], [])
             self.assertEqual(dashboard['days'][0]['pm_view']['event_exposure_items'][0]['ticker'], 'AAPL')
-            self.assertIn('conviction is only 74', dashboard['days'][0]['pm_view']['event_exposure_items'][0]['reasons'][1])
+            self.assertIn('확신도 74', dashboard['days'][0]['pm_view']['event_exposure_items'][0]['reasons'][1])
             self.assertGreaterEqual(
                 dashboard['days'][0]['pm_view']['today_priority_queue'][0]['today_priority_score'],
                 dashboard['days'][0]['pm_view']['today_priority_queue'][-1]['today_priority_score'],

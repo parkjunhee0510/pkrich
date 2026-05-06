@@ -19,7 +19,9 @@
 
 The decision layer owns the final `data_quality_score` used by confidence adjustment. The score combines analyzer validation, price freshness, news coverage, source diversity, fallback depth, missing fundamentals, and macro context availability.
 
-The initial gate is shadow-only. `confidence_meta.data_quality_gate` records whether a low score would cap a `buy` to `watch`, but default official action behavior remains driven by the existing conviction and confidence calculation. Output and web code serialize this metadata without recomputing it.
+By default, the data-quality gate remains shadow-only. `confidence_meta.data_quality_gate` records whether a low score would cap a `buy` to `watch`, while official action behavior remains driven by the existing conviction and confidence calculation.
+
+Set `DECISION_DATA_QUALITY_GATE_MODE=enforce` to promote the gate from shadow mode. In enforced mode, a `buy` with `data_quality_score < 0.6` is capped to `watch`, and the reason text records that the data-quality gate was applied. Output and web code serialize this metadata without recomputing it.
 
 ## Key Components
 

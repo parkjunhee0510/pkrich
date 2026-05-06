@@ -59,7 +59,7 @@ from src.utils.macro_sensitivity import attach_portfolio_macro_sensitivity
 from src.utils.model_config import load_committee_config
 from src.utils.portfolio import calculate_portfolio_summary
 from src.utils.pipeline_logging import finalize_pipeline_logging, get_pipeline_logger, record_pipeline_event, start_pipeline_logging
-from src.output.json_export import _write_validation_warnings_json
+from src.output.json_export import _sync_web_public_data, _write_validation_warnings_json
 
 
 def _build_analysis_orchestrator(model_profile_name: str | None = None) -> AnalysisOrchestrator:
@@ -135,6 +135,8 @@ def run_policy_stage(
             "policy.collector", "info", "events_extracted",
             count=len(new_events),
         )
+        if not new_events:
+            return None
         # Plan B: merge into the rolling active-events dossier so
         # events stay in scope for up to 30 days with age-based decay.
         dossier_entries = update_dossier(new_events, today=today)
@@ -172,7 +174,7 @@ def run_policy_stage(
         return None
 
 
-def run_pipeline(run_date: date | None = None) -> None:
+def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) -> None:
     load_dotenv()
     calendar_run_date = run_date or date.today()
     effective_date = calendar_run_date
@@ -383,6 +385,13 @@ def run_pipeline(run_date: date | None = None) -> None:
             ticker: {"7d": data.price_change_7d, "30d": data.price_change_30d}
             for ticker, data in collected.items()
         }
+        state_metadata = {
+            "decision_signal_stats_as_of": effective_date.isoformat(),
+            "decision_signal_stats_includes_current_run": False,
+            "output_signal_stats_as_of": effective_date.isoformat(),
+            "output_signal_stats_includes_current_run": True,
+            "signal_returns_updated_before_decision": True,
+        }
         output_paths = write_outputs(
             analyses,
             effective_date,
@@ -394,6 +403,7 @@ def run_pipeline(run_date: date | None = None) -> None:
             portfolio_risk=portfolio_risk,
             market_regime=market_regime,
             decisions=decisions,
+            state_metadata=state_metadata,
         )
         ab_test_payload = build_weekly_ab_test_payload(
             run_date=calendar_run_date,
@@ -406,7 +416,16 @@ def run_pipeline(run_date: date | None = None) -> None:
             output_root=Path("output"),
         )
         write_ab_test_results(ab_test_payload, output_root=Path("output"))
-        _run_sector_scan(watchlist, effective_date)
+        if with_sectors:
+            _run_sector_scan(watchlist, effective_date)
+        else:
+            record_pipeline_event(
+                "pipeline",
+                "info",
+                "sector_scan_skipped",
+                reason="disabled_by_default",
+                hint="run with --with-sectors to refresh sectors.json",
+            )
         send_daily_summary(
             analyses,
             effective_date,
@@ -690,6 +709,7 @@ def _run_sector_scan(watchlist, effective_date) -> None:
             skip_tickers=watchlist_tickers,
         )
         write_sectors_json(snapshots, effective_date, output_root=Path("output"))
+        _sync_web_public_data(Path("output") / "data", Path("."))
         record_pipeline_event(
             "pipeline",
             "info",

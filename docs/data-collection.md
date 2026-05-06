@@ -37,6 +37,7 @@
 
 * Respect API limits
 * Add delays between calls
+* `RateLimiterHub` owns provider token buckets and can also register LLM request/token buckets for paths that need RPM and TPM throttling
 
 ### Normalization
 
