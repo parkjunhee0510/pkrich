@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-05-05",
+  "date": "2026-05-07",
   "ticker": "KTOS",
   "payload": {
     "ticker": "KTOS",
@@ -72,41 +72,41 @@
     ],
     "signal_or_takeaway": "매도 경계 — SMA50·SMA200 하회와 30일간 약세 및 실적·방산 수요 확인 전 변동성 확대 | 진입 트리거 59.31 이탈 지속 | 목표 50.00/32.85달러 | 손절 77.74달러",
     "data_snapshot": {
-      "Price": "59.31 USD",
-      "Daily Change": "-4.23%",
-      "Market Cap": "11.12B",
-      "Trailing P/E": "456.23",
-      "EPS": "0.13",
+      "Price": "58.09 USD",
+      "Daily Change": "-5.58%",
+      "Market Cap": "10.89B",
+      "Trailing P/E": "341.71",
+      "EPS": "0.17",
       "52W High": "134.00",
       "52W Low": "32.85",
-      "50D SMA": "77.74",
-      "200D SMA": "80.87",
-      "Volume": "4.24M",
+      "50D SMA": "76.45",
+      "200D SMA": "80.88",
+      "Volume": "2849170",
       "3M Avg Volume": "4.15M",
-      "Price/Book": "5.02",
+      "Price/Book": "4.91",
       "Dividend Yield": "N/A",
       "Sector": "Industrials",
-      "Open": "62.69",
-      "High": "62.79",
-      "Low": "58.01",
-      "Close": "59.31",
+      "Open": "61.17",
+      "High": "61.36",
+      "Low": "57.75",
+      "Close": "58.09",
       "RS vs Sector ETF": "-24.69%"
     },
     "fundamentals": {
-      "market_cap": "11.12B",
-      "trailing_pe": "456.23",
-      "eps": "0.13",
-      "forward_eps": "1.08",
+      "market_cap": "10.89B",
+      "trailing_pe": "341.71",
+      "eps": "0.17",
+      "forward_eps": "1.07",
       "earnings_growth": "+18.60% YoY",
-      "price_to_book": "5.02",
+      "price_to_book": "4.91",
       "dividend_yield": "N/A",
-      "volume": "4.24M",
+      "volume": "2849170",
       "avg_volume_3m": "4.15M",
       "52w_high": "134.00",
       "52w_low": "32.85",
       "short_float_pct": "5.79%",
       "short_ratio": "2.53일",
-      "analyst_target_price": "116.75 USD",
+      "analyst_target_price": "114.80 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "20명",
       "held_by_insiders": "1.41%",
@@ -140,15 +140,15 @@
       "pattern_note": "최근 4개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.2%"
     },
     "price_action": {
-      "atr_14d": "3.70",
-      "atr_percent": "6.25%",
-      "relative_volume": "1.02x",
-      "gap_percent": "+1.22%",
-      "price_vs_sma50": "-23.71%",
-      "price_vs_sma200": "-26.66%",
-      "week52_position": "26%",
+      "atr_14d": "3.45",
+      "atr_percent": "5.93%",
+      "relative_volume": "0.69x",
+      "gap_percent": "-0.56%",
+      "price_vs_sma50": "-24.02%",
+      "price_vs_sma200": "-28.18%",
+      "week52_position": "25%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-24.69%"
+      "rs_vs_sector_etf": "-25.80%"
     },
     "quarterly_financials": [
       {
@@ -221,10 +221,10 @@
     },
     "options_summary": {
       "expiry": "2026-05-08",
-      "atm_call_iv": "0.0%",
-      "atm_put_iv": "1.6%",
-      "iv_percentile_30d": "46th",
-      "put_call_ratio": "8.11",
+      "atm_call_iv": "114.1%",
+      "atm_put_iv": "69.7%",
+      "iv_percentile_30d": "21th",
+      "put_call_ratio": "0.63x",
       "tone": "neutral",
       "unusual_activity": "PUT $180, vol 5, OI 대비 100% ; PUT $145, vol 1, OI 대비 100% ; PUT $140, vol 1, OI 대비 100%",
       "oi_change": "N/A"
@@ -347,8 +347,8 @@
       }
     },
     "period_changes": {
-      "7d": "-3.81%",
-      "30d": "-11.89%"
+      "7d": "-7.87%",
+      "30d": "-19.27%"
     },
     "sec_filing_tags": [
       "기타 공시",
@@ -441,5 +441,6 @@
         }
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-05-07T16:02:39"
 }
