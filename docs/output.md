@@ -85,7 +85,7 @@ Sync failures are logged as output events and should not recompute decisions, mu
 
 Sector explorer payloads are refreshed only when the sector scan path runs, such as `python main.py --with-sectors` or the standalone sector CLI. A default `python main.py` run preserves the latest existing `output/data/sectors.json` and mirrored web copies instead of deleting or blanking them.
 
-`search_evidence.json` is mirrored to `web/public/output/data/search_evidence.json` when present. It is observational in PR 1 and must not override official rule-based decisions.
+`search_evidence.json` is mirrored to `web/public/output/data/search_evidence.json` when present. It is observational and must not override official rule-based decisions. The payload `provider` is `cache` for cache-only runs and `openai` only when a live provider refresh contributed items. `run_summary` includes provider call and error counts so low evidence can be distinguished from provider failures.
 
 `search_audit.json` is mirrored to `web/public/output/data/search_audit.json` when present. It is an observational claim-vs-evidence artifact and must not override official rule-based decisions.
 

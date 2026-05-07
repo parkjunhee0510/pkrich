@@ -17,6 +17,7 @@ class BudgetGuardConfig:
         "committee_deep",
         "macro_narrative",
         "policy_impact",
+        "search_evidence",
     )
 
 
@@ -63,7 +64,14 @@ def budget_guard_config_from_mapping(raw: dict[str, Any] | None) -> BudgetGuardC
         guarded_paths=tuple(
             _list(
                 raw.get("guarded_paths"),
-                default=("ensemble_deep", "ensemble_tie_break", "committee_deep", "macro_narrative", "policy_impact"),
+                default=(
+                    "ensemble_deep",
+                    "ensemble_tie_break",
+                    "committee_deep",
+                    "macro_narrative",
+                    "policy_impact",
+                    "search_evidence",
+                ),
             )
         ),
     )

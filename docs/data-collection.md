@@ -60,7 +60,9 @@
 
 Search evidence is a collector-owned enrichment path. PR 1 is cache-backed and provider-independent: it reads structured files from `output/cache/search_evidence/<YYYY-MM-DD>/<TICKER>.json`, normalizes them, and emits a valid search evidence payload without making live provider calls.
 
-Future OpenAI Web Search integration must plug into this collector boundary. Analyzer, decision, output, and web code must consume normalized search evidence only; they must not call web search directly.
+OpenAI Web Search integration plugs into this same collector boundary through `config/search_evidence.yaml` and `src/collector/providers/search/openai_web_search.py`. The default mode is still `cache`, so normal pipeline runs do not make live search calls. Switching `mode: openai` requires `OPENAI_API_KEY`, rate limits, BudgetGuard telemetry, and current official OpenAI Web Search API verification.
+
+Analyzer, decision, output, and web code must consume normalized search evidence only; they must not call web search directly.
 
 ## Rules
 

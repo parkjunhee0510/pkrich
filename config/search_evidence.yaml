@@ -1,0 +1,17 @@
+# Search evidence is cache-only by default. Switch to `openai` only when
+# OPENAI_API_KEY is available and the API request shape has been verified.
+mode: cache
+provider: openai
+model_profile: standard
+tool_type: web_search
+max_search_tickers_per_run: 5
+max_queries_per_ticker: 2
+cache_ttl_hours: 24
+requests_per_minute: 6
+tokens_per_minute: 60000
+rate_limit_timeout_seconds: 5
+estimated_input_tokens_per_query: 900
+estimated_output_tokens_per_query: 700
+query_templates:
+  - "{ticker} latest earnings revenue guidance"
+  - "{ticker} recent risks demand backlog valuation"

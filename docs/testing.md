@@ -62,6 +62,8 @@ Pipeline must run end-to-end.
 * `tests/test_decision_factors.py` - factor scoring including macro regime/event factors
 * `tests/test_decision_registry.py` - factor registry resolution
 * `tests/test_search_quality_gate.py` - search evidence score and shadow quality gate behavior
+* `tests/test_search_evidence_config.py` - cache-first search evidence config parsing and limits
+* `tests/test_openai_web_search_provider.py` - mocked OpenAI Responses API web search provider adapter and normalization
 * `tests/test_output.py` - output serialization, including news reference provenance fields
 * `tests/test_output_schema.py` - generated JSON shape stability and web-public operational copies
 * `tests/test_pipeline_quality_wiring.py` - pipeline wiring for quality outputs and API status run-date behavior

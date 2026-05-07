@@ -3,13 +3,37 @@ import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
+from src.collector.search_evidence_config import SearchEvidenceConfig
 from src.collector.search_evidence import (
     SearchEvidenceItem,
     build_search_evidence_payload,
     collect_search_evidence,
     query_hash,
 )
+from src.utils.budget_guard import BudgetGuardConfig
+
+
+class _FakeSearchProvider:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, list[str]]] = []
+
+    def search(self, *, ticker: str, queries: list[str], run_date: date) -> list[SearchEvidenceItem]:
+        self.calls.append((ticker, queries))
+        return [
+            SearchEvidenceItem(
+                ticker=ticker,
+                query=queries[0],
+                title=f"{ticker} evidence",
+                url=f"https://example.com/{ticker.lower()}",
+                published_at=run_date.isoformat(),
+                snippet="Recent evidence.",
+                evidence_type="news",
+                relevance_score=0.8,
+                freshness_hours=12,
+            )
+        ]
 
 
 class SearchEvidenceTests(unittest.TestCase):
@@ -120,6 +144,69 @@ class SearchEvidenceTests(unittest.TestCase):
         self.assertEqual(payload["items"], [])
         self.assertEqual(payload["by_ticker"]["AAPL"]["coverage_score"], 0.0)
         self.assertEqual(payload["run_summary"]["searched_ticker_count"], 0)
+
+    def test_collect_search_evidence_uses_openai_provider_when_enabled(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_root = Path(temp_dir) / "cache"
+            provider = _FakeSearchProvider()
+            config = SearchEvidenceConfig(
+                mode="openai",
+                model_profile="standard",
+                max_search_tickers_per_run=1,
+                max_queries_per_ticker=1,
+                query_templates=("{ticker} latest evidence",),
+            )
+
+            with patch("src.collector.search_evidence.record_pipeline_event") as record_event:
+                payload = collect_search_evidence(
+                    run_date=date(2026, 5, 7),
+                    tickers=["COHR", "ALAB"],
+                    cache_root=cache_root,
+                    config=config,
+                    provider=provider,
+                )
+
+            cache_payload = json.loads((cache_root / "2026-05-07" / "COHR.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(provider.calls, [("COHR", ["COHR latest evidence"])])
+        self.assertEqual(payload["provider"], "openai")
+        self.assertEqual(payload["run_summary"]["provider_call_count"], 1)
+        self.assertEqual(payload["run_summary"]["skipped_ticker_count"], 1)
+        self.assertEqual(payload["by_ticker"]["COHR"]["evidence_count"], 1)
+        self.assertEqual(payload["by_ticker"]["ALAB"]["evidence_count"], 0)
+        self.assertEqual(cache_payload["items"][0]["ticker"], "COHR")
+        self.assertTrue(any(call.args[2] == "budget_guard_decision" for call in record_event.call_args_list))
+
+    def test_collect_search_evidence_skips_provider_when_budget_guard_blocks(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            provider = _FakeSearchProvider()
+            config = SearchEvidenceConfig(
+                mode="openai",
+                model_profile="standard",
+                max_search_tickers_per_run=1,
+                max_queries_per_ticker=1,
+                query_templates=("{ticker} latest evidence",),
+            )
+            budget_config = BudgetGuardConfig(
+                mode="enforce",
+                daily_cap_usd=0.0,
+                guarded_profiles=("standard",),
+                guarded_paths=("search_evidence",),
+            )
+
+            with patch("src.collector.search_evidence.load_budget_guard_config", return_value=budget_config):
+                payload = collect_search_evidence(
+                    run_date=date(2026, 5, 7),
+                    tickers=["COHR"],
+                    cache_root=Path(temp_dir) / "cache",
+                    config=config,
+                    provider=provider,
+                )
+
+        self.assertEqual(provider.calls, [])
+        self.assertEqual(payload["provider"], "cache")
+        self.assertEqual(payload["run_summary"]["provider_call_count"], 0)
+        self.assertEqual(payload["run_summary"]["skipped_ticker_count"], 1)
 
     def test_write_search_evidence_output_writes_and_syncs_web_public_copy(self) -> None:
         from src.output.search_evidence_json import write_search_evidence_output

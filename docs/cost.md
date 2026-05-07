@@ -30,12 +30,15 @@ Current guarded paths:
 * `committee_deep`
 * `macro_narrative`
 * `policy_impact`
+* `search_evidence`
 
 Current default mode is `shadow`. In shadow mode, BudgetGuard estimates incremental cost, records a `budget_guard_decision` pipeline event, and reports whether the daily cap would have blocked the path, but it does not skip the LLM call. This keeps cost-risk visibility high without changing official output behavior.
 
 `enforce` mode is reserved for a later operational decision. In enforce mode, guarded optional paths may skip deep or optional work when the estimated run cost exceeds `daily_cap_usd`.
 
 `output/data/cost_log.json` includes BudgetGuard decision counts, guarded path outcomes, profile counts, and total estimated incremental guarded cost. This is telemetry only; it is not a billing ledger.
+
+Search evidence remains `cache` mode by default in `config/search_evidence.yaml`. When `mode: openai` is enabled, provider calls are rate-limited and logged through the `search_evidence` BudgetGuard path before any live OpenAI Web Search request is attempted.
 
 ## Data Strategy
 

@@ -39,7 +39,14 @@ _DEFAULT_CONFIG: dict[str, Any] = {
         'monthly_cap_usd': 5.0,
         'on_exceed': 'log_only',
         'guarded_profiles': ['standard', 'deep'],
-        'guarded_paths': ['ensemble_deep', 'ensemble_tie_break', 'committee_deep', 'macro_narrative', 'policy_impact'],
+        'guarded_paths': [
+            'ensemble_deep',
+            'ensemble_tie_break',
+            'committee_deep',
+            'macro_narrative',
+            'policy_impact',
+            'search_evidence',
+        ],
     },
     'profiles': {
         'economy': {
