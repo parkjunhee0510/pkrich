@@ -34,6 +34,7 @@ Per-ticker payloads now include:
 * `committee_analysis` for always-visible committee debate summaries plus PM conclusions
 * the web dashboard and ticker detail UI consume `committee_analysis` as a presentation-layer debate record, separate from the official `decision`
 * `decision.confidence_meta.search_evidence_score` and `decision.confidence_meta.search_quality_gate` when search evidence quality metadata is available; output serializes these fields without recomputing the score or changing official actions
+* the web dashboard, action-change feed, today decision strip, and ticker detail UI may render search evidence metadata as badges or panels; these presentation cues are observational and must not mutate or reinterpret official decisions
 * `pm_view` on the latest index payload and each `dashboard_history.days[]` entry for additive PM review context on held names
 * `key_news_source_titles` and `key_news_reference_indices` alongside `key_news`, so short translated summaries remain display-friendly while citation audits can trace each item to its source headline
 

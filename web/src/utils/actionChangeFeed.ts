@@ -1,4 +1,5 @@
 import type { DailyEntry, TickerAnalysisData, TickerDecisionData } from '../types'
+import { buildSearchEvidenceBadge, type SearchEvidenceBadgeData } from './searchEvidenceBadge'
 
 export type ActionChangeType = 'action_change' | 'conviction_change' | 'new_ticker' | 'risk_added'
 export type ActionChangeTone = 'positive' | 'negative' | 'caution' | 'neutral' | 'info'
@@ -20,6 +21,7 @@ export interface ActionChangeFeedEntry {
   primaryLabel: string
   secondaryLabel: string
   summary: string
+  evidenceBadge?: SearchEvidenceBadgeData
 }
 
 export interface ActionChangeFeedResult {
@@ -181,6 +183,7 @@ function createEntry(
     primaryLabel: primaryLabelFor(type, previousAction, currentAction, convictionDelta, addedRisks),
     secondaryLabel: secondaryLabelFor(previousConviction, currentConviction, convictionDelta),
     summary: summaryFor(currentTicker, addedRisks),
+    evidenceBadge: buildSearchEvidenceBadge(currentTicker),
   }
 }
 

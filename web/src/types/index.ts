@@ -180,6 +180,16 @@ export interface TickerDecisionData {
       max_action_if_enforced?: 'watch' | string
       would_cap_action?: boolean
     }
+    search_evidence_score?: number | null
+    search_quality_gate?: {
+      mode?: 'shadow' | string
+      threshold?: number
+      max_action_if_enforced?: 'watch' | string
+      would_cap_action?: boolean
+      reason?: string
+      evidence_count?: number
+      source_diversity?: number
+    }
   }
 }
 

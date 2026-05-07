@@ -4,6 +4,7 @@ import {
   type ActionChangeFeedEntry,
   type ActionChangeFeedResult,
 } from './actionChangeFeed'
+import { buildSearchEvidenceBadge, type SearchEvidenceBadgeData } from './searchEvidenceBadge'
 
 export type TodayDecisionKind =
   | 'quality_gate'
@@ -43,6 +44,7 @@ export interface TodayDecisionStripEntry {
   qualityDetail: string
   qualityClassName: string
   metricLabel: string | null
+  evidenceBadge?: SearchEvidenceBadgeData
   stance: TodayDecisionStance
   sourceEntryId?: string
   rankScore: number
@@ -160,17 +162,20 @@ export function classifyDecisionQuality(ticker: TickerAnalysisData): TodayDecisi
 
 function createQualityGateEntry(ticker: TickerAnalysisData): TodayDecisionStripEntry | null {
   const quality = classifyDecisionQuality(ticker)
+  const evidence = buildSearchEvidenceBadge(ticker)
   const action = ticker.decision?.action
   const scoreTriggersGate = quality.score !== null && quality.score < 0.6
   const penaltyTriggersGate = quality.penalty !== null && quality.penalty < 0
+  const searchTriggersGate = evidence.wouldCapAction
 
-  if (!quality.hasGate && !scoreTriggersGate && !penaltyTriggersGate) {
+  if (!quality.hasGate && !scoreTriggersGate && !penaltyTriggersGate && !searchTriggersGate) {
     return null
   }
 
   const normalizedTicker = normalizeTicker(ticker.ticker)
   const maxAction = ticker.decision?.confidence_meta?.data_quality_gate?.max_action_if_enforced
   const capLabel = maxAction ? `cap to ${String(maxAction).toUpperCase()}` : 'quality gate'
+  const isSearchOnlyGate = searchTriggersGate && !quality.hasGate && !scoreTriggersGate && !penaltyTriggersGate
 
   return {
     id: `quality_gate-${normalizedTicker}`,
@@ -178,18 +183,23 @@ function createQualityGateEntry(ticker: TickerAnalysisData): TodayDecisionStripE
     ticker: normalizedTicker,
     name: ticker.name,
     sector: ticker.data_snapshot?.Sector ?? 'Unknown',
-    categoryLabel: 'Quality gate',
+    categoryLabel: isSearchOnlyGate ? 'Evidence gate' : 'Quality gate',
     title: action
-      ? `${normalizedTicker} ${ACTION_LABELS[action]} capped`
-      : `${normalizedTicker} quality gate`,
+      ? isSearchOnlyGate
+        ? `${normalizedTicker} evidence gate`
+        : `${normalizedTicker} ${ACTION_LABELS[action]} capped`
+      : isSearchOnlyGate
+        ? `${normalizedTicker} evidence gate`
+        : `${normalizedTicker} quality gate`,
     supportingLine: supportingQualityLine(ticker, capLabel),
     qualityLabel: quality.label,
     qualityScore: quality.score,
     qualityDetail: quality.detail,
     qualityClassName: quality.className,
-    metricLabel: capLabel,
+    metricLabel: isSearchOnlyGate ? 'evidence gate' : capLabel,
+    evidenceBadge: evidence,
     stance: 'caution',
-    rankScore: quality.score ?? 1,
+    rankScore: Math.min(quality.score ?? 1, evidence.score ?? 1),
     convictionRank: numericConviction(ticker) ?? -1,
   }
 }
@@ -201,6 +211,7 @@ function createFeedEntry(
   if (!ticker) return null
 
   const quality = classifyDecisionQuality(ticker)
+  const evidence = buildSearchEvidenceBadge(ticker)
   const normalizedTicker = normalizeTicker(feedEntry.ticker)
   const kind = kindFromFeedEntry(feedEntry)
 
@@ -218,6 +229,7 @@ function createFeedEntry(
     qualityDetail: quality.detail,
     qualityClassName: quality.className,
     metricLabel: metricLabelForFeed(feedEntry),
+    evidenceBadge: evidence,
     stance: feedEntry.tone,
     sourceEntryId: feedEntry.id,
     rankScore: quality.score ?? 1,

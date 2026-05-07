@@ -20,6 +20,16 @@ function makeEntry(overrides: Partial<TodayDecisionStripEntry> = {}): TodayDecis
     qualityDetail: 'quality 0.52',
     qualityClassName: 'today-decision-quality-low',
     metricLabel: 'cap to WATCH',
+    evidenceBadge: {
+      label: 'Evidence weak',
+      detail: 'score 0.42 · sources 2 · items 2',
+      className: 'search-evidence-weak',
+      tone: 'weak',
+      score: 0.42,
+      sourceDiversity: 2,
+      evidenceCount: 2,
+      wouldCapAction: true,
+    },
     stance: 'caution',
     rankScore: 0.52,
     convictionRank: 65,
@@ -55,6 +65,7 @@ describe('TodayDecisionStrip', () => {
     expect(screen.getByText('Fluence Energy')).toBeInTheDocument()
     expect(screen.getByText('FLNC BUY capped')).toBeInTheDocument()
     expect(screen.getByText('low quality')).toHaveClass('today-decision-quality-low')
+    expect(screen.getByText('Evidence weak')).toHaveClass('search-evidence-weak')
     expect(screen.getByText('quality 0.52')).toBeInTheDocument()
     expect(screen.getByText('cap to WATCH')).toBeInTheDocument()
   })

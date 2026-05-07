@@ -22,6 +22,8 @@ function makeTicker({
   wouldCapAction = false,
   evidenceCoverage,
   evidenceConsistency,
+  searchEvidenceScore,
+  searchWouldCapAction = false,
   risks = [],
 }: {
   ticker: string
@@ -34,6 +36,8 @@ function makeTicker({
   wouldCapAction?: boolean
   evidenceCoverage?: number
   evidenceConsistency?: number
+  searchEvidenceScore?: number
+  searchWouldCapAction?: boolean
   risks?: string[]
 }): TickerAnalysisData {
   return {
@@ -93,16 +97,25 @@ function makeTicker({
         confidencePenalty === undefined &&
         evidenceCoverage === undefined &&
         evidenceConsistency === undefined &&
-        !wouldCapAction
+        searchEvidenceScore === undefined &&
+        !wouldCapAction &&
+        !searchWouldCapAction
           ? undefined
           : {
               data_quality_score: qualityScore,
               confidence_penalty: confidencePenalty,
               evidence_coverage: evidenceCoverage,
               evidence_consistency: evidenceConsistency,
+              search_evidence_score: searchEvidenceScore,
               data_quality_gate: {
                 would_cap_action: wouldCapAction,
                 max_action_if_enforced: 'watch',
+              },
+              search_quality_gate: {
+                would_cap_action: searchWouldCapAction,
+                max_action_if_enforced: 'watch',
+                evidence_count: searchEvidenceScore === undefined ? 0 : 1,
+                source_diversity: searchEvidenceScore === undefined ? 0 : 1,
               },
             },
     },
@@ -208,6 +221,36 @@ describe('buildTodayDecisionStrip', () => {
       qualityLabel: 'unknown',
       qualityScore: null,
       qualityDetail: 'quality unknown',
+    })
+  })
+
+  it('creates a shadow quality gate entry from weak search evidence without changing the action', () => {
+    const previous = makeDay('2026-04-29', [
+      makeTicker({ ticker: 'ALAB', action: 'watch', conviction: 55 }),
+    ])
+    const current = makeDay('2026-05-01', [
+      makeTicker({
+        ticker: 'ALAB',
+        action: 'buy',
+        conviction: 72,
+        qualityScore: 0.88,
+        searchEvidenceScore: 0.41,
+        searchWouldCapAction: true,
+      }),
+    ])
+
+    const strip = buildTodayDecisionStrip(current, previous)
+
+    expect(strip.entries[0]).toMatchObject({
+      kind: 'quality_gate',
+      categoryLabel: 'Evidence gate',
+      ticker: 'ALAB',
+      title: 'ALAB evidence gate',
+      metricLabel: 'evidence gate',
+      evidenceBadge: expect.objectContaining({
+        label: 'Evidence weak',
+        wouldCapAction: true,
+      }),
     })
   })
 })

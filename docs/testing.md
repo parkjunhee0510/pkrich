@@ -69,3 +69,12 @@ Pipeline must run end-to-end.
 * `tests/test_search_audit.py` - search audit claim evaluation, output serialization, and web-public mirror coverage
 * `tests/eval/` - LLM audit data loading, replay, report rendering, and check-specific thresholds
 * `tests/test_codex_*hook*.py` and `tests/test_codex_summarize_session.py` - local Codex hook regression coverage
+
+## Web Frontend Checks
+
+On Windows/OneDrive worktrees, Vitest may fail to spawn default fork workers. Use `npm run test -- --configLoader native --pool threads --run <files...>` when targeted frontend tests hit `spawn EPERM`.
+
+* `web/src/utils/searchEvidenceBadge.test.ts` - search evidence badge tone, label, and missing-metadata mapping
+* `web/src/components/SearchEvidenceBadge.test.tsx` - reusable dashboard badge and ticker detail panel rendering
+* `web/src/utils/actionChangeFeed.test.ts` and `web/src/utils/todayDecisionStrip.test.ts` - dashboard feed entries preserve official decisions while surfacing evidence metadata
+* `web/src/components/ActionChangeFeed.test.tsx` and `web/src/components/TodayDecisionStrip.test.tsx` - dashboard cards render compact evidence badges without requiring a backend call

@@ -12,6 +12,7 @@ import { InfoTooltip } from '../components/InfoTooltip'
 import { DecisionCard } from '../components/DecisionCard'
 import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
 import { CommitteeDetailPanel } from '../components/CommitteeDetailPanel'
+import { SearchEvidencePanel } from '../components/SearchEvidenceBadge'
 import { TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
 import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../types'
@@ -267,6 +268,8 @@ export function TickerDetail() {
       {analysis.decision && (
         <DecisionCard decision={analysis.decision} analysisConsensus={analysis.analysis_consensus} />
       )}
+
+      <SearchEvidencePanel ticker={analysis} />
 
       {actionPlan && (
         <TraderDecisionBoard

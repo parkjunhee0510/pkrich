@@ -2,6 +2,7 @@ import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import type { ActionChangeFeedEntry, ActionChangeFeedResult } from '../utils/actionChangeFeed'
+import { SearchEvidenceBadge } from './SearchEvidenceBadge'
 
 const VISIBLE_ENTRY_LIMIT = 8
 
@@ -87,6 +88,7 @@ function ActionChangeCard({ entry }: { entry: ActionChangeFeedEntry }) {
 
       <div className="action-change-meta-row">
         <span>{entry.secondaryLabel}</span>
+        {entry.evidenceBadge ? <SearchEvidenceBadge badge={entry.evidenceBadge} /> : null}
         {entry.addedRisks.length > 0 ? (
           <span className="action-change-risk-badge">
             새 리스크 {entry.addedRisks.length}개

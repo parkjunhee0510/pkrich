@@ -2,6 +2,7 @@ import { useId } from 'react'
 import { Link } from 'react-router-dom'
 
 import type { TodayDecisionStripEntry, TodayDecisionStripResult } from '../utils/todayDecisionStrip'
+import { SearchEvidenceBadge } from './SearchEvidenceBadge'
 
 type TodayDecisionStripProps = {
   strip: TodayDecisionStripResult
@@ -53,6 +54,7 @@ function TodayDecisionCard({ entry }: { entry: TodayDecisionStripEntry }) {
         <span className={`today-decision-quality-badge ${entry.qualityClassName}`}>
           {entry.qualityLabel}
         </span>
+        {entry.evidenceBadge ? <SearchEvidenceBadge badge={entry.evidenceBadge} /> : null}
       </div>
 
       <div className="today-decision-title-row">

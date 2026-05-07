@@ -21,6 +21,8 @@ function makeTicker({
   risks = [],
   signal = `${ticker} signal`,
   summary = `${ticker} summary`,
+  searchEvidenceScore,
+  searchWouldCapAction = false,
 }: {
   ticker: string
   name?: string
@@ -31,6 +33,8 @@ function makeTicker({
   risks?: string[]
   signal?: string
   summary?: string
+  searchEvidenceScore?: number
+  searchWouldCapAction?: boolean
 }): TickerAnalysisData {
   return {
     ticker,
@@ -85,6 +89,17 @@ function makeTicker({
           reason,
           valid_until: '2026-05-10',
           factors: {},
+          confidence_meta:
+            searchEvidenceScore === undefined && !searchWouldCapAction
+              ? undefined
+              : {
+                  search_evidence_score: searchEvidenceScore,
+                  search_quality_gate: {
+                    would_cap_action: searchWouldCapAction,
+                    evidence_count: searchEvidenceScore === undefined ? 0 : 2,
+                    source_diversity: searchEvidenceScore === undefined ? 0 : 2,
+                  },
+                },
         }
       : undefined,
   } as TickerAnalysisData
@@ -96,7 +111,7 @@ describe('buildActionChangeFeed', () => {
       makeTicker({ ticker: 'ALAB', action: 'watch', conviction: 52 }),
     ])
     const current = makeDay('2026-05-01', [
-      makeTicker({ ticker: 'ALAB', action: 'buy', conviction: 72 }),
+      makeTicker({ ticker: 'ALAB', action: 'buy', conviction: 72, searchEvidenceScore: 0.42, searchWouldCapAction: true }),
     ])
 
     const feed = buildActionChangeFeed(current, previous)
@@ -123,6 +138,10 @@ describe('buildActionChangeFeed', () => {
       primaryLabel: 'WATCH -> BUY',
       secondaryLabel: 'Conviction 52 -> 72 (+20p)',
       summary: 'ALAB decision reason',
+      evidenceBadge: expect.objectContaining({
+        label: 'Evidence weak',
+        wouldCapAction: true,
+      }),
     })
   })
 
