@@ -190,7 +190,7 @@ Decision logic is rule-based even when upstream analysis uses LLMs.
 
 The data-quality gate is shadow-only by default. It records whether low quality would cap a `buy` to `watch`, and `DECISION_DATA_QUALITY_GATE_MODE=enforce` can promote that cap into official action behavior.
 
-Search quality remains shadow-only. The pipeline collects normalized search evidence, generates official decisions, then attaches search evidence score and gate metadata before state/output serialization. Weak or missing search evidence does not change official actions in this phase.
+The search-quality gate is also shadow-only by default. The pipeline collects normalized search evidence, generates official decisions, then attaches search evidence score and gate metadata before state/output serialization. `DECISION_SEARCH_QUALITY_GATE_MODE=enforce` can cap a weak-evidence `buy` to `watch`; missing search payloads remain unavailable metadata and do not cap official actions.
 
 ### State
 

@@ -64,7 +64,7 @@ Owned by `decision/`.
 Responsibilities:
 * Consume the run-level market regime detected earlier in the run
 * Generate factor scores, conviction, confidence metadata, and official `buy` / `watch` / `avoid`
-* Attach search evidence score and `search_quality_gate` metadata in shadow mode after official actions are generated
+* Attach search evidence score and `search_quality_gate` metadata after official actions are generated; default shadow mode is observational, while `DECISION_SEARCH_QUALITY_GATE_MODE=enforce` may cap weak-evidence `buy` decisions to `watch`
 * Keep official actions rule-based even when upstream analysis used LLMs
 
 ### 4. State

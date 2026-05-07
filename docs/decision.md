@@ -25,9 +25,11 @@ Set `DECISION_DATA_QUALITY_GATE_MODE=enforce` to promote the gate from shadow mo
 
 ## Search Evidence Quality
 
-Search evidence quality is attached to `TickerDecision.confidence_meta` after official rule-based actions are generated. This keeps the first search integration observational: `search_evidence_score` and `search_quality_gate` can show whether a weak-evidence `buy` would be capped to `watch`, but the official `TickerDecision.action` remains unchanged.
+Search evidence quality is attached to `TickerDecision.confidence_meta` after official rule-based actions are generated. By default this remains observational: `search_evidence_score` and `search_quality_gate` show whether a weak-evidence `buy` would be capped to `watch`, while the official `TickerDecision.action` remains unchanged.
 
-`src.decision.search_quality.attach_search_quality_shadow(...)` consumes the normalized `search_evidence.json` contract from the collector/output side. It does not fetch data, call an LLM, write artifacts, or enforce caps. Missing search payloads are marked as unavailable and do not penalize a ticker.
+Set `DECISION_SEARCH_QUALITY_GATE_MODE=enforce` to promote the search gate from shadow mode. In enforced mode, a `buy` with `search_evidence_score < 0.55` is capped to `watch`, `confidence_meta.search_quality_gate.enforced` is set to `true`, and the reason text records that the search-evidence gate was applied. Missing search payloads are marked as unavailable and do not penalize a ticker.
+
+`src.decision.search_quality.attach_search_quality_shadow(...)` consumes the normalized `search_evidence.json` contract from the collector/output side. It does not fetch data, call an LLM, or write artifacts.
 
 ## Key Components
 

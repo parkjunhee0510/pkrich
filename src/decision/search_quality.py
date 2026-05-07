@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import replace
 from typing import Any, Mapping
 
@@ -16,8 +17,9 @@ def attach_search_quality_shadow(
     *,
     threshold: float = SEARCH_QUALITY_GATE_THRESHOLD,
 ) -> list[TickerDecision]:
-    """Attach search-evidence quality metadata without changing actions."""
+    """Attach search-evidence quality metadata and optionally enforce weak BUY caps."""
     by_ticker = _search_evidence_by_ticker(search_evidence)
+    mode = _search_quality_gate_mode()
     enriched: list[TickerDecision] = []
     for decision in decisions:
         ticker = _normalize_ticker(decision.ticker)
@@ -28,11 +30,20 @@ def attach_search_quality_shadow(
             score=score,
             summary=summary,
             threshold=threshold,
+            mode=mode,
         )
         confidence_meta = dict(decision.confidence_meta or {})
         confidence_meta["search_evidence_score"] = score
         confidence_meta["search_quality_gate"] = gate
-        enriched.append(replace(decision, confidence_meta=confidence_meta))
+        action = decision.action
+        reason = decision.reason
+        if gate["mode"] == "enforce" and gate["would_cap_action"]:
+            action = str(gate["max_action_if_enforced"])
+            gate["enforced"] = True
+            gate["original_action"] = decision.action
+            gate["capped_action"] = action
+            reason = f"{reason} / {_build_search_quality_gate_note(score=score, threshold=threshold)}"
+        enriched.append(replace(decision, action=action, reason=reason, confidence_meta=confidence_meta))
     return enriched
 
 
@@ -57,6 +68,7 @@ def _build_search_quality_gate(
     score: float | None,
     summary: Mapping[str, Any] | None,
     threshold: float,
+    mode: str,
 ) -> dict[str, Any]:
     evidence_count = _to_int(summary.get("evidence_count")) if isinstance(summary, Mapping) else 0
     source_diversity = _to_int(summary.get("source_diversity")) if isinstance(summary, Mapping) else 0
@@ -72,14 +84,30 @@ def _build_search_quality_gate(
         reason = "search_evidence_sufficient"
 
     return {
-        "mode": "shadow",
+        "mode": mode,
         "threshold": round(_clamp_float(threshold), 4),
         "max_action_if_enforced": "watch",
         "would_cap_action": would_cap,
+        "enforced": False,
         "reason": reason,
         "evidence_count": evidence_count,
         "source_diversity": source_diversity,
     }
+
+
+def _search_quality_gate_mode() -> str:
+    raw_mode = os.getenv("DECISION_SEARCH_QUALITY_GATE_MODE", "shadow").strip().lower()
+    if raw_mode in {"1", "true", "on", "yes", "enforce", "enforced"}:
+        return "enforce"
+    return "shadow"
+
+
+def _build_search_quality_gate_note(*, score: float | None, threshold: float) -> str:
+    score_text = "N/A" if score is None else f"{score:.2f}"
+    return (
+        f"검색 근거 품질 게이트 적용: search_evidence_score "
+        f"{score_text} < {threshold:.2f}라서 buy를 watch로 제한"
+    )
 
 
 def _search_evidence_by_ticker(search_evidence: Mapping[str, Any] | None) -> dict[str, Mapping[str, Any]]:
