@@ -22,6 +22,7 @@ from src.analyzer.ensemble import AnalysisEnsemble
 from src.analyzer.ensemble import apply_consensus_to_decisions
 from src.analyzer.orchestrator import AnalysisOrchestrator
 from src.analyzer.registry import ModuleRegistry
+from src.analyzer.search_audit import build_search_audit_payload
 from src.collector.macro import collect_macro_context
 from src.utils.config import load_yaml_mapping
 from src.collector.policy_events import extract_events
@@ -50,6 +51,7 @@ from src.output.intraday_refresh import write_intraday_refresh_outputs
 from src.output.markdown import write_outputs
 from src.output.routing_outcome import write_routing_outcome_output
 from src.output.schema import SCHEMA_VERSION
+from src.output.search_audit_json import write_search_audit_output
 from src.output.search_evidence_json import write_search_evidence_output
 from src.output.sectors_json import write_sectors_json
 from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
@@ -591,6 +593,30 @@ def _write_search_evidence_artifact(effective_date: date, analyses: list[TickerA
             "pipeline",
             "warning",
             "search_evidence_output_failed",
+            error_type=type(exc).__name__,
+            error_message=str(exc)[:200],
+        )
+        return
+
+    try:
+        audit_payload = build_search_audit_payload(
+            run_date=effective_date,
+            analyses=analyses,
+            search_evidence=payload,
+        )
+        write_search_audit_output(audit_payload, output_root=Path("output"))
+        record_pipeline_event(
+            "pipeline",
+            "info",
+            "search_audit_output_written",
+            ticker_count=len(audit_payload.get("tickers", [])),
+            issue_count=int(audit_payload.get("run_summary", {}).get("issue_count", 0)),
+        )
+    except Exception as exc:
+        record_pipeline_event(
+            "pipeline",
+            "warning",
+            "search_audit_output_failed",
             error_type=type(exc).__name__,
             error_message=str(exc)[:200],
         )

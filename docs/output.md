@@ -24,6 +24,7 @@ The output layer turns finalized pipeline results into stable artifacts.
 * `output/data/tickers/<TICKER>/latest.json`
 * `output/data/tickers/<TICKER>/history.json`
 * `output/data/search_evidence.json`
+* `output/data/search_audit.json`
 * dashboard history, price history, ticker timelines
 * sector explorer payloads
 
@@ -83,6 +84,8 @@ Sync failures are logged as output events and should not recompute decisions, mu
 Sector explorer payloads are refreshed only when the sector scan path runs, such as `python main.py --with-sectors` or the standalone sector CLI. A default `python main.py` run preserves the latest existing `output/data/sectors.json` and mirrored web copies instead of deleting or blanking them.
 
 `search_evidence.json` is mirrored to `web/public/output/data/search_evidence.json` when present. It is observational in PR 1 and must not override official rule-based decisions.
+
+`search_audit.json` is mirrored to `web/public/output/data/search_audit.json` when present. It is an observational claim-vs-evidence artifact and must not override official rule-based decisions.
 
 Use `python -m src.cli.output_health_check` before committing generated artifacts. The check validates every JSON file under `output/data` and `web/public/output/data`, detects unresolved merge-conflict markers in output JSON/CSV/Markdown files, and verifies that the default web mirror files match `output/data` byte-for-byte.
 

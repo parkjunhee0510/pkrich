@@ -49,7 +49,16 @@ def _patch_search_evidence_hooks(stack: ExitStack):
         patch("src.pipeline.collect_search_evidence", return_value={"schema_version": 1, "items": []})
     )
     mock_write_search_evidence = stack.enter_context(patch("src.pipeline.write_search_evidence_output"))
-    return mock_collect_search_evidence, mock_write_search_evidence
+    mock_build_search_audit = stack.enter_context(
+        patch("src.pipeline.build_search_audit_payload", return_value={"schema_version": 1, "tickers": []})
+    )
+    mock_write_search_audit = stack.enter_context(patch("src.pipeline.write_search_audit_output"))
+    return (
+        mock_collect_search_evidence,
+        mock_write_search_evidence,
+        mock_build_search_audit,
+        mock_write_search_audit,
+    )
 
 
 def _run_minimal_pipeline_for_sector_tests(
@@ -107,7 +116,12 @@ def _run_minimal_pipeline_for_sector_tests(
         stack.enter_context(patch("src.pipeline.persist_peer_selections"))
         stack.enter_context(patch("src.pipeline._persist_routing_log"))
         stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
-        mock_collect_search_evidence, mock_write_search_evidence = _patch_search_evidence_hooks(stack)
+        (
+            mock_collect_search_evidence,
+            mock_write_search_evidence,
+            mock_build_search_audit,
+            mock_write_search_audit,
+        ) = _patch_search_evidence_hooks(stack)
         stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
         stack.enter_context(patch("src.pipeline.write_ab_test_results"))
         mock_sector_scan = stack.enter_context(patch("src.pipeline._run_sector_scan"))
@@ -134,7 +148,13 @@ def _run_minimal_pipeline_for_sector_tests(
 
         run_pipeline(run_date=date(2026, 4, 29), with_sectors=with_sectors)
 
-    return mock_sector_scan, mock_collect_search_evidence, mock_write_search_evidence
+    return (
+        mock_sector_scan,
+        mock_collect_search_evidence,
+        mock_write_search_evidence,
+        mock_build_search_audit,
+        mock_write_search_audit,
+    )
 
 
 class PipelineQualityWiringTests(unittest.TestCase):
@@ -155,7 +175,13 @@ class PipelineQualityWiringTests(unittest.TestCase):
     def test_run_pipeline_skips_sector_scan_by_default_and_logs_skip(self) -> None:
         events: list[tuple[str, str, str, dict[str, object]]] = []
 
-        mock_sector_scan, _mock_collect_search_evidence, _mock_write_search_evidence = _run_minimal_pipeline_for_sector_tests(
+        (
+            mock_sector_scan,
+            _mock_collect_search_evidence,
+            _mock_write_search_evidence,
+            _mock_build_search_audit,
+            _mock_write_search_audit,
+        ) = _run_minimal_pipeline_for_sector_tests(
             with_sectors=False,
             recorded_events=events,
         )
@@ -177,7 +203,13 @@ class PipelineQualityWiringTests(unittest.TestCase):
     def test_run_pipeline_runs_sector_scan_when_requested(self) -> None:
         events: list[tuple[str, str, str, dict[str, object]]] = []
 
-        mock_sector_scan, _mock_collect_search_evidence, _mock_write_search_evidence = _run_minimal_pipeline_for_sector_tests(
+        (
+            mock_sector_scan,
+            _mock_collect_search_evidence,
+            _mock_write_search_evidence,
+            _mock_build_search_audit,
+            _mock_write_search_audit,
+        ) = _run_minimal_pipeline_for_sector_tests(
             with_sectors=True,
             recorded_events=events,
         )
@@ -188,7 +220,13 @@ class PipelineQualityWiringTests(unittest.TestCase):
     def test_run_pipeline_writes_search_evidence_output(self) -> None:
         events: list[tuple[str, str, str, dict[str, object]]] = []
 
-        _mock_sector_scan, mock_collect_search_evidence, mock_write_search_evidence = _run_minimal_pipeline_for_sector_tests(
+        (
+            _mock_sector_scan,
+            mock_collect_search_evidence,
+            mock_write_search_evidence,
+            _mock_build_search_audit,
+            _mock_write_search_audit,
+        ) = _run_minimal_pipeline_for_sector_tests(
             with_sectors=False,
             recorded_events=events,
         )
@@ -199,6 +237,31 @@ class PipelineQualityWiringTests(unittest.TestCase):
         self.assertEqual(kwargs["tickers"], ["AAPL"])
         mock_write_search_evidence.assert_called_once_with(
             {"schema_version": 1, "items": []},
+            output_root=Path("output"),
+        )
+
+    def test_run_pipeline_writes_search_audit_output_after_search_evidence(self) -> None:
+        events: list[tuple[str, str, str, dict[str, object]]] = []
+
+        (
+            _mock_sector_scan,
+            _mock_collect_search_evidence,
+            _mock_write_search_evidence,
+            mock_build_search_audit,
+            mock_write_search_audit,
+        ) = _run_minimal_pipeline_for_sector_tests(
+            with_sectors=False,
+            recorded_events=events,
+        )
+
+        mock_build_search_audit.assert_called_once()
+        self.assertEqual(mock_build_search_audit.call_args.kwargs["run_date"], date(2026, 4, 29))
+        self.assertEqual(
+            mock_build_search_audit.call_args.kwargs["search_evidence"],
+            {"schema_version": 1, "items": []},
+        )
+        mock_write_search_audit.assert_called_once_with(
+            mock_build_search_audit.return_value,
             output_root=Path("output"),
         )
 

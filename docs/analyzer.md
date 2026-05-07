@@ -111,6 +111,12 @@ Ticker-level structured modules record `raw_payload_hash`, `fallback_payload_has
 
 Committee, macro narrative, policy impact, and weekly insight paths record scope-specific evidence hashes. Manifest writes are best-effort and must not fail the daily pipeline.
 
+## Search Audit
+
+`src/analyzer/search_audit.py` performs a deterministic, observational comparison between existing `TickerAnalysis` claim text and normalized `search_evidence.json` items. It does not call providers, prompt the LLM, write files, or change official decisions.
+
+The audit extracts compact claims from summary, signal, financial highlight, risk, and key-news fields, then labels each claim as `supported`, `conflicting`, `missing_evidence`, or `insufficient_evidence` based on token and numeric overlap with same-ticker search evidence. The output layer writes the resulting payload to `output/data/search_audit.json`.
+
 ## Rules
 
 * No direct external API calls

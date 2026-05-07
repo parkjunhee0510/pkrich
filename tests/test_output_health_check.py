@@ -90,6 +90,21 @@ class OutputHealthCheckTests(unittest.TestCase):
         self.assertFalse(result.ok)
         self.assertIn("mirror_missing", {issue.code for issue in result.issues})
 
+    def test_search_audit_is_part_of_default_web_mirror_when_present(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_json(
+                root / "output" / "data" / "search_audit.json",
+                {"schema_version": 1, "date": "2026-05-07", "tickers": [], "run_summary": {}},
+            )
+            (root / "web" / "public" / "output" / "data").mkdir(parents=True)
+
+            result = check_output_health(root)
+
+        self.assertFalse(result.ok)
+        self.assertIn("mirror_missing", {issue.code for issue in result.issues})
+        self.assertTrue(any("search_audit.json" in issue.path for issue in result.issues))
+
     def test_cli_returns_nonzero_when_health_check_fails(self) -> None:
         from src.cli.output_health_check import main
 

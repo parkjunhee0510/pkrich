@@ -65,5 +65,6 @@ Pipeline must run end-to-end.
 * `tests/test_output_schema.py` - generated JSON shape stability and web-public operational copies
 * `tests/test_pipeline_quality_wiring.py` - pipeline wiring for quality outputs and API status run-date behavior
 * `tests/test_search_evidence.py` - search evidence cache normalization, output serialization, and web-public mirror coverage
+* `tests/test_search_audit.py` - search audit claim evaluation, output serialization, and web-public mirror coverage
 * `tests/eval/` - LLM audit data loading, replay, report rendering, and check-specific thresholds
 * `tests/test_codex_*hook*.py` and `tests/test_codex_summarize_session.py` - local Codex hook regression coverage
