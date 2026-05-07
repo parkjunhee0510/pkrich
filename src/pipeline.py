@@ -38,6 +38,7 @@ from src.collector.orchestrated_collection import (
     collect_news_via_orchestrator,
 )
 from src.collector.price import collect_market_data, collect_market_overview
+from src.collector.search_evidence import collect_search_evidence
 from src.collector.sector_scan import scan_sectors
 from src.collector.shadow_compare import run_shadow_comparison
 from src.output.alert import evaluate_alert_rules
@@ -49,9 +50,10 @@ from src.output.intraday_refresh import write_intraday_refresh_outputs
 from src.output.markdown import write_outputs
 from src.output.routing_outcome import write_routing_outcome_output
 from src.output.schema import SCHEMA_VERSION
+from src.output.search_evidence_json import write_search_evidence_output
 from src.output.sectors_json import write_sectors_json
 from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
-from src.types import CollectedTickerData, MarketRegime
+from src.types import CollectedTickerData, MarketRegime, TickerAnalysis
 from src.utils.config import load_portfolio, load_sectors, load_watchlist
 from src.utils.datastore import get_datastore
 from src.utils.env import is_env_flag_enabled, load_dotenv
@@ -405,6 +407,7 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
             decisions=decisions,
             state_metadata=state_metadata,
         )
+        _write_search_evidence_artifact(effective_date, analyses)
         ab_test_payload = build_weekly_ab_test_payload(
             run_date=calendar_run_date,
             watchlist=watchlist,
@@ -567,6 +570,30 @@ def _persist_routing_log(
         _json.dumps(history_payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
+
+def _write_search_evidence_artifact(effective_date: date, analyses: list[TickerAnalysis]) -> None:
+    try:
+        payload = collect_search_evidence(
+            run_date=effective_date,
+            tickers=[analysis.ticker for analysis in analyses],
+        )
+        write_search_evidence_output(payload, output_root=Path("output"))
+        record_pipeline_event(
+            "pipeline",
+            "info",
+            "search_evidence_output_written",
+            ticker_count=len(payload.get("by_ticker", {})),
+            item_count=len(payload.get("items", [])),
+        )
+    except Exception as exc:
+        record_pipeline_event(
+            "pipeline",
+            "warning",
+            "search_evidence_output_failed",
+            error_type=type(exc).__name__,
+            error_message=str(exc)[:200],
+        )
 
 
 def _collect_market_context(

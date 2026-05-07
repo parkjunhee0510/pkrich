@@ -44,6 +44,14 @@ def _decision(ticker: str) -> TickerDecision:
     return TickerDecision(ticker=ticker, action="watch", conviction=50, reason="reason")
 
 
+def _patch_search_evidence_hooks(stack: ExitStack):
+    mock_collect_search_evidence = stack.enter_context(
+        patch("src.pipeline.collect_search_evidence", return_value={"schema_version": 1, "items": []})
+    )
+    mock_write_search_evidence = stack.enter_context(patch("src.pipeline.write_search_evidence_output"))
+    return mock_collect_search_evidence, mock_write_search_evidence
+
+
 def _run_minimal_pipeline_for_sector_tests(
     *,
     with_sectors: bool,
@@ -99,6 +107,7 @@ def _run_minimal_pipeline_for_sector_tests(
         stack.enter_context(patch("src.pipeline.persist_peer_selections"))
         stack.enter_context(patch("src.pipeline._persist_routing_log"))
         stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
+        mock_collect_search_evidence, mock_write_search_evidence = _patch_search_evidence_hooks(stack)
         stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
         stack.enter_context(patch("src.pipeline.write_ab_test_results"))
         mock_sector_scan = stack.enter_context(patch("src.pipeline._run_sector_scan"))
@@ -125,7 +134,7 @@ def _run_minimal_pipeline_for_sector_tests(
 
         run_pipeline(run_date=date(2026, 4, 29), with_sectors=with_sectors)
 
-    return mock_sector_scan
+    return mock_sector_scan, mock_collect_search_evidence, mock_write_search_evidence
 
 
 class PipelineQualityWiringTests(unittest.TestCase):
@@ -146,7 +155,7 @@ class PipelineQualityWiringTests(unittest.TestCase):
     def test_run_pipeline_skips_sector_scan_by_default_and_logs_skip(self) -> None:
         events: list[tuple[str, str, str, dict[str, object]]] = []
 
-        mock_sector_scan = _run_minimal_pipeline_for_sector_tests(
+        mock_sector_scan, _mock_collect_search_evidence, _mock_write_search_evidence = _run_minimal_pipeline_for_sector_tests(
             with_sectors=False,
             recorded_events=events,
         )
@@ -168,13 +177,30 @@ class PipelineQualityWiringTests(unittest.TestCase):
     def test_run_pipeline_runs_sector_scan_when_requested(self) -> None:
         events: list[tuple[str, str, str, dict[str, object]]] = []
 
-        mock_sector_scan = _run_minimal_pipeline_for_sector_tests(
+        mock_sector_scan, _mock_collect_search_evidence, _mock_write_search_evidence = _run_minimal_pipeline_for_sector_tests(
             with_sectors=True,
             recorded_events=events,
         )
 
         mock_sector_scan.assert_called_once()
         self.assertFalse(any(event == "sector_scan_skipped" for *_prefix, event, _fields in events))
+
+    def test_run_pipeline_writes_search_evidence_output(self) -> None:
+        events: list[tuple[str, str, str, dict[str, object]]] = []
+
+        _mock_sector_scan, mock_collect_search_evidence, mock_write_search_evidence = _run_minimal_pipeline_for_sector_tests(
+            with_sectors=False,
+            recorded_events=events,
+        )
+
+        mock_collect_search_evidence.assert_called_once()
+        kwargs = mock_collect_search_evidence.call_args.kwargs
+        self.assertEqual(kwargs["run_date"], date(2026, 4, 29))
+        self.assertEqual(kwargs["tickers"], ["AAPL"])
+        mock_write_search_evidence.assert_called_once_with(
+            {"schema_version": 1, "items": []},
+            output_root=Path("output"),
+        )
 
     def test_run_pipeline_writes_api_status_for_calendar_run_date(self) -> None:
         watchlist = [WatchlistItem(ticker="AAPL", name="Apple")]
@@ -214,6 +240,7 @@ class PipelineQualityWiringTests(unittest.TestCase):
             stack.enter_context(patch("src.pipeline.persist_peer_selections"))
             stack.enter_context(patch("src.pipeline._persist_routing_log"))
             stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
+            _patch_search_evidence_hooks(stack)
             stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
             stack.enter_context(patch("src.pipeline.write_ab_test_results"))
             stack.enter_context(patch("src.pipeline._run_sector_scan"))
@@ -306,6 +333,7 @@ class PipelineQualityWiringTests(unittest.TestCase):
             stack.enter_context(patch("src.pipeline.persist_peer_selections"))
             stack.enter_context(patch("src.pipeline._persist_routing_log"))
             stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
+            _patch_search_evidence_hooks(stack)
             stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
             stack.enter_context(patch("src.pipeline.write_ab_test_results"))
             stack.enter_context(patch("src.pipeline._run_sector_scan"))
@@ -423,6 +451,7 @@ class PipelineQualityWiringTests(unittest.TestCase):
             stack.enter_context(patch("src.pipeline.persist_peer_selections"))
             stack.enter_context(patch("src.pipeline._persist_routing_log"))
             stack.enter_context(patch("src.pipeline.write_outputs", side_effect=_capture_write_outputs))
+            _patch_search_evidence_hooks(stack)
             stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
             stack.enter_context(patch("src.pipeline.write_ab_test_results"))
             stack.enter_context(patch("src.pipeline._run_sector_scan"))

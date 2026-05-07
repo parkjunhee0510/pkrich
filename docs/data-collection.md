@@ -56,6 +56,12 @@
 * `macro_events.py` — scheduled macro events (FOMC, CPI, NFP, etc.)
 * Consumed by `decision/factors/macro_regime_factor.py` and `decision/factors/macro_event_factor.py` via `utils/macro_event_match.py`
 
+## Search Evidence
+
+Search evidence is a collector-owned enrichment path. PR 1 is cache-backed and provider-independent: it reads structured files from `output/cache/search_evidence/<YYYY-MM-DD>/<TICKER>.json`, normalizes them, and emits a valid search evidence payload without making live provider calls.
+
+Future OpenAI Web Search integration must plug into this collector boundary. Analyzer, decision, output, and web code must consume normalized search evidence only; they must not call web search directly.
+
 ## Rules
 
 * No coupling with analyzer

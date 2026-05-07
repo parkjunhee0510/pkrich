@@ -76,6 +76,20 @@ class OutputHealthCheckTests(unittest.TestCase):
 
         self.assertTrue(result.ok, result.format_summary())
 
+    def test_search_evidence_is_part_of_default_web_mirror_when_present(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_json(
+                root / "output" / "data" / "search_evidence.json",
+                {"schema_version": 1, "date": "2026-05-07", "items": [], "by_ticker": {}, "run_summary": {}},
+            )
+            (root / "web" / "public" / "output" / "data").mkdir(parents=True)
+
+            result = check_output_health(root)
+
+        self.assertFalse(result.ok)
+        self.assertIn("mirror_missing", {issue.code for issue in result.issues})
+
     def test_cli_returns_nonzero_when_health_check_fails(self) -> None:
         from src.cli.output_health_check import main
 
