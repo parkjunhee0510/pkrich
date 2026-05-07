@@ -40,13 +40,26 @@ def _analysis(ticker: str) -> TickerAnalysis:
     )
 
 
-def _decision(ticker: str) -> TickerDecision:
-    return TickerDecision(ticker=ticker, action="watch", conviction=50, reason="reason")
+def _decision(
+    ticker: str,
+    *,
+    action: str = "watch",
+    conviction: int = 50,
+    confidence_meta: dict[str, object] | None = None,
+) -> TickerDecision:
+    return TickerDecision(
+        ticker=ticker,
+        action=action,  # type: ignore[arg-type]
+        conviction=conviction,
+        reason="reason",
+        confidence_meta=confidence_meta or {},
+    )
 
 
-def _patch_search_evidence_hooks(stack: ExitStack):
+def _patch_search_evidence_hooks(stack: ExitStack, payload: dict[str, object] | None = None):
+    payload = payload or {"schema_version": 1, "items": []}
     mock_collect_search_evidence = stack.enter_context(
-        patch("src.pipeline.collect_search_evidence", return_value={"schema_version": 1, "items": []})
+        patch("src.pipeline.collect_search_evidence", return_value=payload)
     )
     mock_write_search_evidence = stack.enter_context(patch("src.pipeline.write_search_evidence_output"))
     mock_build_search_audit = stack.enter_context(
@@ -65,6 +78,9 @@ def _run_minimal_pipeline_for_sector_tests(
     *,
     with_sectors: bool,
     recorded_events: list[tuple[str, str, str, dict[str, object]]],
+    search_evidence_payload: dict[str, object] | None = None,
+    decisions: list[TickerDecision] | None = None,
+    write_outputs_side_effect=None,
 ):
     watchlist = [WatchlistItem(ticker="AAPL", name="Apple")]
     collected = {
@@ -115,13 +131,16 @@ def _run_minimal_pipeline_for_sector_tests(
         mock_build_ensemble = stack.enter_context(patch("src.pipeline._build_analysis_ensemble"))
         stack.enter_context(patch("src.pipeline.persist_peer_selections"))
         stack.enter_context(patch("src.pipeline._persist_routing_log"))
-        stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
+        if write_outputs_side_effect is None:
+            stack.enter_context(patch("src.pipeline.write_outputs", return_value={}))
+        else:
+            stack.enter_context(patch("src.pipeline.write_outputs", side_effect=write_outputs_side_effect))
         (
             mock_collect_search_evidence,
             mock_write_search_evidence,
             mock_build_search_audit,
             mock_write_search_audit,
-        ) = _patch_search_evidence_hooks(stack)
+        ) = _patch_search_evidence_hooks(stack, payload=search_evidence_payload)
         stack.enter_context(patch("src.pipeline.build_weekly_ab_test_payload", return_value={}))
         stack.enter_context(patch("src.pipeline.write_ab_test_results"))
         mock_sector_scan = stack.enter_context(patch("src.pipeline._run_sector_scan"))
@@ -134,7 +153,7 @@ def _run_minimal_pipeline_for_sector_tests(
         stack.enter_context(patch("src.pipeline.write_api_status_outputs"))
         stack.enter_context(patch("src.pipeline._write_validation_warnings_json"))
         stack.enter_context(patch("src.pipeline.run_policy_stage", return_value=None))
-        stack.enter_context(patch("src.pipeline.generate_decisions", return_value=[_decision("AAPL")]))
+        stack.enter_context(patch("src.pipeline.generate_decisions", return_value=decisions or [_decision("AAPL")]))
         stack.enter_context(
             patch("src.pipeline.apply_consensus_to_decisions", side_effect=lambda decisions, _consensus: decisions)
         )
@@ -264,6 +283,44 @@ class PipelineQualityWiringTests(unittest.TestCase):
             mock_build_search_audit.return_value,
             output_root=Path("output"),
         )
+
+    def test_run_pipeline_adds_search_quality_shadow_metadata_before_write_outputs(self) -> None:
+        events: list[tuple[str, str, str, dict[str, object]]] = []
+        captured: dict[str, list[TickerDecision]] = {}
+        search_evidence_payload = {
+            "schema_version": 1,
+            "date": "2026-04-29",
+            "provider": "cache",
+            "items": [],
+            "by_ticker": {
+                "AAPL": {
+                    "coverage_score": 0.1,
+                    "freshness_score": 0.2,
+                    "average_relevance_score": 0.4,
+                    "source_diversity": 1,
+                    "evidence_count": 1,
+                }
+            },
+            "run_summary": {},
+        }
+
+        def _capture_write_outputs(_analyses, _effective_date, **kwargs):
+            captured["decisions"] = list(kwargs["decisions"])
+            return {}
+
+        _run_minimal_pipeline_for_sector_tests(
+            with_sectors=False,
+            recorded_events=events,
+            search_evidence_payload=search_evidence_payload,
+            decisions=[_decision("AAPL", action="buy", conviction=72)],
+            write_outputs_side_effect=_capture_write_outputs,
+        )
+
+        [decision] = captured["decisions"]
+        self.assertEqual(decision.action, "buy")
+        self.assertLess(decision.confidence_meta["search_evidence_score"], 0.55)
+        self.assertTrue(decision.confidence_meta["search_quality_gate"]["would_cap_action"])
+        self.assertEqual(decision.confidence_meta["search_quality_gate"]["mode"], "shadow")
 
     def test_run_pipeline_writes_api_status_for_calendar_run_date(self) -> None:
         watchlist = [WatchlistItem(ticker="AAPL", name="Apple")]

@@ -21,6 +21,7 @@ Owned by `collector/`.
 Current responsibilities:
 * Collect ticker market data through the market-data orchestrator
 * Collect daily news through the news path selected by feature flags
+* Load normalized search evidence from cache for post-decision shadow quality metadata and audit artifacts
 * Collect market overview and macro context
 * Collect macro v2 inputs: economic surprise (`macro_surprise.py`) and scheduled macro events (`macro_events.py`)
 * Detect actual market date from collected price history
@@ -63,6 +64,7 @@ Owned by `decision/`.
 Responsibilities:
 * Consume the run-level market regime detected earlier in the run
 * Generate factor scores, conviction, confidence metadata, and official `buy` / `watch` / `avoid`
+* Attach search evidence score and `search_quality_gate` metadata in shadow mode after official actions are generated
 * Keep official actions rule-based even when upstream analysis used LLMs
 
 ### 4. State
@@ -96,6 +98,8 @@ Important output families:
 * `output/data/analysis_quality.json`
 * `output/data/cost_log.json`
 * `output/data/routing_outcome.json`
+* `output/data/search_evidence.json`
+* `output/data/search_audit.json`
 * `docs/reports/llm-audit-YYYY-MM-DD.md`
 * `output/data/llm_audit/YYYY-MM-DD.json`
 

@@ -13,6 +13,7 @@
 * External APIs are allowed only here
 * Fallback chains live here
 * Outputs must be normalized before leaving this step
+* Search evidence providers and cache loaders are collector-owned even when their normalized payload is consumed later for shadow metadata
 
 ### Analyze
 
@@ -24,6 +25,7 @@
 
 * No external data fetching
 * No output formatting
+* Search quality gates may consume normalized search evidence, but they must not call providers or enforce action caps unless a later explicit policy enables it
 
 ### State
 

@@ -32,6 +32,7 @@ from src.output.policy_active_events import update_dossier, to_policy_events
 from src.collector.peer_candidates import load_peer_candidates, persist_peer_selections
 from src.decision.decision_layer import generate_decisions
 from src.decision.market_regime import detect_market_regime
+from src.decision.search_quality import attach_search_quality_shadow
 from src.collector.news_rss import collect_news_for_watchlist
 from src.collector.news_shadow_compare import run_news_shadow_comparison
 from src.collector.orchestrated_collection import (
@@ -376,6 +377,9 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
             decisions = []
             record_pipeline_event("decision", "warning", "decision_failed")
 
+        search_evidence_payload = _collect_search_evidence_artifact(effective_date, analyses)
+        decisions = attach_search_quality_shadow(decisions, search_evidence_payload)
+
         datastore.record_signals(
             analyses,
             effective_date,
@@ -409,7 +413,7 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
             decisions=decisions,
             state_metadata=state_metadata,
         )
-        _write_search_evidence_artifact(effective_date, analyses)
+        _write_search_evidence_artifact(effective_date, analyses, search_evidence_payload)
         ab_test_payload = build_weekly_ab_test_payload(
             run_date=calendar_run_date,
             watchlist=watchlist,
@@ -574,12 +578,32 @@ def _persist_routing_log(
     )
 
 
-def _write_search_evidence_artifact(effective_date: date, analyses: list[TickerAnalysis]) -> None:
+def _collect_search_evidence_artifact(effective_date: date, analyses: list[TickerAnalysis]) -> dict[str, object] | None:
     try:
-        payload = collect_search_evidence(
+        return collect_search_evidence(
             run_date=effective_date,
             tickers=[analysis.ticker for analysis in analyses],
         )
+    except Exception as exc:
+        record_pipeline_event(
+            "pipeline",
+            "warning",
+            "search_evidence_collect_failed",
+            error_type=type(exc).__name__,
+            error_message=str(exc)[:200],
+        )
+        return None
+
+
+def _write_search_evidence_artifact(
+    effective_date: date,
+    analyses: list[TickerAnalysis],
+    payload: dict[str, object] | None,
+) -> None:
+    if payload is None:
+        return
+
+    try:
         write_search_evidence_output(payload, output_root=Path("output"))
         record_pipeline_event(
             "pipeline",

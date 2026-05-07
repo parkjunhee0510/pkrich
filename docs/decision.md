@@ -23,6 +23,12 @@ By default, the data-quality gate remains shadow-only. `confidence_meta.data_qua
 
 Set `DECISION_DATA_QUALITY_GATE_MODE=enforce` to promote the gate from shadow mode. In enforced mode, a `buy` with `data_quality_score < 0.6` is capped to `watch`, and the reason text records that the data-quality gate was applied. Output and web code serialize this metadata without recomputing it.
 
+## Search Evidence Quality
+
+Search evidence quality is attached to `TickerDecision.confidence_meta` after official rule-based actions are generated. This keeps the first search integration observational: `search_evidence_score` and `search_quality_gate` can show whether a weak-evidence `buy` would be capped to `watch`, but the official `TickerDecision.action` remains unchanged.
+
+`src.decision.search_quality.attach_search_quality_shadow(...)` consumes the normalized `search_evidence.json` contract from the collector/output side. It does not fetch data, call an LLM, write artifacts, or enforce caps. Missing search payloads are marked as unavailable and do not penalize a ticker.
+
 ## Key Components
 
 * `DecisionFactor`
@@ -30,6 +36,7 @@ Set `DECISION_DATA_QUALITY_GATE_MODE=enforce` to promote the gate from shadow mo
 * `MarketRegime` and sub-regime classification in `src/decision/market_regime.py`
 * `ConvictionScorer`
 * `generate_decisions(...)` in `src/decision/decision_layer.py`
+* `attach_search_quality_shadow(...)` in `src/decision/search_quality.py`
 
 Included factor families:
 * macro regime factors
