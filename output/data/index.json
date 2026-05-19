@@ -5,55 +5,30 @@
     {
       "label": "S&P 500",
       "symbol": "^GSPC",
-      "price": "7,363.66",
-      "change": "-0.53%"
+      "price": "7,353.61",
+      "change": "-0.67%"
     },
     {
       "label": "NASDAQ 100",
       "symbol": "^NDX",
-      "price": "28,859.26",
-      "change": "-0.47%"
+      "price": "28,818.84",
+      "change": "-0.61%"
     },
     {
       "label": "VIX",
       "symbol": "^VIX",
-      "price": "18.04",
-      "change": "+1.23%"
+      "price": "18.05",
+      "change": "+1.29%"
     }
   ],
   "macro_context": {
     "vix": {
-      "level": "18.04",
+      "level": "18.05",
       "change": "N/A",
       "regime": "정상 범위"
     },
     "upcoming_macro_events": [],
     "macro_events": [
-      {
-        "event_type": "hormuz_disruption",
-        "severity": "high",
-        "region": "middle_east",
-        "transmission_channels": [
-          "oil",
-          "shipping",
-          "risk_sentiment"
-        ],
-        "affected_sectors": [
-          "Energy",
-          "Industrials",
-          "Consumer Cyclical",
-          "Technology"
-        ],
-        "affected_industries": [
-          "Airlines",
-          "Shipping",
-          "Oil & Gas",
-          "Defense"
-        ],
-        "direction": "mixed",
-        "summary_ko": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
-        "expires_at": "2026-05-26"
-      },
       {
         "event_type": "middle_east_escalation",
         "severity": "high",
@@ -79,6 +54,31 @@
         "direction": "risk_off",
         "summary_ko": "중동 확전 우려로 위험자산 선호가 약해지고 에너지 가격 민감도가 높아질 수 있습니다.",
         "expires_at": "2026-05-24"
+      },
+      {
+        "event_type": "hormuz_disruption",
+        "severity": "high",
+        "region": "middle_east",
+        "transmission_channels": [
+          "oil",
+          "shipping",
+          "risk_sentiment"
+        ],
+        "affected_sectors": [
+          "Energy",
+          "Industrials",
+          "Consumer Cyclical",
+          "Technology"
+        ],
+        "affected_industries": [
+          "Airlines",
+          "Shipping",
+          "Oil & Gas",
+          "Defense"
+        ],
+        "direction": "mixed",
+        "summary_ko": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
+        "expires_at": "2026-05-26"
       },
       {
         "event_type": "opec_supply_shock",
@@ -107,87 +107,87 @@
     ],
     "us10y": {
       "label": "US 10Y",
-      "level": "4.66",
-      "price": "4.66",
-      "change": "+0.78%"
+      "level": "4.67",
+      "price": "4.67",
+      "change": "+0.95%"
     },
     "us2y": {
       "label": "US 5Y",
-      "level": "4.32",
-      "price": "4.32",
-      "change": "+0.86%"
+      "level": "4.33",
+      "price": "4.33",
+      "change": "+1.17%"
     },
     "us3m": {
       "label": "US 13W T-Bill",
       "level": "3.58",
       "price": "3.58",
-      "change": "+0.28%"
+      "change": "+0.20%"
     },
     "us30y": {
       "label": "US 30Y",
       "level": "5.18",
       "price": "5.18",
-      "change": "+0.56%"
+      "change": "+0.66%"
     },
     "tips": {
       "label": "TIPS ETF",
-      "level": "110.08",
-      "price": "110.08",
-      "change": "-0.36%"
+      "level": "110.11",
+      "price": "110.11",
+      "change": "-0.33%"
     },
     "dxy": {
       "label": "Dollar Index",
-      "level": "99.29",
-      "price": "99.29",
-      "change": "+0.32%"
+      "level": "99.32",
+      "price": "99.32",
+      "change": "+0.36%"
     },
     "copper": {
       "label": "Copper",
-      "level": "6.20",
-      "price": "6.20",
-      "change": "-1.07%"
+      "level": "6.19",
+      "price": "6.19",
+      "change": "-1.24%"
     },
     "oil_wti": {
       "label": "WTI Crude",
-      "level": "104.44",
-      "price": "104.44",
-      "change": "-3.88%"
+      "level": "104.41",
+      "price": "104.41",
+      "change": "-3.91%"
     },
     "gold": {
       "label": "Gold",
-      "level": "4,501.40",
-      "price": "4,501.40",
-      "change": "-1.12%"
+      "level": "4,488.50",
+      "price": "4,488.50",
+      "change": "-1.41%"
     },
     "usdjpy": {
       "label": "USD/JPY",
-      "level": "159.07",
-      "price": "159.07",
-      "change": "+0.14%"
+      "level": "159.08",
+      "price": "159.08",
+      "change": "+0.15%"
     },
     "usdcny": {
       "label": "USD/CNY",
       "level": "6.81",
       "price": "6.81",
-      "change": "+0.08%"
+      "change": "+0.07%"
     },
     "btc": {
       "label": "Bitcoin",
-      "level": "76,734.94",
-      "price": "76,734.94",
-      "change": "-0.28%"
+      "level": "76,879.96",
+      "price": "76,879.96",
+      "change": "-0.10%"
     },
     "hyg": {
       "label": "HY Credit ETF",
-      "level": "79.33",
-      "price": "79.33",
-      "change": "-0.26%"
+      "level": "79.38",
+      "price": "79.38",
+      "change": "-0.20%"
     },
     "lqd": {
       "label": "IG Credit ETF",
-      "level": "107.11",
-      "price": "107.11",
-      "change": "-0.52%"
+      "level": "107.12",
+      "price": "107.12",
+      "change": "-0.50%"
     },
     "yield_curve_10y_2y": {
       "label": "10Y-2Y Spread",
@@ -197,20 +197,20 @@
     },
     "yield_curve_10y_3m": {
       "label": "10Y-3M Spread",
-      "level": "+1.08",
-      "spread_bps": "+108",
+      "level": "+1.09",
+      "spread_bps": "+109",
       "status": "steep"
     },
     "credit_spread": {
       "label": "HY/IG Ratio",
       "level": "0.741",
-      "hy_level": "79.33",
-      "ig_level": "107.11"
+      "hy_level": "79.38",
+      "ig_level": "107.12"
     },
     "spy_technicals": {
-      "close": "734.51",
-      "sma50": "692.20",
-      "rsi14": "68.3",
+      "close": "733.73",
+      "sma50": "692.18",
+      "rsi14": "67.4",
       "sma200": "674.48"
     },
     "surprise_score": {
@@ -5508,24 +5508,24 @@
       "summary": "현재 주가는 52주 고점의 95% 수준이며 SMA50과 SMA200을 각각 8.69%, 11.22% 상회해 추세는 견조하지만 RS vs Sector ETF는 -11.31%로 상대강도는 약합니다. 다음 촉매는 2026-07-30 실적 발표와 2026-05-11 배당락일이며, 목표가 기준 상방은 애널리스트 목표 303.38달러입니다.",
       "signal_or_takeaway": "매수 관찰 — 신제품 기대와 수요 회복, 목표가 상향이 함께 제시됨 | 진입 트리거 284.18 상향 유지 | 목표 294.38/303.38달러 | 손절 261.46달러",
       "data_snapshot": {
-        "Price": "297.58 USD",
-        "Daily Change": "-0.09%",
-        "Market Cap": "4.37T",
-        "Trailing P/E": "36.07",
+        "Price": "298.97 USD",
+        "Daily Change": "+0.38%",
+        "Market Cap": "4.39T",
+        "Trailing P/E": "36.24",
         "EPS": "8.25",
         "52W High": "303.20",
         "52W Low": "193.46",
         "50D SMA": "267.00",
         "200D SMA": "259.58",
-        "Volume": "21760026",
+        "Volume": "34842416",
         "3M Avg Volume": "43.77M",
-        "Price/Book": "40.99",
+        "Price/Book": "41.18",
         "Dividend Yield": "0.36%",
         "Sector": "Technology",
         "Open": "296.97",
         "High": "300.51",
         "Low": "296.35",
-        "Close": "297.58",
+        "Close": "298.97",
         "RS vs Sector ETF": "-11.31%"
       },
       "key_news": [
@@ -5550,14 +5550,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "4.37T",
-        "trailing_pe": "36.07",
+        "market_cap": "4.39T",
+        "trailing_pe": "36.24",
         "eps": "8.25",
         "forward_eps": "9.59",
         "earnings_growth": "+21.80% YoY",
-        "price_to_book": "40.99",
+        "price_to_book": "41.18",
         "dividend_yield": "0.36%",
-        "volume": "21760026",
+        "volume": "34842416",
         "avg_volume_3m": "43.77M",
         "52w_high": "303.20",
         "52w_low": "193.46",
@@ -5589,14 +5589,14 @@
       },
       "price_action": {
         "atr_14d": "6.68",
-        "atr_percent": "2.25%",
-        "relative_volume": "0.50x",
+        "atr_percent": "2.24%",
+        "relative_volume": "0.80x",
         "gap_percent": "-0.29%",
-        "price_vs_sma50": "+11.45%",
-        "price_vs_sma200": "+14.64%",
-        "week52_position": "95%",
+        "price_vs_sma50": "+11.98%",
+        "price_vs_sma200": "+15.17%",
+        "week52_position": "96%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-2.30%"
+        "rs_vs_sector_etf": "-1.50%"
       },
       "upcoming_events": [
         {
@@ -5673,17 +5673,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-20",
-        "atm_call_iv": "22.2%",
-        "atm_put_iv": "14.4%",
-        "iv_percentile_30d": "11th",
+        "atm_call_iv": "16.5%",
+        "atm_put_iv": "19.5%",
+        "iv_percentile_30d": "8th",
         "put_call_ratio": "0.32x",
         "tone": "neutral",
         "unusual_activity": "PUT $360, vol 249, OI 대비 36% ; PUT $230, vol 377, OI 대비 46% ; PUT $370, vol 41, OI 대비 73%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+0.94%",
-        "30d": "+10.12%"
+        "7d": "+1.41%",
+        "30d": "+10.64%"
       },
       "sec_filing_tags": [
         "실적",
@@ -5876,24 +5876,24 @@
       "summary": "주가는 904.59달러로 52주 신고가 908.89달러 바로 아래이며, 30일간 +25.66% 상승해 단기 과열 신호(RSI 73.8)가 보입니다. 다음 촉매는 2026-05-19 배당 지급일 전까지의 추세 지속 여부와 2026-08-04 실적 발표(D-90)이며, 호르무즈 해협 차질은 유가·해상 물류 변동성을 통해 관련 산업에만 제한적으로 영향을 줄 수 있습니다.",
       "signal_or_takeaway": "매도 경계 — RSI 과열과 52주 신고가 인접, 실적 D-90까지 추세 지속 여부 관찰 | 진입 트리거 908.89 상향 돌파 실패 또는 752.64 이탈 확인 | 목표 752.64/593.31달러 | 손절 944.90달러",
       "data_snapshot": {
-        "Price": "861.99 USD",
-        "Daily Change": "-0.23%",
-        "Market Cap": "397.15B",
-        "Trailing P/E": "43.03",
+        "Price": "860.15 USD",
+        "Daily Change": "-0.44%",
+        "Market Cap": "396.18B",
+        "Trailing P/E": "42.92",
         "EPS": "20.04",
         "52W High": "931.35",
         "52W Low": "336.24",
         "50D SMA": "785.80",
         "200D SMA": "617.17",
-        "Volume": "2203396",
+        "Volume": "2664391",
         "3M Avg Volume": "2.53M",
-        "Price/Book": "21.28",
+        "Price/Book": "21.23",
         "Dividend Yield": "0.70%",
         "Sector": "Industrials",
         "Open": "861.59",
         "High": "869.83",
         "Low": "845.55",
-        "Close": "861.99",
+        "Close": "860.15",
         "RS vs Sector ETF": "+20.92%"
       },
       "key_news": [
@@ -5918,14 +5918,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "397.15B",
-        "trailing_pe": "43.03",
+        "market_cap": "396.18B",
+        "trailing_pe": "42.92",
         "eps": "20.04",
         "forward_eps": "29.72",
         "earnings_growth": "+30.20% YoY",
-        "price_to_book": "21.28",
+        "price_to_book": "21.23",
         "dividend_yield": "0.70%",
-        "volume": "2203396",
+        "volume": "2664391",
         "avg_volume_3m": "2.53M",
         "52w_high": "931.35",
         "52w_low": "336.24",
@@ -5957,14 +5957,14 @@
       },
       "price_action": {
         "atr_14d": "34.12",
-        "atr_percent": "3.96%",
-        "relative_volume": "0.87x",
+        "atr_percent": "3.97%",
+        "relative_volume": "1.05x",
         "gap_percent": "-0.27%",
-        "price_vs_sma50": "+9.70%",
-        "price_vs_sma200": "+39.67%",
+        "price_vs_sma50": "+9.46%",
+        "price_vs_sma200": "+39.37%",
         "week52_position": "88%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+11.22%"
+        "rs_vs_sector_etf": "+11.20%"
       },
       "upcoming_events": [
         {
@@ -6034,17 +6034,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "43.8%",
-        "atm_put_iv": "40.3%",
-        "iv_percentile_30d": "6th",
+        "atm_call_iv": "42.0%",
+        "atm_put_iv": "43.5%",
+        "iv_percentile_30d": "5th",
         "put_call_ratio": "1.66x",
         "tone": "neutral",
         "unusual_activity": "PUT $960, vol 29, OI 대비 100% ; PUT $890, vol 31, OI 대비 103% ; PUT $1340, vol 8, OI 대비 100%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-5.50%",
-        "30d": "+8.68%"
+        "7d": "-5.70%",
+        "30d": "+8.45%"
       },
       "sec_filing_tags": [
         "기타 공시",
@@ -6246,24 +6246,24 @@
       "summary": "주가는 SMA50과 거의 같은 수준이고 30일간 -5.20%로 약세이며, RS vs Sector ETF도 -4.81%로 상대적 모멘텀이 둔합니다. 다음 촉매는 2026-07-31 실적 발표와 2026-05-15 배당 지급일이며, 호르무즈 해협 차질과 OPEC 공급 충격은 유가 및 정유·물류 변동성을 키울 수 있습니다.",
       "signal_or_takeaway": "중립 관찰 — SMA50 근처와 약세 모멘텀이 혼재되어 방향성 확인이 우선임 | 진입 트리거 154.95 상향 회복 | 목표 160.88/165.91달러 | 손절 154.88달러",
       "data_snapshot": {
-        "Price": "162.31 USD",
-        "Daily Change": "+1.13%",
-        "Market Cap": "672.77B",
-        "Trailing P/E": "27.32",
+        "Price": "162.55 USD",
+        "Daily Change": "+1.28%",
+        "Market Cap": "673.76B",
+        "Trailing P/E": "27.37",
         "EPS": "5.94",
         "52W High": "176.41",
         "52W Low": "101.19",
         "50D SMA": "155.15",
         "200D SMA": "130.11",
-        "Volume": "9963903",
+        "Volume": "18165178",
         "3M Avg Volume": "21.30M",
-        "Price/Book": "2.61",
+        "Price/Book": "2.62",
         "Dividend Yield": "2.57%",
         "Sector": "Energy",
         "Open": "161.50",
-        "High": "162.76",
+        "High": "163.32",
         "Low": "159.64",
-        "Close": "162.31",
+        "Close": "162.55",
         "RS vs Sector ETF": "-4.81%"
       },
       "key_news": [
@@ -6288,14 +6288,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "672.77B",
-        "trailing_pe": "27.32",
+        "market_cap": "673.76B",
+        "trailing_pe": "27.37",
         "eps": "5.94",
         "forward_eps": "10.42",
         "earnings_growth": "-43.40% YoY",
-        "price_to_book": "2.61",
+        "price_to_book": "2.62",
         "dividend_yield": "2.57%",
-        "volume": "9963903",
+        "volume": "18165178",
         "avg_volume_3m": "21.30M",
         "52w_high": "176.41",
         "52w_low": "101.19",
@@ -6326,15 +6326,15 @@
         "pattern_note": "최근 3개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
       },
       "price_action": {
-        "atr_14d": "4.13",
-        "atr_percent": "2.55%",
-        "relative_volume": "0.47x",
+        "atr_14d": "4.17",
+        "atr_percent": "2.57%",
+        "relative_volume": "0.85x",
         "gap_percent": "+0.63%",
-        "price_vs_sma50": "+4.62%",
-        "price_vs_sma200": "+24.75%",
-        "week52_position": "81%",
+        "price_vs_sma50": "+4.77%",
+        "price_vs_sma200": "+24.93%",
+        "week52_position": "82%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+0.22%"
+        "rs_vs_sector_etf": "+0.41%"
       },
       "upcoming_events": [
         {
@@ -6404,17 +6404,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "33.2%",
-        "atm_put_iv": "32.2%",
-        "iv_percentile_30d": "3th",
+        "atm_call_iv": "37.9%",
+        "atm_put_iv": "27.5%",
+        "iv_percentile_30d": "6th",
         "put_call_ratio": "0.51x",
         "tone": "neutral",
         "unusual_activity": "CALL $185, vol 278, OI 대비 63% ; PUT $185, vol 68, OI 대비 43% ; PUT $80, vol 426, OI 대비 101%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+7.75%",
-        "30d": "+10.84%"
+        "7d": "+7.91%",
+        "30d": "+11.00%"
       },
       "sec_filing_tags": [
         "실적",
@@ -6610,24 +6610,24 @@
       "summary": "주가는 30일간 +61.35% 급등했고 52주 고점의 97% 부근까지 올라, SMA50과 SMA200을 각각 49.14%, 67.35% 상회합니다. 다음 촉매는 2026-05-06 실적 발표이며, 실적 직후 모멘텀 유지 여부가 단기 방향을 좌우할 가능성이 큽니다.",
       "signal_or_takeaway": "매수 관찰 — 2026-05-06 실적 발표 전후 모멘텀 유지 여부가 핵심 | 진입 트리거 362.79 상향 돌파 | 목표 362.79/384.86달러 | 손절 238.20달러",
       "data_snapshot": {
-        "Price": "416.00 USD",
-        "Daily Change": "-1.19%",
-        "Market Cap": "678.33B",
-        "Trailing P/E": "139.13",
+        "Price": "414.05 USD",
+        "Daily Change": "-1.65%",
+        "Market Cap": "675.15B",
+        "Trailing P/E": "138.48",
         "EPS": "2.99",
         "52W High": "469.22",
         "52W Low": "107.67",
         "50D SMA": "283.78",
         "200D SMA": "225.41",
-        "Volume": "30431979",
+        "Volume": "37434111",
         "3M Avg Volume": "38.98M",
-        "Price/Book": "10.52",
+        "Price/Book": "10.47",
         "Dividend Yield": "N/A",
         "Sector": "Technology",
-        "Open": "412.96",
+        "Open": "412.60",
         "High": "428.75",
         "Low": "393.36",
-        "Close": "416.00",
+        "Close": "414.05",
         "RS vs Sector ETF": "+40.26%"
       },
       "key_news": [
@@ -6652,14 +6652,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "678.33B",
-        "trailing_pe": "139.13",
+        "market_cap": "675.15B",
+        "trailing_pe": "138.48",
         "eps": "2.99",
         "forward_eps": "12.95",
         "earnings_growth": "+91.20% YoY",
-        "price_to_book": "10.52",
+        "price_to_book": "10.47",
         "dividend_yield": "N/A",
-        "volume": "30431979",
+        "volume": "37434111",
         "avg_volume_3m": "38.98M",
         "52w_high": "469.22",
         "52w_low": "107.67",
@@ -6691,14 +6691,14 @@
       },
       "price_action": {
         "atr_14d": "29.02",
-        "atr_percent": "6.97%",
-        "relative_volume": "0.78x",
-        "gap_percent": "-1.91%",
-        "price_vs_sma50": "+46.59%",
-        "price_vs_sma200": "+84.55%",
+        "atr_percent": "7.01%",
+        "relative_volume": "0.96x",
+        "gap_percent": "-1.99%",
+        "price_vs_sma50": "+45.90%",
+        "price_vs_sma200": "+83.69%",
         "week52_position": "85%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+36.91%"
+        "rs_vs_sector_etf": "+36.49%"
       },
       "upcoming_events": [
         {
@@ -6761,17 +6761,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "84.1%",
-        "atm_put_iv": "69.1%",
-        "iv_percentile_30d": "13th",
+        "atm_call_iv": "73.3%",
+        "atm_put_iv": "80.3%",
+        "iv_percentile_30d": "11th",
         "put_call_ratio": "1.11x",
         "tone": "neutral",
         "unusual_activity": "PUT $550, vol 80, OI 대비 43% ; PUT $540, vol 80, OI 대비 66% ; PUT $420, vol 84, OI 대비 175%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-7.20%",
-        "30d": "+49.43%"
+        "7d": "-7.64%",
+        "30d": "+48.73%"
       },
       "sec_filing_tags": [
         "기타 공시",
@@ -6964,24 +6964,24 @@
       "summary": "주가는 SMA50과 SMA200을 각각 1.75%, 9.01% 상회하며 30일간 +1.63%로 완만한 우상향입니다. 다음 촉매는 2026-07-21 실적 발표와 2026-05-15 배당 지급일이며, 방어주 성격상 변동성은 상대적으로 낮은 편입니다.",
       "signal_or_takeaway": "중립 관찰 — 완만한 우상향과 2026-05-15 배당 지급일 전 박스권 점검 | 진입 트리거 80.57 상향 돌파 | 목표 80.57/85.76달러 | 손절 77.13달러",
       "data_snapshot": {
-        "Price": "81.84 USD",
-        "Daily Change": "+0.79%",
-        "Market Cap": "352.14B",
-        "Trailing P/E": "25.74",
+        "Price": "81.92 USD",
+        "Daily Change": "+0.89%",
+        "Market Cap": "352.46B",
+        "Trailing P/E": "25.76",
         "EPS": "3.18",
         "52W High": "82.66",
         "52W Low": "65.35",
         "50D SMA": "77.14",
         "200D SMA": "72.52",
-        "Volume": "9499364",
+        "Volume": "15906515",
         "3M Avg Volume": "15.37M",
-        "Price/Book": "10.47",
+        "Price/Book": "10.48",
         "Dividend Yield": "2.61%",
         "Sector": "Consumer Staples",
         "Open": "81.40",
         "High": "82.66",
         "Low": "81.27",
-        "Close": "81.84",
+        "Close": "81.92",
         "RS vs Sector ETF": "-0.06%"
       },
       "key_news": [
@@ -7006,14 +7006,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "352.14B",
-        "trailing_pe": "25.74",
+        "market_cap": "352.46B",
+        "trailing_pe": "25.76",
         "eps": "3.18",
         "forward_eps": "3.48",
         "earnings_growth": "+18.20% YoY",
-        "price_to_book": "10.47",
+        "price_to_book": "10.48",
         "dividend_yield": "2.61%",
-        "volume": "9499364",
+        "volume": "15906515",
         "avg_volume_3m": "15.37M",
         "52w_high": "82.66",
         "52w_low": "65.35",
@@ -7046,13 +7046,13 @@
       "price_action": {
         "atr_14d": "1.15",
         "atr_percent": "1.40%",
-        "relative_volume": "0.62x",
+        "relative_volume": "1.03x",
         "gap_percent": "+0.25%",
-        "price_vs_sma50": "+6.09%",
-        "price_vs_sma200": "+12.86%",
-        "week52_position": "95%",
+        "price_vs_sma50": "+6.20%",
+        "price_vs_sma200": "+12.97%",
+        "week52_position": "96%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+3.80%"
+        "rs_vs_sector_etf": "+3.76%"
       },
       "upcoming_events": [
         {
@@ -7122,17 +7122,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "22.1%",
-        "atm_put_iv": "18.1%",
-        "iv_percentile_30d": "5th",
+        "atm_call_iv": "19.5%",
+        "atm_put_iv": "21.0%",
+        "iv_percentile_30d": "6th",
         "put_call_ratio": "0.70x",
         "tone": "neutral",
         "unusual_activity": "CALL $88, vol 40, OI 대비 69% ; PUT $90, vol 12, OI 대비 150% ; PUT $48, vol 36, OI 대비 38%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+2.26%",
-        "30d": "+8.05%"
+        "7d": "+2.36%",
+        "30d": "+8.16%"
       },
       "sec_filing_tags": [
         "실적",
@@ -7323,24 +7323,24 @@
       "summary": "주가는 SMA50과 SMA200을 각각 -5.61%, -3.07% 밑돌고 30일간 -7.59%로 부진하며, RS vs Sector ETF도 -11.05%로 약세입니다. 다음 촉매는 2026-07-22 실적 발표와 향후 배당 기대이며, 현재는 실적 확인 전까지 박스권 흐름이 이어질 가능성이 큽니다.",
       "signal_or_takeaway": "중립 관찰 — [실적] AT&T INC., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 25.25–26.55 | 목표 26.87/27.52 | 손절 SMA50(27.44 USD)",
       "data_snapshot": {
-        "Price": "24.87 USD",
-        "Daily Change": "+1.80%",
-        "Market Cap": "172.84B",
-        "Trailing P/E": "8.18",
+        "Price": "24.98 USD",
+        "Daily Change": "+2.25%",
+        "Market Cap": "173.57B",
+        "Trailing P/E": "8.22",
         "EPS": "3.04",
         "52W High": "29.79",
         "52W Low": "22.95",
         "50D SMA": "26.77",
         "200D SMA": "26.59",
-        "Volume": "19765611",
+        "Volume": "29591374",
         "3M Avg Volume": "39.59M",
-        "Price/Book": "1.58",
+        "Price/Book": "1.59",
         "Dividend Yield": "4.54%",
         "Sector": "Communication Services",
         "Open": "24.59",
-        "High": "24.94",
+        "High": "24.99",
         "Low": "24.42",
-        "Close": "24.87",
+        "Close": "24.98",
         "RS vs Sector ETF": "-11.05%"
       },
       "key_news": [
@@ -7365,14 +7365,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "172.84B",
-        "trailing_pe": "8.18",
+        "market_cap": "173.57B",
+        "trailing_pe": "8.22",
         "eps": "3.04",
         "forward_eps": "2.56",
         "earnings_growth": "-11.30% YoY",
-        "price_to_book": "1.58",
+        "price_to_book": "1.59",
         "dividend_yield": "4.54%",
-        "volume": "19765611",
+        "volume": "29591374",
         "avg_volume_3m": "39.59M",
         "52w_high": "29.79",
         "52w_low": "22.95",
@@ -7405,13 +7405,13 @@
       "price_action": {
         "atr_14d": "0.54",
         "atr_percent": "2.17%",
-        "relative_volume": "0.50x",
+        "relative_volume": "0.75x",
         "gap_percent": "+0.65%",
-        "price_vs_sma50": "-7.09%",
-        "price_vs_sma200": "-6.47%",
-        "week52_position": "28%",
+        "price_vs_sma50": "-6.68%",
+        "price_vs_sma200": "-6.06%",
+        "week52_position": "30%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-3.46%"
+        "rs_vs_sector_etf": "-3.04%"
       },
       "upcoming_events": [
         {
@@ -7474,17 +7474,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "23.8%",
-        "atm_put_iv": "29.1%",
-        "iv_percentile_30d": "5th",
+        "atm_call_iv": "24.0%",
+        "atm_put_iv": "28.7%",
+        "iv_percentile_30d": "6th",
         "put_call_ratio": "0.58x",
         "tone": "neutral",
         "unusual_activity": "CALL $15, vol 72, OI 대비 35% ; CALL $27, vol 171, OI 대비 39% ; CALL $25, vol 101, OI 대비 51%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-1.43%",
-        "30d": "-6.19%"
+        "7d": "-0.99%",
+        "30d": "-5.77%"
       },
       "sec_filing_tags": [
         "실적",
@@ -7677,24 +7677,24 @@
       "summary": "주가는 48.00달러로 30일간 +64.16% 급등했고 52주 고점 84.64달러 대비 38% 수준이라 변동성 구간이지만, SMA50 35.96달러 위에서 거래되며 모멘텀이 유지되고 있습니다. 다음 촉매는 오늘(2026-05-06) 실적 발표(D-0)이며, 결과에 따라 최근 상승분의 유지 여부가 빠르게 확인될 수 있습니다.",
       "signal_or_takeaway": "매수 관찰 — 실적 D-0와 SMA50 상회, 최근 상승 추세 유지 여부가 핵심 catalyst | 진입 트리거 48.00 상향 유지 | 목표 53.16/63.91달러 | 손절 46.53달러",
       "data_snapshot": {
-        "Price": "48.85 USD",
-        "Daily Change": "-0.93%",
-        "Market Cap": "18.23B",
-        "Trailing P/E": "125.26",
+        "Price": "48.44 USD",
+        "Daily Change": "-1.76%",
+        "Market Cap": "18.08B",
+        "Trailing P/E": "124.21",
         "EPS": "0.39",
         "52W High": "84.64",
         "52W Low": "25.89",
         "50D SMA": "39.25",
         "200D SMA": "47.02",
-        "Volume": "16456320",
+        "Volume": "21992788",
         "3M Avg Volume": "28.54M",
-        "Price/Book": "4.66",
+        "Price/Book": "4.62",
         "Dividend Yield": "N/A",
         "Sector": "Technology",
         "Open": "47.64",
-        "High": "49.23",
+        "High": "49.44",
         "Low": "45.51",
-        "Close": "48.85",
+        "Close": "48.44",
         "RS vs Sector ETF": "+43.07%"
       },
       "key_news": [
@@ -7713,14 +7713,14 @@
         2
       ],
       "fundamentals": {
-        "market_cap": "18.23B",
-        "trailing_pe": "125.26",
+        "market_cap": "18.08B",
+        "trailing_pe": "124.21",
         "eps": "0.39",
         "forward_eps": "-1.04",
         "earnings_growth": "+1578.57% YoY",
-        "price_to_book": "4.66",
+        "price_to_book": "4.62",
         "dividend_yield": "N/A",
-        "volume": "16456320",
+        "volume": "21992788",
         "avg_volume_3m": "28.54M",
         "52w_high": "84.64",
         "52w_low": "25.89",
@@ -7751,15 +7751,15 @@
         "pattern_note": "최근 1개 분기 연속 상회 · 최근 3개 분기 서프라이즈 추세 개선 · 평균 서프라이즈 +1.4%"
       },
       "price_action": {
-        "atr_14d": "4.94",
-        "atr_percent": "10.12%",
-        "relative_volume": "0.58x",
+        "atr_14d": "4.95",
+        "atr_percent": "10.23%",
+        "relative_volume": "0.77x",
         "gap_percent": "-3.39%",
-        "price_vs_sma50": "+24.44%",
-        "price_vs_sma200": "+3.88%",
-        "week52_position": "39%",
+        "price_vs_sma50": "+23.40%",
+        "price_vs_sma200": "+3.01%",
+        "week52_position": "38%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-6.53%"
+        "rs_vs_sector_etf": "-7.14%"
       },
       "upcoming_events": [
         {
@@ -7822,17 +7822,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "100.8%",
-        "atm_put_iv": "92.8%",
-        "iv_percentile_30d": "8th",
+        "atm_call_iv": "96.9%",
+        "atm_put_iv": "90.9%",
+        "iv_percentile_30d": "15th",
         "put_call_ratio": "1.14x",
         "tone": "bullish",
         "unusual_activity": "PUT $65, vol 18, OI 대비 225% ; PUT $18, vol 61, OI 대비 34% ; PUT $115, vol 1, OI 대비 50%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-12.56%",
-        "30d": "+5.99%"
+        "7d": "-13.30%",
+        "30d": "+5.10%"
       },
       "sec_filing_tags": [
         "기타 공시",
@@ -8032,24 +8032,24 @@
       "summary": "주가는 SMA50을 2.56% 상회하지만 30일간 -5.75%로 약세이며, 옵션 흐름도 PCR 3.07로 방어적입니다. 다음 촉매는 2026-05-06 실적 발표와 유가 방향이며, 호르무즈 해협 차질이나 OPEC 공급 충격은 에너지 가격에 직접적인 영향을 줄 수 있습니다.",
       "signal_or_takeaway": "중립 경계 — 실적과 유가 방향성 확인 대기 | 진입 트리거 59.34 지지 확인 | 목표 62.06/64.33달러 | 손절 57.86달러",
       "data_snapshot": {
-        "Price": "60.73 USD",
-        "Daily Change": "+1.73%",
-        "Market Cap": "60.40B",
-        "Trailing P/E": "82.07",
+        "Price": "60.70 USD",
+        "Daily Change": "+1.68%",
+        "Market Cap": "60.37B",
+        "Trailing P/E": "82.03",
         "EPS": "0.74",
         "52W High": "67.45",
         "52W Low": "38.80",
         "50D SMA": "58.59",
         "200D SMA": "47.84",
-        "Volume": "9108517",
+        "Volume": "11460003",
         "3M Avg Volume": "16.95M",
         "Price/Book": "1.96",
         "Dividend Yield": "1.74%",
         "Sector": "Energy",
         "Open": "60.13",
-        "High": "60.81",
+        "High": "60.94",
         "Low": "59.64",
-        "Close": "60.73",
+        "Close": "60.70",
         "RS vs Sector ETF": "-5.36%"
       },
       "key_news": [
@@ -8074,14 +8074,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "60.40B",
-        "trailing_pe": "82.07",
+        "market_cap": "60.37B",
+        "trailing_pe": "82.03",
         "eps": "0.74",
         "forward_eps": "3.61",
         "earnings_growth": "+3.16% YoY",
         "price_to_book": "1.96",
         "dividend_yield": "1.74%",
-        "volume": "9108517",
+        "volume": "11460003",
         "avg_volume_3m": "16.95M",
         "52w_high": "67.45",
         "52w_low": "38.80",
@@ -8112,15 +8112,15 @@
         "pattern_note": "최근 4개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.3%"
       },
       "price_action": {
-        "atr_14d": "1.93",
-        "atr_percent": "3.19%",
-        "relative_volume": "0.54x",
+        "atr_14d": "1.94",
+        "atr_percent": "3.20%",
+        "relative_volume": "0.68x",
         "gap_percent": "+0.72%",
-        "price_vs_sma50": "+3.65%",
-        "price_vs_sma200": "+26.95%",
-        "week52_position": "77%",
+        "price_vs_sma50": "+3.60%",
+        "price_vs_sma200": "+26.89%",
+        "week52_position": "76%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+1.53%"
+        "rs_vs_sector_etf": "+1.51%"
       },
       "upcoming_events": [
         {
@@ -8183,8 +8183,8 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "38.5%",
-        "atm_put_iv": "43.3%",
+        "atm_call_iv": "41.4%",
+        "atm_put_iv": "35.5%",
         "iv_percentile_30d": "7th",
         "put_call_ratio": "0.23x",
         "tone": "bearish",
@@ -8192,8 +8192,8 @@
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+7.93%",
-        "30d": "+12.90%"
+        "7d": "+7.87%",
+        "30d": "+12.85%"
       },
       "sec_filing_tags": [
         "실적",
@@ -8384,24 +8384,24 @@
       "summary": "주가는 SMA50과 SMA200을 각각 3.83%, 7.80% 상회하고 30일간 +4.31%로 안정적입니다. 다음 촉매는 2026-05-06 실적 발표이며, 재생에너지 유틸리티 특성상 실적과 가이던스가 핵심입니다.",
       "signal_or_takeaway": "중립 관찰 — 실적 직전 안정적 추세 유지 | 진입 트리거 115.34 지지 확인 | 목표 120.06/127.09달러 | 손절 111.08달러",
       "data_snapshot": {
-        "Price": "130.93 USD",
-        "Daily Change": "+1.30%",
-        "Market Cap": "8.05B",
-        "Trailing P/E": "63.25",
+        "Price": "130.68 USD",
+        "Daily Change": "+1.11%",
+        "Market Cap": "8.03B",
+        "Trailing P/E": "63.13",
         "EPS": "2.07",
         "52W High": "138.52",
         "52W Low": "70.42",
         "50D SMA": "114.24",
         "200D SMA": "108.79",
-        "Volume": "420257",
+        "Volume": "598750",
         "3M Avg Volume": "984,759",
-        "Price/Book": "3.13",
+        "Price/Book": "3.12",
         "Dividend Yield": "0.37%",
         "Sector": "Utilities",
         "Open": "128.42",
         "High": "132.00",
         "Low": "127.79",
-        "Close": "130.93",
+        "Close": "130.68",
         "RS vs Sector ETF": "+3.88%"
       },
       "key_news": [
@@ -8426,14 +8426,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "8.05B",
-        "trailing_pe": "63.25",
+        "market_cap": "8.03B",
+        "trailing_pe": "63.13",
         "eps": "2.07",
         "forward_eps": "2.49",
         "earnings_growth": "+7.60% YoY",
-        "price_to_book": "3.13",
+        "price_to_book": "3.12",
         "dividend_yield": "0.37%",
-        "volume": "420257",
+        "volume": "598750",
         "avg_volume_3m": "984,759",
         "52w_high": "138.52",
         "52w_low": "70.42",
@@ -8465,14 +8465,14 @@
       },
       "price_action": {
         "atr_14d": "4.71",
-        "atr_percent": "3.60%",
-        "relative_volume": "0.43x",
+        "atr_percent": "3.61%",
+        "relative_volume": "0.61x",
         "gap_percent": "-0.63%",
-        "price_vs_sma50": "+14.61%",
-        "price_vs_sma200": "+20.34%",
-        "week52_position": "89%",
+        "price_vs_sma50": "+14.39%",
+        "price_vs_sma200": "+20.12%",
+        "week52_position": "88%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+19.89%"
+        "rs_vs_sector_etf": "+19.55%"
       },
       "upcoming_events": [
         {
@@ -8535,17 +8535,17 @@
       },
       "options_summary": {
         "expiry": "2026-06-18",
-        "atm_call_iv": "39.1%",
-        "atm_put_iv": "34.6%",
+        "atm_call_iv": "37.3%",
+        "atm_put_iv": "37.2%",
         "put_call_ratio": "0.43x",
-        "iv_percentile_30d": "26th",
+        "iv_percentile_30d": "20th",
         "tone": "bearish",
         "unusual_activity": "PUT $90, vol 20, OI 대비 100% ; CALL $85, vol 1, OI 대비 100% ; CALL $110, vol 1, OI 대비 100%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+3.75%",
-        "30d": "+15.83%"
+        "7d": "+3.55%",
+        "30d": "+15.61%"
       },
       "sec_filing_tags": [
         "실적",
@@ -8735,24 +8735,24 @@
       "summary": "주가는 SMA50과 SMA200을 크게 상회하며 30일간 +6.40%로 반등했지만, RS vs Sector ETF는 -14.69%로 업종 대비는 약합니다. 다음 촉매는 2026-05-13 실적 발표와 그 전후 변동성 확대 여부이며, 옵션에서는 PCR 0.19와 NetΔ +70,231이 확인됩니다.",
       "signal_or_takeaway": "매수 관찰 — 2026-05-13 실적 발표와 SMA50·SMA200 상회 모멘텀 | 진입 트리거 16.46 상향 유지 | 목표 17.60/18.93달러 | 손절 14.14달러",
       "data_snapshot": {
-        "Price": "19.01 USD",
-        "Daily Change": "-0.99%",
-        "Market Cap": "735.91M",
-        "Trailing P/E": "11.96",
+        "Price": "19.13 USD",
+        "Daily Change": "-0.36%",
+        "Market Cap": "740.55M",
+        "Trailing P/E": "12.03",
         "EPS": "1.59",
         "52W High": "23.59",
         "52W Low": "6.60",
         "50D SMA": "15.95",
         "200D SMA": "11.43",
-        "Volume": "745204",
+        "Volume": "947778",
         "3M Avg Volume": "1.56M",
-        "Price/Book": "5.57",
+        "Price/Book": "5.61",
         "Dividend Yield": "N/A",
         "Sector": "Technology",
         "Open": "19.15",
         "High": "19.83",
         "Low": "17.64",
-        "Close": "19.01",
+        "Close": "19.13",
         "RS vs Sector ETF": "-14.69%"
       },
       "key_news": [
@@ -8777,14 +8777,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "735.91M",
-        "trailing_pe": "11.96",
+        "market_cap": "740.55M",
+        "trailing_pe": "12.03",
         "eps": "1.59",
         "forward_eps": "-0.25",
         "earnings_growth": "+11.36% YoY",
-        "price_to_book": "5.57",
+        "price_to_book": "5.61",
         "dividend_yield": "N/A",
-        "volume": "745204",
+        "volume": "947778",
         "avg_volume_3m": "1.56M",
         "52w_high": "23.59",
         "52w_low": "6.60",
@@ -8816,14 +8816,14 @@
       },
       "price_action": {
         "atr_14d": "2.00",
-        "atr_percent": "10.50%",
-        "relative_volume": "0.48x",
+        "atr_percent": "10.44%",
+        "relative_volume": "0.61x",
         "gap_percent": "-0.26%",
-        "price_vs_sma50": "+19.18%",
-        "price_vs_sma200": "+66.30%",
-        "week52_position": "73%",
+        "price_vs_sma50": "+19.93%",
+        "price_vs_sma200": "+67.35%",
+        "week52_position": "74%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-15.23%"
+        "rs_vs_sector_etf": "-14.34%"
       },
       "upcoming_events": [
         {
@@ -8886,17 +8886,17 @@
       },
       "options_summary": {
         "expiry": "2026-06-18",
-        "atm_call_iv": "102.0%",
-        "atm_put_iv": "91.0%",
+        "atm_call_iv": "98.9%",
+        "atm_put_iv": "93.5%",
         "put_call_ratio": "0.52x",
-        "iv_percentile_30d": "19th",
+        "iv_percentile_30d": "31th",
         "tone": "neutral",
         "unusual_activity": "CALL $26, vol 30, OI 대비 100% ; CALL $19, vol 6, OI 대비 33% ; PUT $18, vol 5, OI 대비 33%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+7.77%",
-        "30d": "-2.71%"
+        "7d": "+8.45%",
+        "30d": "-2.10%"
       },
       "sec_filing_tags": [
         "기타 공시",
@@ -9088,8 +9088,8 @@
       "summary": "주가는 30일간 +23.42% 상승했지만 주가가 52주 고점 대비 낮고, 단기 옵션에서는 7달러 풋 대량 거래가 확인됩니다. 다음 촉매는 2026-05-11 실적 발표이며, 실적과 자금조달 우려가 함께 반영될 수 있습니다.",
       "signal_or_takeaway": "중립 관찰 — 2026-05-11 실적 발표와 단기 상승분 소화 구간 | 진입 트리거 3.32 지지 확인 | 목표 3.69/4.58달러 | 손절 2.51달러",
       "data_snapshot": {
-        "Price": "3.32 USD",
-        "Daily Change": "-3.91%",
+        "Price": "3.31 USD",
+        "Daily Change": "-4.06%",
         "Market Cap": "4.62B",
         "Trailing P/E": "N/A",
         "EPS": "-1.39",
@@ -9097,15 +9097,15 @@
         "52W Low": "0.74",
         "50D SMA": "2.80",
         "200D SMA": "2.37",
-        "Volume": "37244393",
+        "Volume": "44732845",
         "3M Avg Volume": "82.95M",
-        "Price/Book": "6.16",
+        "Price/Book": "6.15",
         "Dividend Yield": "N/A",
         "Sector": "Industrials",
         "Open": "3.39",
         "High": "3.45",
         "Low": "3.21",
-        "Close": "3.32",
+        "Close": "3.31",
         "RS vs Sector ETF": "+18.68%"
       },
       "key_news": [
@@ -9135,9 +9135,9 @@
         "eps": "-1.39",
         "forward_eps": "-0.16",
         "earnings_growth": "+14.29% YoY",
-        "price_to_book": "6.16",
+        "price_to_book": "6.15",
         "dividend_yield": "N/A",
-        "volume": "37244393",
+        "volume": "44732845",
         "avg_volume_3m": "82.95M",
         "52w_high": "4.58",
         "52w_low": "0.74",
@@ -9169,14 +9169,14 @@
       },
       "price_action": {
         "atr_14d": "0.33",
-        "atr_percent": "9.98%",
-        "relative_volume": "0.45x",
-        "gap_percent": "-1.68%",
-        "price_vs_sma50": "+18.37%",
-        "price_vs_sma200": "+39.80%",
+        "atr_percent": "9.99%",
+        "relative_volume": "0.54x",
+        "gap_percent": "-1.74%",
+        "price_vs_sma50": "+18.19%",
+        "price_vs_sma200": "+39.59%",
         "week52_position": "67%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+21.78%"
+        "rs_vs_sector_etf": "+21.81%"
       },
       "upcoming_events": [
         {
@@ -9239,17 +9239,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "120.3%",
-        "atm_put_iv": "84.4%",
-        "iv_percentile_30d": "4th",
+        "atm_call_iv": "114.1%",
+        "atm_put_iv": "110.9%",
+        "iv_percentile_30d": "12th",
         "put_call_ratio": "0.19x",
         "tone": "neutral",
         "unusual_activity": "PUT $7, vol 2500, OI 대비 96%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-6.74%",
-        "30d": "+19.42%"
+        "7d": "-7.02%",
+        "30d": "+19.06%"
       },
       "sec_filing_tags": [
         "실적",
@@ -9436,24 +9436,24 @@
       "summary": "현재가 335.73달러로 30일간 +32.58% 상승해 52주 고점 364.80달러의 90% 구간에 있으며, 50일선 280.25달러와 200일선 179.63달러 대비 각각 +19.80%, +86.90%입니다. 다음 촉매는 2026-05-06 실적 발표(D-0)이며, 실적과 공시 모멘텀이 이어질 경우 상단 재시험이 가능하지만 MACD는 bearish이고 옵션 흐름은 NetΔ -18,342로 단기 경계도 함께 필요합니다.",
       "signal_or_takeaway": "중립 관찰 — 실적 D-0과 상단 재시험 가능성 | 진입 트리거 364.80 상향 돌파 | 목표 364.80/369.15달러 | 손절 280.25달러",
       "data_snapshot": {
-        "Price": "351.40 USD",
-        "Daily Change": "-3.15%",
-        "Market Cap": "68.75B",
-        "Trailing P/E": "167.33",
+        "Price": "353.63 USD",
+        "Daily Change": "-2.54%",
+        "Market Cap": "69.18B",
+        "Trailing P/E": "168.40",
         "EPS": "2.10",
         "52W High": "413.00",
         "52W Low": "73.66",
         "50D SMA": "300.60",
         "200D SMA": "192.74",
-        "Volume": "4578583",
+        "Volume": "5743316",
         "3M Avg Volume": "7.67M",
-        "Price/Book": "6.44",
+        "Price/Book": "6.48",
         "Dividend Yield": "N/A",
         "Sector": "Technology",
         "Open": "354.42",
         "High": "365.94",
         "Low": "336.71",
-        "Close": "351.40",
+        "Close": "353.63",
         "RS vs Sector ETF": "+11.49%"
       },
       "key_news": [
@@ -9478,14 +9478,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "68.75B",
-        "trailing_pe": "167.33",
+        "market_cap": "69.18B",
+        "trailing_pe": "168.40",
         "eps": "2.10",
         "forward_eps": "8.10",
         "earnings_growth": "+11.18% YoY",
-        "price_to_book": "6.44",
+        "price_to_book": "6.48",
         "dividend_yield": "N/A",
-        "volume": "4578583",
+        "volume": "5743316",
         "avg_volume_3m": "7.67M",
         "52w_high": "413.00",
         "52w_low": "73.66",
@@ -9517,14 +9517,14 @@
       },
       "price_action": {
         "atr_14d": "29.40",
-        "atr_percent": "8.37%",
-        "relative_volume": "0.60x",
+        "atr_percent": "8.31%",
+        "relative_volume": "0.75x",
         "gap_percent": "-2.32%",
-        "price_vs_sma50": "+16.90%",
-        "price_vs_sma200": "+82.32%",
-        "week52_position": "82%",
+        "price_vs_sma50": "+17.64%",
+        "price_vs_sma200": "+83.47%",
+        "week52_position": "83%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-10.67%"
+        "rs_vs_sector_etf": "-9.74%"
       },
       "upcoming_events": [
         {
@@ -9587,17 +9587,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "110.2%",
-        "atm_put_iv": "102.1%",
-        "iv_percentile_30d": "18th",
+        "atm_call_iv": "103.0%",
+        "atm_put_iv": "107.6%",
+        "iv_percentile_30d": "14th",
         "put_call_ratio": "1.91x",
         "tone": "neutral",
         "unusual_activity": "PUT $260, vol 80, OI 대비 92% ; PUT $185, vol 29, OI 대비 97% ; PUT $320, vol 10, OI 대비 100%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-6.05%",
-        "30d": "+1.85%"
+        "7d": "-5.45%",
+        "30d": "+2.50%"
       },
       "sec_filing_tags": [
         "실적",
@@ -9799,24 +9799,24 @@
       "summary": "주가는 30일간 +82.80% 급등했고 52주 고점의 76% 수준까지 올라, SMA50과 SMA200을 각각 51.74%, 32.04% 상회합니다. 다음 촉매는 2026-05-06 실적 발표이며, 높은 변동성과 동반된 옵션 경계가 함께 나타납니다.",
       "signal_or_takeaway": "매수 관찰 — 2026-05-06 실적 발표와 높은 변동성 경계 | 진입 트리거 215.69 상향 돌파 | 목표 237.53/262.90달러 | 손절 142.15달러",
       "data_snapshot": {
-        "Price": "251.73 USD",
-        "Daily Change": "+16.77%",
-        "Market Cap": "43.14B",
-        "Trailing P/E": "168.93",
+        "Price": "244.26 USD",
+        "Daily Change": "+13.30%",
+        "Market Cap": "41.87B",
+        "Trailing P/E": "163.93",
         "EPS": "1.49",
         "52W High": "262.90",
         "52W Low": "84.78",
         "50D SMA": "160.67",
         "200D SMA": "167.98",
-        "Volume": "6894556",
+        "Volume": "9381744",
         "3M Avg Volume": "5.21M",
-        "Price/Book": "28.86",
+        "Price/Book": "28.01",
         "Dividend Yield": "N/A",
         "Sector": "Technology",
-        "Open": "212.00",
+        "Open": "212.96",
         "High": "255.96",
         "Low": "210.55",
-        "Close": "251.73",
+        "Close": "244.26",
         "RS vs Sector ETF": "+61.71%"
       },
       "key_news": [
@@ -9841,14 +9841,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "43.14B",
-        "trailing_pe": "168.93",
+        "market_cap": "41.87B",
+        "trailing_pe": "163.93",
         "eps": "1.49",
         "forward_eps": "4.21",
         "earnings_growth": "+1.44% YoY",
-        "price_to_book": "28.86",
+        "price_to_book": "28.01",
         "dividend_yield": "N/A",
-        "volume": "6894556",
+        "volume": "9381744",
         "avg_volume_3m": "5.21M",
         "52w_high": "262.90",
         "52w_low": "84.78",
@@ -9880,14 +9880,14 @@
       },
       "price_action": {
         "atr_14d": "20.96",
-        "atr_percent": "8.33%",
-        "relative_volume": "1.32x",
-        "gap_percent": "-1.66%",
-        "price_vs_sma50": "+56.68%",
-        "price_vs_sma200": "+49.86%",
-        "week52_position": "94%",
+        "atr_percent": "8.58%",
+        "relative_volume": "1.80x",
+        "gap_percent": "-1.22%",
+        "price_vs_sma50": "+52.03%",
+        "price_vs_sma200": "+45.41%",
+        "week52_position": "90%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+32.11%"
+        "rs_vs_sector_etf": "+28.10%"
       },
       "upcoming_events": [
         {
@@ -9950,17 +9950,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "111.1%",
-        "atm_put_iv": "136.3%",
-        "iv_percentile_30d": "50th",
+        "atm_call_iv": "120.4%",
+        "atm_put_iv": "122.9%",
+        "iv_percentile_30d": "21th",
         "put_call_ratio": "1.27x",
         "tone": "neutral",
         "unusual_activity": "PUT $250, vol 150, OI 대비 91% ; PUT $260, vol 40, OI 대비 100% ; PUT $195, vol 55, OI 대비 393%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+23.14%",
-        "30d": "+44.63%"
+        "7d": "+19.49%",
+        "30d": "+40.34%"
       },
       "sec_filing_tags": [
         "실적",
@@ -10150,24 +10150,24 @@
       "summary": "주가는 271.60달러로 52주 고점 276.65달러의 97% 구간에 있으며, SMA50 대비 +20.57%, SMA200 대비 +61.82%로 추세는 강하지만 30D +26.40% 이후 단기 과열 여부를 점검할 구간입니다. 다음 촉매는 D-13인 2026-05-19 실적 발표이며, 그 전까지는 RSI 64.3, MACD bullish, 옵션 플로우의 PCR 96.50 bearish와 1.5×ATR 기준 목표 292.18달러가 동시에 작동하는지 확인하는 흐름입니다.",
       "signal_or_takeaway": "매수 유지 — 실적 D-13 전까지 강한 추세와 상단 근접 | 진입 트리거 276.65 상향 돌파 | 목표 276.65/292.18달러 | 손절 225.26달러",
       "data_snapshot": {
-        "Price": "239.49 USD",
-        "Daily Change": "-3.09%",
-        "Market Cap": "12.63B",
-        "Trailing P/E": "130.87",
+        "Price": "244.49 USD",
+        "Daily Change": "-1.07%",
+        "Market Cap": "12.89B",
+        "Trailing P/E": "133.60",
         "EPS": "1.83",
         "52W High": "294.06",
         "52W Low": "86.48",
         "50D SMA": "236.08",
         "200D SMA": "176.29",
-        "Volume": "944930",
+        "Volume": "1681894",
         "3M Avg Volume": "1.01M",
-        "Price/Book": "11.27",
+        "Price/Book": "11.51",
         "Dividend Yield": "N/A",
         "Sector": "Industrials",
         "Open": "237.84",
         "High": "245.30",
         "Low": "232.31",
-        "Close": "239.49",
+        "Close": "244.49",
         "RS vs Sector ETF": "+21.66%"
       },
       "key_news": [
@@ -10186,14 +10186,14 @@
         2
       ],
       "fundamentals": {
-        "market_cap": "12.63B",
-        "trailing_pe": "130.87",
+        "market_cap": "12.89B",
+        "trailing_pe": "133.60",
         "eps": "1.83",
         "forward_eps": "7.38",
         "earnings_growth": "-218.42% YoY",
-        "price_to_book": "11.27",
+        "price_to_book": "11.51",
         "dividend_yield": "N/A",
-        "volume": "944930",
+        "volume": "1681894",
         "avg_volume_3m": "1.01M",
         "52w_high": "294.06",
         "52w_low": "86.48",
@@ -10225,14 +10225,14 @@
       },
       "price_action": {
         "atr_14d": "18.07",
-        "atr_percent": "7.55%",
-        "relative_volume": "0.93x",
+        "atr_percent": "7.39%",
+        "relative_volume": "1.66x",
         "gap_percent": "-3.76%",
-        "price_vs_sma50": "+1.44%",
-        "price_vs_sma200": "+35.85%",
-        "week52_position": "74%",
+        "price_vs_sma50": "+3.56%",
+        "price_vs_sma200": "+38.69%",
+        "week52_position": "76%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+0.81%"
+        "rs_vs_sector_etf": "+3.07%"
       },
       "upcoming_events": [
         {
@@ -10295,17 +10295,17 @@
       },
       "options_summary": {
         "expiry": "2026-06-18",
-        "atm_call_iv": "92.7%",
-        "atm_put_iv": "86.3%",
+        "atm_call_iv": "87.5%",
+        "atm_put_iv": "95.4%",
         "put_call_ratio": "1.23x",
-        "iv_percentile_30d": "42th",
+        "iv_percentile_30d": "40th",
         "tone": "neutral",
         "unusual_activity": "PUT $220, vol 33, OI 대비 100% ; PUT $190, vol 33, OI 대비 100% ; PUT $200, vol 20, OI 대비 100%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-13.31%",
-        "30d": "-1.73%"
+        "7d": "-11.50%",
+        "30d": "+0.32%"
       },
       "sec_filing_tags": [
         "실적",
@@ -10507,24 +10507,24 @@
       "summary": "주가는 SMA50과 SMA200을 모두 밑돌고 30일간 -3.86%로 약세이며, 옵션 흐름도 PCR 2.09로 방어적입니다. 다음 촉매는 2026-05-06 실적 발표이며, 실적과 재생에너지 수급 전망이 주가 방향을 좌우할 가능성이 큽니다.",
       "signal_or_takeaway": "매도 경계 — 실적과 재생에너지 수급 전망이 주가 방향을 좌우 | 진입 트리거 12.69 하향 이탈 | 목표 12.69/3.93달러 | 손절 14.20달러",
       "data_snapshot": {
-        "Price": "17.67 USD",
-        "Daily Change": "-9.57%",
-        "Market Cap": "3.26B",
+        "Price": "17.91 USD",
+        "Daily Change": "-8.34%",
+        "Market Cap": "3.30B",
         "Trailing P/E": "N/A",
         "EPS": "-0.31",
         "52W High": "33.51",
         "52W Low": "4.40",
         "50D SMA": "15.43",
         "200D SMA": "16.40",
-        "Volume": "7492436",
+        "Volume": "9257389",
         "3M Avg Volume": "7.21M",
-        "Price/Book": "6.37",
+        "Price/Book": "6.46",
         "Dividend Yield": "N/A",
         "Sector": "Utilities",
         "Open": "18.95",
         "High": "19.39",
         "Low": "17.23",
-        "Close": "17.67",
+        "Close": "17.91",
         "RS vs Sector ETF": "-4.29%"
       },
       "key_news": [
@@ -10549,14 +10549,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "3.26B",
+        "market_cap": "3.30B",
         "trailing_pe": "N/A",
         "eps": "-0.31",
         "forward_eps": "0.13",
         "earnings_growth": "+33.33% YoY",
-        "price_to_book": "6.37",
+        "price_to_book": "6.46",
         "dividend_yield": "N/A",
-        "volume": "7492436",
+        "volume": "9257389",
         "avg_volume_3m": "7.21M",
         "52w_high": "33.51",
         "52w_low": "4.40",
@@ -10588,14 +10588,14 @@
       },
       "price_action": {
         "atr_14d": "2.92",
-        "atr_percent": "16.52%",
-        "relative_volume": "1.04x",
+        "atr_percent": "16.30%",
+        "relative_volume": "1.28x",
         "gap_percent": "-3.02%",
-        "price_vs_sma50": "+14.55%",
-        "price_vs_sma200": "+7.73%",
+        "price_vs_sma50": "+16.10%",
+        "price_vs_sma200": "+9.18%",
         "week52_position": "46%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+34.63%"
+        "rs_vs_sector_etf": "+36.26%"
       },
       "upcoming_events": [
         {
@@ -10658,17 +10658,17 @@
       },
       "options_summary": {
         "expiry": "2026-06-18",
-        "atm_call_iv": "113.2%",
-        "atm_put_iv": "94.6%",
+        "atm_call_iv": "106.7%",
+        "atm_put_iv": "106.1%",
         "put_call_ratio": "0.76x",
-        "iv_percentile_30d": "29th",
+        "iv_percentile_30d": "27th",
         "tone": "neutral",
         "unusual_activity": "PUT $27, vol 62, OI 대비 188% ; PUT $45, vol 33, OI 대비 143% ; PUT $25, vol 42, OI 대비 76%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-16.96%",
-        "30d": "+30.60%"
+        "7d": "-15.84%",
+        "30d": "+32.37%"
       },
       "sec_filing_tags": [
         "기타 공시"
@@ -10851,8 +10851,8 @@
       "summary": "주가는 SMA50과 SMA200을 모두 상회하며 30일간 +21.70% 상승했지만, 애널리스트 목표가는 현재가보다 낮습니다. 다음 촉매는 N/A이며, 실적 발표일 정보가 제공되지 않았습니다.",
       "signal_or_takeaway": "매수 관찰 — SMA50·SMA200 상회와 30일간 상승 모멘텀 | 진입 트리거 76.39 상향 돌파 | 목표 80.06/80.45달러 | 손절 64.78달러",
       "data_snapshot": {
-        "Price": "71.53 USD",
-        "Daily Change": "-4.00%",
+        "Price": "71.74 USD",
+        "Daily Change": "-3.72%",
         "Market Cap": "2.42B",
         "Trailing P/E": "N/A",
         "EPS": "-3.59",
@@ -10860,7 +10860,7 @@
         "52W Low": "53.49",
         "50D SMA": "66.95",
         "200D SMA": "65.04",
-        "Volume": "219519",
+        "Volume": "571662",
         "3M Avg Volume": "412,481",
         "Price/Book": "1.89",
         "Dividend Yield": "1.77%",
@@ -10868,7 +10868,7 @@
         "Open": "73.12",
         "High": "72.98",
         "Low": "70.20",
-        "Close": "71.53",
+        "Close": "71.74",
         "RS vs Sector ETF": "+16.96%"
       },
       "key_news": [
@@ -10900,7 +10900,7 @@
         "earnings_growth": "-150.34% YoY",
         "price_to_book": "1.89",
         "dividend_yield": "1.77%",
-        "volume": "219519",
+        "volume": "571662",
         "avg_volume_3m": "412,481",
         "52w_high": "80.06",
         "52w_low": "53.49",
@@ -10932,14 +10932,14 @@
       },
       "price_action": {
         "atr_14d": "2.90",
-        "atr_percent": "4.05%",
-        "relative_volume": "0.53x",
+        "atr_percent": "4.04%",
+        "relative_volume": "1.39x",
         "gap_percent": "-1.43%",
-        "price_vs_sma50": "+6.84%",
-        "price_vs_sma200": "+9.98%",
-        "week52_position": "68%",
+        "price_vs_sma50": "+7.15%",
+        "price_vs_sma200": "+10.30%",
+        "week52_position": "69%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+6.03%"
+        "rs_vs_sector_etf": "+6.54%"
       },
       "upcoming_events": [
         {
@@ -11002,17 +11002,17 @@
       },
       "options_summary": {
         "expiry": "2026-06-18",
-        "atm_call_iv": "41.1%",
-        "atm_put_iv": "38.4%",
-        "iv_percentile_30d": "15th",
+        "atm_call_iv": "43.3%",
+        "atm_put_iv": "41.3%",
+        "iv_percentile_30d": "8th",
         "put_call_ratio": "0.76x",
         "tone": "neutral",
         "unusual_activity": "CALL $70, vol 51, OI 대비 54% ; PUT $70, vol 50, OI 대비 100% ; CALL $45, vol 5, OI 대비 31%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-3.40%",
-        "30d": "+3.49%"
+        "7d": "-3.12%",
+        "30d": "+3.79%"
       },
       "sec_filing_tags": [
         "기타 공시"
@@ -11189,24 +11189,24 @@
       "summary": "주가는 SMA50과 SMA200을 상회하고 30일간 +14.14% 상승해 추세가 양호합니다. 다음 촉매는 2026-05-12 실적 발표이며, 실적 확인 전까지 우상향 흐름이 이어질 수 있습니다.",
       "signal_or_takeaway": "매수 유지 — SMA50·SMA200 상회와 30일간 상승 추세 | 진입 트리거 123.34 지지 확인 | 목표 126.04/131.72달러 | 손절 114.53달러",
       "data_snapshot": {
-        "Price": "127.95 USD",
-        "Daily Change": "-4.86%",
-        "Market Cap": "19.24B",
-        "Trailing P/E": "33.23",
+        "Price": "127.12 USD",
+        "Daily Change": "-5.47%",
+        "Market Cap": "19.12B",
+        "Trailing P/E": "33.02",
         "EPS": "3.85",
         "52W High": "156.78",
         "52W Low": "51.69",
         "50D SMA": "119.05",
         "200D SMA": "96.30",
-        "Volume": "1878526",
+        "Volume": "2674268",
         "3M Avg Volume": "2.00M",
-        "Price/Book": "8.83",
+        "Price/Book": "8.77",
         "Dividend Yield": "N/A",
         "Sector": "Industrials",
         "Open": "129.68",
         "High": "132.14",
         "Low": "123.26",
-        "Close": "127.95",
+        "Close": "127.12",
         "RS vs Sector ETF": "+9.40%"
       },
       "key_news": [
@@ -11231,14 +11231,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "19.24B",
-        "trailing_pe": "33.23",
+        "market_cap": "19.12B",
+        "trailing_pe": "33.02",
         "eps": "3.85",
         "forward_eps": "5.56",
         "earnings_growth": "-8.00% YoY",
-        "price_to_book": "8.83",
+        "price_to_book": "8.77",
         "dividend_yield": "N/A",
-        "volume": "1878526",
+        "volume": "2674268",
         "avg_volume_3m": "2.00M",
         "52w_high": "156.78",
         "52w_low": "51.69",
@@ -11270,14 +11270,14 @@
       },
       "price_action": {
         "atr_14d": "11.52",
-        "atr_percent": "9.00%",
-        "relative_volume": "0.94x",
+        "atr_percent": "9.06%",
+        "relative_volume": "1.34x",
         "gap_percent": "-3.57%",
-        "price_vs_sma50": "+7.47%",
-        "price_vs_sma200": "+32.87%",
-        "week52_position": "73%",
+        "price_vs_sma50": "+6.77%",
+        "price_vs_sma200": "+32.01%",
+        "week52_position": "72%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+17.41%"
+        "rs_vs_sector_etf": "+16.87%"
       },
       "upcoming_events": [
         {
@@ -11340,8 +11340,8 @@
       },
       "options_summary": {
         "expiry": "2026-06-18",
-        "atm_call_iv": "81.9%",
-        "atm_put_iv": "68.4%",
+        "atm_call_iv": "79.0%",
+        "atm_put_iv": "71.3%",
         "put_call_ratio": "1.33x",
         "iv_percentile_30d": "31th",
         "tone": "neutral",
@@ -11349,8 +11349,8 @@
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+2.06%",
-        "30d": "+14.87%"
+        "7d": "+1.40%",
+        "30d": "+14.12%"
       },
       "sec_filing_tags": [
         "실적",
@@ -11542,16 +11542,16 @@
       "summary": "주가는 SMA50과 SMA200을 크게 밑돌고 30일간 -19.95%로 약세이며, RS vs Sector ETF도 -24.69%로 부진합니다. 다음 촉매는 2026-05-06 실적 발표와 방산 수요 관련 수주 확인이며, 현재는 단기 조정 압력이 큽니다.",
       "signal_or_takeaway": "매도 경계 — SMA50·SMA200 하회와 30일간 약세 및 실적·방산 수요 확인 전 변동성 확대 | 진입 트리거 59.31 이탈 지속 | 목표 50.00/32.85달러 | 손절 77.74달러",
       "data_snapshot": {
-        "Price": "53.46 USD",
-        "Daily Change": "-1.40%",
+        "Price": "53.47 USD",
+        "Daily Change": "-1.39%",
         "Market Cap": "10.03B",
-        "Trailing P/E": "314.49",
+        "Trailing P/E": "314.50",
         "EPS": "0.17",
         "52W High": "134.00",
         "52W Low": "34.06",
         "50D SMA": "71.15",
         "200D SMA": "80.77",
-        "Volume": "1871473",
+        "Volume": "2682200",
         "3M Avg Volume": "4.50M",
         "Price/Book": "4.52",
         "Dividend Yield": "N/A",
@@ -11559,7 +11559,7 @@
         "Open": "54.24",
         "High": "54.58",
         "Low": "52.78",
-        "Close": "53.46",
+        "Close": "53.47",
         "RS vs Sector ETF": "-24.69%"
       },
       "key_news": [
@@ -11582,13 +11582,13 @@
       ],
       "fundamentals": {
         "market_cap": "10.03B",
-        "trailing_pe": "314.49",
+        "trailing_pe": "314.50",
         "eps": "0.17",
         "forward_eps": "1.07",
         "earnings_growth": "+1.31% YoY",
         "price_to_book": "4.52",
         "dividend_yield": "N/A",
-        "volume": "1871473",
+        "volume": "2682200",
         "avg_volume_3m": "4.50M",
         "52w_high": "134.00",
         "52w_low": "34.06",
@@ -11621,13 +11621,13 @@
       "price_action": {
         "atr_14d": "3.36",
         "atr_percent": "6.29%",
-        "relative_volume": "0.42x",
+        "relative_volume": "0.60x",
         "gap_percent": "+0.04%",
         "price_vs_sma50": "-24.86%",
-        "price_vs_sma200": "-33.81%",
+        "price_vs_sma200": "-33.80%",
         "week52_position": "19%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-22.15%"
+        "rs_vs_sector_etf": "-21.94%"
       },
       "upcoming_events": [
         {
@@ -11690,17 +11690,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "84.8%",
-        "atm_put_iv": "65.0%",
-        "iv_percentile_30d": "11th",
+        "atm_call_iv": "57.5%",
+        "atm_put_iv": "69.5%",
+        "iv_percentile_30d": "3th",
         "put_call_ratio": "0.66x",
         "tone": "neutral",
         "unusual_activity": "PUT $180, vol 5, OI 대비 100% ; PUT $145, vol 1, OI 대비 100% ; PUT $140, vol 1, OI 대비 100%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-6.75%",
-        "30d": "-24.69%"
+        "7d": "-6.73%",
+        "30d": "-24.68%"
       },
       "sec_filing_tags": [
         "기타 공시",
@@ -11890,24 +11890,24 @@
       "summary": "주가는 SMA50과 SMA200을 크게 밑돌고 30일간 -11.93%로 약세이며, RSI 34.8과 MACD 하락이 혼재됩니다. 다음 촉매는 2026-06-23 실적 발표이며, 신규 수주와 실적 회복 여부가 관건입니다.",
       "signal_or_takeaway": "매도 경계 — SMA50과 SMA200 하회 및 30일간 약세 지속 | 진입 트리거 166.69 지지 이탈 | 목표 155.69/50.00달러 | 손절 185.67달러",
       "data_snapshot": {
-        "Price": "159.82 USD",
-        "Daily Change": "-1.05%",
-        "Market Cap": "8.09B",
+        "Price": "160.23 USD",
+        "Daily Change": "-0.80%",
+        "Market Cap": "8.11B",
         "Trailing P/E": "N/A",
         "EPS": "-4.34",
         "52W High": "417.86",
         "52W Low": "156.00",
         "50D SMA": "191.04",
         "200D SMA": "265.43",
-        "Volume": "485400",
+        "Volume": "712984",
         "3M Avg Volume": "1.61M",
         "Price/Book": "1.86",
         "Dividend Yield": "N/A",
         "Sector": "Industrials",
-        "Open": "160.93",
+        "Open": "161.00",
         "High": "162.03",
         "Low": "157.01",
-        "Close": "159.82",
+        "Close": "160.23",
         "RS vs Sector ETF": "-16.67%"
       },
       "key_news": [
@@ -11932,14 +11932,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "8.09B",
+        "market_cap": "8.11B",
         "trailing_pe": "N/A",
         "eps": "-4.34",
         "forward_eps": "4.05",
         "earnings_growth": "-5150.00% YoY",
         "price_to_book": "1.86",
         "dividend_yield": "N/A",
-        "volume": "485400",
+        "volume": "712984",
         "avg_volume_3m": "1.61M",
         "52w_high": "417.86",
         "52w_low": "156.00",
@@ -11971,14 +11971,14 @@
       },
       "price_action": {
         "atr_14d": "9.46",
-        "atr_percent": "5.92%",
-        "relative_volume": "0.30x",
-        "gap_percent": "-0.37%",
-        "price_vs_sma50": "-16.34%",
-        "price_vs_sma200": "-39.79%",
-        "week52_position": "1%",
+        "atr_percent": "5.90%",
+        "relative_volume": "0.44x",
+        "gap_percent": "-0.32%",
+        "price_vs_sma50": "-16.13%",
+        "price_vs_sma200": "-39.63%",
+        "week52_position": "2%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-13.97%"
+        "rs_vs_sector_etf": "-13.54%"
       },
       "upcoming_events": [
         {
@@ -12041,17 +12041,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "76.2%",
-        "atm_put_iv": "62.3%",
-        "iv_percentile_30d": "10th",
+        "atm_call_iv": "73.0%",
+        "atm_put_iv": "66.8%",
+        "iv_percentile_30d": "14th",
         "put_call_ratio": "0.46x",
         "tone": "neutral",
         "unusual_activity": "PUT $370, vol 303, OI 대비 120% ; PUT $430, vol 32, OI 대비 100% ; PUT $180, vol 75, OI 대비 71%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-5.35%",
-        "30d": "-16.51%"
+        "7d": "-5.11%",
+        "30d": "-16.29%"
       },
       "sec_filing_tags": [
         "기타 공시"
@@ -12227,24 +12227,24 @@
       "summary": "주가는 78.76달러로 30일간 +16.39% 상승했지만 당일은 -1.93%로 쉬어가는 흐름이며, 52주 고점 99.58달러 대비 아직 거리가 있어 실적 전 박스권 관리가 우선입니다. 다음 촉매는 2026-05-07 실적 발표(D-1)로, 발표 결과와 공시 모멘텀이 이어질 경우 87.56달러 애널리스트 목표가 및 88.09달러(1.5×ATR) 구간 재도전 여부가 관전 포인트입니다.",
       "signal_or_takeaway": "중립 관찰 — 실적 D-1과 박스권 관리 우선 | 진입 트리거 87.56 상향 돌파 | 목표 87.56/88.09달러 | 손절 72.67달러",
       "data_snapshot": {
-        "Price": "126.18 USD",
-        "Daily Change": "-3.80%",
-        "Market Cap": "73.02B",
+        "Price": "127.31 USD",
+        "Daily Change": "-2.94%",
+        "Market Cap": "73.68B",
         "Trailing P/E": "N/A",
         "EPS": "-0.32",
         "52W High": "138.38",
         "52W Low": "23.92",
         "50D SMA": "80.47",
         "200D SMA": "65.36",
-        "Volume": "25727141",
+        "Volume": "29875828",
         "3M Avg Volume": "23.88M",
-        "Price/Book": "39.83",
+        "Price/Book": "40.19",
         "Dividend Yield": "N/A",
         "Sector": "Industrials",
         "Open": "125.97",
         "High": "129.57",
         "Low": "115.23",
-        "Close": "126.18",
+        "Close": "127.31",
         "RS vs Sector ETF": "+11.65%"
       },
       "key_news": [
@@ -12266,14 +12266,14 @@
         3
       ],
       "fundamentals": {
-        "market_cap": "73.02B",
+        "market_cap": "73.68B",
         "trailing_pe": "N/A",
         "eps": "-0.32",
         "forward_eps": "-0.01",
         "earnings_growth": "+41.67% YoY",
-        "price_to_book": "39.83",
+        "price_to_book": "40.19",
         "dividend_yield": "N/A",
-        "volume": "25727141",
+        "volume": "29875828",
         "avg_volume_3m": "23.88M",
         "52w_high": "138.38",
         "52w_low": "23.92",
@@ -12305,14 +12305,14 @@
       },
       "price_action": {
         "atr_14d": "11.09",
-        "atr_percent": "8.79%",
-        "relative_volume": "1.08x",
+        "atr_percent": "8.71%",
+        "relative_volume": "1.25x",
         "gap_percent": "-3.96%",
-        "price_vs_sma50": "+56.80%",
-        "price_vs_sma200": "+93.04%",
-        "week52_position": "89%",
+        "price_vs_sma50": "+58.21%",
+        "price_vs_sma200": "+94.78%",
+        "week52_position": "90%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+51.33%"
+        "rs_vs_sector_etf": "+52.88%"
       },
       "upcoming_events": [
         {
@@ -12375,17 +12375,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "119.3%",
-        "atm_put_iv": "106.3%",
-        "iv_percentile_30d": "15th",
+        "atm_call_iv": "105.9%",
+        "atm_put_iv": "110.8%",
+        "iv_percentile_30d": "16th",
         "put_call_ratio": "0.83x",
         "tone": "neutral",
         "unusual_activity": "PUT $135, vol 52, OI 대비 193% ; PUT $130, vol 8, OI 대비 62%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+7.33%",
-        "30d": "+48.80%"
+        "7d": "+8.29%",
+        "30d": "+50.13%"
       },
       "sec_filing_tags": [
         "기타 공시",
@@ -12586,24 +12586,24 @@
       "summary": "주가는 SMA50과 SMA200을 밑돌고 30일간 -12.31%로 약세이며, RS vs Sector ETF도 -17.05%로 뒤처집니다. 다음 촉매는 2026-05-06 실적 발표와 우주·국방 프로젝트 진행 상황이며, 변동성은 높은 편입니다.",
       "signal_or_takeaway": "중립 관찰 — [기타 공시] Redwire Corp, 8-K 중요 사항 공시용 보고서를 SEC에 제출 | 진입 트리거 7.71–9.67 | 목표 10.16/11.14 | 손절 SMA50(9.39 USD)",
       "data_snapshot": {
-        "Price": "13.82 USD",
-        "Daily Change": "-0.97%",
-        "Market Cap": "2.75B",
+        "Price": "13.91 USD",
+        "Daily Change": "-0.36%",
+        "Market Cap": "2.77B",
         "Trailing P/E": "N/A",
         "EPS": "-2.59",
         "52W High": "22.25",
         "52W Low": "4.87",
         "50D SMA": "9.92",
         "200D SMA": "8.99",
-        "Volume": "40679165",
+        "Volume": "46654305",
         "3M Avg Volume": "24.09M",
-        "Price/Book": "2.49",
+        "Price/Book": "2.50",
         "Dividend Yield": "N/A",
         "Sector": "Industrials",
         "Open": "13.74",
         "High": "14.46",
         "Low": "12.86",
-        "Close": "13.82",
+        "Close": "13.91",
         "RS vs Sector ETF": "-17.05%"
       },
       "key_news": [
@@ -12628,14 +12628,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "2.75B",
+        "market_cap": "2.77B",
         "trailing_pe": "N/A",
         "eps": "-2.59",
         "forward_eps": "-0.41",
         "earnings_growth": "-344.44% YoY",
-        "price_to_book": "2.49",
+        "price_to_book": "2.50",
         "dividend_yield": "N/A",
-        "volume": "40679165",
+        "volume": "46654305",
         "avg_volume_3m": "24.09M",
         "52w_high": "22.25",
         "52w_low": "4.87",
@@ -12667,14 +12667,14 @@
       },
       "price_action": {
         "atr_14d": "1.45",
-        "atr_percent": "10.46%",
-        "relative_volume": "1.69x",
+        "atr_percent": "10.40%",
+        "relative_volume": "1.94x",
         "gap_percent": "-1.54%",
-        "price_vs_sma50": "+39.32%",
-        "price_vs_sma200": "+53.77%",
+        "price_vs_sma50": "+40.18%",
+        "price_vs_sma200": "+54.72%",
         "week52_position": "52%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+36.24%"
+        "rs_vs_sector_etf": "+37.28%"
       },
       "upcoming_events": [
         {
@@ -12737,17 +12737,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "164.8%",
-        "atm_put_iv": "118.4%",
-        "iv_percentile_30d": "13th",
+        "atm_call_iv": "127.7%",
+        "atm_put_iv": "138.3%",
+        "iv_percentile_30d": "16th",
         "put_call_ratio": "0.73x",
         "tone": "neutral",
         "unusual_activity": "CALL $22, vol 151, OI 대비 76% ; PUT $27, vol 2, OI 대비 100% ; PUT $13, vol 2, OI 대비 100%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+19.55%",
-        "30d": "+33.66%"
+        "7d": "+20.33%",
+        "30d": "+34.53%"
       },
       "sec_filing_tags": [
         "기타 공시",
@@ -12935,24 +12935,24 @@
       "summary": "주가는 SMA50을 크게 상회하고 30일간 +31.14% 급등했지만 SMA200은 -0.41%로 거의 같은 수준입니다. 다음 촉매는 2026-07-29 실적 발표이며, 메디케어 관련 불확실성과 옵션의 높은 풋 비중이 함께 남아 있습니다.",
       "signal_or_takeaway": "중립 경계 — 2026-07-29 실적 발표와 메디케어 관련 불확실성 | 진입 트리거 240.50 상향 돌파 | 목표 253.09/315.35달러 | 손절 190.44달러",
       "data_snapshot": {
-        "Price": "308.61 USD",
-        "Daily Change": "+0.85%",
-        "Market Cap": "37.05B",
-        "Trailing P/E": "32.97",
+        "Price": "310.55 USD",
+        "Daily Change": "+1.49%",
+        "Market Cap": "37.29B",
+        "Trailing P/E": "33.18",
         "EPS": "9.36",
         "52W High": "315.35",
         "52W Low": "163.11",
         "50D SMA": "209.91",
         "200D SMA": "242.71",
-        "Volume": "995479",
+        "Volume": "1672597",
         "3M Avg Volume": "1.83M",
-        "Price/Book": "2.11",
+        "Price/Book": "2.12",
         "Dividend Yield": "1.16%",
         "Sector": "Healthcare",
         "Open": "304.78",
         "High": "313.18",
         "Low": "302.24",
-        "Close": "308.61",
+        "Close": "310.55",
         "RS vs Sector ETF": "+31.81%"
       },
       "key_news": [
@@ -12977,14 +12977,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "37.05B",
-        "trailing_pe": "32.97",
+        "market_cap": "37.29B",
+        "trailing_pe": "33.18",
         "eps": "9.36",
         "forward_eps": "15.34",
         "earnings_growth": "-4.60% YoY",
-        "price_to_book": "2.11",
+        "price_to_book": "2.12",
         "dividend_yield": "1.16%",
-        "volume": "995479",
+        "volume": "1672597",
         "avg_volume_3m": "1.83M",
         "52w_high": "315.35",
         "52w_low": "163.11",
@@ -13016,14 +13016,14 @@
       },
       "price_action": {
         "atr_14d": "12.89",
-        "atr_percent": "4.18%",
-        "relative_volume": "0.54x",
+        "atr_percent": "4.15%",
+        "relative_volume": "0.92x",
         "gap_percent": "-0.40%",
-        "price_vs_sma50": "+47.02%",
-        "price_vs_sma200": "+27.15%",
-        "week52_position": "96%",
+        "price_vs_sma50": "+47.94%",
+        "price_vs_sma200": "+27.95%",
+        "week52_position": "97%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "+51.38%"
+        "rs_vs_sector_etf": "+52.37%"
       },
       "upcoming_events": [
         {
@@ -13086,17 +13086,17 @@
       },
       "options_summary": {
         "expiry": "2026-05-22",
-        "atm_call_iv": "58.2%",
-        "atm_put_iv": "48.6%",
-        "iv_percentile_30d": "16th",
+        "atm_call_iv": "51.9%",
+        "atm_put_iv": "56.1%",
+        "iv_percentile_30d": "20th",
         "put_call_ratio": "1.29x",
         "tone": "neutral",
         "unusual_activity": "PUT $240, vol 61, OI 대비 165% ; PUT $440, vol 4, OI 대비 200% ; PUT $310, vol 4, OI 대비 40%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "+4.49%",
-        "30d": "+50.44%"
+        "7d": "+5.15%",
+        "30d": "+51.38%"
       },
       "sec_filing_tags": [
         "실적",
@@ -13286,16 +13286,16 @@
       "summary": "주가는 SMA50과 SMA200을 상회하며 30일간 +5.86% 상승해 완만한 우상향입니다. 다음 촉매는 향후 5거래일 내로 표시된 일정이며, 실적 발표일은 제공되지 않았습니다.",
       "signal_or_takeaway": "매수 관찰 — SMA50·SMA200 상회와 완만한 우상향 지속 | 진입 트리거 21.87 지지 확인 | 목표 22.58/24.97달러 | 손절 20.71달러",
       "data_snapshot": {
-        "Price": "20.95 USD",
-        "Daily Change": "-0.55%",
-        "Market Cap": "22.72B",
-        "Trailing P/E": "12.86",
+        "Price": "20.92 USD",
+        "Daily Change": "-0.71%",
+        "Market Cap": "22.68B",
+        "Trailing P/E": "12.83",
         "EPS": "1.63",
         "52W High": "23.35",
         "52W Low": "15.28",
         "50D SMA": "20.82",
         "200D SMA": "19.80",
-        "Volume": "5296987",
+        "Volume": "8388964",
         "3M Avg Volume": "14.84M",
         "Price/Book": "1.30",
         "Dividend Yield": "3.89%",
@@ -13303,7 +13303,7 @@
         "Open": "21.00",
         "High": "21.08",
         "Low": "20.75",
-        "Close": "20.95",
+        "Close": "20.92",
         "RS vs Sector ETF": "+2.43%"
       },
       "key_news": [
@@ -13328,14 +13328,14 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "22.72B",
-        "trailing_pe": "12.86",
+        "market_cap": "22.68B",
+        "trailing_pe": "12.83",
         "eps": "1.63",
         "forward_eps": "2.15",
         "earnings_growth": "+33.30% YoY",
         "price_to_book": "1.30",
         "dividend_yield": "3.89%",
-        "volume": "5296987",
+        "volume": "8388964",
         "avg_volume_3m": "14.84M",
         "52w_high": "23.35",
         "52w_low": "15.28",
@@ -13368,13 +13368,13 @@
       "price_action": {
         "atr_14d": "0.45",
         "atr_percent": "2.14%",
-        "relative_volume": "0.36x",
+        "relative_volume": "0.57x",
         "gap_percent": "-0.33%",
-        "price_vs_sma50": "+0.63%",
-        "price_vs_sma200": "+5.81%",
+        "price_vs_sma50": "+0.46%",
+        "price_vs_sma200": "+5.63%",
         "week52_position": "70%",
         "rs_vs_spy": "N/A",
-        "rs_vs_sector_etf": "-1.79%"
+        "rs_vs_sector_etf": "-1.50%"
       },
       "upcoming_events": [],
       "news_tone": {
@@ -13429,17 +13429,17 @@
       },
       "options_summary": {
         "expiry": "2026-06-18",
-        "atm_call_iv": "27.5%",
-        "atm_put_iv": "31.9%",
-        "iv_percentile_30d": "17th",
+        "atm_call_iv": "28.3%",
+        "atm_put_iv": "33.2%",
+        "iv_percentile_30d": "21th",
         "put_call_ratio": "0.83x",
         "tone": "neutral",
         "unusual_activity": "CALL $15, vol 100, OI 대비 95% ; CALL $13, vol 14, OI 대비 41% ; CALL $8, vol 5, OI 대비 50%",
         "oi_change": "N/A"
       },
       "period_changes": {
-        "7d": "-1.55%",
-        "30d": "-3.90%"
+        "7d": "-1.69%",
+        "30d": "-4.04%"
       },
       "sec_filing_tags": [
         "실적",
@@ -13629,5 +13629,5 @@
     "output_signal_stats_includes_current_run": true,
     "signal_returns_updated_before_decision": true
   },
-  "intraday_refreshed_at": "2026-05-19T18:56:21"
+  "intraday_refreshed_at": "2026-05-19T20:27:11"
 }
