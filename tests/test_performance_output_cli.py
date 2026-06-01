@@ -78,12 +78,14 @@ class PerformanceOutputCliTests(unittest.TestCase):
             baseline_path = output_data / "performance_baseline.json"
             trends_path = output_data / "performance_trends.json"
             quality_loop_path = output_data / "quality_reliability_loop.json"
+            strategy_simulator_path = output_data / "strategy_simulator.json"
             report_path = root / "docs" / "reports" / "performance-2026-05-07.md"
             baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
             trends = json.loads(trends_path.read_text(encoding="utf-8"))
             quality_loop = json.loads(quality_loop_path.read_text(encoding="utf-8"))
             summary = json.loads(stdout.getvalue())
             report_exists = report_path.exists()
+            strategy_simulator_exists = strategy_simulator_path.exists()
             baseline_text = baseline_path.read_text(encoding="utf-8")
             baseline_mirror_text = (web_public / "performance_baseline.json").read_text(
                 encoding="utf-8"
@@ -96,6 +98,9 @@ class PerformanceOutputCliTests(unittest.TestCase):
             quality_loop_mirror_text = (
                 web_public / "quality_reliability_loop.json"
             ).read_text(encoding="utf-8")
+            strategy_simulator_mirror_exists = (
+                web_public / "strategy_simulator.json"
+            ).exists()
 
         self.assertEqual(exit_code, 0)
         self.assertEqual(baseline["status"], "ok")
@@ -114,7 +119,10 @@ class PerformanceOutputCliTests(unittest.TestCase):
         self.assertEqual(summary["baseline_path"], str(baseline_path))
         self.assertEqual(summary["trends_path"], str(trends_path))
         self.assertEqual(summary["quality_loop_path"], str(quality_loop_path))
+        self.assertEqual(summary["strategy_simulator_path"], str(strategy_simulator_path))
         self.assertEqual(summary["report_path"], str(report_path))
+        self.assertTrue(strategy_simulator_exists)
+        self.assertTrue(strategy_simulator_mirror_exists)
 
 
 if __name__ == "__main__":

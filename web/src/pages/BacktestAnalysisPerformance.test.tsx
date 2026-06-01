@@ -103,6 +103,20 @@ vi.mock('../hooks/useJsonResource', () => ({
                 triple_barrier_outcomes: { hit: 47, pending: 4, stop: 36 },
               },
             },
+            avoid: {
+              '5d': {
+                sample_count: 0,
+                completed_count: 0,
+                avg_return: null,
+                median_return: null,
+                win_rate: null,
+                loss_rate: null,
+                directional_win_rate: null,
+                missing_count: 0,
+                return_distribution: { positive: 0, negative: 0, flat: 0 },
+                triple_barrier_outcomes: {},
+              },
+            },
           },
           conviction_calibration: {
             status: 'observational',
@@ -157,6 +171,22 @@ vi.mock('../hooks/useJsonResource', () => ({
                   missing_count: 17,
                   return_distribution: { positive: 32, negative: 12, flat: 1 },
                   triple_barrier_outcomes: { hit: 24, stop: 21 },
+                },
+              },
+            },
+            unknown: {
+              unknown: {
+                '5d': {
+                  sample_count: 24,
+                  completed_count: 24,
+                  avg_return: 9.12,
+                  median_return: 8.4,
+                  win_rate: null,
+                  loss_rate: null,
+                  directional_win_rate: null,
+                  missing_count: 0,
+                  return_distribution: { positive: 20, negative: 4, flat: 0 },
+                  triple_barrier_outcomes: {},
                 },
               },
             },
@@ -498,6 +528,28 @@ vi.mock('../hooks/useJsonResource', () => ({
       }
     }
 
+    if (relativePath === 'output/data/strategy_simulator.json') {
+      return {
+        data: {
+          schema_version: 1,
+          status: 'ok',
+          as_of: '2026-05-06',
+          mode: 'observational_long_only',
+          basis: 'final_action',
+          inputs: { signal_count: 1, usable_signal_count: 1, price_row_count: 2 },
+          assumptions: { initial_capital: 100000, fee_rate: 0.001, slippage_rate: 0.0005 },
+          presets: {
+            conservative: strategyPreset('보수형', 2.1),
+            balanced: strategyPreset('균형형', 4.2),
+            aggressive: strategyPreset('공격형', 5.4),
+          },
+          notes: ['Strategy simulator is observational.'],
+        },
+        loading: false,
+        error: null,
+      }
+    }
+
     return { data: null, loading: false, error: null }
   },
 }))
@@ -508,15 +560,20 @@ describe('Backtest analysis performance panel', () => {
 
     expect(screen.getByRole('heading', { name: '분석 성과 추적' })).toBeInTheDocument()
     expect(screen.getByText('2026-05-06 · 표본 225건 · 결정 23건')).toBeInTheDocument()
-    expect(screen.getByText('BUY 5D')).toBeInTheDocument()
+    expectTextContent('BUY 5D')
     expect(screen.getByText('+4.77%')).toBeInTheDocument()
-    expect(screen.getByText('히트율 71.1% · 완료 45/62')).toBeInTheDocument()
-    expect(screen.getByText('WATCH 5D')).toBeInTheDocument()
-    expect(screen.getByText('표본 139건 · 완료 87건')).toBeInTheDocument()
+    expect(screen.getByText('히트율 71.1% · 평가완료 45건 기준 · 전체 BUY 62건')).toBeInTheDocument()
+    expectTextContent('WATCH 5D')
+    expect(screen.getByText('방향 없음 · 평가완료 87건 기준 · 전체 WATCH 139건')).toBeInTheDocument()
+    expectTextContent('AVOID 5D')
+    expect(screen.getByText('전체 AVOID 표본 없음')).toBeInTheDocument()
+    expect(screen.getByText('5D 평균 +4.77% · 전체 표본 62건')).toBeInTheDocument()
+    expect(screen.getByText('미분류')).toBeInTheDocument()
+    expect(screen.getByText('5D 평균 +9.12% · 평가완료 24건 기준 · 전체 표본 24건')).toBeInTheDocument()
     expect(screen.getByText('상위 팩터')).toBeInTheDocument()
     expect(screen.getByText('momentum')).toBeInTheDocument()
     expect(screen.getByText('최근 액션 변경')).toBeInTheDocument()
-    expect(screen.getByText('AMD')).toBeInTheDocument()
+    expect(screen.getAllByText('AMD').length).toBeGreaterThan(0)
     expect(screen.getByRole('heading', { name: 'AI 추천 백테스팅' })).toBeInTheDocument()
     expect(screen.getByText('BUY 추천 승률')).toBeInTheDocument()
     expect(screen.getAllByText('72.5%').length).toBeGreaterThan(0)
@@ -532,5 +589,135 @@ describe('Backtest analysis performance panel', () => {
     expect(screen.getByText('2026-04-12')).toBeInTheDocument()
     expect(screen.getByText('+18.20%')).toBeInTheDocument()
     expect(screen.getByText('-6.40%')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '전략 시뮬레이터' })).toBeInTheDocument()
+    expect(screen.getAllByText('균형형').length).toBeGreaterThan(0)
+    expect(screen.getByText('LLM 방향 진단')).toBeInTheDocument()
   })
 })
+
+function expectTextContent(text: string) {
+  expect(
+    screen.getByText((_, element) => element?.textContent === text),
+  ).toBeInTheDocument()
+}
+
+function strategyPreset(label: string, totalReturn: number) {
+  return {
+    label,
+    description: 'sample',
+    params: {
+      initial_capital: 100000,
+      position_size_pct: 0.1,
+      max_positions: 8,
+      stop_loss_pct: -0.08,
+      take_profit_pct: 0.18,
+      fee_rate: 0.001,
+      slippage_rate: 0.0005,
+    },
+    summary: {
+      initial_capital: 100000,
+      ending_equity: 104200,
+      total_return_pct: totalReturn,
+      realized_pnl: 1200,
+      unrealized_pnl: 3000,
+      cash: 75000,
+      cash_pct: 0.72,
+      invested_value: 29200,
+      invested_pct: 0.28,
+      max_drawdown_pct: -3.1,
+      trade_count: 2,
+      closed_trade_count: 1,
+      open_position_count: 1,
+      winning_trade_count: 1,
+      losing_trade_count: 0,
+      win_rate: 1,
+      avg_closed_trade_return_pct: 12.3,
+      skipped_buy_count: 0,
+    },
+    equity_curve: [
+      {
+        date: '2026-05-06',
+        equity: 104200,
+        cash: 75000,
+        invested_value: 29200,
+        realized_pnl: 1200,
+        unrealized_pnl: 3000,
+        drawdown_pct: 0,
+        open_position_count: 1,
+      },
+    ],
+    trades: [
+      {
+        ticker: 'AAPL',
+        entry_date: '2026-04-02',
+        exit_date: '2026-04-03',
+        exit_reason: 'take_profit',
+        return_pct: 12.3,
+        realized_pnl: 1200,
+        llm_alignment: 'aligned',
+      },
+    ],
+    open_positions: [
+      {
+        ticker: 'AMD',
+        entry_date: '2026-04-02',
+        latest_date: '2026-04-03',
+        return_pct: 8.1,
+        unrealized_pnl: 3000,
+        llm_alignment: 'conflict',
+      },
+    ],
+    entry_candidates: [
+      {
+        rank: 1,
+        ticker: 'RKLB',
+        status: 'pending_next_open',
+        status_label: '다음 open 대기',
+        signal_date: '2026-05-06',
+        conviction: 91,
+        entry_date: null,
+        entry_price: null,
+        stop_price: null,
+        take_profit_price: null,
+        position_size_pct: 0.1,
+        target_notional: 10420,
+        required_cash: null,
+        available_cash: 75000,
+        llm_alignment: 'aligned',
+        signal_direction: 'bull',
+        llm_direction: 'bull',
+        reason: '다음 거래일 open 가격 필요',
+      },
+    ],
+    skipped_entries: { total_count: 0, by_reason: {}, examples: [] },
+    llm_direction_diagnostics: {
+      aligned: {
+        trade_count: 1,
+        closed_trade_count: 1,
+        open_position_count: 0,
+        realized_pnl: 1200,
+        unrealized_pnl: 0,
+        avg_trade_return_pct: 12.3,
+        win_rate: 1,
+      },
+      conflict: {
+        trade_count: 1,
+        closed_trade_count: 0,
+        open_position_count: 1,
+        realized_pnl: 0,
+        unrealized_pnl: 3000,
+        avg_trade_return_pct: 8.1,
+        win_rate: null,
+      },
+      missing: {
+        trade_count: 0,
+        closed_trade_count: 0,
+        open_position_count: 0,
+        realized_pnl: 0,
+        unrealized_pnl: 0,
+        avg_trade_return_pct: null,
+        win_rate: null,
+      },
+    },
+  }
+}

@@ -50,8 +50,8 @@ export function AnalysisPerformancePanel({ payload }: { payload: AnalysisPerform
             key={action}
             label={`${action.toUpperCase()}`}
             sublabel={horizon.toUpperCase()}
-            valueNode={<Delta value={stats?.avg_return ?? null} />}
-            note={buildStatsNote(stats)}
+            valueNode={<Delta value={stats?.avg_return ?? null} fallback={buildActionDeltaFallback(stats)} />}
+            note={buildStatsNote(stats, action)}
             tone={actionTone(action)}
           />
         ))}
@@ -59,24 +59,16 @@ export function AnalysisPerformancePanel({ payload }: { payload: AnalysisPerform
           <SummaryMetricCard
             label="상위 확신 구간"
             valueNode={<span className="ap-summary-text">{formatBucketLabel(bestBucket.bucket)}</span>}
-            note={
-              <>
-                <Delta value={bestBucket.stats.avg_return_5d ?? null} contextLabel="상위 확신 구간" /> · {bestBucket.stats.sample_count}건
-              </>
-            }
+            note={`5D 평균 ${formatPercentValue(bestBucket.stats.avg_return_5d)} · 전체 표본 ${formatInteger(bestBucket.stats.sample_count)}건`}
             tone="accent"
           />
         ) : null}
         {bestRegime ? (
           <SummaryMetricCard
             label="상위 레짐"
-            sublabel={bestRegime.action}
-            valueNode={<span className="ap-summary-text">{bestRegime.regime}</span>}
-            note={
-              <>
-                <Delta value={bestRegime.stats.avg_return ?? null} contextLabel="상위 레짐" /> · 완료 {bestRegime.stats.completed_count}건
-              </>
-            }
+            sublabel={formatActionSublabel(bestRegime.action)}
+            valueNode={<span className="ap-summary-text">{formatCategoryLabel(bestRegime.regime)}</span>}
+            note={`5D 평균 ${formatPercentValue(bestRegime.stats.avg_return)} · ${formatEvaluatedBasis(bestRegime.stats)}`}
             tone={actionTone(bestRegime.action)}
           />
         ) : null}
@@ -170,9 +162,8 @@ function SummaryMetricCard({
   return (
     <div className={`signal-summary-card ap-summary-card ap-tone-${tone}`}>
       <div className="ap-summary-head">
-        {sublabel ? <span className="sr-only">{label} {sublabel}</span> : null}
-        <span className="signal-summary-direction" aria-hidden={sublabel ? 'true' : undefined}>{label}</span>
-        {sublabel ? <span className="ap-summary-sublabel" aria-hidden="true">{sublabel}</span> : null}
+        <span className="signal-summary-direction">{label}</span>
+        {sublabel ? <> <span className="ap-summary-sublabel">{sublabel}</span></> : null}
       </div>
       <div className="signal-summary-count ap-summary-value">{valueNode}</div>
       <div className="ap-summary-note">{note}</div>
@@ -266,12 +257,31 @@ function pickHorizon(windows: string[]): string {
   return windows[0] ?? PREFERRED_HORIZON
 }
 
-function buildStatsNote(stats: AnalysisPerformanceWindowStats | null | undefined): string {
+function buildActionDeltaFallback(stats: AnalysisPerformanceWindowStats | null | undefined): string {
   if (!stats) return '데이터 축적 중'
-  if (stats.win_rate === null || stats.win_rate === undefined) {
-    return `표본 ${stats.sample_count}건 · 완료 ${stats.completed_count}건`
+  if (stats.sample_count === 0) return '표본 없음'
+  if (stats.completed_count === 0) return '평가 대기'
+  return '데이터 축적 중'
+}
+
+function buildStatsNote(stats: AnalysisPerformanceWindowStats | null | undefined, action: string): string {
+  if (!stats) return '데이터 축적 중'
+  const actionLabel = action.toUpperCase()
+  if (stats.sample_count === 0) return `전체 ${actionLabel} 표본 없음`
+  if (stats.completed_count === 0) {
+    return `평가 대기 · 전체 ${actionLabel} ${formatInteger(stats.sample_count)}건`
   }
-  return `히트율 ${formatRatio(stats.win_rate)} · 완료 ${stats.completed_count}/${stats.sample_count}`
+  const basis = `평가완료 ${formatInteger(stats.completed_count)}건 기준 · 전체 ${actionLabel} ${formatInteger(stats.sample_count)}건`
+  if (stats.win_rate === null || stats.win_rate === undefined) {
+    return `방향 없음 · ${basis}`
+  }
+  return `히트율 ${formatRatio(stats.win_rate)} · ${basis}`
+}
+
+function formatEvaluatedBasis(stats: AnalysisPerformanceWindowStats): string {
+  if (stats.sample_count === 0) return '전체 표본 없음'
+  if (stats.completed_count === 0) return `평가 대기 · 전체 표본 ${formatInteger(stats.sample_count)}건`
+  return `평가완료 ${formatInteger(stats.completed_count)}건 기준 · 전체 표본 ${formatInteger(stats.sample_count)}건`
 }
 
 function getTopFactors(payload: AnalysisPerformancePayload): FactorRow[] {
@@ -320,14 +330,35 @@ function formatBucketLabel(bucket: string): string {
   return bucket.replace('_', '-')
 }
 
+function formatActionSublabel(action: string): string | undefined {
+  if (!action || action === 'unknown') return undefined
+  return action.toUpperCase()
+}
+
+function formatCategoryLabel(value: string): string {
+  if (!value || value === 'unknown') return '미분류'
+  return value
+}
+
 function formatRatio(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return '데이터 축적 중'
   return `${(value * 100).toFixed(1)}%`
 }
 
+function formatPercentValue(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return '데이터 축적 중'
+  const sign = value > 0 ? '+' : ''
+  return `${sign}${value.toFixed(2)}%`
+}
+
 function formatNumber(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return 'N/A'
   return value.toFixed(2)
+}
+
+function formatInteger(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return 'N/A'
+  return value.toFixed(0)
 }
 
 function formatConviction(value: number | null | undefined): string {

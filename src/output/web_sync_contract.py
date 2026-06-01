@@ -19,6 +19,7 @@ WEB_SYNC_FILENAMES: tuple[str, ...] = (
     "performance_trends.json",
     "quality_reliability_loop.json",
     "routing_outcome.json",
+    "strategy_simulator.json",
     "direction_alignment.json",
     "ab_test_results.json",
     "price_history.json",

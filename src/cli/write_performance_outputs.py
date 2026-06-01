@@ -49,6 +49,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "baseline_path": str(result["baseline_path"]),
         "trends_path": str(result["trends_path"]),
         "quality_loop_path": str(result["quality_loop_path"]),
+        "strategy_simulator_path": str(result["strategy_simulator_path"]),
         "report_path": str(result["report_path"]),
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))

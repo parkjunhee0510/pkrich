@@ -772,6 +772,101 @@ export interface AnalysisPerformancePayload {
   ai_recommendation_backtest?: AiRecommendationBacktestPayload
 }
 
+export interface StrategySimulatorSummary {
+  initial_capital: number
+  ending_equity: number
+  total_return_pct: number | null
+  realized_pnl: number
+  unrealized_pnl: number
+  cash: number
+  cash_pct: number
+  invested_value: number
+  invested_pct: number
+  max_drawdown_pct: number | null
+  trade_count: number
+  closed_trade_count: number
+  open_position_count: number
+  winning_trade_count: number
+  losing_trade_count: number
+  win_rate: number | null
+  avg_closed_trade_return_pct: number | null
+  skipped_buy_count: number
+}
+
+export interface StrategySimulatorEquityPoint {
+  date: string
+  equity: number
+  cash: number
+  invested_value: number
+  realized_pnl: number
+  unrealized_pnl: number
+  drawdown_pct: number
+  open_position_count: number
+}
+
+export type StrategySimulatorRowValue = number | string | null | undefined
+export type StrategySimulatorRow = Record<string, StrategySimulatorRowValue>
+
+export interface StrategySimulatorDiagnosticsBucket {
+  trade_count: number
+  closed_trade_count: number
+  open_position_count: number
+  realized_pnl: number
+  unrealized_pnl: number
+  avg_trade_return_pct: number | null
+  win_rate: number | null
+}
+
+export interface StrategySimulatorEntryCandidate {
+  rank: number
+  ticker: string
+  status: string
+  status_label: string
+  signal_date: string
+  conviction: number | null
+  entry_date: string | null
+  entry_price: number | null
+  stop_price: number | null
+  take_profit_price: number | null
+  position_size_pct: number | null
+  target_notional: number | null
+  required_cash: number | null
+  available_cash: number | null
+  llm_alignment: string
+  signal_direction: string | null
+  llm_direction: string | null
+  reason: string
+}
+
+export interface StrategySimulatorPreset {
+  label: string
+  description: string
+  params: Record<string, number>
+  summary: StrategySimulatorSummary
+  equity_curve: StrategySimulatorEquityPoint[]
+  trades: StrategySimulatorRow[]
+  open_positions: StrategySimulatorRow[]
+  entry_candidates: StrategySimulatorEntryCandidate[]
+  skipped_entries: {
+    total_count: number
+    by_reason: Record<string, number>
+    examples: StrategySimulatorRow[]
+  }
+  llm_direction_diagnostics: Record<string, StrategySimulatorDiagnosticsBucket>
+}
+
+export interface StrategySimulatorPayload {
+  schema_version?: number
+  status: string
+  as_of: string
+  mode: string
+  basis: string
+  inputs: Record<string, number | string>
+  assumptions: Record<string, number | string | boolean>
+  presets: Record<string, StrategySimulatorPreset>
+  notes: string[]
+}
+
 export interface PerformanceJsonHealth {
   status: string
   invalid_json_count: number

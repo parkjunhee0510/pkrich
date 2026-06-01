@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-06-01",
+  "status": "ok",
+  "latest_run_date": "2026-06-01",
+  "monthly_budget_usd": 5.0,
+  "json_health": {
+    "status": "ok",
+    "invalid_json_count": 0,
+    "issues": []
+  },
+  "cost": {
+    "total_cost_usd": 0.4204665,
+    "estimated_monthly_cost_usd": 9.2503,
+    "monthly_budget_usd": 5.0,
+    "budget_usage_ratio": 1.8501,
+    "llm_calls": 175,
+    "ticker_count_for_rate": 25,
+    "llm_calls_per_ticker": 7.0,
+    "deep_selected_count": 5,
+    "routing_conflicted_count": 1,
+    "budget_guard_would_block_count": 5,
+    "budget_guard_blocked_count": 0
+  },
+  "quality": {
+    "validated_ticker_count": 283,
+    "validation_failure_count": 9,
+    "validation_failure_rate": 0.0318,
+    "hallucination_warning_count": 9,
+    "hallucination_ratio": 0.0318,
+    "fact_warning_count": 2,
+    "consistency_warning_count": 2
+  },
+  "evidence": {
+    "provider": "openai",
+    "ticker_count": 25,
+    "covered_ticker_count": 10,
+    "coverage_ratio": 0.4,
+    "average_coverage_score": 0.2832,
+    "average_freshness_score": 0.176,
+    "candidate_ticker_count": 25,
+    "searched_ticker_count": 10,
+    "cache_ttl_hours": 24,
+    "cache_hit_count": 5,
+    "stale_cache_hit_count": 5,
+    "cache_hit_ratio": 0.2,
+    "stale_cache_hit_ratio": 1.0,
+    "average_cache_age_hours": 12.0,
+    "max_cache_age_hours": 24,
+    "provider_candidate_count": 5,
+    "status_counts": {
+      "covered": 10,
+      "not_refreshed": 15
+    },
+    "priority_ticker_count": 5,
+    "priority_covered_ticker_count": 5,
+    "priority_coverage_ratio": 1.0,
+    "priority_status_counts": {
+      "covered": 5
+    },
+    "priority_refresh_reasons": {
+      "high_volatility": 2,
+      "important_action": 3,
+      "no_evidence": 5,
+      "portfolio_holding": 5,
+      "router_selected": 5
+    },
+    "priority_refresh_candidate_count": 5,
+    "priority_provider_error_count": 0,
+    "priority_not_refreshed_count": 0,
+    "priority_no_evidence_count": 0
+  },
+  "signals": {
+    "turnover_status": "ok",
+    "avg_turnover": 0.034,
+    "kelly_status": "ok"
+  },
+  "p1_readiness": {
+    "status": "ready",
+    "mode": "read_only_report",
+    "tracks": {
+      "search_evidence_provider": {
+        "status": "live_provider_reviewed",
+        "provider": "openai",
+        "candidate_ticker_count": 25,
+        "priority_ticker_count": 5,
+        "searched_ticker_count": 10,
+        "provider_candidate_count": 5,
+        "provider_call_count": 5,
+        "cache_hit_count": 5,
+        "stale_cache_hit_count": 5,
+        "provider_error_count": 0,
+        "provider_unavailable_count": 0,
+        "cache_error_count": 0,
+        "skipped_ticker_count": 15,
+        "cap_review_status": "priority_queued_within_cap",
+        "priority_refresh_candidate_ratio": 1.0,
+        "provider_issue_status": "clean",
+        "operational_issue_count": 0,
+        "stale_cache_reuse_status": "stale_cache_reused",
+        "status_counts": {
+          "covered": 10,
+          "not_refreshed": 15
+        }
+      },
+      "budget_guard": {
+        "status": "report_ready",
+        "mode": "shadow",
+        "enforce_review_status": "report_only_review_required",
+        "decision_counts": {
+          "allow": 1,
+          "would_block": 5
+        },
+        "guarded_path_status_counts": {
+          "would_block": 3,
+          "allow": 1
+        },
+        "would_block_count": 5,
+        "blocked_count": 0,
+        "guarded_path_count": 4,
+        "would_block_path_count": 3,
+        "blocked_path_count": 0,
+        "allow_path_count": 1,
+        "total_estimated_incremental_cost_usd": 0.36505
+      },
+      "analysis_performance": {
+        "status": "ready",
+        "mode": "shadow_observational",
+        "sample_count": 440,
+        "decision_count": 25,
+        "completed_return_windows": [
+          "1d",
+          "5d",
+          "20d"
+        ],
+        "completed_return_window_count": 3,
+        "evaluated_signal_window_count": 9,
+        "conviction_bucket_count": 5,
+        "populated_conviction_bucket_count": 3,
+        "calibration_status": "observational",
+        "regime_count": 2,
+        "factor_count": 13,
+        "factor_attribution_status": "observed_association",
+        "missing_factor_sample_count": 24,
+        "action_change_reason_count": 25,
+        "action_change_coverage_ratio": 1.0,
+        "loop_readiness_status": "ready_for_quality_review"
+      },
+      "output_schema": {
+        "status": "ready",
+        "json_health_status": "ok",
+        "invalid_json_count": 0,
+        "issue_count": 0
+      }
+    }
+  }
+}

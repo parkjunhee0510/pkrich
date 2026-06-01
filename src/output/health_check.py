@@ -25,6 +25,7 @@ from src.output.health_routing_outcome import _validate_routing_outcome_artifact
 from src.output.health_search_audit import _validate_search_audit_artifact
 from src.output.health_search_evidence import _validate_search_evidence_artifact
 from src.output.health_signal_quality import _validate_signal_quality_artifact
+from src.output.health_strategy_simulator import _validate_strategy_simulator_artifact
 from src.output.health_validation_warnings import _validate_validation_warnings_artifact
 
 
@@ -84,6 +85,7 @@ def check_output_health(
     issues.extend(_validate_cost_log_artifact(source_root))
     issues.extend(_validate_analysis_quality_artifact(source_root))
     issues.extend(_validate_analysis_performance_artifact(source_root))
+    issues.extend(_validate_strategy_simulator_artifact(source_root))
     issues.extend(_validate_performance_artifacts(source_root))
     issues.extend(_validate_risk_intel_artifacts(source_root, web_data_dir=mirror_root))
     artifact_issues, artifact_warnings = validate_operational_artifacts(

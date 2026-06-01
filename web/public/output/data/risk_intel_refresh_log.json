@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "as_of": "2026-05-29",
+  "status": "partial",
+  "daily_limit": 0,
+  "used_today": 0,
+  "runs": [],
+  "latest": null,
+  "counters": {
+    "provider_calls": 0,
+    "cache_hits": 0,
+    "cache_misses": 0,
+    "provider_errors": 0,
+    "generated_patch_count": 0
+  },
+  "generation": {
+    "run_id": "run:2026-05-29-risk-intel",
+    "as_of": "2026-05-29",
+    "scoring_config_version": "risk-intel-scoring-v1",
+    "confidence_config_version": "risk-intel-confidence-v1",
+    "source_config_version": "risk-intel-source-v1",
+    "generated_at": "2026-05-29T00:00:00+00:00"
+  },
+  "reset_timezone": "Asia/Seoul",
+  "reset_at_local": "2026-05-29T00:00:00+09:00"
+}

@@ -57,19 +57,23 @@ export function AiRecommendationBacktestPanel({
         <SummaryMetricCard
           label="BUY 추천 승률"
           value={formatRatio(buy20d?.win_rate)}
-          note={`20D 평균 ${formatPercent(buy20d?.avg_return)} · 완료 ${formatCompletedCount(buy20d)}`}
+          note={`20D 평균 ${formatPercent(buy20d?.avg_return)} · ${formatEvaluatedBasis(buy20d, 'BUY')}`}
           tone="pos"
         />
         <SummaryMetricCard
           label="고확신 BUY"
           value={formatPercent(highConvictionBuy?.stats.avg_return)}
-          note={`승률 ${formatRatio(highConvictionBuy?.stats.win_rate)} · 완료 ${formatCompletedCount(highConvictionBuy?.stats)} · ${formatBucketLabel(highConvictionBuy?.bucket)}`}
+          note={`승률 ${formatRatio(highConvictionBuy?.stats.win_rate)} · ${formatEvaluatedBasis(highConvictionBuy?.stats, '고확신 BUY')} · ${formatBucketLabel(highConvictionBuy?.bucket)}`}
           tone="accent"
         />
         <SummaryMetricCard
           label="AVOID 방어 성공률"
-          value={formatRatio(avoid20d?.win_rate)}
-          note={`20D 평균 ${formatPercent(avoid20d?.avg_return)} · 완료 ${formatCompletedCount(avoid20d)}`}
+          value={formatActionWinRate(avoid20d, 'avoid')}
+          note={
+            hasNoSamples(avoid20d)
+              ? '아직 최종 AVOID 추천 표본이 없습니다.'
+              : `20D 평균 ${formatPercent(avoid20d?.avg_return)} · 완료 ${formatCompletedCount(avoid20d)}`
+          }
           tone="neg"
         />
         <SummaryMetricCard
@@ -90,7 +94,7 @@ export function AiRecommendationBacktestPanel({
               <th className="ap-num">5D 평균</th>
               <th className="ap-num">20D 평균</th>
               <th className="ap-num">20D 승률</th>
-              <th className="ap-num">표본</th>
+              <th className="ap-num">평가/전체</th>
             </tr>
           </thead>
           <tbody>
@@ -101,10 +105,10 @@ export function AiRecommendationBacktestPanel({
               return (
                 <tr key={action}>
                   <td className="ap-ticker">{ACTION_LABELS[action]}</td>
-                  <td className="ap-num">{formatPercent(oneDay?.avg_return)}</td>
-                  <td className="ap-num">{formatPercent(fiveDay?.avg_return)}</td>
-                  <td className="ap-num">{formatPercent(twentyDay?.avg_return)}</td>
-                  <td className="ap-num">{formatRatio(twentyDay?.win_rate)}</td>
+                  <td className="ap-num">{formatActionAverage(oneDay)}</td>
+                  <td className="ap-num">{formatActionAverage(fiveDay)}</td>
+                  <td className="ap-num">{formatActionAverage(twentyDay)}</td>
+                  <td className="ap-num">{formatActionWinRate(twentyDay, action)}</td>
                   <td className="ap-num">{formatCompletedCount(twentyDay)}</td>
                 </tr>
               )
@@ -215,6 +219,22 @@ function formatRatio(value: number | null | undefined): string {
   return `${(value * 100).toFixed(1)}%`
 }
 
+function formatActionAverage(stats: AiRecommendationWindowStats | null | undefined): string {
+  if (hasNoSamples(stats)) return '표본 없음'
+  if (stats && stats.completed_count === 0) return '평가 대기'
+  return formatPercent(stats?.avg_return)
+}
+
+function formatActionWinRate(
+  stats: AiRecommendationWindowStats | null | undefined,
+  action: string,
+): string {
+  if (hasNoSamples(stats)) return '표본 없음'
+  if (action === 'watch') return '방향 없음'
+  if (stats && stats.completed_count === 0) return '평가 대기'
+  return formatRatio(stats?.win_rate)
+}
+
 function formatConviction(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return 'N/A'
   return value.toFixed(0)
@@ -225,6 +245,15 @@ function formatCompletedCount(stats: AiRecommendationWindowStats | null | undefi
   return `${formatInteger(stats.completed_count)}/${formatInteger(stats.sample_count)}`
 }
 
+function formatEvaluatedBasis(
+  stats: AiRecommendationWindowStats | null | undefined,
+  label: string,
+): string {
+  if (!stats) return '평가 대기'
+  if (stats.sample_count === 0) return `전체 ${label} 표본 없음`
+  return `평가완료 ${formatInteger(stats.completed_count)}건 기준 · 전체 ${label} ${formatInteger(stats.sample_count)}건`
+}
+
 function formatInteger(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return 'N/A'
   return value.toFixed(0)
@@ -233,4 +262,8 @@ function formatInteger(value: number | null | undefined): string {
 function formatBucketLabel(bucket: string | null | undefined): string {
   if (!bucket) return 'N/A'
   return bucket.replace('_', '-')
+}
+
+function hasNoSamples(stats: AiRecommendationWindowStats | null | undefined): boolean {
+  return Boolean(stats && stats.sample_count === 0)
 }

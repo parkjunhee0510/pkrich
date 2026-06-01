@@ -8,6 +8,7 @@ from typing import Any
 
 from src.output.json_export import _sync_web_public_data
 from src.output.json_writer import write_json_file
+from src.output.strategy_simulator import write_strategy_simulator_output
 from src.utils.performance_metrics import (
     build_performance_payloads,
     build_quality_reliability_loop_payload,
@@ -48,6 +49,8 @@ def write_performance_outputs(
     write_json_file(baseline_path, baseline)
     write_json_file(trends_path, trends)
     write_json_file(quality_loop_path, quality_loop)
+    write_strategy_simulator_output(output_root=root)
+    strategy_simulator_path = data_dir / "strategy_simulator.json"
     report_path = _write_performance_report(
         project,
         baseline,
@@ -60,6 +63,7 @@ def write_performance_outputs(
         "baseline_path": baseline_path,
         "trends_path": trends_path,
         "quality_loop_path": quality_loop_path,
+        "strategy_simulator_path": strategy_simulator_path,
         "report_path": report_path,
     }
 

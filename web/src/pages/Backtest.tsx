@@ -2,6 +2,7 @@
 import { AnalysisPerformancePanel } from '../components/AnalysisPerformancePanel'
 import { AiRecommendationBacktestPanel } from '../components/AiRecommendationBacktestPanel'
 import { EquityCurveChart } from '../components/EquityCurveChart'
+import { StrategySimulatorPanel } from '../components/StrategySimulatorPanel'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useJsonResource } from '../hooks/useJsonResource'
 import { ErrorState } from '../components/ErrorState'
@@ -12,6 +13,7 @@ import type {
   BacktestTickerRow,
   MonthlySummaryData,
   RoutingOutcomePayload,
+  StrategySimulatorPayload,
 } from '../types'
 
 export function Backtest() {
@@ -20,6 +22,7 @@ export function Backtest() {
   const { data: monthly, loading: monthlyLoading, error: monthlyError } = useJsonResource<MonthlySummaryData>('output/data/monthly_summary.json')
   const { data: routingOutcome, loading: routingLoading, error: routingError } = useJsonResource<RoutingOutcomePayload>('output/data/routing_outcome.json')
   const { data: analysisPerformance } = useJsonResource<AnalysisPerformancePayload>('output/data/analysis_performance.json')
+  const { data: strategySimulator } = useJsonResource<StrategySimulatorPayload>('output/data/strategy_simulator.json')
 
   useEffect(() => {
     document.title = '백테스트 · 주간 성과'
@@ -85,6 +88,7 @@ export function Backtest() {
 
       <AnalysisPerformancePanel payload={analysisPerformance} />
       <AiRecommendationBacktestPanel payload={analysisPerformance?.ai_recommendation_backtest} />
+      <StrategySimulatorPanel payload={strategySimulator} />
 
       {(backtest?.bull || backtest?.bear) ? (
         <section className="signals-meta-section">

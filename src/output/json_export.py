@@ -25,6 +25,7 @@ from src.output.json_writer import write_json_file
 from src.output.schema import SCHEMA_VERSION
 from src.output.sharded_export import write_sharded_outputs
 from src.output.direction_alignment import write_direction_alignment_output
+from src.output.strategy_simulator import write_strategy_simulator_output
 from src.output.web_sync_contract import OPTIONAL_WEB_SYNC_FILENAMES, WEB_SYNC_FILENAMES
 from src.types import MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
 from src.utils.datastore import get_datastore
@@ -115,6 +116,7 @@ def write_json_outputs(
     _write_tuning_report_json(data_dir)
     _write_validation_warnings_json(data_dir)
     write_direction_alignment_output(output_root=root)
+    write_strategy_simulator_output(output_root=root)
     monthly_payload = _with_schema_version(
         monthly_summary
         if monthly_summary is not None

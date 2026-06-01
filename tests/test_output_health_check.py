@@ -456,6 +456,194 @@ def _valid_performance_trends_payload() -> dict:
     }
 
 
+def _valid_strategy_simulator_payload(status: str = "ok") -> dict:
+    payload = {
+        "schema_version": 1,
+        "status": status,
+        "as_of": "2026-05-07" if status == "ok" else "",
+        "mode": "observational_long_only",
+        "basis": "final_action",
+        "inputs": {
+            "signal_count": 2,
+            "usable_signal_count": 2,
+            "price_row_count": 3,
+        },
+        "assumptions": {
+            "initial_capital": 100000.0,
+            "entry_timing": "next_trading_day_open",
+            "avoid_exit_timing": "next_trading_day_open",
+            "short_selling": False,
+            "leverage": False,
+            "fee_rate": 0.001,
+            "slippage_rate": 0.0005,
+        },
+        "presets": {},
+        "notes": ["Strategy simulator is observational."],
+    }
+    if status == "insufficient_data":
+        payload["notes"] = ["No usable signal or price rows are available for strategy simulation."]
+        return payload
+
+    preset = {
+        "label": "Balanced",
+        "description": "Default risk profile.",
+        "params": {
+            "initial_capital": 100000.0,
+            "position_size_pct": 0.10,
+            "max_positions": 8,
+            "stop_loss_pct": -0.08,
+            "take_profit_pct": 0.18,
+            "fee_rate": 0.001,
+            "slippage_rate": 0.0005,
+        },
+        "summary": {
+            "initial_capital": 100000.0,
+            "ending_equity": 101000.0,
+            "total_return_pct": 1.0,
+            "realized_pnl": 900.0,
+            "unrealized_pnl": 100.0,
+            "cash": 90000.0,
+            "cash_pct": 0.8911,
+            "invested_value": 11000.0,
+            "invested_pct": 0.1089,
+            "max_drawdown_pct": -1.5,
+            "trade_count": 2,
+            "closed_trade_count": 1,
+            "open_position_count": 1,
+            "winning_trade_count": 1,
+            "losing_trade_count": 0,
+            "win_rate": 1.0,
+            "avg_closed_trade_return_pct": 9.0,
+            "skipped_buy_count": 1,
+        },
+        "equity_curve": [
+            {
+                "date": "2026-05-07",
+                "equity": 101000.0,
+                "cash": 90000.0,
+                "invested_value": 11000.0,
+                "realized_pnl": 900.0,
+                "unrealized_pnl": 100.0,
+                "drawdown_pct": -1.5,
+                "open_position_count": 1,
+            }
+        ],
+        "trades": [
+            {
+                "ticker": "AAPL",
+                "entry_signal_date": "2026-05-01",
+                "entry_date": "2026-05-02",
+                "entry_price": 100.0,
+                "exit_signal_date": None,
+                "exit_date": "2026-05-06",
+                "exit_price": 110.0,
+                "exit_reason": "take_profit",
+                "shares": 100.0,
+                "notional": 10000.0,
+                "entry_cost": 15.0,
+                "exit_cost": 16.5,
+                "realized_pnl": 968.5,
+                "return_pct": 9.685,
+                "holding_days": 4,
+                "conviction": 80.0,
+                "signal_direction": "bull",
+                "llm_direction": "bull",
+                "llm_alignment": "aligned",
+            }
+        ],
+        "open_positions": [
+            {
+                "ticker": "MSFT",
+                "entry_signal_date": "2026-05-02",
+                "entry_date": "2026-05-03",
+                "entry_price": 200.0,
+                "latest_date": "2026-05-07",
+                "latest_close": 202.0,
+                "shares": 50.0,
+                "notional": 10000.0,
+                "market_value": 10100.0,
+                "unrealized_pnl": 85.0,
+                "return_pct": 0.85,
+                "holding_days": 4,
+                "conviction": 70.0,
+                "signal_direction": "bull",
+                "llm_direction": "bear",
+                "llm_alignment": "conflict",
+            }
+        ],
+        "entry_candidates": [
+            {
+                "rank": 1,
+                "ticker": "MSFT",
+                "status": "already_held",
+                "status_label": "이미 보유",
+                "signal_date": "2026-05-02",
+                "conviction": 70.0,
+                "entry_date": "2026-05-03",
+                "entry_price": 200.0,
+                "stop_price": 184.0,
+                "take_profit_price": 236.0,
+                "position_size_pct": 0.10,
+                "target_notional": 10000.0,
+                "required_cash": None,
+                "available_cash": 90000.0,
+                "llm_alignment": "conflict",
+                "signal_direction": "bull",
+                "llm_direction": "bear",
+                "reason": "현재 보유 중",
+            }
+        ],
+        "skipped_entries": {
+            "total_count": 1,
+            "by_reason": {"already_held": 1},
+            "examples": [
+                {
+                    "ticker": "AAPL",
+                    "signal_date": "2026-05-03",
+                    "entry_date": "2026-05-04",
+                    "reason": "already_held",
+                }
+            ],
+        },
+        "llm_direction_diagnostics": {
+            "aligned": {
+                "trade_count": 1,
+                "closed_trade_count": 1,
+                "open_position_count": 0,
+                "realized_pnl": 968.5,
+                "unrealized_pnl": 0.0,
+                "avg_trade_return_pct": 9.685,
+                "win_rate": 1.0,
+            },
+            "conflict": {
+                "trade_count": 1,
+                "closed_trade_count": 0,
+                "open_position_count": 1,
+                "realized_pnl": 0.0,
+                "unrealized_pnl": 85.0,
+                "avg_trade_return_pct": 0.85,
+                "win_rate": None,
+            },
+            "missing": {
+                "trade_count": 0,
+                "closed_trade_count": 0,
+                "open_position_count": 0,
+                "realized_pnl": 0.0,
+                "unrealized_pnl": 0.0,
+                "avg_trade_return_pct": None,
+                "win_rate": None,
+            },
+        },
+    }
+    payload["presets"] = {
+        key: json.loads(json.dumps(preset))
+        for key in ("conservative", "balanced", "aggressive")
+    }
+    payload["presets"]["conservative"]["label"] = "Conservative"
+    payload["presets"]["aggressive"]["label"] = "Aggressive"
+    return payload
+
+
 def _valid_performance_baseline_payload() -> dict:
     return {
         "schema_version": 1,
@@ -2112,6 +2300,154 @@ class OutputHealthCheckTests(unittest.TestCase):
             result = check_output_health(root)
 
         self.assertTrue(result.ok, result.format_summary())
+
+    def test_accepts_valid_strategy_simulator_payload(self) -> None:
+        payload = _valid_strategy_simulator_payload()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_json(root / "output" / "data" / "strategy_simulator.json", payload)
+            _write_json(root / "web" / "public" / "output" / "data" / "strategy_simulator.json", payload)
+
+            result = check_output_health(root)
+
+        self.assertTrue(result.ok, result.format_summary())
+
+    def test_accepts_strategy_simulator_insufficient_data_with_empty_presets(self) -> None:
+        payload = _valid_strategy_simulator_payload(status="insufficient_data")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_json(root / "output" / "data" / "strategy_simulator.json", payload)
+            _write_json(root / "web" / "public" / "output" / "data" / "strategy_simulator.json", payload)
+
+            result = check_output_health(root)
+
+        self.assertTrue(result.ok, result.format_summary())
+
+    def test_detects_invalid_strategy_simulator_root_shape(self) -> None:
+        cases = (
+            ("schema_version", lambda payload: payload.update({"schema_version": "1"})),
+            ("status", lambda payload: payload.update({"status": "partial"})),
+            ("mode", lambda payload: payload.update({"mode": "long_only_observational_simulator"})),
+            ("basis", lambda payload: payload.update({"basis": "signal_tracker_plus_price_history"})),
+            ("notes", lambda payload: payload.update({"notes": [None]})),
+            ("presets", lambda payload: payload.update({"status": "insufficient_data", "presets": {"balanced": {}}})),
+            ("presets", lambda payload: payload["presets"].pop("aggressive")),
+        )
+        for field, mutate in cases:
+            with self.subTest(field=field):
+                payload = _valid_strategy_simulator_payload()
+                mutate(payload)
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    root = Path(temp_dir)
+                    _write_json(root / "output" / "data" / "strategy_simulator.json", payload)
+                    _write_json(root / "web" / "public" / "output" / "data" / "strategy_simulator.json", payload)
+
+                    result = check_output_health(root)
+
+                self.assertFalse(result.ok)
+                self.assertTrue(
+                    any(
+                        issue.code == "invalid_strategy_simulator" and field in issue.detail
+                        for issue in result.issues
+                    ),
+                    result.format_summary(),
+                )
+
+    def test_detects_invalid_strategy_simulator_preset_values(self) -> None:
+        cases = (
+            (
+                "llm_direction_diagnostics",
+                lambda payload: payload["presets"]["balanced"].pop("llm_direction_diagnostics"),
+            ),
+            (
+                "entry_candidates",
+                lambda payload: payload["presets"]["balanced"].pop("entry_candidates"),
+            ),
+            (
+                "llm_direction_diagnostics",
+                lambda payload: payload["presets"]["balanced"].update(
+                    {"diagnostics": payload["presets"]["balanced"].pop("llm_direction_diagnostics")}
+                ),
+            ),
+            ("max_positions", lambda payload: payload["presets"]["balanced"]["params"].update({"max_positions": "8"})),
+            (
+                "closed_trade_count",
+                lambda payload: payload["presets"]["balanced"]["summary"].update({"closed_trade_count": -1}),
+            ),
+            (
+                "win_rate",
+                lambda payload: payload["presets"]["balanced"]["summary"].update({"win_rate": 1.2}),
+            ),
+            (
+                "avg_closed_trade_return_pct",
+                lambda payload: payload["presets"]["balanced"]["summary"].update(
+                    {"avg_closed_trade_return_pct": "9.0"}
+                ),
+            ),
+            (
+                "exit_reason",
+                lambda payload: payload["presets"]["balanced"]["trades"][0].update({"exit_reason": "sell"}),
+            ),
+            (
+                "llm_alignment",
+                lambda payload: payload["presets"]["balanced"]["trades"][0].update({"llm_alignment": "unknown"}),
+            ),
+            (
+                "llm_alignment",
+                lambda payload: payload["presets"]["balanced"]["open_positions"][0].update(
+                    {"llm_alignment": "unknown"}
+                ),
+            ),
+            (
+                "status",
+                lambda payload: payload["presets"]["balanced"]["entry_candidates"][0].update(
+                    {"status": "unknown"}
+                ),
+            ),
+            (
+                "rank",
+                lambda payload: payload["presets"]["balanced"]["entry_candidates"][0].update(
+                    {"rank": -1}
+                ),
+            ),
+            (
+                "required_cash",
+                lambda payload: payload["presets"]["balanced"]["entry_candidates"][0].update(
+                    {"required_cash": "10000"}
+                ),
+            ),
+            (
+                "trade_count",
+                lambda payload: payload["presets"]["balanced"]["llm_direction_diagnostics"]["aligned"].update(
+                    {"trade_count": -1}
+                ),
+            ),
+            (
+                "win_rate",
+                lambda payload: payload["presets"]["balanced"]["llm_direction_diagnostics"]["aligned"].update(
+                    {"win_rate": 1.2}
+                ),
+            ),
+        )
+        for field, mutate in cases:
+            with self.subTest(field=field):
+                payload = _valid_strategy_simulator_payload()
+                mutate(payload)
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    root = Path(temp_dir)
+                    _write_json(root / "output" / "data" / "strategy_simulator.json", payload)
+                    _write_json(root / "web" / "public" / "output" / "data" / "strategy_simulator.json", payload)
+
+                    result = check_output_health(root)
+
+                self.assertFalse(result.ok)
+                self.assertTrue(
+                    any(
+                        issue.code == "invalid_strategy_simulator" and field in issue.detail
+                        for issue in result.issues
+                    ),
+                    result.format_summary(),
+                )
 
     def test_detects_invalid_api_status_root_shape(self) -> None:
         cases = (

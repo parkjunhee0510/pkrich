@@ -1849,6 +1849,101 @@
   border: 1px solid var(--ink);
 }
 
+.strategy-simulator-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 0;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: var(--rule-weight) solid var(--ink);
+}
+.strategy-simulator-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.strategy-simulator-section-title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+.strategy-simulator-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.strategy-entry-candidate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.5rem;
+}
+.strategy-entry-candidate-card {
+  min-height: 168px;
+  padding: 0.75rem;
+  background: var(--paper);
+  border: var(--rule-weight) solid var(--ink);
+  box-shadow: var(--shadow-hard-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+}
+.strategy-entry-candidate-card:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-hard); }
+.strategy-entry-candidate-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.strategy-entry-candidate-rank,
+.strategy-entry-candidate-status {
+  padding: 0.16rem 0.4rem;
+  border: 1px solid var(--ink);
+  font-size: 0.68rem;
+  line-height: 1.2;
+}
+.strategy-entry-candidate-ready { background: var(--pos-block); color: var(--on-pos-block); }
+.strategy-entry-candidate-pending { background: var(--info-block); color: var(--on-info-block); }
+.strategy-entry-candidate-held { background: var(--caution-block); color: var(--on-caution-block); }
+.strategy-entry-candidate-blocked { background: var(--neg-block); color: var(--on-neg-block); }
+.strategy-entry-candidate-muted { background: var(--bone); }
+.strategy-entry-candidate-ticker {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+.strategy-entry-candidate-reason {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+.strategy-entry-candidate-metrics {
+  display: grid;
+  gap: 0.22rem;
+  font-size: 0.76rem;
+}
+.strategy-entry-candidate-empty {
+  min-height: 96px;
+  padding: 0.75rem;
+  border: var(--rule-weight) dashed var(--ink);
+  background: var(--bone);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+}
+.strategy-entry-candidate-table-shell { overflow-x: auto; }
+.strategy-entry-candidate-table { min-width: 980px; }
+.strategy-entry-candidate-table th,
+.strategy-entry-candidate-table td {
+  white-space: nowrap;
+}
+
 .catalyst-cell { font-family: var(--font-mono); font-size: 0.78rem; }
 
 /* ========== Calendar ========== */
