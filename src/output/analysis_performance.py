@@ -12,6 +12,7 @@ from src.output.json_writer import write_json_file
 from src.output.schema import SCHEMA_VERSION
 from src.types import MarketRegime, TickerDecision
 from src.utils.performance_analytics import (
+    build_ai_recommendation_backtest,
     build_conviction_calibration,
     build_factor_attribution,
     build_regime_performance,
@@ -78,6 +79,7 @@ def build_analysis_performance_payload(
             run_date=run_date,
             market_regime=market_regime,
         ),
+        "ai_recommendation_backtest": build_ai_recommendation_backtest(signal_rows),
     }
 
 

@@ -651,6 +651,69 @@ export interface AnalysisPerformanceConvictionBucket {
   avoid_win_rate: number | null
 }
 
+export interface AiRecommendationWindowStats {
+  sample_count: number
+  completed_count: number
+  avg_return: number | null
+  median_return: number | null
+  win_rate: number | null
+  loss_rate: number | null
+  best_return: number | null
+  worst_return: number | null
+  missing_count: number
+}
+
+export interface AiRecommendationConvictionBucket {
+  sample_count: number
+  action_counts: Record<string, number>
+  by_action: Record<string, Record<string, AiRecommendationWindowStats>>
+}
+
+export interface AiRecommendationTickerRow {
+  ticker: string
+  signals: number
+  buy_signals: number
+  watch_signals: number
+  avoid_signals: number
+  completed_5d_count: number
+  completed_20d_count: number
+  avg_return_5d: number | null
+  avg_return_20d: number | null
+  win_rate_5d: number | null
+  win_rate_20d: number | null
+}
+
+export interface AiRecommendationExample {
+  signal_date: string
+  ticker: string
+  action: string
+  conviction: number | null
+  return_5d: number | null
+  return_20d: number | null
+  catalyst_tag: string
+  regime: string
+}
+
+export interface AiRecommendationBacktestPayload {
+  status: string
+  basis: string
+  horizons: string[]
+  summary: {
+    sample_count: number
+    completed_20d_count: number
+    best_action: string | null
+    worst_action: string | null
+    notes: string[]
+  }
+  by_action: Record<string, Record<string, AiRecommendationWindowStats>>
+  conviction_buckets: Record<string, AiRecommendationConvictionBucket>
+  ticker_leaderboard: AiRecommendationTickerRow[]
+  notable_examples: {
+    best: AiRecommendationExample[]
+    worst: AiRecommendationExample[]
+  }
+}
+
 export interface AnalysisPerformanceFactorStats {
   sample_count: number
   avg_score: number | null
@@ -706,6 +769,7 @@ export interface AnalysisPerformancePayload {
     factors: Record<string, AnalysisPerformanceFactorStats>
   }
   action_change_reasons?: AnalysisPerformanceActionChange[]
+  ai_recommendation_backtest?: AiRecommendationBacktestPayload
 }
 
 export interface PerformanceJsonHealth {

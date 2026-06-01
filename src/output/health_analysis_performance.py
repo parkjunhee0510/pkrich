@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Iterable
 
 from src.output.health_analysis_performance_actions import _validate_analysis_performance_action_changes
+from src.output.health_analysis_performance_ai_backtest import _validate_ai_recommendation_backtest
 from src.output.health_analysis_performance_factors import _validate_analysis_performance_factor_attribution
 from src.output.health_analysis_performance_windows import _validate_analysis_performance_window_map
 from src.output.health_common import (
@@ -70,6 +71,7 @@ def _validate_analysis_performance_artifact(root: Path) -> Iterable[OutputHealth
         _validate_analysis_performance_regime_performance,
         _validate_analysis_performance_factor_attribution,
         _validate_analysis_performance_action_changes,
+        _validate_ai_recommendation_backtest,
     )
     for validator in validators:
         issue = validator(path, payload)

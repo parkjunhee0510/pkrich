@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo } from 'react'
 import { AnalysisPerformancePanel } from '../components/AnalysisPerformancePanel'
+import { AiRecommendationBacktestPanel } from '../components/AiRecommendationBacktestPanel'
 import { EquityCurveChart } from '../components/EquityCurveChart'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useJsonResource } from '../hooks/useJsonResource'
@@ -83,6 +84,7 @@ export function Backtest() {
       ) : null}
 
       <AnalysisPerformancePanel payload={analysisPerformance} />
+      <AiRecommendationBacktestPanel payload={analysisPerformance?.ai_recommendation_backtest} />
 
       {(backtest?.bull || backtest?.bear) ? (
         <section className="signals-meta-section">

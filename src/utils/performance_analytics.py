@@ -9,6 +9,11 @@ from statistics import median
 from typing import Any
 
 HORIZONS = (1, 5, 20)
+AI_ACTIONS = ("buy", "watch", "avoid")
+AI_CONVICTION_BUCKETS = (
+    ("65_80", 65, 80),
+    ("80_100", 80, 100),
+)
 BUCKETS = (
     ("0_35", 0, 35),
     ("35_50", 35, 50),
@@ -134,6 +139,58 @@ def build_factor_attribution(rows: list[dict[str, str]]) -> dict[str, Any]:
     }
 
 
+def build_ai_recommendation_backtest(rows: list[dict[str, str]]) -> dict[str, Any]:
+    tracked_rows = [row for row in rows if _action(row) in AI_ACTIONS]
+    if not tracked_rows:
+        return {
+            "status": "insufficient_data",
+            "basis": "final_action",
+            "horizons": ["1d", "5d", "20d"],
+            "summary": {
+                "sample_count": 0,
+                "completed_20d_count": 0,
+                "best_action": None,
+                "worst_action": None,
+                "notes": ["No tracked signals are available yet."],
+            },
+            "by_action": {},
+            "conviction_buckets": {},
+            "ticker_leaderboard": [],
+            "notable_examples": {"best": [], "worst": []},
+        }
+
+    by_action: dict[str, dict[str, Any]] = {}
+    for action_name in AI_ACTIONS:
+        action_rows = [row for row in tracked_rows if _action(row) == action_name]
+        by_action[action_name] = {
+            f"{horizon}d": _ai_window_metrics(action_rows, horizon, action_name)
+            for horizon in HORIZONS
+        }
+
+    best_action, worst_action = _ai_best_worst_actions(tracked_rows)
+    return {
+        "status": "ok",
+        "basis": "final_action",
+        "horizons": ["1d", "5d", "20d"],
+        "summary": {
+            "sample_count": len(tracked_rows),
+            "completed_20d_count": sum(
+                1 for row in tracked_rows if _return_value(row, 20) is not None
+            ),
+            "best_action": best_action,
+            "worst_action": worst_action,
+            "notes": [
+                "Watch rows keep win/loss rates null; raw watch returns are included in summaries and examples.",
+                "Ticker win rates are directional for buy and avoid recommendations only.",
+            ],
+        },
+        "by_action": by_action,
+        "conviction_buckets": _ai_conviction_buckets(tracked_rows),
+        "ticker_leaderboard": _ai_ticker_leaderboard(tracked_rows),
+        "notable_examples": _ai_notable_examples(tracked_rows),
+    }
+
+
 def _window_metrics(rows: list[dict[str, str]], horizon: int, action_name: str) -> dict[str, Any]:
     values: list[float] = []
     missing_count = 0
@@ -185,6 +242,212 @@ def _window_metrics(rows: list[dict[str, str]], horizon: int, action_name: str) 
         "return_distribution": dict(distribution),
         "triple_barrier_outcomes": dict(sorted(outcomes.items())),
     }
+
+
+def _ai_window_metrics(rows: list[dict[str, str]], horizon: int, action_name: str) -> dict[str, Any]:
+    values: list[float] = []
+    missing_count = 0
+    wins = 0
+    losses = 0
+
+    for row in rows:
+        value = _return_value(row, horizon)
+        if value is None:
+            missing_count += 1
+            continue
+        values.append(value)
+        if action_name == "buy":
+            wins += 1 if value > 0 else 0
+            losses += 1 if value <= 0 else 0
+        elif action_name == "avoid":
+            wins += 1 if value <= 0 else 0
+            losses += 1 if value > 0 else 0
+
+    completed = len(values)
+    win_rate = None
+    loss_rate = None
+    if action_name in {"buy", "avoid"} and completed:
+        win_rate = round(wins / completed, 4)
+        loss_rate = round(losses / completed, 4)
+
+    return {
+        "sample_count": len(rows),
+        "completed_count": completed,
+        "avg_return": round(sum(values) / completed, 4) if completed else None,
+        "median_return": round(float(median(values)), 4) if completed else None,
+        "win_rate": win_rate,
+        "loss_rate": loss_rate,
+        "best_return": round(max(values), 4) if values else None,
+        "worst_return": round(min(values), 4) if values else None,
+        "missing_count": missing_count,
+    }
+
+
+def _ai_conviction_buckets(rows: list[dict[str, str]]) -> dict[str, Any]:
+    bucket_rows: dict[str, list[dict[str, str]]] = {name: [] for name, _, _ in AI_CONVICTION_BUCKETS}
+    for row in rows:
+        conviction = _parse_float(row.get("conviction"))
+        if conviction is None:
+            continue
+        for name, low, high in AI_CONVICTION_BUCKETS:
+            if low <= conviction < high or (name == "80_100" and conviction == 100):
+                bucket_rows[name].append(row)
+                break
+
+    result: dict[str, Any] = {}
+    for name, grouped_rows in bucket_rows.items():
+        result[name] = {
+            "sample_count": len(grouped_rows),
+            "action_counts": dict(sorted(Counter(_action(row) for row in grouped_rows).items())),
+            "by_action": {
+                action_name: {
+                    f"{horizon}d": _ai_window_metrics(
+                        [row for row in grouped_rows if _action(row) == action_name],
+                        horizon,
+                        action_name,
+                    )
+                    for horizon in (5, 20)
+                }
+                for action_name in AI_ACTIONS
+            },
+        }
+    return result
+
+
+def _ai_best_worst_actions(rows: list[dict[str, str]]) -> tuple[str | None, str | None]:
+    action_returns: dict[str, list[float]] = defaultdict(list)
+    for row in rows:
+        value = _return_value(row, 20)
+        if value is not None:
+            action_returns[_action(row)].append(value)
+
+    averages = [
+        (action_name, round(sum(values) / len(values), 4))
+        for action_name, values in action_returns.items()
+        if values
+    ]
+    if not averages:
+        return None, None
+    best = sorted(averages, key=lambda item: (-item[1], item[0]))[0][0]
+    worst = sorted(averages, key=lambda item: (item[1], item[0]))[0][0]
+    return best, worst
+
+
+def _ai_ticker_leaderboard(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for row in rows:
+        ticker = str(row.get("ticker", "") or "").strip().upper()
+        if ticker:
+            grouped[ticker].append(row)
+
+    leaderboard = []
+    for ticker, ticker_rows in grouped.items():
+        leaderboard.append(
+            {
+                "ticker": ticker,
+                "signals": len(ticker_rows),
+                "buy_signals": sum(1 for row in ticker_rows if _action(row) == "buy"),
+                "watch_signals": sum(1 for row in ticker_rows if _action(row) == "watch"),
+                "avoid_signals": sum(1 for row in ticker_rows if _action(row) == "avoid"),
+                "completed_5d_count": _completed_return_count(ticker_rows, 5),
+                "completed_20d_count": _completed_return_count(ticker_rows, 20),
+                "avg_return_5d": _average_return(ticker_rows, 5),
+                "avg_return_20d": _average_return(ticker_rows, 20),
+                # Ticker win rates remain directional: buy succeeds above 0%, avoid at or below 0%, watch is neutral.
+                "win_rate_5d": _recommendation_win_rate(ticker_rows, 5),
+                "win_rate_20d": _recommendation_win_rate(ticker_rows, 20),
+            }
+        )
+
+    return sorted(
+        leaderboard,
+        key=lambda row: (
+            -row["completed_20d_count"],
+            _none_last_desc_sort(row["avg_return_20d"]),
+            _none_last_desc_sort(row["avg_return_5d"]),
+            row["ticker"],
+        ),
+    )
+
+
+def _ai_notable_examples(rows: list[dict[str, str]]) -> dict[str, list[dict[str, Any]]]:
+    examples = []
+    for row in rows:
+        score = _return_value(row, 20)
+        completed_20d = score is not None
+        if not completed_20d:
+            score = _return_value(row, 5)
+        if score is None:
+            continue
+        examples.append((completed_20d, score, _ai_example(row)))
+
+    best = [
+        example
+        for _, _, example in sorted(
+            examples,
+            key=lambda item: (not item[0], -item[1], item[2]["ticker"]),
+        )[:5]
+    ]
+    worst = [
+        example
+        for _, _, example in sorted(
+            examples,
+            key=lambda item: (not item[0], item[1], item[2]["ticker"]),
+        )[:5]
+    ]
+    return {"best": best, "worst": worst}
+
+
+def _ai_example(row: dict[str, str]) -> dict[str, Any]:
+    return {
+        "signal_date": str(row.get("signal_date", "") or ""),
+        "ticker": str(row.get("ticker", "") or "").strip().upper(),
+        "action": _action(row),
+        "conviction": _parse_float(row.get("conviction")),
+        "return_5d": _rounded_return(row, 5),
+        "return_20d": _rounded_return(row, 20),
+        "catalyst_tag": str(row.get("catalyst_tag", "") or ""),
+        "regime": _regime(row),
+    }
+
+
+def _average_return(rows: list[dict[str, str]], horizon: int) -> float | None:
+    values = [value for value in (_return_value(row, horizon) for row in rows) if value is not None]
+    return round(sum(values) / len(values), 4) if values else None
+
+
+def _completed_return_count(rows: list[dict[str, str]], horizon: int) -> int:
+    return sum(1 for row in rows if _return_value(row, horizon) is not None)
+
+
+def _recommendation_win_rate(rows: list[dict[str, str]], horizon: int) -> float | None:
+    outcomes = [
+        outcome
+        for outcome in (_recommendation_success(row, horizon) for row in rows)
+        if outcome is not None
+    ]
+    return round(sum(1 for outcome in outcomes if outcome) / len(outcomes), 4) if outcomes else None
+
+
+def _recommendation_success(row: dict[str, str], horizon: int) -> bool | None:
+    value = _return_value(row, horizon)
+    if value is None:
+        return None
+    action_name = _action(row)
+    if action_name == "buy":
+        return value > 0
+    if action_name == "avoid":
+        return value <= 0
+    return None
+
+
+def _rounded_return(row: dict[str, str], horizon: int) -> float | None:
+    value = _return_value(row, horizon)
+    return round(value, 4) if value is not None else None
+
+
+def _none_last_desc_sort(value: float | None) -> float:
+    return -value if value is not None else float("inf")
 
 
 def _bucket_name(conviction: float) -> str:

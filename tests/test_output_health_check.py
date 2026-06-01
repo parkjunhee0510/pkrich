@@ -263,6 +263,31 @@ def _valid_analysis_performance_payload() -> dict:
         "return_distribution": {"positive": 7, "negative": 3, "flat": 0},
         "triple_barrier_outcomes": {"hit": 6, "stop": 4},
     }
+    ai_window_stats = {
+        "sample_count": 8,
+        "completed_count": 7,
+        "missing_count": 1,
+        "avg_return": 2.4,
+        "median_return": 1.8,
+        "best_return": 8.2,
+        "worst_return": -3.1,
+        "win_rate": 0.71,
+        "loss_rate": 0.29,
+    }
+    ai_by_action = {
+        action: {
+            horizon: dict(ai_window_stats)
+            for horizon in ("1d", "5d", "20d")
+        }
+        for action in ("buy", "watch", "avoid")
+    }
+    ai_bucket_by_action = {
+        action: {
+            horizon: dict(ai_window_stats)
+            for horizon in ("5d", "20d")
+        }
+        for action in ("buy", "watch", "avoid")
+    }
     return {
         "schema_version": 1,
         "as_of": "2026-05-07",
@@ -344,6 +369,70 @@ def _valid_analysis_performance_payload() -> dict:
                 ],
             }
         ],
+        "ai_recommendation_backtest": {
+            "status": "ok",
+            "basis": "final_action",
+            "horizons": ["1d", "5d", "20d"],
+            "summary": {
+                "sample_count": 12,
+                "completed_20d_count": 7,
+                "best_action": "buy",
+                "worst_action": "avoid",
+                "notes": ["AI recommendation backtest is observational."],
+            },
+            "by_action": {
+                action: {horizon: dict(stats) for horizon, stats in by_horizon.items()}
+                for action, by_horizon in ai_by_action.items()
+            },
+            "conviction_buckets": {
+                "65_80": {
+                    "sample_count": 8,
+                    "action_counts": {"buy": 6, "watch": 1, "avoid": 1},
+                    "by_action": {
+                        action: {horizon: dict(stats) for horizon, stats in by_horizon.items()}
+                        for action, by_horizon in ai_bucket_by_action.items()
+                    },
+                },
+                "80_100": {
+                    "sample_count": 4,
+                    "action_counts": {"buy": 2, "watch": 1, "avoid": 1},
+                    "by_action": {
+                        action: {horizon: dict(stats) for horizon, stats in by_horizon.items()}
+                        for action, by_horizon in ai_bucket_by_action.items()
+                    },
+                },
+            },
+            "ticker_leaderboard": [
+                {
+                    "ticker": "AAPL",
+                    "signals": 4,
+                    "buy_signals": 4,
+                    "watch_signals": 0,
+                    "avoid_signals": 0,
+                    "completed_5d_count": 4,
+                    "completed_20d_count": 3,
+                    "avg_return_5d": 1.6,
+                    "avg_return_20d": 2.4,
+                    "win_rate_5d": 0.75,
+                    "win_rate_20d": 0.67,
+                }
+            ],
+            "notable_examples": {
+                "best": [
+                    {
+                        "signal_date": "2026-04-01",
+                        "ticker": "AAPL",
+                        "action": "buy",
+                        "catalyst_tag": "earnings",
+                        "regime": "bull",
+                        "conviction": 72,
+                        "return_5d": 1.6,
+                        "return_20d": 8.2,
+                    }
+                ],
+                "worst": [],
+            },
+        },
     }
 
 
@@ -1871,6 +1960,158 @@ class OutputHealthCheckTests(unittest.TestCase):
                         for issue in result.issues
                     )
                 )
+
+    def test_detects_invalid_ai_recommendation_backtest_shape(self) -> None:
+        cases = (
+            (
+                "basis",
+                lambda payload: payload["ai_recommendation_backtest"].update({"basis": "llm_direction"}),
+            ),
+            (
+                "horizons",
+                lambda payload: payload["ai_recommendation_backtest"].update({"horizons": "1d,5d,20d"}),
+            ),
+            (
+                "horizons",
+                lambda payload: payload["ai_recommendation_backtest"].update({"horizons": ["bogus"]}),
+            ),
+            (
+                "horizons",
+                lambda payload: payload["ai_recommendation_backtest"].update(
+                    {"horizons": ["1d", "5d", "20d", "20d"]}
+                ),
+            ),
+            (
+                "status",
+                lambda payload: payload["ai_recommendation_backtest"].update(
+                    {"status": "partial", "horizons": ["bogus"], "by_action": {"buy": {}}}
+                ),
+            ),
+            (
+                "by_action",
+                lambda payload: payload["ai_recommendation_backtest"].update({"by_action": {"buy": {}}}),
+            ),
+            (
+                "completed_20d_count",
+                lambda payload: payload["ai_recommendation_backtest"]["summary"].update(
+                    {"completed_20d_count": -1}
+                ),
+            ),
+            (
+                "win_rate",
+                lambda payload: payload["ai_recommendation_backtest"]["by_action"]["buy"]["20d"].update(
+                    {"win_rate": 1.2}
+                ),
+            ),
+            (
+                "ticker_leaderboard",
+                lambda payload: payload["ai_recommendation_backtest"].update({"ticker_leaderboard": {}}),
+            ),
+            (
+                "notable_examples",
+                lambda payload: payload["ai_recommendation_backtest"].update({"notable_examples": []}),
+            ),
+        )
+        for field, mutate in cases:
+            with self.subTest(field=field):
+                payload = json.loads(json.dumps(_valid_analysis_performance_payload()))
+                mutate(payload)
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    root = Path(temp_dir)
+                    _write_json(root / "output" / "data" / "analysis_performance.json", payload)
+                    _write_json(root / "web" / "public" / "output" / "data" / "analysis_performance.json", payload)
+
+                    result = check_output_health(root)
+
+                self.assertFalse(result.ok)
+                self.assertTrue(
+                    any(
+                        issue.code == "invalid_analysis_performance" and field in issue.detail
+                        for issue in result.issues
+                    ),
+                    result.format_summary(),
+                )
+
+    def test_allows_missing_ai_recommendation_backtest_for_backward_compatibility(self) -> None:
+        payload = _valid_analysis_performance_payload()
+        payload.pop("ai_recommendation_backtest")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_json(root / "output" / "data" / "analysis_performance.json", payload)
+            _write_json(root / "web" / "public" / "output" / "data" / "analysis_performance.json", payload)
+
+            result = check_output_health(root)
+
+        self.assertTrue(
+            all(
+                issue.code != "invalid_analysis_performance"
+                or "ai_recommendation_backtest" not in issue.detail
+                for issue in result.issues
+            ),
+            result.format_summary(),
+        )
+
+    def test_generated_ai_recommendation_backtest_allows_blank_optional_example_metadata(self) -> None:
+        from src.output.analysis_performance import build_analysis_performance_payload
+        from src.types import MarketRegime
+
+        signal_rows = [
+            {
+                "signal_date": "2026-04-02",
+                "ticker": "AAPL",
+                "action": "buy",
+                "conviction": "72",
+                "catalyst_tag": "",
+                "regime": "",
+                "return_1d": "+1.00%",
+                "return_5d": "+3.00%",
+                "return_20d": "+8.00%",
+                "evaluated_1d": "True",
+                "evaluated_5d": "True",
+                "evaluated_20d": "True",
+                "barrier_label": "hit",
+                "factors_json": '{"momentum": 1.5}',
+            }
+        ]
+        payload = build_analysis_performance_payload(
+            signal_rows,
+            run_date=date(2026, 5, 1),
+            decisions=[],
+            market_regime=MarketRegime(regime="neutral"),
+        )
+        self.assertEqual(payload["ai_recommendation_backtest"]["notable_examples"]["best"][0]["catalyst_tag"], "")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_json(root / "output" / "data" / "analysis_performance.json", payload)
+            _write_json(root / "web" / "public" / "output" / "data" / "analysis_performance.json", payload)
+
+            result = check_output_health(root)
+
+        self.assertTrue(result.ok, result.format_summary())
+
+    def test_generated_sparse_ai_recommendation_backtest_insufficient_data_passes_health_check(self) -> None:
+        from src.output.analysis_performance import build_analysis_performance_payload
+        from src.types import MarketRegime
+
+        payload = build_analysis_performance_payload(
+            [],
+            run_date=date(2026, 5, 1),
+            decisions=[],
+            market_regime=MarketRegime(regime="neutral"),
+        )
+        self.assertEqual(payload["ai_recommendation_backtest"]["status"], "insufficient_data")
+        self.assertEqual(payload["ai_recommendation_backtest"]["by_action"], {})
+        self.assertEqual(payload["ai_recommendation_backtest"]["conviction_buckets"], {})
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_json(root / "output" / "data" / "analysis_performance.json", payload)
+            _write_json(root / "web" / "public" / "output" / "data" / "analysis_performance.json", payload)
+
+            result = check_output_health(root)
+
+        self.assertTrue(result.ok, result.format_summary())
 
     def test_detects_invalid_api_status_root_shape(self) -> None:
         cases = (

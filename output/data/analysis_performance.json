@@ -2762,5 +2762,724 @@
         }
       ]
     }
-  ]
+  ],
+  "ai_recommendation_backtest": {
+    "status": "ok",
+    "basis": "final_action",
+    "horizons": [
+      "1d",
+      "5d",
+      "20d"
+    ],
+    "summary": {
+      "sample_count": 416,
+      "completed_20d_count": 132,
+      "best_action": "buy",
+      "worst_action": "watch",
+      "notes": [
+        "Watch rows keep win/loss rates null; raw watch returns are included in summaries and examples.",
+        "Ticker win rates are directional for buy and avoid recommendations only."
+      ]
+    },
+    "by_action": {
+      "buy": {
+        "1d": {
+          "sample_count": 128,
+          "completed_count": 119,
+          "avg_return": 1.9544,
+          "median_return": 0.89,
+          "win_rate": 0.5714,
+          "loss_rate": 0.4286,
+          "best_return": 43.58,
+          "worst_return": -15.41,
+          "missing_count": 9
+        },
+        "5d": {
+          "sample_count": 128,
+          "completed_count": 95,
+          "avg_return": 6.1661,
+          "median_return": 3.54,
+          "win_rate": 0.6737,
+          "loss_rate": 0.3263,
+          "best_return": 75.36,
+          "worst_return": -15.22,
+          "missing_count": 33
+        },
+        "20d": {
+          "sample_count": 128,
+          "completed_count": 45,
+          "avg_return": 17.7329,
+          "median_return": 9.62,
+          "win_rate": 0.8889,
+          "loss_rate": 0.1111,
+          "best_return": 57.33,
+          "worst_return": -7.85,
+          "missing_count": 83
+        }
+      },
+      "watch": {
+        "1d": {
+          "sample_count": 288,
+          "completed_count": 272,
+          "avg_return": 1.6209,
+          "median_return": 0.315,
+          "win_rate": null,
+          "loss_rate": null,
+          "best_return": 56.93,
+          "worst_return": -11.61,
+          "missing_count": 16
+        },
+        "5d": {
+          "sample_count": 288,
+          "completed_count": 221,
+          "avg_return": 6.3674,
+          "median_return": 2.27,
+          "win_rate": null,
+          "loss_rate": null,
+          "best_return": 98.2,
+          "worst_return": -21.56,
+          "missing_count": 67
+        },
+        "20d": {
+          "sample_count": 288,
+          "completed_count": 87,
+          "avg_return": 15.7002,
+          "median_return": 9.58,
+          "win_rate": null,
+          "loss_rate": null,
+          "best_return": 91.16,
+          "worst_return": -19.36,
+          "missing_count": 201
+        }
+      },
+      "avoid": {
+        "1d": {
+          "sample_count": 0,
+          "completed_count": 0,
+          "avg_return": null,
+          "median_return": null,
+          "win_rate": null,
+          "loss_rate": null,
+          "best_return": null,
+          "worst_return": null,
+          "missing_count": 0
+        },
+        "5d": {
+          "sample_count": 0,
+          "completed_count": 0,
+          "avg_return": null,
+          "median_return": null,
+          "win_rate": null,
+          "loss_rate": null,
+          "best_return": null,
+          "worst_return": null,
+          "missing_count": 0
+        },
+        "20d": {
+          "sample_count": 0,
+          "completed_count": 0,
+          "avg_return": null,
+          "median_return": null,
+          "win_rate": null,
+          "loss_rate": null,
+          "best_return": null,
+          "worst_return": null,
+          "missing_count": 0
+        }
+      }
+    },
+    "conviction_buckets": {
+      "65_80": {
+        "sample_count": 128,
+        "action_counts": {
+          "buy": 128
+        },
+        "by_action": {
+          "buy": {
+            "5d": {
+              "sample_count": 128,
+              "completed_count": 95,
+              "avg_return": 6.1661,
+              "median_return": 3.54,
+              "win_rate": 0.6737,
+              "loss_rate": 0.3263,
+              "best_return": 75.36,
+              "worst_return": -15.22,
+              "missing_count": 33
+            },
+            "20d": {
+              "sample_count": 128,
+              "completed_count": 45,
+              "avg_return": 17.7329,
+              "median_return": 9.62,
+              "win_rate": 0.8889,
+              "loss_rate": 0.1111,
+              "best_return": 57.33,
+              "worst_return": -7.85,
+              "missing_count": 83
+            }
+          },
+          "watch": {
+            "5d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            },
+            "20d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            }
+          },
+          "avoid": {
+            "5d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            },
+            "20d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            }
+          }
+        }
+      },
+      "80_100": {
+        "sample_count": 0,
+        "action_counts": {},
+        "by_action": {
+          "buy": {
+            "5d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            },
+            "20d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            }
+          },
+          "watch": {
+            "5d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            },
+            "20d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            }
+          },
+          "avoid": {
+            "5d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            },
+            "20d": {
+              "sample_count": 0,
+              "completed_count": 0,
+              "avg_return": null,
+              "median_return": null,
+              "win_rate": null,
+              "loss_rate": null,
+              "best_return": null,
+              "worst_return": null,
+              "missing_count": 0
+            }
+          }
+        }
+      }
+    },
+    "ticker_leaderboard": [
+      {
+        "ticker": "AMD",
+        "signals": 24,
+        "buy_signals": 18,
+        "watch_signals": 6,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 14.3945,
+        "avg_return_20d": 57.8933,
+        "win_rate_5d": 0.9286,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "IONQ",
+        "signals": 24,
+        "buy_signals": 12,
+        "watch_signals": 12,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 12.095,
+        "avg_return_20d": 38.4158,
+        "win_rate_5d": 0.5,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "PLUG",
+        "signals": 24,
+        "buy_signals": 14,
+        "watch_signals": 10,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 5.5845,
+        "avg_return_20d": 20.2733,
+        "win_rate_5d": 0.5714,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "ORA",
+        "signals": 24,
+        "buy_signals": 2,
+        "watch_signals": 22,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 2.921,
+        "avg_return_20d": 18.7483,
+        "win_rate_5d": 1.0,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "SPIR",
+        "signals": 24,
+        "buy_signals": 0,
+        "watch_signals": 24,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 1.505,
+        "avg_return_20d": 15.4825,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "AAPL",
+        "signals": 24,
+        "buy_signals": 4,
+        "watch_signals": 20,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 2.898,
+        "avg_return_20d": 12.7725,
+        "win_rate_5d": 0.75,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "CAT",
+        "signals": 24,
+        "buy_signals": 18,
+        "watch_signals": 6,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 3.263,
+        "avg_return_20d": 10.7242,
+        "win_rate_5d": 0.8,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "KO",
+        "signals": 24,
+        "buy_signals": 0,
+        "watch_signals": 24,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 0.773,
+        "avg_return_20d": 6.0517,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "XOM",
+        "signals": 24,
+        "buy_signals": 0,
+        "watch_signals": 24,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": -0.4795,
+        "avg_return_20d": 2.3133,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "OXY",
+        "signals": 24,
+        "buy_signals": 15,
+        "watch_signals": 9,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": 0.169,
+        "avg_return_20d": 1.7275,
+        "win_rate_5d": 0.5714,
+        "win_rate_20d": 0.6667
+      },
+      {
+        "ticker": "T",
+        "signals": 24,
+        "buy_signals": 3,
+        "watch_signals": 21,
+        "avoid_signals": 0,
+        "completed_5d_count": 20,
+        "completed_20d_count": 12,
+        "avg_return_5d": -0.5415,
+        "avg_return_20d": -4.0775,
+        "win_rate_5d": 0.0,
+        "win_rate_20d": 0.0
+      },
+      {
+        "ticker": "RDW",
+        "signals": 12,
+        "buy_signals": 5,
+        "watch_signals": 7,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 40.9337,
+        "avg_return_20d": null,
+        "win_rate_5d": 1.0,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "FLNC",
+        "signals": 12,
+        "buy_signals": 0,
+        "watch_signals": 12,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 27.6475,
+        "avg_return_20d": null,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "RKLB",
+        "signals": 12,
+        "buy_signals": 1,
+        "watch_signals": 11,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 22.7913,
+        "avg_return_20d": null,
+        "win_rate_5d": 1.0,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "ALAB",
+        "signals": 12,
+        "buy_signals": 8,
+        "watch_signals": 4,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 19.4425,
+        "avg_return_20d": null,
+        "win_rate_5d": 0.5,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "HUM",
+        "signals": 12,
+        "buy_signals": 0,
+        "watch_signals": 12,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 8.4662,
+        "avg_return_20d": null,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "AVAV",
+        "signals": 12,
+        "buy_signals": 0,
+        "watch_signals": 12,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 6.69,
+        "avg_return_20d": null,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "NXT",
+        "signals": 12,
+        "buy_signals": 11,
+        "watch_signals": 1,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 5.1062,
+        "avg_return_20d": null,
+        "win_rate_5d": 0.7143,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "ATKR",
+        "signals": 12,
+        "buy_signals": 0,
+        "watch_signals": 12,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 3.8162,
+        "avg_return_20d": null,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "MOD",
+        "signals": 12,
+        "buy_signals": 10,
+        "watch_signals": 2,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 3.22,
+        "avg_return_20d": null,
+        "win_rate_5d": 0.6667,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "COHR",
+        "signals": 12,
+        "buy_signals": 3,
+        "watch_signals": 9,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 3.215,
+        "avg_return_20d": null,
+        "win_rate_5d": 0.5,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "KTOS",
+        "signals": 12,
+        "buy_signals": 0,
+        "watch_signals": 12,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": 1.8763,
+        "avg_return_20d": null,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "KEY",
+        "signals": 12,
+        "buy_signals": 1,
+        "watch_signals": 11,
+        "avoid_signals": 0,
+        "completed_5d_count": 8,
+        "completed_20d_count": 0,
+        "avg_return_5d": -0.5375,
+        "avg_return_20d": null,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "DD",
+        "signals": 4,
+        "buy_signals": 3,
+        "watch_signals": 1,
+        "avoid_signals": 0,
+        "completed_5d_count": 0,
+        "completed_20d_count": 0,
+        "avg_return_5d": null,
+        "avg_return_20d": null,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "XYL",
+        "signals": 4,
+        "buy_signals": 0,
+        "watch_signals": 4,
+        "avoid_signals": 0,
+        "completed_5d_count": 0,
+        "completed_20d_count": 0,
+        "avg_return_5d": null,
+        "avg_return_20d": null,
+        "win_rate_5d": null,
+        "win_rate_20d": null
+      }
+    ],
+    "notable_examples": {
+      "best": [
+        {
+          "signal_date": "2026-04-13",
+          "ticker": "IONQ",
+          "action": "watch",
+          "conviction": 52.0,
+          "return_5d": 62.37,
+          "return_20d": 91.16,
+          "catalyst_tag": "기타 공시",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-04-13",
+          "ticker": "AMD",
+          "action": "watch",
+          "conviction": 61.0,
+          "return_5d": 11.39,
+          "return_20d": 85.87,
+          "catalyst_tag": "기타 공시",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-04-14",
+          "ticker": "AMD",
+          "action": "watch",
+          "conviction": 60.0,
+          "return_5d": 11.53,
+          "return_20d": 75.75,
+          "catalyst_tag": "기타 공시",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-04-15",
+          "ticker": "AMD",
+          "action": "watch",
+          "conviction": 59.0,
+          "return_5d": 17.57,
+          "return_20d": 74.22,
+          "catalyst_tag": "기타 공시",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-04-29",
+          "ticker": "IONQ",
+          "action": "watch",
+          "conviction": 61.0,
+          "return_5d": 24.84,
+          "return_20d": 66.56,
+          "catalyst_tag": "기타 공시",
+          "regime": "risk_on"
+        }
+      ],
+      "worst": [
+        {
+          "signal_date": "2026-04-13",
+          "ticker": "SPIR",
+          "action": "watch",
+          "conviction": 60.0,
+          "return_5d": -21.56,
+          "return_20d": -19.36,
+          "catalyst_tag": "실적",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-04-14",
+          "ticker": "SPIR",
+          "action": "watch",
+          "conviction": 56.0,
+          "return_5d": -9.64,
+          "return_20d": -14.95,
+          "catalyst_tag": "실적",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-04-15",
+          "ticker": "SPIR",
+          "action": "watch",
+          "conviction": 60.0,
+          "return_5d": -11.05,
+          "return_20d": -11.3,
+          "catalyst_tag": "실적",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-04-17",
+          "ticker": "T",
+          "action": "buy",
+          "conviction": 67.0,
+          "return_5d": -1.17,
+          "return_20d": -7.85,
+          "catalyst_tag": "실적",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-04-20",
+          "ticker": "T",
+          "action": "buy",
+          "conviction": 66.0,
+          "return_5d": -2.52,
+          "return_20d": -6.68,
+          "catalyst_tag": "실적",
+          "regime": "risk_on"
+        }
+      ]
+    }
+  }
 }

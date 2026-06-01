@@ -60,6 +60,9 @@ class AnalysisPerformanceOutputTests(unittest.TestCase):
         self.assertIn("regime_performance", payload)
         self.assertIn("factor_attribution", payload)
         self.assertEqual(payload["action_change_reasons"][0]["ticker"], "AAPL")
+        self.assertIn("ai_recommendation_backtest", payload)
+        self.assertEqual(payload["ai_recommendation_backtest"]["basis"], "final_action")
+        self.assertEqual(payload["ai_recommendation_backtest"]["by_action"]["watch"]["5d"]["win_rate"], None)
         self.assertEqual(written["schema_version"], SCHEMA_VERSION)
 
 
