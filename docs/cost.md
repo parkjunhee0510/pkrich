@@ -36,9 +36,15 @@ Current default mode is `shadow`. In shadow mode, BudgetGuard estimates incremen
 
 `enforce` mode is reserved for a later operational decision. In enforce mode, guarded optional paths may skip deep or optional work when the estimated run cost exceeds `daily_cap_usd`.
 
-`output/data/cost_log.json` includes BudgetGuard decision counts, guarded path outcomes, profile counts, and total estimated incremental guarded cost. This is telemetry only; it is not a billing ledger.
+`output/data/cost_log.json` includes BudgetGuard decision counts, guarded path outcomes, profile counts, total estimated incremental guarded cost, model profile cost/token/call/model counts, ensemble routing counts, and a deep-pass value summary. This is telemetry only; it is not a billing ledger. The output health check validates this minimum shape when the artifact is present so cost telemetry corruption is caught before commit.
 
-Search evidence remains `cache` mode by default in `config/search_evidence.yaml`. When `mode: openai` is enabled, provider calls are rate-limited and logged through the `search_evidence` BudgetGuard path before any live OpenAI Web Search request is attempted.
+`performance_baseline.json` derives a read-only BudgetGuard review track from the latest cost log. It uses `budget_guard.monthly_cap_usd` from `config/models.yaml` as the default monthly budget for diagnostics, and preserves decision-count and guarded-path status distributions, would-block/blocked/allow path counts, estimated incremental guarded cost, and an `enforce_review_status`. These fields are report evidence for a later operational decision; they do not switch BudgetGuard mode or skip optional LLM paths.
+
+Operational cost health compares the latest run with a previous comparable successful run when telemetry is available. The comparison should report total cost delta, profile-level call/token/cost deltas for `economy`, `standard`, and `deep`, BudgetGuard `would_block` paths, and evidence provider call/error status. These diagnostics are warning-level by default; they do not change official decisions or automatically switch BudgetGuard to enforce mode.
+
+Smart Model Router V1 does not increase the deep-review cap or add provider calls. It preserves the existing `max_daily_ensemble` limit and reorders eligible deep-review candidates by an explainable priority score before the existing BudgetGuard decision is recorded. Routing logs include estimated incremental and monthly deep-review cost so report-mode savings can be reviewed without switching BudgetGuard to enforce mode.
+
+Search evidence now defaults to `openai` mode in `config/search_evidence.yaml` so priority tickers do not report zero coverage just because the local cache is empty. Provider calls are rate-limited and logged through the `search_evidence` BudgetGuard path before any live OpenAI Web Search request is attempted. Router-selected tickers are prioritized within the existing `max_search_tickers_per_run` cap, and operators can use `SEARCH_EVIDENCE_MODE=cache` for a cache-only/offline run.
 
 ## Data Strategy
 

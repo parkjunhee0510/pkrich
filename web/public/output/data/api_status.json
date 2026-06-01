@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "run_date": "2026-05-06",
-  "log_path": "logs\\pipeline\\2026-05-06.jsonl",
+  "run_date": "2026-06-01",
+  "log_path": "logs\\pipeline\\2026-06-01.jsonl",
   "pipeline_completed": true,
   "providers": {
     "yfinance": {
       "overall_status": "active",
-      "used_tickers": 23,
+      "used_tickers": 25,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -14,7 +14,7 @@
     },
     "alpha_vantage": {
       "overall_status": "active",
-      "used_tickers": 23,
+      "used_tickers": 25,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -22,7 +22,7 @@
     },
     "polygon": {
       "overall_status": "active",
-      "used_tickers": 23,
+      "used_tickers": 25,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -30,7 +30,7 @@
     },
     "fmp": {
       "overall_status": "active",
-      "used_tickers": 23,
+      "used_tickers": 25,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -38,7 +38,7 @@
     },
     "finnhub": {
       "overall_status": "active",
-      "used_tickers": 23,
+      "used_tickers": 25,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -46,7 +46,7 @@
     },
     "sec_edgar": {
       "overall_status": "active",
-      "used_tickers": 23,
+      "used_tickers": 25,
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
@@ -58,32 +58,32 @@
       "throttled_tickers": 0,
       "unavailable_tickers": 0,
       "failed_tickers": 0,
-      "not_used_tickers": 22
+      "not_used_tickers": 24
     }
   },
   "llm": {
     "used": true,
     "planned_batches": 0,
-    "completed_batches": 174,
+    "completed_batches": 175,
     "failed_batches": 0,
-    "validation_failures": 13,
-    "estimated_cost_usd": 0.44996165,
+    "validation_failures": 9,
+    "estimated_cost_usd": 0.4204665,
     "latest_model": "gpt-5.4-mini",
     "models_used": {
-      "gpt-5.4-mini": 174
+      "gpt-5.4-mini": 175
     },
     "quality": {
-      "run_date": "2026-05-06",
+      "run_date": "2026-06-01",
       "success": true,
-      "daily_api_cost_usd": 0.44996165,
+      "daily_api_cost_usd": 0.4204665,
       "batch_count": 0,
-      "validated_ticker_count": 278,
-      "validation_failure_count": 13,
+      "validated_ticker_count": 283,
+      "validation_failure_count": 9,
       "schema_violation_count": 0,
-      "fact_warning_count": 7,
+      "fact_warning_count": 2,
       "consistency_warning_count": 2,
-      "hallucination_warning_count": 4,
-      "hallucination_ratio": 0.0144
+      "hallucination_warning_count": 9,
+      "hallucination_ratio": 0.0318
     }
   }
 }

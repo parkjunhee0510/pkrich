@@ -48,10 +48,13 @@ Core pieces:
 
 * Economy profile analyzes the full watchlist first
 * Selected tickers receive deeper LLM-only re-analysis
-* Selection is driven by the configured conviction trigger range; `portfolio_priority` can force current holdings into the deep-pass candidate set
+* Eligibility is driven by the configured conviction trigger range; `portfolio_priority` can force current holdings into the deep-pass candidate set
+* Smart Model Router V1 ranks eligible deep-review candidates by deterministic priority score before applying `max_daily_ensemble`
+* Router priority scores are based on boundary proximity, portfolio exposure, upcoming events, evidence gap, volatility, and directional signal importance
+* Router-selected tickers are exposed through diagnostics as `selected_tickers`; the pipeline passes them to the collector as search evidence refresh priorities without increasing model or provider caps
 * Conflicts may trigger a third review
 * BudgetGuard records shadow decisions before deep and tie-break routes
-* Optional routing logs record each ticker's selection reason, portfolio flag, action, and conviction
+* Routing logs record each ticker's selection reason, portfolio flag, action, conviction, router priority score, router reason codes, priority skips, and estimated deep-review cost
 * Final analysis payload remains schema-compatible with the rest of the pipeline
 
 ### Committee Flow
@@ -90,6 +93,8 @@ Structured LLM modules:
 * Fact warnings for unverifiable claims
 * Pattern enforcement via `signal_levels.py`
 
+Prompt templates reinforce these guards before validation: `key_news` must not rewrite English source headlines into new English titles, and narrative/risk modules must use numeric values and measurable triggers directly from the input payload instead of calculating or rounding new values.
+
 For `signal_or_takeaway`, validation follows dedicated signal rules rather than
 the generic numeric mismatch scanner. Target and stop values that match
 `must_use_values` are allowed even when they are far from current price, and
@@ -101,6 +106,7 @@ guess missing levels. Fallback signals must use the same structured
 
 * Per-module model profile and batch-size selection in `src/utils/model_config.py`
 * `budget_guard` config in `config/models.yaml` controls shadow/enforce behavior for guarded optional LLM paths
+* `ensemble.emit_routing_log` should remain enabled for router observability; it writes routing metadata only and does not add model calls
 * `llm_runtime.py` enforces a missing-ticker retry budget so partial batches are recovered without runaway cost
 
 ## LLM Evidence Manifest
@@ -115,7 +121,7 @@ Committee, macro narrative, policy impact, and weekly insight paths record scope
 
 `src/analyzer/search_audit.py` performs a deterministic, observational comparison between existing `TickerAnalysis` claim text and normalized `search_evidence.json` items. It does not call providers, prompt the LLM, write files, or change official decisions.
 
-The audit extracts compact claims from summary, signal, financial highlight, risk, and key-news fields, then labels each claim as `supported`, `conflicting`, `missing_evidence`, or `insufficient_evidence` based on token and numeric overlap with same-ticker search evidence. The output layer writes the resulting payload to `output/data/search_audit.json`.
+The audit extracts compact claims from summary, signal, financial highlight, risk, and key-news fields, then labels each claim as `supported`, `conflicting`, `missing_evidence`, or `insufficient_evidence` based on token and numeric overlap with same-ticker search evidence. Before matching, it splits multi-sentence and pipe-delimited text into smaller claims, excludes internal market-data-only statements such as price, SMA, RSI, 52-week position, RVOL, ATR, options-level checks, PER/ROE/FCF, forward or TTM EPS metrics, analyst targets, and next-earnings date metrics, and only audits claims that contain explicit external-evidence terms. Those internal observations are validated by collector/analyzer data paths, while search audit focuses on external evidence such as revenue, guidance, filings, contracts, demand, supply, dividends, litigation, regulatory claims, earnings beats, reported results, and upgrades or downgrades. ASCII evidence terms are matched as whole tokens so `Sector` is not treated as `SEC`, and SEC form labels such as `10-Q` or `8-K` are ignored during numeric conflict checks. The output layer writes the resulting payload to `output/data/search_audit.json`.
 
 ## Rules
 

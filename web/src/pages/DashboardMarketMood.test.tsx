@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Link } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -49,6 +49,23 @@ vi.mock('../hooks/useDashboardData', () => ({
     refreshing: false,
     error: null,
     refresh: vi.fn(),
+  }),
+}))
+
+vi.mock('../hooks/useSearchEvidenceData', () => ({
+  useSearchEvidenceData: () => ({ searchEvidence: null, loading: false, error: null }),
+}))
+
+vi.mock('../hooks/useQualityReliabilityLoopData', () => ({
+  useQualityReliabilityLoopData: () => ({ qualityLoop: null, loading: false, error: null }),
+}))
+
+vi.mock('../hooks/useRiskIntelData', () => ({
+  useRiskIntelData: () => ({
+    summary: null,
+    graph: null,
+    loading: false,
+    error: null,
   }),
 }))
 
@@ -131,12 +148,15 @@ describe('Dashboard market mood briefing', () => {
       </MemoryRouter>,
     )
 
+    expect(screen.getByRole('region', { name: '오늘의 뉴스 데스크' })).toBeInTheDocument()
     expect(screen.getByText('오늘 시장 분위기')).toBeInTheDocument()
     expect(screen.getByText('risk_on · 주목 1개 / 주의 1개 · 매크로와 섹터 흐름')).toBeInTheDocument()
     expect(screen.getByText('오늘의 시장 해석')).toBeInTheDocument()
     expect(screen.getByText('주목 섹터')).toBeInTheDocument()
     expect(screen.getByText('주의 섹터')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'NVDA' })).toBeInTheDocument()
+    const marketMoodSection = screen.getByText('오늘의 시장 해석').closest('section')
+    expect(marketMoodSection).not.toBeNull()
+    expect(within(marketMoodSection as HTMLElement).getByRole('link', { name: 'NVDA' })).toBeInTheDocument()
     expect(screen.queryByText('로컬 리서치 자동화')).not.toBeInTheDocument()
     expect(screen.queryByTestId('pm-daily-queue')).not.toBeInTheDocument()
     expect(screen.queryByText('오늘의 우선순위')).not.toBeInTheDocument()

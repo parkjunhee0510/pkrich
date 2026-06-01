@@ -144,6 +144,58 @@ class SearchQualityGateTests(unittest.TestCase):
         )
         self.assertFalse(enriched.confidence_meta["search_quality_gate"]["would_cap_action"])
 
+    def test_provider_unavailable_status_records_no_search_quality_penalty(self) -> None:
+        decision = TickerDecision(ticker="ALAB", action="buy", conviction=72, reason="setup")
+        payload = _search_payload(
+            "ALAB",
+            {
+                "evidence_count": 0,
+                "source_diversity": 0,
+                "evidence_status": "provider_unavailable",
+                "provider_status": "provider_unavailable",
+                "priority_for_refresh": True,
+            },
+        )
+
+        with patch.dict("os.environ", {"DECISION_SEARCH_QUALITY_GATE_MODE": "enforce"}):
+            [enriched] = attach_search_quality_shadow([decision], payload)
+
+        gate = enriched.confidence_meta["search_quality_gate"]
+        self.assertEqual(enriched.action, "buy")
+        self.assertIsNone(enriched.confidence_meta["search_evidence_score"])
+        self.assertEqual(gate["reason"], "provider_unavailable")
+        self.assertEqual(gate["evidence_status"], "provider_unavailable")
+        self.assertEqual(gate["provider_status"], "provider_unavailable")
+        self.assertTrue(gate["priority_for_refresh"])
+        self.assertFalse(gate["would_cap_action"])
+        self.assertFalse(gate["enforced"])
+
+    def test_no_evidence_status_remains_low_search_quality_signal(self) -> None:
+        decision = TickerDecision(ticker="ALAB", action="buy", conviction=72, reason="setup")
+        payload = _search_payload(
+            "ALAB",
+            {
+                "coverage_score": 0.0,
+                "freshness_score": 0.0,
+                "average_relevance_score": 0.0,
+                "source_diversity": 0,
+                "evidence_count": 0,
+                "evidence_status": "no_evidence",
+                "provider_status": "searched_no_results",
+                "priority_for_refresh": True,
+            },
+        )
+
+        [enriched] = attach_search_quality_shadow([decision], payload)
+
+        gate = enriched.confidence_meta["search_quality_gate"]
+        self.assertEqual(enriched.confidence_meta["search_evidence_score"], 0.0)
+        self.assertEqual(gate["reason"], "no_recent_search_evidence")
+        self.assertEqual(gate["evidence_status"], "no_evidence")
+        self.assertEqual(gate["provider_status"], "searched_no_results")
+        self.assertTrue(gate["priority_for_refresh"])
+        self.assertTrue(gate["would_cap_action"])
+
 
 if __name__ == "__main__":
     unittest.main()

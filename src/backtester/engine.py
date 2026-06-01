@@ -20,7 +20,7 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
         first_eval_date = _estimate_first_eval_date(pending_rows)
         return {
             "status": "awaiting_evaluation" if pending_rows else "insufficient_data",
-            "strategy": "bull/bear 시그널을 20거래일 기준으로 평가",
+            "strategy": "Evaluate bull/bear signals on a 20-trading-day horizon.",
             "signals": 0,
             "pending_signals": len(pending_rows),
             "first_eval_date": first_eval_date,
@@ -38,7 +38,7 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
         first_eval_date = _estimate_first_eval_date(pending_rows)
         return {
             "status": "awaiting_evaluation" if pending_rows else "insufficient_data",
-            "strategy": "bull/bear 시그널을 20거래일 기준으로 평가",
+            "strategy": "Evaluate bull/bear signals on a 20-trading-day horizon.",
             "signals": 0,
             "pending_signals": len(pending_rows),
             "first_eval_date": first_eval_date,
@@ -47,7 +47,7 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
 
     return {
         "status": "ok",
-        "strategy": "bull/bear 시그널을 20거래일 기준으로 분리 평가",
+        "strategy": "Evaluate bull/bear signals separately on a 20-trading-day horizon.",
         "signals": combined_summary["signals"],
         "win_rate": combined_summary["win_rate"],
         "avg_return": combined_summary["avg_return"],
@@ -199,10 +199,10 @@ def _estimate_first_eval_date(rows: list[dict[str, Any]]) -> str | None:
 
 def _build_pending_message(first_eval_date: str | None, pending_signals: int) -> str:
     if first_eval_date:
-        return f"{first_eval_date}부터 백테스트 통계 집계 시작 예정 · 대기 signal {pending_signals}건"
+        return f"Backtest statistics begin after {first_eval_date}; pending signals: {pending_signals}."
     if pending_signals > 0:
-        return f"20거래일 평가를 기다리는 signal {pending_signals}건이 있습니다."
-    return "백테스트용 평가 완료 signal이 아직 없습니다."
+        return f"Waiting for 20-trading-day outcomes; pending signals: {pending_signals}."
+    return "No completed signals are available for backtest evaluation yet."
 
 
 def _add_business_days(start: date, business_days: int) -> date:

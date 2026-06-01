@@ -6,6 +6,7 @@ from src.types import NewsItem, WatchlistItem
 from src.utils.config import load_simple_mapping
 from src.utils.env import is_env_flag_enabled
 from src.utils.pipeline_logging import record_pipeline_event
+from src.collector.feed_fetch import parse_feed
 
 _DEFAULT_MAX_ITEMS_PER_FEED = 5
 _DEFAULT_IR_SOURCE_NAME_BY_HOST = {
@@ -41,7 +42,7 @@ def collect_ir_rss_news(
     collected: list[NewsItem] = []
     for feed_url in item.ir_rss_feeds:
         try:
-            feed = feedparser.parse(feed_url)
+            feed = parse_feed(feed_url)
             source_name = _resolve_ir_source_name(item, feed, feed_url)
             feed_items = 0
             for entry in getattr(feed, "entries", [])[:max_items_per_feed]:

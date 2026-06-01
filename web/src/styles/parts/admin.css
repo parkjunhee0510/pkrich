@@ -164,16 +164,16 @@
 .sector-card {
   display: block;
   padding: 1.1rem 1.2rem;
-  border: 1px solid var(--border, rgba(0,0,0,0.1));
-  border-radius: 12px;
-  background: var(--surface, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
   color: inherit;
   text-decoration: none;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .sector-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-hard-sm);
 }
 .sector-card h2 {
   margin: 0 0 0.4rem;
@@ -194,8 +194,8 @@
   font-family: var(--font-mono);
   font-size: 0.75rem;
   padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(127,127,127,0.12);
+  border-radius: var(--radius-md);
+  background: var(--color-neutral-soft-bg);
 }
 .ticker-chip.muted { color: var(--ink-soft); }
 
@@ -206,9 +206,9 @@
 }
 .sector-ticker-card {
   padding: 1rem 1.1rem;
-  border: 1px solid var(--border, rgba(0,0,0,0.1));
-  border-radius: 12px;
-  background: var(--surface, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
 }
 .sector-ticker-head {
   display: flex;
@@ -236,8 +236,8 @@
   font-family: var(--font-mono);
   font-size: 0.8rem;
 }
-.sector-ticker-price .change.positive { color: #26a69a; }
-.sector-ticker-price .change.negative { color: #ef5350; }
+.sector-ticker-price .change.positive { color: var(--color-positive-outline-fg); }
+.sector-ticker-price .change.negative { color: var(--color-negative-outline-fg); }
 .sector-ticker-chart { margin: 0.5rem 0 0.75rem; }
 .sector-ticker-note {
   color: var(--ink-soft);
@@ -266,9 +266,9 @@
 .sector-perf {
   margin: 0 0 1.5rem;
   padding: 1rem 1.2rem;
-  border: 1px solid var(--border, rgba(0,0,0,0.1));
-  border-radius: 12px;
-  background: var(--surface, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
 }
 .sector-perf-head {
   display: flex;
@@ -306,7 +306,7 @@
   transition: background 0.12s ease;
 }
 .sector-perf-row:hover {
-  background: rgba(127,127,127,0.08);
+  background: var(--color-neutral-soft-bg);
 }
 .sector-perf-name {
   font-weight: 500;
@@ -316,8 +316,8 @@
   text-align: right;
   font-size: 0.85rem;
 }
-.sector-perf-value.positive { color: #26a69a; }
-.sector-perf-value.negative { color: #ef5350; }
+.sector-perf-value.positive { color: var(--color-positive-outline-fg); }
+.sector-perf-value.negative { color: var(--color-negative-outline-fg); }
 .sector-perf-breadth {
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -330,7 +330,7 @@
 .sector-perf-bar-track {
   position: relative;
   height: 10px;
-  background: rgba(127,127,127,0.08);
+  background: var(--color-neutral-soft-bg);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -340,7 +340,7 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgba(127,127,127,0.4);
+  background: var(--color-neutral-track);
 }
 .sector-perf-bar-fill {
   position: absolute;
@@ -348,8 +348,8 @@
   bottom: 1px;
   border-radius: 2px;
 }
-.sector-perf-bar-fill.positive { background: #26a69a; }
-.sector-perf-bar-fill.negative { background: #ef5350; }
+.sector-perf-bar-fill.positive { background: var(--color-positive); }
+.sector-perf-bar-fill.negative { background: var(--color-negative); }
 .sector-perf-footnote {
   margin: 0.75rem 0 0;
   font-size: 0.75rem;
@@ -369,10 +369,10 @@
   margin: 0.5rem 0 0.75rem;
   padding: 0.4rem 0.5rem;
   border-radius: 6px;
-  background: rgba(127,127,127,0.06);
+  background: var(--color-neutral-soft-bg);
 }
-.fiftytwo-strong { background: rgba(38,166,154,0.10); }
-.fiftytwo-weak   { background: rgba(239,83,80,0.10); }
+.fiftytwo-strong { background: var(--color-positive-soft-bg); }
+.fiftytwo-weak   { background: var(--color-negative-soft-bg); }
 .fiftytwo-scale {
   display: flex;
   align-items: center;
@@ -387,9 +387,9 @@
   height: 6px;
   background: linear-gradient(
     90deg,
-    rgba(239,83,80,0.35) 0%,
-    rgba(127,127,127,0.25) 50%,
-    rgba(38,166,154,0.45) 100%
+    var(--color-negative-soft-border) 0%,
+    var(--color-neutral-soft-border) 50%,
+    var(--color-positive-soft-border) 100%
   );
   border-radius: 3px;
 }
@@ -398,7 +398,7 @@
   top: -3px;
   width: 2px;
   height: 12px;
-  background: var(--ink, #111);
+  background: var(--ink);
   border-radius: 1px;
   transform: translateX(-50%);
 }
@@ -420,19 +420,19 @@
   font-family: var(--font-mono);
   font-size: 0.7rem;
   padding: 2px 7px;
-  border-radius: 999px;
+  border-radius: var(--radius-md);
 }
-.sector-strength-chip.strong { background: rgba(38,166,154,0.15); color: #1f8b81; }
-.sector-strength-chip.weak   { background: rgba(239,83,80,0.15); color: #c23a37; }
-.sector-strength-chip.muted  { background: rgba(127,127,127,0.10); color: var(--ink-soft); }
+.sector-strength-chip.strong { background: var(--color-positive-soft-bg); color: var(--color-positive-soft-fg); }
+.sector-strength-chip.weak   { background: var(--color-negative-soft-bg); color: var(--color-negative-soft-fg); }
+.sector-strength-chip.muted  { background: var(--color-neutral-soft-bg); color: var(--ink-soft); }
 
 /* Sector benchmark overlay */
 .sector-benchmark {
   margin: 0 0 1.25rem;
   padding: 0.9rem 1.1rem;
-  border: 1px solid var(--border, rgba(0,0,0,0.1));
-  border-radius: 12px;
-  background: var(--surface, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
 }
 .sector-benchmark-head {
   display: flex;
@@ -458,8 +458,8 @@
   font-family: var(--font-mono);
   font-size: 0.85rem;
 }
-.sector-benchmark-head .change.positive { color: #26a69a; }
-.sector-benchmark-head .change.negative { color: #ef5350; }
+.sector-benchmark-head .change.positive { color: var(--color-positive-outline-fg); }
+.sector-benchmark-head .change.negative { color: var(--color-negative-outline-fg); }
 .sector-benchmark-sparkline {
   margin: 0.25rem 0 0.6rem;
 }
@@ -480,8 +480,8 @@
 .sector-benchmark-windows .window-label {
   color: var(--ink-soft);
 }
-.sector-benchmark-windows .window-value.positive { color: #26a69a; }
-.sector-benchmark-windows .window-value.negative { color: #ef5350; }
+.sector-benchmark-windows .window-value.positive { color: var(--color-positive-outline-fg); }
+.sector-benchmark-windows .window-value.negative { color: var(--color-negative-outline-fg); }
 
 /* Relative return badge on ticker cards */
 .sector-relative {
@@ -493,21 +493,21 @@
   display: inline-block;
 }
 .sector-relative.positive {
-  background: rgba(38,166,154,0.12);
-  color: #1f8b81;
+  background: var(--color-positive-soft-bg);
+  color: var(--color-positive-soft-fg);
 }
 .sector-relative.negative {
-  background: rgba(239,83,80,0.12);
-  color: #c23a37;
+  background: var(--color-negative-soft-bg);
+  color: var(--color-negative-soft-fg);
 }
 
 /* Sector correlation heatmap */
 .corr-heatmap {
   margin: 0 0 1.25rem;
   padding: 1rem 1.1rem;
-  border: 1px solid var(--border, rgba(0,0,0,0.1));
-  border-radius: 12px;
-  background: var(--surface, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
 }
 .corr-heatmap-head {
   display: flex;
@@ -553,7 +553,7 @@
   transition: outline 0.12s ease;
 }
 .corr-cell.active {
-  outline: 2px solid var(--ink, #111);
+  outline: 2px solid var(--ink);
 }
 .corr-heatmap-footnote {
   margin: 0.75rem 0 0;
@@ -561,4 +561,3 @@
   color: var(--ink-soft);
   line-height: 1.45;
 }
-

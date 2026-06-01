@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ErrorState } from '../components/ErrorState'
+import { PerformanceMeasurementPanel } from '../components/PerformanceMeasurementPanel'
 import { SignalQualityPanel } from '../components/SignalQualityPanel'
 import { TablePageSkeleton } from '../components/Skeleton'
+import { useJsonResource } from '../hooks/useJsonResource'
 import type {
   AnalysisQualityPayload,
   AnalyticsCostResponse,
   CostLogPayload,
   CostLogRun,
   DirectionAlignmentPayload,
+  PerformanceBaselinePayload,
+  PerformanceTrendsPayload,
 } from '../types'
 
 const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, '') ?? ''
-const STATIC_COST_LOG_URL = `${import.meta.env.BASE_URL}output/data/cost_log.json`
 const STATIC_ANALYSIS_QUALITY_URL = `${import.meta.env.BASE_URL}output/data/analysis_quality.json`
 const DIRECTION_ALIGNMENT_URL = `${import.meta.env.BASE_URL}output/data/direction_alignment.json`
 const CALIBRATION_URL = `${import.meta.env.BASE_URL}output/data/calibration.json`
@@ -259,16 +262,27 @@ const VALUE_HINT_LABELS: Record<string, string> = {
 }
 
 export function Admin() {
-  const [data, setData] = useState<AnalyticsCostResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [dataSource, setDataSource] = useState<'api' | 'static' | null>(null)
+  const [apiData, setApiData] = useState<AnalyticsCostResponse | null>(null)
+  const [apiLoading, setApiLoading] = useState(Boolean(API_BASE))
+  const [apiError, setApiError] = useState<string | null>(null)
   const [calibration, setCalibration] = useState<CalibrationPayload | null>(null)
   const [analysisQuality, setAnalysisQuality] = useState<AnalysisQualityPayload | null>(null)
   const [directionAlignment, setDirectionAlignment] = useState<DirectionAlignmentPayload | null>(null)
   const [factorAudit, setFactorAudit] = useState<FactorAuditPayload | null>(null)
   const [tuningReport, setTuningReport] = useState<TuningReportPayload | null>(null)
   const [validationWarnings, setValidationWarnings] = useState<ValidationWarningsPayload | null>(null)
+  const { data: staticCostLog, loading: staticCostLoading, error: staticCostError } =
+    useJsonResource<CostLogPayload>('output/data/cost_log.json')
+  const { data: performanceBaseline } = useJsonResource<PerformanceBaselinePayload>('output/data/performance_baseline.json')
+  const { data: performanceTrends } = useJsonResource<PerformanceTrendsPayload>('output/data/performance_trends.json')
+
+  const data = useMemo(
+    () => (API_BASE ? apiData : staticCostLog ? buildStaticAnalyticsResponse(staticCostLog) : null),
+    [apiData, staticCostLog],
+  )
+  const loading = API_BASE ? apiLoading : staticCostLoading
+  const error = API_BASE ? apiError : staticCostError
+  const dataSource = API_BASE ? (apiData ? 'api' : null) : (staticCostLog ? 'static' : null)
 
   useEffect(() => {
     document.title = 'Admin · Stock Research'
@@ -311,38 +325,27 @@ export function Admin() {
   }, [])
 
   useEffect(() => {
+    if (!API_BASE) return
     let cancelled = false
 
     async function load() {
-      setLoading(true)
-      setError(null)
+      setApiLoading(true)
+      setApiError(null)
 
       try {
-        if (API_BASE) {
-          const response = await fetch(`${API_BASE}/api/analytics/cost`, { cache: 'no-store' })
-          if (!response.ok) throw new Error(`HTTP ${response.status}`)
-          const json: AnalyticsCostResponse = await response.json()
-          if (!cancelled) {
-            setData(json)
-            setDataSource('api')
-          }
-          return
-        }
-
-        const response = await fetch(STATIC_COST_LOG_URL, { cache: 'no-store' })
+        const response = await fetch(`${API_BASE}/api/analytics/cost`, { cache: 'no-store' })
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        const costLog: CostLogPayload = await response.json()
+        const json: AnalyticsCostResponse = await response.json()
         if (!cancelled) {
-          setData(buildStaticAnalyticsResponse(costLog))
-          setDataSource('static')
+          setApiData(json)
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : String(err))
+          setApiError(err instanceof Error ? err.message : String(err))
         }
       } finally {
         if (!cancelled) {
-          setLoading(false)
+          setApiLoading(false)
         }
       }
     }
@@ -471,6 +474,8 @@ export function Admin() {
         />
       </div>
 
+      <PerformanceMeasurementPanel baseline={performanceBaseline} trends={performanceTrends} />
+
       <section className="ticker-detail-section-shell">
         <div className="section-header-with-kicker">
           <div>
@@ -592,7 +597,7 @@ export function Admin() {
           </table>
         </div>
         {latestExecutionRun && Number(latestExecutionRun.daily_api_cost_usd ?? 0) === 0 && latestExecutionRun.validation_failure_count > 0 ? (
-          <p className="section-kicker" style={{ marginTop: 8 }}>
+          <p className="section-kicker u-mt-2">
             최신 실행은 LLM 비용이 0으로 기록됐습니다. 보통 OpenAI 쿼터 부족이나 호출 실패로 실제 모델 응답이 생성되지 않았을 때 이렇게 보입니다.
           </p>
         ) : null}
@@ -667,7 +672,7 @@ function DirectionAlignmentSection({ payload }: { payload: DirectionAlignmentPay
         </div>
       </div>
 
-      <div className="signal-summary-grid" style={{ marginTop: 12 }}>
+      <div className="signal-summary-grid u-mt-3">
         <SummaryMetricCard
           label="비교 가능 signal"
           value={`${summary.comparable_signals}`}
@@ -686,7 +691,7 @@ function DirectionAlignmentSection({ payload }: { payload: DirectionAlignmentPay
       </div>
 
       {payload.by_pair.length > 0 ? (
-        <div className="watchlist-table-shell" style={{ marginTop: 16 }}>
+        <div className="watchlist-table-shell u-mt-4">
           <table className="watchlist-table">
             <thead>
               <tr>
@@ -707,13 +712,13 @@ function DirectionAlignmentSection({ payload }: { payload: DirectionAlignmentPay
           </table>
         </div>
       ) : (
-        <p className="empty" style={{ marginTop: 12 }}>
+        <p className="empty u-mt-3">
           아직 llm_direction 비교 데이터가 충분하지 않습니다.
         </p>
       )}
 
       {payload.recent_conflicts.length > 0 ? (
-        <div className="watchlist-table-shell" style={{ marginTop: 16 }}>
+        <div className="watchlist-table-shell u-mt-4">
           <table className="watchlist-table">
             <thead>
               <tr>
@@ -788,14 +793,13 @@ function CalibrationSection({ payload }: { payload: CalibrationPayload | null })
             conviction 10분위별 {showAlpha ? '초과 수익 (α = 개별 − 워치리스트 평균)' : '실현 수익'} · Brier 점수 낮을수록 보정 양호
           </p>
         </div>
-        <div className="period-badge" style={{ display: 'flex', gap: 6 }}>
+        <div className="period-badge u-inline-cluster-sm">
           {(['1', '5', '20'] as const).map((key) =>
             available.includes(key) ? (
               <button
                 key={key}
                 type="button"
-                className={`nav-link${activeKey === key ? ' nav-active' : ''}`}
-                style={{ padding: '2px 10px', fontSize: 12 }}
+                className={`nav-link u-chip-compact${activeKey === key ? ' nav-active' : ''}`}
                 onClick={() => setHorizonKey(key)}
               >
                 {key}D
@@ -806,16 +810,14 @@ function CalibrationSection({ payload }: { payload: CalibrationPayload | null })
             <>
               <button
                 type="button"
-                className={`nav-link${metricKey === 'absolute' ? ' nav-active' : ''}`}
-                style={{ padding: '2px 10px', fontSize: 12 }}
+                className={`nav-link u-chip-compact${metricKey === 'absolute' ? ' nav-active' : ''}`}
                 onClick={() => setMetricKey('absolute')}
               >
                 절대
               </button>
               <button
                 type="button"
-                className={`nav-link${metricKey === 'alpha' ? ' nav-active' : ''}`}
-                style={{ padding: '2px 10px', fontSize: 12 }}
+                className={`nav-link u-chip-compact${metricKey === 'alpha' ? ' nav-active' : ''}`}
                 onClick={() => setMetricKey('alpha')}
               >
                 α
@@ -831,7 +833,7 @@ function CalibrationSection({ payload }: { payload: CalibrationPayload | null })
         </p>
       ) : (
         <>
-          <div className="watchlist-table-shell" style={{ marginTop: 12 }}>
+          <div className="watchlist-table-shell u-mt-3">
             <table className="watchlist-table">
               <thead>
                 <tr>
@@ -860,7 +862,7 @@ function CalibrationSection({ payload }: { payload: CalibrationPayload | null })
             </table>
           </div>
 
-          <div className="signal-summary-grid" style={{ marginTop: 16 }}>
+          <div className="signal-summary-grid u-mt-4">
             <SummaryMetricCard
               label="Brier score"
               value={brier !== null ? brier.toFixed(4) : 'N/A'}
@@ -889,7 +891,7 @@ function CalibrationSection({ payload }: { payload: CalibrationPayload | null })
           </div>
 
           {bins.length > 0 ? (
-            <div className="watchlist-table-shell" style={{ marginTop: 12 }}>
+            <div className="watchlist-table-shell u-mt-3">
               <table className="watchlist-table">
                 <thead>
                   <tr>
@@ -955,14 +957,13 @@ function FactorAuditSection({ payload }: { payload: FactorAuditPayload | null })
             |ρ| ≥ {collinearity.threshold} = 병합 후보 · |IR| &lt; {factor_ir.threshold} = 약한 팩터 (드롭 검토)
           </p>
         </div>
-        <div className="period-badge" style={{ display: 'flex', gap: 6 }}>
+        <div className="period-badge u-inline-cluster-sm">
           {(['5', '20'] as const).map((key) =>
             available.includes(key) ? (
               <button
                 key={key}
                 type="button"
-                className={`nav-link${activeKey === key ? ' nav-active' : ''}`}
-                style={{ padding: '2px 10px', fontSize: 12 }}
+                className={`nav-link u-chip-compact${activeKey === key ? ' nav-active' : ''}`}
                 onClick={() => setHorizonKey(key)}
               >
                 {key}D
@@ -978,7 +979,7 @@ function FactorAuditSection({ payload }: { payload: FactorAuditPayload | null })
         </p>
       ) : (
         <>
-          <h4 style={{ marginTop: 12 }}>팩터별 정보비 (Spearman ρ vs 실현 {activeKey}D 수익)</h4>
+          <h4 className="u-mt-3">팩터별 정보비 (Spearman ρ vs 실현 {activeKey}D 수익)</h4>
           {factor_ir.status === 'ok' && factor_ir.factors.length > 0 ? (
             <div className="watchlist-table-shell">
               <table className="watchlist-table">
@@ -1027,7 +1028,7 @@ function FactorAuditSection({ payload }: { payload: FactorAuditPayload | null })
             <p className="empty">IR 계산에 필요한 데이터가 부족합니다 (N={factor_ir.sample_size}).</p>
           )}
 
-          <h4 style={{ marginTop: 16 }}>팩터 쌍 공선성 (Pearson ρ)</h4>
+          <h4 className="u-mt-4">팩터 쌍 공선성 (Pearson ρ)</h4>
           {collinearity.status === 'ok' && collinearity.pairs.length > 0 ? (
             <div className="watchlist-table-shell">
               <table className="watchlist-table">
@@ -1068,7 +1069,7 @@ function FactorAuditSection({ payload }: { payload: FactorAuditPayload | null })
             <p className="empty">공선성 계산에 필요한 데이터가 부족합니다 (N={collinearity.sample_size}).</p>
           )}
 
-          <h4 style={{ marginTop: 16 }}>Weight range 감쇠 권고 (|IR| &lt; 0.1)</h4>
+          <h4 className="u-mt-4">Weight range 감쇠 권고 (|IR| &lt; 0.1)</h4>
           {horizon.weight_decays && horizon.weight_decays.status === 'ok' && horizon.weight_decays.suggestions.length > 0 ? (
             <div className="watchlist-table-shell">
               <table className="watchlist-table">
@@ -1099,12 +1100,12 @@ function FactorAuditSection({ payload }: { payload: FactorAuditPayload | null })
                           [{s.suggested.min}, {s.suggested.max}]
                         </span>
                       </td>
-                      <td style={{ fontSize: 12 }}>{s.reason}</td>
+                      <td className="u-text-xs">{s.reason}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <p className="section-kicker" style={{ marginTop: 8 }}>
+              <p className="section-kicker u-mt-2">
                 수동 적용: `config/decision_weights.yaml` 편집 후 재시작. 완전 제거는 보류.
               </p>
             </div>
@@ -1187,7 +1188,7 @@ function ValidationWarningsSection({
         </div>
       </div>
 
-      <div className="signal-summary-grid" style={{ marginTop: 12 }}>
+      <div className="signal-summary-grid u-mt-3">
         {categories.map((cat) => {
           const meta = VALIDATION_CATEGORY_META[cat] ?? {
             label: cat,
@@ -1206,11 +1207,11 @@ function ValidationWarningsSection({
       </div>
 
       {series.length === 0 ? (
-        <p className="empty" style={{ marginTop: 12 }}>
+        <p className="empty u-mt-3">
           아직 파이프라인 로그 요약이 없습니다.
         </p>
       ) : (
-        <div className="admin-cost-grid" style={{ marginTop: 16 }}>
+        <div className="admin-cost-grid u-mt-4">
           <div className="admin-cost-chart">
             {series.map((day) => {
               const dayTotal = categories.reduce(
@@ -1251,7 +1252,7 @@ function ValidationWarningsSection({
         </div>
       )}
 
-      <p className="section-kicker" style={{ marginTop: 8 }}>
+      <p className="section-kicker u-mt-2">
         발동율이 5% 초과하면 재프롬프트 루프 도입 검토 · 특정 카테고리 집중 시 프롬프트 지시 강화
       </p>
     </section>
@@ -1294,14 +1295,13 @@ function TuningReportSection({ payload }: { payload: TuningReportPayload | null 
             walk-forward CV의 out-of-sample Spearman이 양수이고 overfit gap이 작을 때만 반영 검토 · 자동 쓰기 금지
           </p>
         </div>
-        <div className="period-badge" style={{ display: 'flex', gap: 6 }}>
+        <div className="period-badge u-inline-cluster-sm">
           {(['5', '20'] as const).map((key) =>
             available.includes(key) ? (
               <button
                 key={key}
                 type="button"
-                className={`nav-link${activeKey === key ? ' nav-active' : ''}`}
-                style={{ padding: '2px 10px', fontSize: 12 }}
+                className={`nav-link u-chip-compact${activeKey === key ? ' nav-active' : ''}`}
                 onClick={() => setHorizonKey(key)}
               >
                 {key}D
@@ -1311,7 +1311,7 @@ function TuningReportSection({ payload }: { payload: TuningReportPayload | null 
         </div>
       </div>
 
-      <h4 style={{ marginTop: 12 }}>레짐별 가중치 후보 (walk-forward)</h4>
+      <h4 className="u-mt-3">레짐별 가중치 후보 (walk-forward)</h4>
       {regimeEntries.length === 0 ? (
         <p className="empty">평가된 시그널이 부족합니다.</p>
       ) : (
@@ -1361,7 +1361,7 @@ function TuningReportSection({ payload }: { payload: TuningReportPayload | null 
                         'N/A'
                       )}
                     </td>
-                    <td style={{ fontSize: 12 }}>
+                    <td className="u-text-xs">
                       {mults
                         ? Object.entries(mults)
                             .map(([k, v]) => `${k}=${v}`)
@@ -1378,7 +1378,7 @@ function TuningReportSection({ payload }: { payload: TuningReportPayload | null 
 
       <PurgedWalkForwardBlock payload={horizon.purged_walk_forward} />
 
-      <h4 style={{ marginTop: 16 }}>임계값 권고</h4>
+      <h4 className="u-mt-4">임계값 권고</h4>
       {thresholds.status === 'ok' && thresholds.suggested ? (
         <div className="signal-summary-grid">
           <SummaryMetricCard
@@ -1415,11 +1415,11 @@ function PurgedWalkForwardBlock({
 
   return (
     <>
-      <h4 style={{ marginTop: 16 }}>
+      <h4 className="u-mt-4">
         Purged Walk-Forward CV (embargo {payload.embargo_days}D · label horizon{' '}
         {payload.purge_horizon_days}D)
       </h4>
-      <p className="section-kicker" style={{ marginBottom: 8 }}>
+      <p className="section-kicker u-mb-2">
         학습 샘플 중 테스트 라벨 윈도우와 겹치는 행을 제거 + 양쪽에 embargo 갭을 추가 (López de Prado).
         위의 기본 walk-forward는 라벨 누수가 있을 수 있으므로, 의사결정은 이 표의 OOS ρ 기준으로.
       </p>
@@ -1477,7 +1477,7 @@ function PurgedWalkForwardBlock({
                     )}
                   </td>
                   <td>{(report.avg_purged_per_fold ?? 0).toFixed(1)}</td>
-                  <td style={{ fontSize: 12 }}>
+                  <td className="u-text-xs">
                     {mults
                       ? Object.entries(mults)
                           .map(([k, v]) => `${k}=${v}`)
@@ -1504,11 +1504,11 @@ function PurgedFoldDetails({
   const okEntries = entries.filter(([, r]) => r.status === 'ok' && r.folds.length > 0)
   if (okEntries.length === 0) return null
   return (
-    <details style={{ marginTop: 8 }}>
-      <summary className="section-kicker" style={{ cursor: 'pointer' }}>
+    <details className="u-mt-2">
+      <summary className="section-kicker u-cursor-pointer">
         Fold별 상세 (train/purged/test_window/OOS ρ)
       </summary>
-      <div className="watchlist-table-shell" style={{ marginTop: 8 }}>
+      <div className="watchlist-table-shell u-mt-2">
         <table className="watchlist-table">
           <thead>
             <tr>
@@ -1530,7 +1530,7 @@ function PurgedFoldDetails({
                   <td>{fold.train_size}</td>
                   <td>{fold.purged}</td>
                   <td>{fold.test_size}</td>
-                  <td style={{ fontSize: 12 }}>
+                  <td className="u-text-xs">
                     {fold.test_start ?? '—'} → {fold.test_end ?? '—'}
                   </td>
                   <td>

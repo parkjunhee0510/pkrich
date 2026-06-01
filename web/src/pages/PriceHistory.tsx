@@ -1,7 +1,7 @@
 ﻿import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
-import { TablePageSkeleton } from '../components/Skeleton'
+import { InlineLoadingState } from '../components/Skeleton'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { usePriceHistoryLive } from '../hooks/usePriceHistoryLive'
 import type { PriceHistoryRow, TickerAnalysisData } from '../types'
@@ -125,7 +125,7 @@ export function PriceHistory() {
     return rows
   }, [periodRows, sortDirection, sortKey])
 
-  if (dashboardLoading || priceLoading) return <TablePageSkeleton title="가격 흐름" />
+  if (dashboardLoading || priceLoading) return <InlineLoadingState label="가격 흐름 데이터를 불러오는 중" />
   if (dashboardError) return <ErrorState message={dashboardError} />
 
   const selectedSummary = tickers.find((item) => item.ticker === selectedTicker)
@@ -169,6 +169,7 @@ export function PriceHistory() {
       <section className="price-history-section">
         <input
           className="dashboard-search"
+          aria-label="시세 종목명 또는 티커 검색"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
           placeholder="종목명 또는 티커 검색"
@@ -221,7 +222,7 @@ export function PriceHistory() {
 
       <section className="price-history-section">
         {periodRows.length > 0 ? (
-          <Suspense fallback={<div className="status">차트를 불러오는 중...</div>}>
+          <Suspense fallback={<InlineLoadingState label="가격 차트를 불러오는 중" />}>
             <PriceChart rows={periodRows} height={480} />
           </Suspense>
         ) : (
@@ -283,8 +284,10 @@ function SortableHead({
   direction: SortDirection
   onClick: () => void
 }) {
+  const ariaSort = active ? (direction === 'desc' ? 'descending' : 'ascending') : 'none'
+
   return (
-    <th>
+    <th aria-sort={ariaSort}>
       <button type="button" className={`price-history-sort${active ? ' active' : ''}`} onClick={onClick}>
         <span>{label}</span>
         <span>{active ? (direction === 'desc' ? '↓' : '↑') : '↕'}</span>

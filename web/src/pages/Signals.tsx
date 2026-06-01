@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { TablePageSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
+import { EmptyState } from '../components/ui/EmptyState'
 import type { SignalHistoryRow, SignalDirectionSummary } from '../types'
-import { changeColor } from '../utils/format'
 
 const DIRECTION_LABELS: Record<string, string> = {
   bull: '강세',
@@ -12,19 +12,24 @@ const DIRECTION_LABELS: Record<string, string> = {
   neutral: '중립',
 }
 
-const DIRECTION_COLORS: Record<string, string> = {
-  bull: 'var(--color-up)',
-  bear: 'var(--color-down)',
-  neutral: 'var(--color-neutral)',
+const DIRECTION_TONE_CLASSES: Record<string, string> = {
+  bull: 'signal-tone-up',
+  bear: 'signal-tone-down',
+  neutral: 'signal-tone-neutral',
 }
 
-function formatReturn(value: string): { text: string; color: string } {
-  if (!value || value === 'N/A' || value === '') return { text: '-', color: 'var(--color-text-secondary)' }
+function returnToneClass(value: number): string {
+  if (value > 0) return 'signal-tone-up'
+  if (value < 0) return 'signal-tone-down'
+  return 'signal-tone-neutral'
+}
+
+function formatReturn(value: string): { text: string; toneClass: string } {
+  if (!value || value === 'N/A' || value === '') return { text: '-', toneClass: 'signal-tone-muted' }
   const num = parseFloat(value)
-  if (isNaN(num)) return { text: value, color: 'var(--color-text-secondary)' }
+  if (isNaN(num)) return { text: value, toneClass: 'signal-tone-muted' }
   const text = `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`
-  const color = changeColor(num)
-  return { text, color }
+  return { text, toneClass: returnToneClass(num) }
 }
 
 function SummaryCard({ direction, summary }: { direction: string; summary: SignalDirectionSummary }) {
@@ -33,7 +38,7 @@ function SummaryCard({ direction, summary }: { direction: string; summary: Signa
 
   return (
     <div className="signal-summary-card">
-      <div className="signal-summary-direction" style={{ color: DIRECTION_COLORS[direction] ?? 'var(--color-text)' }}>
+      <div className={`signal-summary-direction ${DIRECTION_TONE_CLASSES[direction] ?? 'signal-tone-default'}`}>
         {DIRECTION_LABELS[direction] ?? direction}
       </div>
       <div className="signal-summary-count">{summary.count}건</div>
@@ -43,11 +48,11 @@ function SummaryCard({ direction, summary }: { direction: string; summary: Signa
       </div>
       <div className="signal-summary-row">
         <span className="signal-summary-label">5일 승률</span>
-        <span style={{ fontWeight: 700 }}>{winRate}</span>
+        <span className="u-font-bold">{winRate}</span>
       </div>
       <div className="signal-summary-row">
         <span className="signal-summary-label">5일 평균</span>
-        <span style={{ color: avgReturn.color, fontWeight: 600 }}>{avgReturn.text}</span>
+        <span className={`signal-return-value ${avgReturn.toneClass}`}>{avgReturn.text}</span>
       </div>
     </div>
   )
@@ -89,29 +94,29 @@ function computeTickerStats(signals: SignalHistoryRow[]): TickerStats[] {
 
 function TickerSummaryCard({ stat }: { stat: TickerStats }) {
   const winRate = stat.evaluated > 0 ? `${((stat.wins / stat.evaluated) * 100).toFixed(1)}%` : '-'
-  const avgRet = stat.avgReturn !== null ? formatReturn(stat.avgReturn.toFixed(2)) : { text: '-', color: 'var(--color-text-secondary)' }
+  const avgRet = stat.avgReturn !== null ? formatReturn(stat.avgReturn.toFixed(2)) : { text: '-', toneClass: 'signal-tone-muted' }
 
   return (
     <div className="signal-summary-card">
       <div className="signal-summary-direction">
-        <Link to={`/ticker/${stat.ticker}`} style={{ color: 'var(--color-accent)', textDecoration: 'none', fontWeight: 700 }}>
+        <Link to={`/ticker/${stat.ticker}`} className="signal-summary-link">
           {stat.ticker}
         </Link>
       </div>
       <div className="signal-summary-count">{stat.count}건</div>
       <div className="signal-summary-row">
         <span className="signal-summary-label">강세 / 약세</span>
-        <span style={{ color: 'var(--color-up)' }}>{stat.bullCount}</span>
-        <span style={{ margin: '0 4px', color: 'var(--color-text-secondary)' }}>/</span>
-        <span style={{ color: 'var(--color-down)' }}>{stat.bearCount}</span>
+        <span className="signal-tone-up">{stat.bullCount}</span>
+        <span className="u-inline-separator">/</span>
+        <span className="signal-tone-down">{stat.bearCount}</span>
       </div>
       <div className="signal-summary-row">
         <span className="signal-summary-label">5일 승률</span>
-        <span style={{ fontWeight: 700 }}>{winRate}</span>
+        <span className="u-font-bold">{winRate}</span>
       </div>
       <div className="signal-summary-row">
         <span className="signal-summary-label">5일 평균</span>
-        <span style={{ color: avgRet.color, fontWeight: 600 }}>{avgRet.text}</span>
+        <span className={`signal-return-value ${avgRet.toneClass}`}>{avgRet.text}</span>
       </div>
     </div>
   )
@@ -132,17 +137,16 @@ function SignalRow({ signal }: { signal: SignalHistoryRow }) {
       </td>
       <td>
         <span
-          className="signal-direction-chip"
-          style={{ color: DIRECTION_COLORS[signal.signal_direction] ?? 'inherit' }}
+          className={`signal-direction-chip ${DIRECTION_TONE_CLASSES[signal.signal_direction] ?? ''}`}
         >
           {DIRECTION_LABELS[signal.signal_direction] ?? signal.signal_direction}
         </span>
       </td>
-      <td style={{ textAlign: 'right' }}>${signal.signal_price}</td>
+      <td className="signal-numeric-cell">${signal.signal_price}</td>
       <td className="catalyst-cell">{signal.catalyst_tag || '-'}</td>
-      <td style={{ textAlign: 'right', color: r1d.color }}>{r1d.text}</td>
-      <td style={{ textAlign: 'right', color: r5d.color }}>{r5d.text}</td>
-      <td style={{ textAlign: 'right', color: r20d.color }}>{r20d.text}</td>
+      <td className={`signal-numeric-cell ${r1d.toneClass}`}>{r1d.text}</td>
+      <td className={`signal-numeric-cell ${r5d.toneClass}`}>{r5d.text}</td>
+      <td className={`signal-numeric-cell ${r20d.toneClass}`}>{r20d.text}</td>
     </tr>
   )
 }
@@ -152,10 +156,10 @@ function GroupedSignalRows({ ticker, signals }: { ticker: string; signals: Signa
     <>
       <tr className="ticker-group-header-row">
         <td colSpan={8}>
-          <Link to={`/ticker/${ticker}`} className="ticker-link" style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+          <Link to={`/ticker/${ticker}`} className="ticker-link u-text-sm u-font-bold">
             {ticker}
           </Link>
-          <span style={{ marginLeft: '0.5rem', color: 'var(--color-text-secondary)', fontSize: '0.8rem' }}>
+          <span className="u-muted-meta">
             ({signals.length}건)
           </span>
         </td>
@@ -205,14 +209,24 @@ export function Signals() {
 
   if (loading) return <TablePageSkeleton title="시그널 검증 통계" />
   if (error) return <ErrorState message={error} />
-  if (!data) return <p className="status">No data available.</p>
+  if (!data) {
+    return (
+      <EmptyState
+        title="표시할 시그널 데이터가 없습니다."
+        description="파이프라인 출력이 준비되면 시그널 검증 통계가 여기에 표시됩니다."
+      />
+    )
+  }
 
   const signalStats = data.signal_stats
   if (!signalStats || recentSignals.length === 0) {
     return (
       <div className="signals-page">
         <h2>시그널 검증 통계</h2>
-        <p className="status">시그널 데이터가 아직 축적되지 않았습니다. 파이프라인이 수일간 실행되면 자동으로 채워집니다.</p>
+        <EmptyState
+          title="시그널 데이터가 아직 축적되지 않았습니다."
+          description="파이프라인이 수일간 실행되면 검증 통계가 자동으로 채워집니다."
+        />
       </div>
     )
   }
@@ -297,17 +311,19 @@ export function Signals() {
       )}
 
       {/* Filters */}
-      <div className="dashboard-controls" style={{ marginTop: '1.5rem' }}>
+      <div className="dashboard-controls u-mt-6">
         <input
           className="dashboard-search"
           type="search"
           placeholder="티커 검색"
+          aria-label="시그널 티커 검색"
           value={tickerFilter}
           onChange={(e) => setTickerFilter(e.target.value)}
         />
         <select
           className="dashboard-filter"
           value={directionFilter}
+          aria-label="시그널 방향 필터"
           onChange={(e) => setDirectionFilter(e.target.value)}
         >
           <option value="ALL">전체 방향</option>
@@ -316,7 +332,9 @@ export function Signals() {
           <option value="neutral">중립</option>
         </select>
         <button
+          type="button"
           className={`dashboard-filter-btn${groupByTicker ? ' active' : ''}`}
+          aria-pressed={groupByTicker}
           onClick={() => setGroupByTicker((v) => !v)}
         >
           {groupByTicker ? '종목 그룹 해제' : '종목별 그룹'}
@@ -331,11 +349,11 @@ export function Signals() {
               <th>날짜</th>
               <th>종목</th>
               <th>방향</th>
-              <th style={{ textAlign: 'right' }}>시그널가</th>
+              <th className="signal-numeric-cell">시그널가</th>
               <th>촉매</th>
-              <th style={{ textAlign: 'right' }}>1D</th>
-              <th style={{ textAlign: 'right' }}>5D</th>
-              <th style={{ textAlign: 'right' }}>20D</th>
+              <th className="signal-numeric-cell">1D</th>
+              <th className="signal-numeric-cell">5D</th>
+              <th className="signal-numeric-cell">20D</th>
             </tr>
           </thead>
           <tbody>

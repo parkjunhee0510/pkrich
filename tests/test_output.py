@@ -480,6 +480,32 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(dashboard_history['days'][0]['state_metadata'], state_metadata)
             self.assertEqual(index_payload['state_metadata'], state_metadata)
 
+    def test_write_json_outputs_retries_transient_dashboard_history_write_error(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            output_root = Path(temp_dir) / 'output'
+            data_dir = output_root / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            original_write_text = Path.write_text
+            attempts = {'dashboard_history': 0}
+
+            def flaky_write_text(path: Path, *args: object, **kwargs: object) -> int:
+                if path.name == 'dashboard_history.json' and attempts['dashboard_history'] == 0:
+                    attempts['dashboard_history'] += 1
+                    raise OSError(22, 'Invalid argument')
+                return original_write_text(path, *args, **kwargs)
+
+            with patch.object(Path, 'write_text', autospec=True, side_effect=flaky_write_text):
+                write_json_outputs(
+                    [_sample_analysis()],
+                    date(2026, 4, 8),
+                    output_root=output_root,
+                    market_overview=[],
+                )
+
+            dashboard_history = json.loads((data_dir / 'dashboard_history.json').read_text(encoding='utf-8'))
+            self.assertEqual(attempts['dashboard_history'], 1)
+            self.assertEqual(dashboard_history['days'][0]['date'], '2026-04-08')
+
     def test_render_ticker_markdown_includes_period_quarterly_events_and_timeline(self) -> None:
         content = render_ticker_markdown(
             TickerAnalysis(**{**_sample_analysis().__dict__, 'committee_analysis': _sample_committee_analysis()}),

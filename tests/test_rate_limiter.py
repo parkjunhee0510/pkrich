@@ -41,8 +41,18 @@ class TokenBucketLimiterTests(unittest.TestCase):
             TokenBucketLimiter(RateLimit(calls_per_minute=0))
 
     def test_thread_safety(self) -> None:
-        """Many threads contending on a small bucket must never over-issue."""
-        limiter = TokenBucketLimiter(RateLimit(calls_per_minute=6000, burst=10))
+        """Many threads contending on a small bucket must never over-issue.
+
+        Uses a negligible refill rate (1 cpm ≈ 0.017 tokens/sec) so the bucket
+        cannot gain a whole token during the test window — the only tokens
+        available are the initial burst. Since acquire's check+decrement runs
+        under a lock, EXACTLY `burst` of the 50 contending threads may succeed:
+        no more (would be a race) and no fewer (would be lost tokens).
+
+        (The previous 6000 cpm = 100 tokens/sec refilled a few tokens during
+        thread startup jitter, making `sum <= burst` flaky on loaded machines.)
+        """
+        limiter = TokenBucketLimiter(RateLimit(calls_per_minute=1, burst=10))
         successes: list[bool] = []
         lock = threading.Lock()
 
@@ -56,8 +66,8 @@ class TokenBucketLimiterTests(unittest.TestCase):
             t.start()
         for t in threads:
             t.join()
-        # At most 10 (burst) should succeed immediately.
-        self.assertLessEqual(sum(successes), 10)
+        # Deterministic now that refill is ~0: exactly the burst capacity.
+        self.assertEqual(sum(successes), 10)
 
 
 class RateLimiterHubTests(unittest.TestCase):

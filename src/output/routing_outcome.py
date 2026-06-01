@@ -153,6 +153,9 @@ def _build_latest_run_snapshot(
             "in_portfolio": bool(entry.get("in_portfolio", False)),
             "conviction": entry.get("conviction"),
             "action": entry.get("action"),
+            "router_priority_score": float(entry.get("router_priority_score", 0.0) or 0.0),
+            "router_reason_codes": _string_list(entry.get("router_reason_codes")),
+            "skipped_due_to_priority": bool(entry.get("skipped_due_to_priority", False)),
         }
         for entry in latest.get("tickers", [])
         if isinstance(entry, dict)
@@ -163,6 +166,11 @@ def _build_latest_run_snapshot(
         "max_daily_ensemble": latest.get("max_daily_ensemble", 0),
         "portfolio_priority": bool(latest.get("portfolio_priority", False)),
         "deep_pass_count": int(latest.get("deep_pass_count", 0) or 0),
+        "selected_tickers": _string_list(latest.get("selected_tickers")),
+        "skipped_due_to_priority": _string_list(latest.get("skipped_due_to_priority")),
+        "router_budget_estimate": latest.get("router_budget_estimate")
+        if isinstance(latest.get("router_budget_estimate"), dict)
+        else {},
         "tickers": tickers,
     }
 
@@ -224,6 +232,12 @@ def _parse_percent(raw_value: str) -> float | None:
 
 def _is_truthy(raw_value: str) -> bool:
     return str(raw_value or "").strip().lower() in {"1", "true", "yes", "y"}
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if str(item).strip()]
 
 
 def _rounded_or_none(value: float | None) -> float | None:

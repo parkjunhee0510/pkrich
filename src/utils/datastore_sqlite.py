@@ -25,6 +25,52 @@ PRICE_COLUMN_DEFAULTS: dict[str, str] = {
     'volume': "TEXT NOT NULL DEFAULT 'N/A'",
 }
 
+SIGNAL_HISTORY_COLUMNS: tuple[str, ...] = (
+    'signal_date',
+    'ticker',
+    'signal_type',
+    'signal_direction',
+    'llm_direction',
+    'signal_price',
+    'catalyst_tag',
+    'news_tone',
+    'trade_frame_scenario',
+    'conviction',
+    'raw_conviction',
+    'action',
+    'regime',
+    'sub_regime',
+    'factors_json',
+    'factor_reasoning_json',
+    'confidence_meta_json',
+    'return_1d',
+    'return_5d',
+    'return_20d',
+    'evaluated_1d',
+    'evaluated_5d',
+    'evaluated_20d',
+    'barrier_label',
+    'barrier_hit_day',
+    'barrier_return',
+    'barrier_date',
+)
+
+SIGNAL_HISTORY_COLUMN_DEFAULTS: dict[str, str] = {
+    'llm_direction': "TEXT NOT NULL DEFAULT ''",
+    'conviction': "TEXT NOT NULL DEFAULT ''",
+    'raw_conviction': "TEXT NOT NULL DEFAULT ''",
+    'action': "TEXT NOT NULL DEFAULT ''",
+    'regime': "TEXT NOT NULL DEFAULT ''",
+    'sub_regime': "TEXT NOT NULL DEFAULT ''",
+    'factors_json': "TEXT NOT NULL DEFAULT ''",
+    'factor_reasoning_json': "TEXT NOT NULL DEFAULT ''",
+    'confidence_meta_json': "TEXT NOT NULL DEFAULT ''",
+    'barrier_label': "TEXT NOT NULL DEFAULT ''",
+    'barrier_hit_day': "TEXT NOT NULL DEFAULT ''",
+    'barrier_return': "TEXT NOT NULL DEFAULT ''",
+    'barrier_date': "TEXT NOT NULL DEFAULT ''",
+}
+
 
 class SqliteDatastore(Datastore):
     def __init__(self, output_root: Path | None = None) -> None:
@@ -124,46 +170,27 @@ class SqliteDatastore(Datastore):
 
     def sync_signal_history(self, csv_path: Path) -> None:
         rows = load_signal_rows(csv_path)
+        # Guard against wiping the table when the source CSV is missing
+        # (wrong path / transient read failure). A genuinely empty but present
+        # CSV still syncs to an empty table as intended.
+        if not rows and not Path(csv_path).exists():
+            return
         connection = sqlite3.connect(self.sqlite_path)
         try:
             connection.execute('DELETE FROM signal_history')
+            columns_sql = ', '.join(SIGNAL_HISTORY_COLUMNS)
+            placeholders = ', '.join('?' for _ in SIGNAL_HISTORY_COLUMNS)
             connection.executemany(
-                '''
-                INSERT INTO signal_history (
-                    signal_date,
-                    ticker,
-                    signal_type,
-                    signal_direction,
-                    llm_direction,
-                    signal_price,
-                    catalyst_tag,
-                    news_tone,
-                    trade_frame_scenario,
-                    return_1d,
-                    return_5d,
-                    return_20d,
-                    evaluated_1d,
-                    evaluated_5d,
-                    evaluated_20d
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                f'''
+                INSERT INTO signal_history ({columns_sql})
+                VALUES ({placeholders})
                 ''',
                 [
-                    (
-                        row.get('signal_date', ''),
-                        str(row.get('ticker', '')).strip().upper(),
-                        row.get('signal_type', ''),
-                        row.get('signal_direction', ''),
-                        row.get('llm_direction', ''),
-                        row.get('signal_price', ''),
-                        row.get('catalyst_tag', ''),
-                        row.get('news_tone', ''),
-                        row.get('trade_frame_scenario', ''),
-                        row.get('return_1d', ''),
-                        row.get('return_5d', ''),
-                        row.get('return_20d', ''),
-                        row.get('evaluated_1d', ''),
-                        row.get('evaluated_5d', ''),
-                        row.get('evaluated_20d', ''),
+                    tuple(
+                        str(row.get(column, '')).strip().upper()
+                        if column == 'ticker'
+                        else row.get(column, '')
+                        for column in SIGNAL_HISTORY_COLUMNS
                     )
                     for row in rows
                 ],
@@ -341,99 +368,27 @@ class SqliteDatastore(Datastore):
             connection.close()
 
     def get_signal_stats(self) -> dict[str, Any] | None:
-        connection = sqlite3.connect(self.sqlite_path)
-        try:
-            cursor = connection.execute(
-                '''
-                SELECT
-                    signal_date,
-                    ticker,
-                    signal_type,
-                    signal_direction,
-                    llm_direction,
-                    signal_price,
-                    catalyst_tag,
-                    news_tone,
-                    trade_frame_scenario,
-                    return_1d,
-                    return_5d,
-                    return_20d,
-                    evaluated_1d,
-                    evaluated_5d,
-                    evaluated_20d
-                FROM signal_history
-                ORDER BY signal_date DESC, ticker ASC
-                '''
-            )
-            rows = [
-                {
-                    'signal_date': row[0],
-                    'ticker': row[1],
-                    'signal_type': row[2],
-                    'signal_direction': row[3],
-                    'llm_direction': row[4],
-                    'signal_price': row[5],
-                    'catalyst_tag': row[6],
-                    'news_tone': row[7],
-                    'trade_frame_scenario': row[8],
-                    'return_1d': row[9],
-                    'return_5d': row[10],
-                    'return_20d': row[11],
-                    'evaluated_1d': row[12],
-                    'evaluated_5d': row[13],
-                    'evaluated_20d': row[14],
-                }
-                for row in cursor.fetchall()
-            ]
-        finally:
-            connection.close()
+        rows = self._load_signal_history_rows()
         if not rows:
             return None
         return build_signal_stats_from_rows(rows)
 
     def load_signal_rows_data(self) -> list[dict[str, str]]:
+        return self._load_signal_history_rows()
+
+    def _load_signal_history_rows(self) -> list[dict[str, str]]:
+        columns_sql = ', '.join(SIGNAL_HISTORY_COLUMNS)
         connection = sqlite3.connect(self.sqlite_path)
         try:
             cursor = connection.execute(
-                '''
-                SELECT
-                    signal_date,
-                    ticker,
-                    signal_type,
-                    signal_direction,
-                    llm_direction,
-                    signal_price,
-                    catalyst_tag,
-                    news_tone,
-                    trade_frame_scenario,
-                    return_1d,
-                    return_5d,
-                    return_20d,
-                    evaluated_1d,
-                    evaluated_5d,
-                    evaluated_20d
+                f'''
+                SELECT {columns_sql}
                 FROM signal_history
                 ORDER BY signal_date DESC, ticker ASC
                 '''
             )
             return [
-                {
-                    'signal_date': row[0],
-                    'ticker': row[1],
-                    'signal_type': row[2],
-                    'signal_direction': row[3],
-                    'llm_direction': row[4],
-                    'signal_price': row[5],
-                    'catalyst_tag': row[6],
-                    'news_tone': row[7],
-                    'trade_frame_scenario': row[8],
-                    'return_1d': row[9],
-                    'return_5d': row[10],
-                    'return_20d': row[11],
-                    'evaluated_1d': row[12],
-                    'evaluated_5d': row[13],
-                    'evaluated_20d': row[14],
-                }
+                {column: str(value) for column, value in zip(SIGNAL_HISTORY_COLUMNS, row)}
                 for row in cursor.fetchall()
             ]
         finally:
@@ -560,12 +515,24 @@ class SqliteDatastore(Datastore):
                     catalyst_tag TEXT NOT NULL,
                     news_tone TEXT NOT NULL,
                     trade_frame_scenario TEXT NOT NULL,
+                    conviction TEXT NOT NULL DEFAULT '',
+                    raw_conviction TEXT NOT NULL DEFAULT '',
+                    action TEXT NOT NULL DEFAULT '',
+                    regime TEXT NOT NULL DEFAULT '',
+                    sub_regime TEXT NOT NULL DEFAULT '',
+                    factors_json TEXT NOT NULL DEFAULT '',
+                    factor_reasoning_json TEXT NOT NULL DEFAULT '',
+                    confidence_meta_json TEXT NOT NULL DEFAULT '',
                     return_1d TEXT NOT NULL,
                     return_5d TEXT NOT NULL,
                     return_20d TEXT NOT NULL,
                     evaluated_1d TEXT NOT NULL,
                     evaluated_5d TEXT NOT NULL,
                     evaluated_20d TEXT NOT NULL,
+                    barrier_label TEXT NOT NULL DEFAULT '',
+                    barrier_hit_day TEXT NOT NULL DEFAULT '',
+                    barrier_return TEXT NOT NULL DEFAULT '',
+                    barrier_date TEXT NOT NULL DEFAULT '',
                     PRIMARY KEY (signal_date, ticker, signal_direction, catalyst_tag)
                 )
                 '''
@@ -632,8 +599,10 @@ class SqliteDatastore(Datastore):
             str(row[1]).strip().lower()
             for row in connection.execute("PRAGMA table_info(signal_history)").fetchall()
         }
-        if "llm_direction" not in existing_columns:
-            connection.execute('ALTER TABLE signal_history ADD COLUMN "llm_direction" TEXT NOT NULL DEFAULT \'\'')
+        for column_name, column_spec in SIGNAL_HISTORY_COLUMN_DEFAULTS.items():
+            if column_name in existing_columns:
+                continue
+            connection.execute(f'ALTER TABLE signal_history ADD COLUMN "{column_name}" {column_spec}')
 
     def _upsert_price_rows(self, rows: list[dict[str, str]]) -> None:
         if not rows:

@@ -9,6 +9,20 @@ from typing import Any, Mapping
 from src.types import TickerDecision
 
 SEARCH_QUALITY_GATE_THRESHOLD = 0.55
+OPERATIONAL_EVIDENCE_STATUSES = {
+    "cache_error",
+    "not_refreshed",
+    "provider_error",
+    "provider_unavailable",
+}
+OPERATIONAL_PROVIDER_STATUSES = {
+    "budget_blocked",
+    "cache_error",
+    "not_selected",
+    "provider_error",
+    "provider_unavailable",
+    "rate_limited",
+}
 
 
 def attach_search_quality_shadow(
@@ -24,7 +38,7 @@ def attach_search_quality_shadow(
     for decision in decisions:
         ticker = _normalize_ticker(decision.ticker)
         summary = by_ticker.get(ticker)
-        score = calculate_search_evidence_score(summary) if summary is not None else None
+        score = _search_evidence_score_for_gate(summary)
         gate = _build_search_quality_gate(
             action=decision.action,
             score=score,
@@ -62,6 +76,12 @@ def calculate_search_evidence_score(summary: Mapping[str, Any] | None) -> float:
     return round(score, 4)
 
 
+def _search_evidence_score_for_gate(summary: Mapping[str, Any] | None) -> float | None:
+    if summary is None or _operational_gap_reason(summary):
+        return None
+    return calculate_search_evidence_score(summary)
+
+
 def _build_search_quality_gate(
     *,
     action: str,
@@ -72,9 +92,15 @@ def _build_search_quality_gate(
 ) -> dict[str, Any]:
     evidence_count = _to_int(summary.get("evidence_count")) if isinstance(summary, Mapping) else 0
     source_diversity = _to_int(summary.get("source_diversity")) if isinstance(summary, Mapping) else 0
+    evidence_status = _summary_text(summary, "evidence_status")
+    provider_status = _summary_text(summary, "provider_status")
+    priority_for_refresh = bool(summary.get("priority_for_refresh")) if isinstance(summary, Mapping) else False
     would_cap = score is not None and score < threshold and str(action).lower() == "buy"
+    operational_reason = _operational_gap_reason(summary)
 
-    if score is None:
+    if operational_reason:
+        reason = operational_reason
+    elif score is None:
         reason = "search_evidence_unavailable"
     elif evidence_count <= 0:
         reason = "no_recent_search_evidence"
@@ -92,6 +118,9 @@ def _build_search_quality_gate(
         "reason": reason,
         "evidence_count": evidence_count,
         "source_diversity": source_diversity,
+        "evidence_status": evidence_status,
+        "provider_status": provider_status,
+        "priority_for_refresh": priority_for_refresh,
     }
 
 
@@ -125,6 +154,24 @@ def _search_evidence_by_ticker(search_evidence: Mapping[str, Any] | None) -> dic
 
 def _normalize_ticker(ticker: object) -> str:
     return str(ticker or "").strip().upper()
+
+
+def _summary_text(summary: Mapping[str, Any] | None, key: str) -> str:
+    if not isinstance(summary, Mapping):
+        return "unavailable"
+    return str(summary.get(key) or "").strip().lower()
+
+
+def _operational_gap_reason(summary: Mapping[str, Any] | None) -> str:
+    if not isinstance(summary, Mapping):
+        return ""
+    evidence_status = _summary_text(summary, "evidence_status")
+    if evidence_status in OPERATIONAL_EVIDENCE_STATUSES:
+        return evidence_status
+    provider_status = _summary_text(summary, "provider_status")
+    if provider_status in OPERATIONAL_PROVIDER_STATUSES:
+        return provider_status
+    return ""
 
 
 def _clamp_float(value: object) -> float:

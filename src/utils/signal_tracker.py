@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import csv
+import json
+import os
 import re
+import tempfile
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
@@ -19,6 +22,14 @@ FIELDNAMES = [
     "catalyst_tag",
     "news_tone",
     "trade_frame_scenario",
+    "conviction",
+    "raw_conviction",
+    "action",
+    "regime",
+    "sub_regime",
+    "factors_json",
+    "factor_reasoning_json",
+    "confidence_meta_json",
     "return_1d",
     "return_5d",
     "return_20d",
@@ -41,8 +52,14 @@ def record_signals(
     run_date: date,
     price_lookup: dict[str, float],
     csv_path: Path,
+    *,
+    decisions: list[Any] | None = None,
+    market_regime: Any | None = None,
 ) -> None:
     rows = _load_rows(csv_path)
+    decisions_by_ticker = _decision_by_ticker(decisions)
+    regime = str(getattr(market_regime, "regime", "") or "").strip()
+    sub_regime = str(getattr(market_regime, "sub_regime", "") or "").strip()
     replacement_keys = {(run_date.isoformat(), analysis.ticker) for analysis in analyses}
     retained = [row for row in rows if (row.get("signal_date"), row.get("ticker")) not in replacement_keys]
 
@@ -50,20 +67,34 @@ def record_signals(
         signal_price = price_lookup.get(analysis.ticker)
         if signal_price is None:
             continue
-        signal_direction = _classify_signal_direction(analysis)
+        llm_text_direction = _classify_signal_direction(analysis)
         filings = collect_sec_filings(analysis.news_references)
         primary_filing = filings[0] if filings else {}
+        decision = decisions_by_ticker.get(analysis.ticker.strip().upper())
+        rule_direction = _classify_rule_direction(decision, fallback=llm_text_direction)
         retained.append(
             {
                 "signal_date": run_date.isoformat(),
                 "ticker": analysis.ticker,
                 "signal_type": str(primary_filing.get("form_type", "") or "takeaway"),
-                "signal_direction": signal_direction,
-                "llm_direction": signal_direction,
+                "signal_direction": rule_direction,
+                "llm_direction": llm_text_direction,
                 "signal_price": f"{signal_price:.2f}",
                 "catalyst_tag": str(primary_filing.get("tag", "") or "일반 이슈"),
                 "news_tone": str(analysis.news_tone.get("label", "neutral")),
                 "trade_frame_scenario": str(analysis.trade_frame.get("base_scenario", "") or analysis.signal_or_takeaway),
+                "conviction": str(getattr(decision, "conviction", "") if decision is not None else ""),
+                "raw_conviction": str(getattr(decision, "raw_conviction", "") if decision is not None else ""),
+                "action": str(getattr(decision, "action", "") if decision is not None else ""),
+                "regime": regime,
+                "sub_regime": sub_regime,
+                "factors_json": _safe_json_dumps(getattr(decision, "factors", {}) if decision is not None else {}),
+                "factor_reasoning_json": _safe_json_dumps(
+                    getattr(decision, "factor_reasoning", {}) if decision is not None else {}
+                ),
+                "confidence_meta_json": _safe_json_dumps(
+                    getattr(decision, "confidence_meta", {}) if decision is not None else {}
+                ),
                 "return_1d": row_default(),
                 "return_5d": row_default(),
                 "return_20d": row_default(),
@@ -407,6 +438,24 @@ def _ticker_performance(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
     return result
 
 
+def _safe_json_dumps(value: Any) -> str:
+    if value is None:
+        return "{}"
+    try:
+        return json.dumps(value, ensure_ascii=False, sort_keys=True)
+    except TypeError:
+        return "{}"
+
+
+def _decision_by_ticker(decisions: list[Any] | None) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for decision in decisions or []:
+        ticker = str(getattr(decision, "ticker", "")).strip().upper()
+        if ticker:
+            result[ticker] = decision
+    return result
+
+
 def row_default() -> str:
     return "N/A"
 
@@ -428,6 +477,25 @@ def _classify_signal_direction(analysis: TickerAnalysis) -> str:
     return "neutral"
 
 
+def _classify_rule_direction(decision: Any, fallback: str = "neutral") -> str:
+    """Rule-based direction derived from the 13-factor decision layer's action.
+
+    Independent of LLM-generated text so it can be meaningfully compared against
+    `_classify_signal_direction` (which extracts the LLM's self-reported direction
+    from `signal_or_takeaway`/`trade_frame`/`news_tone`).
+    """
+    if decision is None:
+        return fallback
+    action = str(getattr(decision, "action", "")).strip().lower()
+    if action == "buy":
+        return "bull"
+    if action == "avoid":
+        return "bear"
+    if action == "watch":
+        return "neutral"
+    return fallback
+
+
 def _is_signal_win(direction: str, return_value: float) -> bool:
     if direction == "bull":
         return return_value > 0
@@ -446,7 +514,12 @@ def _build_price_series(
     for row in price_history_rows:
         ticker = str(row.get("ticker", "")).strip().upper()
         row_date = _parse_date(row.get("date", ""))
-        price = _parse_float(row.get("price", ""))
+        # Prefer the settled daily close; fall back to the collection-time
+        # snapshot only when close is unavailable. Using `price` here would
+        # measure returns snapshot-to-snapshot rather than close-to-close.
+        price = _parse_float(row.get("close", ""))
+        if price is None:
+            price = _parse_float(row.get("price", ""))
         if not ticker or row_date is None or price is None:
             continue
         series_map.setdefault(ticker, {})[row_date] = price
@@ -498,10 +571,21 @@ def _write_rows(csv_path: Path, rows: list[dict[str, str]]) -> None:
         {name: row.get(name, "") for name in FIELDNAMES}
         for row in ordered_rows
     ]
-    with csv_path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=FIELDNAMES)
-        writer.writeheader()
-        writer.writerows(normalized_rows)
+    # Write to a sibling temp file then atomically replace, so a crash mid-write
+    # cannot truncate or corrupt the canonical signal history.
+    fd, tmp_name = tempfile.mkstemp(dir=str(csv_path.parent), prefix="signal_tracker.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=FIELDNAMES, lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(normalized_rows)
+        os.replace(tmp_name, csv_path)
+    except BaseException:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
 
 
 def _parse_date(raw_value: str) -> date | None:

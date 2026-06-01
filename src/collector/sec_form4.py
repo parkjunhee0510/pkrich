@@ -17,12 +17,12 @@ from typing import Any
 from urllib import request
 from urllib.error import URLError
 
+from src.collector.sec_edgar import sec_user_agent
 from src.utils.network import can_open_tcp_connection
 from src.utils.pipeline_logging import record_pipeline_event
 
 _SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
 _SEC_ARCHIVES_URL = "https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{document}"
-_SEC_USER_AGENT = "pkrich-stock-research/1.0 (contact: local-automation)"
 _REQUEST_DELAY = 0.15  # SEC allows 10 req/s; stay well under
 _LAST_REQUEST_AT: float = 0.0
 
@@ -78,7 +78,7 @@ def _download_submissions(cik: str) -> dict[str, Any]:
     url = _SEC_SUBMISSIONS_URL.format(cik=cik)
     _throttle()
     req = request.Request(url, headers={
-        "User-Agent": _SEC_USER_AGENT,
+        "User-Agent": sec_user_agent(),
         "Accept-Encoding": "gzip, deflate",
         "Host": "data.sec.gov",
     })
@@ -146,7 +146,7 @@ def _parse_form4_filing(cik: str, filing: dict[str, str]) -> list[dict[str, str]
     try:
         _throttle()
         req = request.Request(url, headers={
-            "User-Agent": _SEC_USER_AGENT,
+            "User-Agent": sec_user_agent(),
             "Accept": "application/xml",
         })
         with request.urlopen(req, timeout=15) as resp:

@@ -1,12 +1,15 @@
 ﻿import type { Dispatch, ReactNode, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ActionChangeFeed } from '../components/ActionChangeFeed'
+import { DashboardNewsDesk } from '../components/DashboardNewsDesk'
 import { ErrorState } from '../components/ErrorState'
 import { MacroContextBar } from '../components/MacroContextBar'
 import { MacroNarrativePanel } from '../components/MacroNarrativePanel'
 import { MarketOverview } from '../components/MarketOverview'
 import { MarketMoodSectorBriefing } from '../components/MarketMoodSectorBriefing'
+import { RiskIntelPanel } from '../components/RiskIntelPanel'
 import { DashboardSkeleton } from '../components/Skeleton'
+import { TodayPriorityQueue } from '../components/TodayPriorityQueue'
 import {
   CatalystFeed,
   EarningsBoard,
@@ -16,9 +19,15 @@ import {
 import { WatchlistTable } from '../components/WatchlistTable'
 import { TodayDecisionStrip } from '../components/TodayDecisionStrip'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { EmptyState } from '../components/ui/EmptyState'
+import { useQualityReliabilityLoopData } from '../hooks/useQualityReliabilityLoopData'
+import { useRiskIntelData } from '../hooks/useRiskIntelData'
+import { useSearchEvidenceData } from '../hooks/useSearchEvidenceData'
 import type { DailyEntry, TickerAnalysisData, WeeklyReportSection } from '../types'
 import { buildActionChangeFeed, findPreviousValidDay } from '../utils/actionChangeFeed'
 import { buildTodayDecisionStrip } from '../utils/todayDecisionStrip'
+import { buildTodayPriorityQueue } from '../utils/todayPriorityQueue'
+import { buildDashboardNewsDeskViewModel } from '../utils/newsDesk'
 import { buildMarketMoodSummary, deriveSectorMoodInsights } from '../utils/sectorMood'
 import {
   buildCatalystFeedSections,
@@ -64,6 +73,9 @@ const EMPTY_DAY: DailyEntry = { date: '', market_overview: [], tickers: [] }
 
 export function Dashboard() {
   const { data, loading, refreshing, error, refresh } = useDashboardData({ pollIntervalMs: 60000 })
+  const { summary: riskIntelSummary, graph: riskIntelGraph } = useRiskIntelData()
+  const { searchEvidence } = useSearchEvidenceData()
+  const { qualityLoop } = useQualityReliabilityLoopData()
   const searchInputRef = useRef<HTMLInputElement | null>(null)
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -101,6 +113,18 @@ export function Dashboard() {
   const todayDecisionStrip = useMemo(
     () => buildTodayDecisionStrip(day, previousDay, { feed: actionChangeFeed }),
     [day, previousDay, actionChangeFeed],
+  )
+  const todayPriorityQueue = useMemo(
+    () =>
+      buildTodayPriorityQueue({
+        day,
+        previousDay,
+        searchEvidence,
+        riskIntelSummary,
+        qualityLoop,
+        limit: 8,
+      }),
+    [day, previousDay, searchEvidence, riskIntelSummary, qualityLoop],
   )
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
@@ -149,6 +173,34 @@ export function Dashboard() {
       }),
     [day.tickers, day.market_regime, day.macro_context],
   )
+  const newsDeskViewModel = useMemo(
+    () =>
+      buildDashboardNewsDeskViewModel({
+        day,
+        previousDay,
+        sectorMood,
+        actionChangeFeed,
+        todayDecisionStrip,
+        todayPriorityQueue,
+        riskIntelSummary,
+        searchEvidence,
+        qualityLoop,
+        dataError: error,
+        limit: 6,
+      }),
+    [
+      day,
+      previousDay,
+      sectorMood,
+      actionChangeFeed,
+      todayDecisionStrip,
+      todayPriorityQueue,
+      riskIntelSummary,
+      searchEvidence,
+      qualityLoop,
+      error,
+    ],
+  )
   const decisionCounts = useMemo(() => countDecisions(day.tickers), [day.tickers])
   const emptyState = useMemo(
     () => buildEmptyStateMessage(searchQuery, selectedSector, traderFilters),
@@ -196,9 +248,16 @@ export function Dashboard() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [refresh, searchQuery])
 
-  if (loading) return <DashboardSkeleton />
-  if (error) return <ErrorState message={error} />
-  if (!data || data.days.length === 0) return <p className="status">No data available.</p>
+  if (loading && !data) return <DashboardSkeleton />
+  if (error && !data) return <ErrorState message={error} />
+  if (!data || data.days.length === 0) {
+    return (
+      <EmptyState
+        title="표시할 대시보드 데이터가 없습니다."
+        description="출력 파일이 생성되면 워치리스트와 리서치 요약이 여기에 표시됩니다."
+      />
+    )
+  }
 
   return (
     <div className="dashboard" data-density={density}>
@@ -221,7 +280,12 @@ export function Dashboard() {
           </div>
         </div>
         {data.days.length > 1 && (
-          <select className="date-select" value={idx} onChange={(e) => setSelectedIdx(Number(e.target.value))}>
+          <select
+            className="date-select"
+            value={idx}
+            aria-label="대시보드 날짜 선택"
+            onChange={(e) => setSelectedIdx(Number(e.target.value))}
+          >
             {data.days.map((entry, index) => (
               <option key={entry.date} value={index}>
                 {entry.date}
@@ -238,10 +302,16 @@ export function Dashboard() {
             className="dashboard-search"
             type="search"
             placeholder="티커 또는 종목명 검색"
+            aria-label="티커 또는 종목명 검색"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <select className="dashboard-filter" value={selectedSector} onChange={(e) => setSelectedSector(e.target.value)}>
+          <select
+            className="dashboard-filter"
+            value={selectedSector}
+            aria-label="섹터 필터"
+            onChange={(e) => setSelectedSector(e.target.value)}
+          >
             <option value="ALL">전체 섹터</option>
             {sectors.map((sector) => (
               <option key={sector} value={sector}>
@@ -255,6 +325,7 @@ export function Dashboard() {
               type="number"
               min={1000}
               step={1000}
+              aria-label="계좌 크기"
               value={accountSize}
               onChange={(e) => setAccountSize(Number(e.target.value) || 10000)}
             />
@@ -273,6 +344,8 @@ export function Dashboard() {
                 key={preset}
                 type="button"
                 className={`preset-chip ${accountSize === preset ? 'active' : ''}`}
+                aria-pressed={accountSize === preset}
+                aria-label={`계좌 크기를 ${preset.toLocaleString()} USD로 설정`}
                 onClick={() => setAccountSize(preset)}
               >
                 {preset.toLocaleString()} USD
@@ -285,6 +358,7 @@ export function Dashboard() {
             <button
               type="button"
               className={`preset-chip ${watchlistSort === 'score' ? 'active' : ''}`}
+              aria-pressed={watchlistSort === 'score'}
               onClick={() => setWatchlistSort('score')}
             >
               점수순
@@ -292,6 +366,7 @@ export function Dashboard() {
             <button
               type="button"
               className={`preset-chip ${watchlistSort === 'earnings' ? 'active' : ''}`}
+              aria-pressed={watchlistSort === 'earnings'}
               onClick={() => setWatchlistSort('earnings')}
             >
               실적 임박순
@@ -299,6 +374,7 @@ export function Dashboard() {
             <button
               type="button"
               className={`preset-chip ${watchlistSort === 'catalyst' ? 'active' : ''}`}
+              aria-pressed={watchlistSort === 'catalyst'}
               onClick={() => setWatchlistSort('catalyst')}
             >
               강한 재료순
@@ -342,17 +418,28 @@ export function Dashboard() {
 
           <div className="density-chip-row compact-row">
             <span className="watchlist-sort-label">밀도</span>
-            <button type="button" className={`preset-chip ${density === 'compact' ? 'active' : ''}`} onClick={() => setDensity('compact')}>
+            <button
+              type="button"
+              className={`preset-chip ${density === 'compact' ? 'active' : ''}`}
+              aria-pressed={density === 'compact'}
+              onClick={() => setDensity('compact')}
+            >
               간결
             </button>
             <button
               type="button"
               className={`preset-chip ${density === 'comfortable' ? 'active' : ''}`}
+              aria-pressed={density === 'comfortable'}
               onClick={() => setDensity('comfortable')}
             >
               기본
             </button>
-            <button type="button" className={`preset-chip ${density === 'focus' ? 'active' : ''}`} onClick={() => setDensity('focus')}>
+            <button
+              type="button"
+              className={`preset-chip ${density === 'focus' ? 'active' : ''}`}
+              aria-pressed={density === 'focus'}
+              onClick={() => setDensity('focus')}
+            >
               집중
             </button>
           </div>
@@ -361,9 +448,17 @@ export function Dashboard() {
 
       {refreshing && <p className="dashboard-refresh-note">최신 output을 다시 불러오는 중입니다.</p>}
 
+      <DashboardNewsDesk viewModel={newsDeskViewModel} refreshing={refreshing} />
+
+      <TodayPriorityQueue queue={todayPriorityQueue} />
+
       <TodayDecisionStrip strip={todayDecisionStrip} />
 
       <ActionChangeFeed feed={actionChangeFeed} />
+
+      {riskIntelSummary && riskIntelSummary.cards.length > 0 ? (
+        <RiskIntelPanel summary={riskIntelSummary} graph={riskIntelGraph} compact />
+      ) : null}
 
       <TodaySetupBoard cards={topSetupCards} />
 
@@ -439,10 +534,7 @@ export function Dashboard() {
       {sortedWatchlistTickers.length > 0 ? (
         <WatchlistTable tickers={sortedWatchlistTickers} accountSize={accountSize} density={density} />
       ) : (
-        <div className="dashboard-empty-state">
-          <strong>{emptyState.title}</strong>
-          <p>{emptyState.body}</p>
-        </div>
+        <EmptyState title={emptyState.title} description={emptyState.body} className="dashboard-empty-state" />
       )}
     </div>
   )
@@ -597,7 +689,7 @@ function parseNumericValue(value?: string): number | null {
 
 function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <button type="button" className={`preset-chip ${active ? 'active' : ''}`} onClick={onClick}>
+    <button type="button" className={`preset-chip ${active ? 'active' : ''}`} aria-pressed={active} onClick={onClick}>
       {label}
     </button>
   )

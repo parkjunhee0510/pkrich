@@ -96,7 +96,7 @@ class GoogleNewsCollectTests(unittest.TestCase):
         fake.parse.return_value = self._build_feed(["A", "B"])
         p = GoogleNewsNewsProvider()
 
-        with patch.dict("sys.modules", {"feedparser": fake}):
+        with patch("src.collector.providers.news.google_news_news_provider.parse_feed", fake.parse):
             result = p.collect(_ctx())
 
         self.assertEqual(result.status, "success")
@@ -116,7 +116,7 @@ class GoogleNewsCollectTests(unittest.TestCase):
         fake.parse.return_value = SimpleNamespace(entries=entries)
         p = GoogleNewsNewsProvider()
 
-        with patch.dict("sys.modules", {"feedparser": fake}):
+        with patch("src.collector.providers.news.google_news_news_provider.parse_feed", fake.parse):
             result = p.collect(_ctx())
 
         # 6 feeds × 1 valid entry each = 6 items.
@@ -138,7 +138,7 @@ class GoogleNewsCollectTests(unittest.TestCase):
         )
         p = GoogleNewsNewsProvider()
 
-        with patch.dict("sys.modules", {"feedparser": fake}):
+        with patch("src.collector.providers.news.google_news_news_provider.parse_feed", fake.parse):
             result = p.collect(_ctx())
 
         self.assertEqual(len(result.items), 6)
@@ -158,7 +158,7 @@ class GoogleNewsCollectTests(unittest.TestCase):
         fake.parse.side_effect = side_effect
         p = GoogleNewsNewsProvider()
 
-        with patch.dict("sys.modules", {"feedparser": fake}):
+        with patch("src.collector.providers.news.google_news_news_provider.parse_feed", fake.parse):
             with patch(
                 "src.collector.providers.news.google_news_news_provider.record_pipeline_event"
             ) as logged:
@@ -181,7 +181,7 @@ class GoogleNewsCollectTests(unittest.TestCase):
         fake.parse.return_value = SimpleNamespace(entries=[entry])
         p = GoogleNewsNewsProvider()
 
-        with patch.dict("sys.modules", {"feedparser": fake}):
+        with patch("src.collector.providers.news.google_news_news_provider.parse_feed", fake.parse):
             result = p.collect(_ctx())
 
         self.assertTrue(all(item.source == "Bloomberg" for item in result.items))
@@ -193,7 +193,7 @@ class GoogleNewsCollectTests(unittest.TestCase):
         fake.parse.return_value = SimpleNamespace(entries=[entry])
         p = GoogleNewsNewsProvider()
 
-        with patch.dict("sys.modules", {"feedparser": fake}):
+        with patch("src.collector.providers.news.google_news_news_provider.parse_feed", fake.parse):
             result = p.collect(_ctx())
 
         # Feed names include "Google News", "Yahoo Finance", "Reuters", etc.

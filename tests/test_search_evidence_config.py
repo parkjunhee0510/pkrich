@@ -1,15 +1,16 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from src.collector.search_evidence_config import SearchEvidenceConfig, load_search_evidence_config
 
 
 class SearchEvidenceConfigTests(unittest.TestCase):
-    def test_defaults_keep_search_evidence_cache_only(self) -> None:
+    def test_defaults_enable_live_priority_refresh(self) -> None:
         config = SearchEvidenceConfig()
 
-        self.assertEqual(config.mode, "cache")
+        self.assertEqual(config.mode, "openai")
         self.assertEqual(config.provider, "openai")
         self.assertEqual(config.max_search_tickers_per_run, 5)
         self.assertEqual(config.max_queries_per_ticker, 2)
@@ -54,6 +55,34 @@ class SearchEvidenceConfigTests(unittest.TestCase):
         self.assertEqual(config.estimated_input_tokens_per_query, 700)
         self.assertEqual(config.estimated_output_tokens_per_query, 500)
         self.assertEqual(config.query_templates, ("{ticker} latest earnings", "{ticker} risk factors"))
+
+    def test_env_override_can_enable_limited_live_refresh(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "search_evidence.yaml"
+            path.write_text(
+                "\n".join(
+                    [
+                        "mode: cache",
+                        "max_search_tickers_per_run: 5",
+                        "max_queries_per_ticker: 2",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.dict(
+                "os.environ",
+                {
+                    "SEARCH_EVIDENCE_MODE": "openai",
+                    "SEARCH_EVIDENCE_MAX_TICKERS_PER_RUN": "2",
+                    "SEARCH_EVIDENCE_MAX_QUERIES_PER_TICKER": "1",
+                },
+            ):
+                config = load_search_evidence_config(str(path))
+
+        self.assertEqual(config.mode, "openai")
+        self.assertEqual(config.max_search_tickers_per_run, 2)
+        self.assertEqual(config.max_queries_per_ticker, 1)
 
 
 if __name__ == "__main__":

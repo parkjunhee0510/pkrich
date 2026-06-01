@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { TablePageSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
+import { EmptyState } from '../components/ui/EmptyState'
 import { parseNumericChange, changeColor } from '../utils/format'
 import type { MacroEvent, UpcomingEvent } from '../types'
 
@@ -52,7 +53,14 @@ export function Calendar() {
 
   if (loading) return <TablePageSkeleton title="캘린더" />
   if (error) return <ErrorState message={error} />
-  if (!data || data.days.length === 0) return <p className="status">No data available.</p>
+  if (!data || data.days.length === 0) {
+    return (
+      <EmptyState
+        title="표시할 캘린더 데이터가 없습니다."
+        description="대시보드 출력이 생성되면 실적, 배당, 이벤트 일정이 여기에 표시됩니다."
+      />
+    )
+  }
 
   const latestDay = data.days[data.days.length - 1]
 
@@ -145,12 +153,14 @@ export function Calendar() {
           className="dashboard-search"
           type="search"
           placeholder="종목명 또는 티커 검색"
+          aria-label="캘린더 종목명 또는 티커 검색"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <select
           className="dashboard-filter"
           value={eventTypeFilter}
+          aria-label="캘린더 이벤트 유형 필터"
           onChange={(e) => setEventTypeFilter(e.target.value)}
         >
           <option value="ALL">전체 이벤트</option>

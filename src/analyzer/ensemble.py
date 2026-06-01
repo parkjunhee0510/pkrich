@@ -7,6 +7,11 @@ from typing import Any
 from src.analyzer.orchestrator import AnalysisOrchestrator
 from src.analyzer.payloads import payloads_from_analyses
 from src.analyzer.quality_summary import select_quality_summary_by_source
+from src.analyzer.smart_router import (
+    build_router_scores,
+    estimate_deep_review_cost,
+    rank_router_candidates,
+)
 from src.decision.decision_layer import generate_decisions
 from src.types import (
     CollectedTickerData,
@@ -99,14 +104,28 @@ class AnalysisEnsemble:
                 in_portfolio=item.ticker in portfolio_tickers,
             )
         ]
+        router_scores = build_router_scores(
+            watchlist,
+            economy_decision_map,
+            analyses_by_ticker=economy_map,
+            collected_by_ticker=collected,
+            portfolio_tickers=portfolio_tickers,
+            run_date=run_date,
+        )
         target_tickers = _select_target_tickers(
             eligible_tickers,
             economy_decision_map,
             watchlist,
             self.config,
             portfolio_tickers=portfolio_tickers,
+            router_scores=router_scores,
         )
-        skipped_due_to_cap = [ticker for ticker in eligible_tickers if ticker not in target_tickers]
+        skipped_due_to_priority = [ticker for ticker in eligible_tickers if ticker not in target_tickers]
+        skipped_due_to_cap = list(skipped_due_to_priority)
+        router_budget_estimate = estimate_deep_review_cost(
+            load_model_profile(profile_name=self.config.second_model),
+            selected_count=len(target_tickers),
+        )
 
         deep_map: dict[str, TickerAnalysis] = {}
         deep_decision_map: dict[str, TickerDecision] = {}
@@ -129,6 +148,9 @@ class AnalysisEnsemble:
             "deep_executed_modules": [],
             "tie_break_executed_modules": [],
             "third_review_tickers": [],
+            "router_scores": router_scores,
+            "skipped_due_to_priority": skipped_due_to_priority,
+            "router_budget_estimate": router_budget_estimate,
         }
         portfolio_result = dict(self.economy_orchestrator.portfolio_result)
         economy_quality_summary_by_ticker = dict(getattr(self.economy_orchestrator, "quality_summary_by_ticker", {}))
@@ -151,6 +173,9 @@ class AnalysisEnsemble:
                 config=self.config,
                 portfolio_tickers=portfolio_tickers,
                 run_date=run_date,
+                router_scores=router_scores,
+                skipped_due_to_priority=skipped_due_to_priority,
+                router_budget_estimate=router_budget_estimate,
             )
 
         if target_tickers:
@@ -377,10 +402,17 @@ def _select_target_tickers(
     config: EnsembleConfig,
     *,
     portfolio_tickers: set[str] | None = None,
+    router_scores: dict[str, dict[str, object]] | None = None,
 ) -> list[str]:
     if not config.enabled:
         return []
     portfolio_tickers = portfolio_tickers or set()
+    if router_scores:
+        ranked = rank_router_candidates(eligible_tickers, router_scores, watchlist)
+        if config.max_daily_ensemble == 0:
+            return ranked
+        return ranked[: config.max_daily_ensemble]
+
     watchlist_order = {item.ticker: index for index, item in enumerate(watchlist)}
 
     def _sort_key(ticker: str) -> tuple[int, float, float, int]:
@@ -424,13 +456,20 @@ def build_routing_log(
     config: EnsembleConfig,
     portfolio_tickers: set[str] | None = None,
     run_date: date | None = None,
+    router_scores: dict[str, dict[str, object]] | None = None,
+    skipped_due_to_priority: list[str] | None = None,
+    router_budget_estimate: dict[str, object] | None = None,
 ) -> dict[str, Any]:
     portfolio_tickers = portfolio_tickers or set()
+    router_scores = router_scores or {}
+    skipped_due_to_priority = skipped_due_to_priority or []
     selected_tickers = set(target_tickers)
+    priority_skipped_tickers = set(skipped_due_to_priority)
     entries: list[dict[str, Any]] = []
     for item in watchlist:
         decision = decision_map.get(item.ticker)
         in_portfolio = item.ticker in portfolio_tickers
+        router_score = router_scores.get(item.ticker, {})
         entries.append(
             {
                 "ticker": item.ticker,
@@ -440,6 +479,9 @@ def build_routing_log(
                 "reason": _classify_routing_reason(decision, config, in_portfolio=in_portfolio),
                 "action": decision.action if decision else None,
                 "conviction": decision.conviction if decision else None,
+                "router_priority_score": float(router_score.get("priority_score", 0.0) or 0.0),
+                "router_reason_codes": list(router_score.get("reason_codes", []) or []),
+                "skipped_due_to_priority": item.ticker in priority_skipped_tickers,
             }
         )
     return {
@@ -451,6 +493,8 @@ def build_routing_log(
         "portfolio_priority": config.portfolio_priority,
         "deep_pass_count": len(selected_tickers),
         "selected_tickers": target_tickers,
+        "skipped_due_to_priority": skipped_due_to_priority,
+        "router_budget_estimate": router_budget_estimate or {},
         "tickers": entries,
     }
 

@@ -1,0 +1,289 @@
+/* Risk Intelligence graph and dashboard cards */
+
+.risk-intel-page,
+.risk-intel-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.risk-intel-panel {
+  padding: var(--space-5);
+  border: var(--rule-weight) solid var(--ink);
+  background: var(--paper);
+  box-shadow: var(--shadow-hard);
+}
+
+.risk-intel-panel-compact {
+  padding: var(--space-4);
+}
+
+.risk-intel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.risk-intel-head h2 {
+  margin: 0.2rem 0;
+}
+
+.risk-intel-head p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.risk-intel-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 14rem;
+}
+
+.risk-intel-status,
+.risk-intel-meta,
+.risk-intel-link,
+.risk-intel-score,
+.risk-intel-evidence {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--ink);
+  background: var(--bone);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  line-height: 1.2;
+}
+
+.risk-intel-status-ok { background: var(--pos-block); color: var(--on-pos-block); }
+.risk-intel-status-partial { background: var(--caution-block); color: var(--ink); }
+.risk-intel-status-degraded,
+.risk-intel-status-error { background: var(--neg-block); color: var(--on-neg-block); }
+
+.risk-intel-link {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.risk-intel-link:hover {
+  text-decoration: underline;
+}
+
+.risk-intel-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr);
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.risk-intel-card-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.risk-intel-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 2px solid var(--ink);
+  background: var(--bone);
+}
+
+.risk-intel-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.risk-intel-card p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.risk-intel-level-alert { border-left: 0.5rem solid var(--neg-block); }
+.risk-intel-level-warning { border-left: 0.5rem solid var(--caution-block); }
+.risk-intel-level-observation { border-left: 0.5rem solid var(--info-block); }
+
+.risk-intel-card-meta,
+.risk-intel-chip-row,
+.risk-intel-sector-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.risk-intel-level-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 800;
+}
+
+.risk-intel-ticker-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.9rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+.risk-intel-ticker-chip a {
+  color: var(--ink);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.risk-intel-ticker-chip a:hover {
+  text-decoration: underline;
+}
+
+.risk-intel-ticker-chip.is-holding {
+  border-width: 2px;
+  background: var(--pos-block);
+  color: var(--on-pos-block);
+}
+
+.risk-intel-ticker-chip.is-watchlist {
+  background: var(--info-block);
+  color: var(--on-info-block);
+}
+
+.risk-intel-ticker-chip span {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+}
+
+.risk-intel-sector-row span,
+.risk-intel-cap-note {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.25rem 0.5rem;
+  border: 1px dashed var(--ink);
+  background: var(--paper);
+  font-size: 0.75rem;
+}
+
+.risk-intel-map-shell,
+.risk-intel-map-empty {
+  min-height: 18rem;
+  border: 2px solid var(--ink);
+  background: var(--bone);
+  padding: var(--space-4);
+}
+
+.risk-intel-map-empty,
+.risk-intel-empty {
+  display: grid;
+  place-items: center;
+  min-height: 8rem;
+  color: var(--ink-soft);
+}
+
+.risk-intel-map-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.risk-intel-map {
+  width: 100%;
+  min-height: 15rem;
+  overflow: visible;
+}
+
+.risk-intel-map line {
+  stroke: var(--ink);
+  stroke-width: 0.6;
+}
+
+.risk-intel-map text {
+  font-family: var(--font-mono);
+  font-size: 3px;
+  text-anchor: middle;
+  fill: var(--ink);
+}
+
+.risk-intel-node circle {
+  stroke: var(--ink);
+  stroke-width: 0.9;
+  fill: var(--paper);
+}
+
+.risk-intel-node-issue circle,
+.risk-intel-node-policy circle,
+.risk-intel-node-security circle {
+  fill: var(--caution-block);
+}
+
+.risk-intel-node-sector circle {
+  fill: var(--info-block);
+}
+
+.risk-intel-node-ticker circle {
+  fill: var(--pos-block);
+}
+
+.risk-intel-secondary-note {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.risk-intel-warning-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 2px solid var(--ink);
+  background: var(--bone);
+}
+
+.risk-intel-warning-panel h3 {
+  margin: 0;
+}
+
+.risk-intel-warning-panel ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.risk-intel-warning-panel li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+@media (max-width: 860px) {
+  .risk-intel-head,
+  .risk-intel-status-row {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .risk-intel-head {
+    flex-direction: column;
+  }
+
+  .risk-intel-layout {
+    grid-template-columns: 1fr;
+  }
+}

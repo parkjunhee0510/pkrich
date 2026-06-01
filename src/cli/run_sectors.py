@@ -21,10 +21,13 @@ from src.collector.sector_scan import scan_sectors
 from src.output.json_export import _sync_web_public_data
 from src.output.sectors_json import write_sectors_json
 from src.utils.config import load_sectors, load_watchlist
+from src.utils.env import sanitize_proxy_environment
 from src.utils.pipeline_logging import record_pipeline_event
 
 
 def main() -> None:
+    sanitize_proxy_environment()
+
     parser = argparse.ArgumentParser(
         description="Run the sector explorer scan only (no analyzer, no decision)."
     )

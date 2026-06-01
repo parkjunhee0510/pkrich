@@ -1,7 +1,8 @@
 # 주식 리서치 자동화 시스템 — 설계 문서
 
-> **상태**: v4  
+> **상태**: v5
 > **작성일**: 2026-04-15  
+> **최종 업데이트**: 2026-05-19
 > **작성자**: 박준희  
 
 ---
@@ -17,7 +18,6 @@
 - 관심 종목의 시세/재무/뉴스를 **자동으로 수집**하고, AI가 **구조화된 리서치 노트**를 생성
 - 일일/주간 Markdown 노트 및 React 웹 대시보드로 데이터 시각화
 - Obsidian vault에 `.md` 파일로 저장하여 누적 기록 관리 (선택적)
-- **월 운영 비용 $5 이하** 유지
 
 ### 1.3 비목표 (Non-Goals)
 
@@ -118,7 +118,7 @@
 │           React 대시보드 빌드 → GitHub Pages 배포    │
 │           (Dashboard / TickerDetail / Portfolio /    │
 │            Signals / Backtest / Calendar /           │
-│            Chat / Scenario)                         │
+│            Chat / Scenario / Risk Intel)             │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -126,38 +126,72 @@
 
 ```
 1. GitHub Actions cron 트리거 (UTC 22:00 = KST 07:00, 미 장 마감 후)
-2. watchlist.yaml + portfolio.yaml 로드 (관심 종목 + 보유 포지션)
-3. yfinance로 각 종목의 시세/재무/포지셔닝 데이터 수집 (6개월 히스토리 포함)
-   → 6개월 히스토리에서 7D / 30D 가격 변화율 직접 계산
-   → ATR(14), RVOL, Gap%, SMA50/200 위치, 52W 위치, RS vs SPY 계산
-   → 포지셔닝: 공매도 %, 애널리스트 목표가/추천, 기관/내부자 보유, 옵션 IV
-   → 가격 수집 실패 시 Stooq fallback
-   → 재무/이벤트 수집 실패 시 Alpha Vantage fallback (KEY 설정 시)
-4. ^GSPC (S&P 500), ^NDX (NASDAQ 100)으로 시장 개요 수집
-5. Google News RSS + DuckDuckGo Search로 종목별 뉴스 수집/보강
-6. IR RSS (회사 공식 뉴스룸) + SEC EDGAR 공시 수집
-   → 8-K Item 번호 파싱 (2.02 실적, 5.02 임원 교체 등)
-   → hard/medium/soft catalyst 분류 + importance_score 부여
-7. 수집 데이터를 OpenAI Responses API에 전달 (strict JSON schema)
-   → MODEL_PROFILE (economy/standard/deep)과 token_estimator 기반
-     동적 배치 크기 결정 (BATCH_SIZE 환경변수 오버라이드 가능)
-   → cost_tracker.py가 호출별 토큰/비용 누적 기록
-   → API 실패 시 다요소 점수 기반 deterministic fallback 분석
-8. 포트폴리오 현황 계산 (현재 시세 × 보유 수 → 평가금액/손익)
-9. 시그널 사후 업데이트: signal_tracker.csv 에서 1D/5D/20D 경과된
-   과거 시그널에 실제 수익률 기록
-10. 오늘 시그널 기록: 각 종목의 signal_or_takeaway → CSV에 append
-11. signal_stats 로드: bull/bear/neutral별 승률·평균 수익률 계산
-12. Markdown 출력: 일일 노트(포트폴리오 섹션 포함), 주간 노트,
-    종목별 상세 노트 생성
-13. JSON 출력: dashboard.json (portfolio_summary, signal_stats 포함),
-    price_history.json, ticker_timelines.json 생성
-    → web/public/output/data/에 자동 동기화
-14. Obsidian 동기화 (OBSIDIAN_VAULT_PATH 설정 시)
-    → Slack 요약 발송 (SLACK_WEBHOOK_URL 설정 시)
-    → 파이프라인 이벤트 로그 기록 (JSONL + 요약 JSON)
-15. Git auto-commit → GitHub Pages 대시보드 자동 배포
+2. main.py가 CLI 플래그에 따라 run_pipeline(), collect_only(), sector scan을 분기
+3. watchlist.yaml + portfolio.yaml + models.yaml + search_evidence.yaml 로드
+4. Collector가 시장/시세/재무/뉴스/공시/매크로/정책/피어 후보를 정규화
+   → 가격 수집 실패 시 Stooq 등 fallback
+   → 누락 가격은 datastore 가격 이력으로 보강
+   → 실제 시장일(effective market date)을 가격 이력에서 감지
+5. 포트폴리오 현황, 매크로 민감도, 시장 레짐, 매크로 내러티브 생성
+6. Analyzer가 ModuleRegistry 순서대로 결정론 모듈 → LLM 모듈을 실행
+   → raw payload와 fallback payload를 모두 유지
+   → strict JSON schema, validator, hallucination guard 적용
+   → LLM evidence manifest를 hash-only JSONL로 기록
+7. AnalysisEnsemble이 economy 전체 분석 후 Smart Model Router로 deep review 후보를 선별
+   → max_daily_ensemble cap 안에서만 deep/tie-break 경로 실행
+   → BudgetGuard가 shadow/enforce 설정에 따라 optional LLM 경로를 평가
+8. Committee가 growth/value/risk/macro/PM 역할별 리뷰를 생성
+   → committee output은 presentation/review 데이터이며 공식 결정의 source of truth가 아님
+9. State refresh가 과거 시그널 1D/5D/20D 수익률과 triple-barrier label을 갱신
+10. Decision layer가 rule-based factor scoring으로 buy/watch/avoid를 생성
+    → data_quality_score, search_evidence_score, gate metadata는 confidence_meta에 기록
+    → 기본 gate 모드는 shadow이며, enforce는 명시적 환경변수로만 사용
+11. Collector search evidence 경로가 cache-first payload를 만들고, 필요 시 provider mode로 우선 후보를 refresh
+    → 기본은 cache mode라 정상 daily run에서 live search 비용이 발생하지 않음
+12. Datastore가 현재 run의 signal row와 decision metadata를 기록
+13. Output layer가 Markdown, sharded JSON, web-public mirror, audit/quality/cost/routing/performance artifact를 생성
+14. Risk Intelligence Graph가 policy impact, search evidence, portfolio/watchlist, sector exposure를 읽어 정적 네트워크 artifact를 생성
+    → Phase 1 daily batch는 외부 Tier 2 web search provider를 호출하지 않고 기존 cache/schema만 사용
+15. Search audit, risk intelligence, analysis performance, routing outcome, performance baseline/trends는 read-only telemetry/설명 artifact로 기록
+16. Slack/alert, pipeline JSONL/summary, API status, GitHub Pages 배포가 후속 처리
 ```
+
+### 2.3 현재 아키텍처 불변식
+
+현재 파이프라인의 핵심 불변식은 다음 순서를 보존하는 것이다.
+
+```
+collect -> analyze -> state -> output -> store -> log
+```
+
+레이어 경계:
+
+- Collector: 외부 API, provider fallback, rate limit, cache-first search evidence를 소유한다.
+- Analyzer: LLM prompt, structured output, module DAG, ensemble, committee, evidence manifest, search audit를 소유한다.
+- Decision: 공식 `buy` / `watch` / `avoid`, conviction, factor reasoning, confidence metadata를 소유한다.
+- State: signal tracker, realized return, triple-barrier label, signal statistics를 재현 가능하게 관리한다.
+- Output: Markdown/JSON/web mirror/health report를 쓰고 risk intelligence 설명 artifact를 만들되 decision을 재계산하지 않는다.
+- Datastore: 가격 이력, signal row, analysis run metadata의 단일 persistence boundary다.
+- Logging: 관측성 artifact를 만들되 business behavior를 바꾸지 않는다.
+- Web: `output/data`의 정적 소비자이며 공식 결정, 성능 telemetry, routing telemetry를 재계산하지 않는다.
+
+### 2.4 현재 주요 산출물
+
+`output/data`가 웹과 자동화 소비자의 source of truth다. 대표 산출물:
+
+- `index.json`, `dashboard_history.json`, `tickers/<TICKER>/latest.json`, `tickers/<TICKER>/history.json`
+- `price_history.json`, `ticker_timelines.json`, `api_status.json`, `api_ticker_matrix.json`
+- `analysis_quality.json`, `validation_warnings.json`, `cost_log.json`
+- `routing_log.json`, `routing_log_history.json`, `routing_outcome.json`
+- `search_evidence.json`, `search_audit.json`
+- `risk_intel_graph.json`, `risk_intel_summary.json`, `risk_intel_refresh_log.json`
+- `analysis_performance.json`, `performance_baseline.json`, `performance_trends.json`
+- `signal_quality.json`, `backtest_summary.json`, `monthly_summary.json`, `factor_audit.json`
+- `llm_evidence/<DATE>.jsonl`, `llm_audit/<DATE>.json`
+
+이 중 search evidence, search audit, risk intelligence, routing outcome, analysis performance, performance baseline/trends, backtest summary는 관측/검토/설명용 산출물이다. 공식 decision을 덮어쓰거나 factor weight를 재학습하는 입력으로 사용하지 않는다.
+
+Risk intelligence artifact의 `generation.scoring_config_version`은 score weights/threshold/cap/half-life/hop-decay 변경을 추적하고, `generation.confidence_config_version`은 edge confidence band table 변경을 추적한다. 두 버전이 바뀌면 calibration fixture와 output health check가 함께 갱신되어야 한다.
 
 ---
 
@@ -429,13 +463,16 @@ S&P 500: 5,234.18 (+0.45%) | NASDAQ 100: 16,892.33 (+0.62%)
 
 **주간 노트**: 해당 주 거래일 데이터를 집계하여 상위 등락 종목, 반복 뉴스, 주간 Action Items 제공.
 
-#### JSON 출력 3종
+#### 주요 JSON 출력
 
 | 파일 | 내용 | 용도 |
 |---|---|---|
 | `dashboard.json` | 전체 날짜별 분석 데이터 (티커, 시그널, 뉴스톤, 이벤트 등) | 웹 대시보드 메인 |
 | `price_history.json` | 날짜별 종가/등락률 배열 | 웹 가격 차트 |
 | `ticker_timelines.json` | 종목별 날짜 타임라인 (최대 90일) | 웹 타임라인 뷰 |
+| `risk_intel_graph.json` | 정책/안보/사회 이슈와 섹터/종목 전파 경로, 점수 breakdown, health metadata | `/risk-intel` 네트워크 맵 |
+| `risk_intel_summary.json` | 한국어 카드 요약, 보유/관심 종목 구분, top-N alert/warning 카드 | 대시보드 compact risk card |
+| `risk_intel_refresh_log.json` | manual refresh 후보 patch와 provider counter 계약 | 후속 manual refresh 운영 로그 |
 
 파이프라인 실행 시 `web/public/output/data/`로 자동 동기화.
 
@@ -485,8 +522,28 @@ React (Vite + TypeScript + Recharts) 기반 정적 사이트. GitHub Pages로 �
 | Calendar | `/calendar` | 실적 발표/이벤트 캘린더 |
 | Chat | `/chat` | 한국어 Q&A 인터페이스 |
 | Scenario | `/scenario` | What-if 시나리오 분석 |
+| Risk Intel | `/risk-intel` | 정책/안보/사회 이슈가 섹터와 보유/관심 종목으로 전파되는 네트워크 맵 |
 
 **배포**: `deploy-dashboard.yml`이 `web/**` 또는 `output/data/**` 변경 시 자동 빌드 → GitHub Pages 배포.
+
+### 3.6 현재 운영 레이어 보정
+
+현재 코드는 초기 v4 설계보다 모듈화가 더 진행되어 있으며, 다음 파일군을 우선 기준으로 본다.
+
+| 레이어 | 현재 주요 파일 | 책임 |
+|---|---|---|
+| Pipeline | `src/pipeline.py`, `main.py` | daily full run, collect-only, optional sector scan 분기 |
+| Collector | `src/collector/orchestrator.py`, `src/collector/providers/*`, `src/collector/search_evidence.py` | 외부 데이터 수집, fallback, search evidence cache/provider 경로 |
+| Analyzer | `src/analyzer/orchestrator.py`, `src/analyzer/ensemble.py`, `src/analyzer/smart_router.py`, `src/analyzer/modules/*` | module DAG, economy/deep/tie-break ensemble, Smart Model Router |
+| Committee | `src/analyzer/committee.py`, `src/analyzer/committee_prompt.py` | 역할별 debate, PM summary, presentation-only review |
+| Decision | `src/decision/decision_layer.py`, `src/decision/factors/*`, `src/decision/search_quality.py` | rule-based official action, conviction, quality gate metadata |
+| State | `src/utils/signal_tracker.py`, `src/utils/signal_metadata_backfill.py` | signal row, realized return, triple-barrier label, legacy metadata backfill |
+| Datastore | `src/utils/datastore.py`, `src/utils/datastore_csv.py`, `src/utils/datastore_sqlite.py` | CSV/SQLite persistence abstraction |
+| Output | `src/output/*`, `src/output/json_writer.py`, `src/output/web_sync_contract.py` | Markdown/JSON/report/web mirror, risk intelligence artifact, safe JSON write/parse-back |
+| Performance | `src/utils/performance_metrics.py`, `src/utils/performance_analytics.py`, `src/output/performance.py`, `src/output/analysis_performance.py` | read-only run quality, signal performance, routing/evidence/cost telemetry |
+| Web | `web/src/*`, `web/vite.config.ts` | static artifact consumption; local dev bridge only in Vite serve mode |
+
+Local Vite 개발 서버는 `/api/local-research/*`와 `/api/local-portfolio/*` bridge를 제공해 watchlist 추가, portfolio 저장, `python main.py` 실행을 도울 수 있다. 이 bridge는 production static build에 포함되는 business logic이 아니며, decision/analyzer/provider 책임을 대신하지 않는다.
 
 ---
 
@@ -695,6 +752,10 @@ watchlist:
 
 30종목으로 확장 시에도 ~$0.47/월. 목표($5) 대비 10배 이상 여유.
 
+현재 비용 통제는 `config/models.yaml`의 profile, module override, ensemble cap, BudgetGuard가 함께 담당한다. BudgetGuard의 기본 모드는 shadow이며 `ensemble_deep`, `ensemble_tie_break`, `committee_deep`, `macro_narrative`, `policy_impact`, `search_evidence` 같은 optional 고비용 경로를 사전 평가한다.
+
+`config/search_evidence.yaml`의 기본값은 `mode: cache`다. OpenAI Web Search provider mode는 명시적으로 켜고 API key/rate limit/cap을 확인한 경우에만 사용한다. Smart Model Router가 search evidence priority ticker를 넘기더라도 `max_search_tickers_per_run` cap을 늘리거나 추가 호출을 만들면 안 된다.
+
 ---
 
 ## 7. 로깅
@@ -714,6 +775,16 @@ watchlist:
 - provider 사용 횟수
 - 최근 에러 목록
 - 티커별 top scored headline
+
+운영 리포트는 `output/data`에도 파생된다.
+
+- `analysis_quality.json`: validation, hallucination, warning trend
+- `cost_log.json`: profile별 cost/token/call, BudgetGuard decision, routing count
+- `routing_outcome.json`: deep review selection, priority skip, router score, estimated cost
+- `performance_baseline.json`, `performance_trends.json`: JSON health, cost, quality, evidence, signal telemetry
+- `analysis_performance.json`: signal performance, conviction calibration, regime performance, factor attribution, action-change reasons
+
+이 리포트들은 관측성 산출물이며 decision layer의 공식 결정을 변경하지 않는다.
 
 ---
 
@@ -739,6 +810,12 @@ watchlist:
 | **Phase 16** | 시그널 트래커 (1D/5D/20D 수익률 검증), 백테스트 엔진, 월간 요약 | ✅ 완료 |
 | **Phase 17** | FastAPI REST API, Chat Q&A 엔진, 웹 대시보드 확장 (8 페이지) | ✅ 완료 |
 | **Phase 1-0e** | Provider 아키텍처 도입 (DataProvider ABC, CollectionOrchestrator, ProviderRegistry, RateLimit) — yfinance/FMP/Finnhub/Polygon/Stooq/AlphaVantage를 우선순위 provider로 등록, shadow mode 검증 후 orchestrator 기본 경로 전환, 순수 포매터·기술지표·yfinance 헬퍼·EPS 헬퍼를 독립 모듈로 분리, price.py 1946줄 → 1491줄 축소 | ✅ 완료 |
+| **Phase 18** | Analyzer module DAG, economy/deep/tie-break ensemble, BudgetGuard shadow telemetry, LLM evidence manifest | ✅ 완료 |
+| **Phase 19** | Multi-role committee review, PM view, decision confidence metadata, data/search quality gate shadow mode | ✅ 완료 |
+| **Phase 20** | Cache-first search evidence, optional OpenAI Web Search provider boundary, search audit, web evidence badges | ✅ 완료 |
+| **Phase 21** | Smart Model Router, routing log/history/outcome, performance baseline/trends, analysis performance artifact | ✅ 완료 |
+| **Phase 22** | Portfolio command center, local portfolio edit bridge, safe web-public output sync contract | ✅ 완료 |
+| **Phase 23** | Risk Intelligence Graph Phase 1: 정책/안보/사회 이슈 네트워크 artifact, score/cap/health 검증, 한국어 dashboard card와 `/risk-intel` 맵 | ✅ 완료 |
 
 ---
 
@@ -758,8 +835,45 @@ watchlist:
 
 ## 10. 향후 확장 고려 사항
 
-현재 미구현 항목. Phase 9~17에서 배치 전략 확장, 모델 업그레이드, SQLite, 포트폴리오 트래킹, 리스크 분석, 시그널 추적, API, Chat, 웹 대시보드 확장 등을 완료.
+Phase 18~23까지 ensemble, committee, search evidence, performance telemetry, portfolio command center, risk intelligence graph가 들어왔기 때문에 향후 확장은 "정확도와 운영 신뢰도 개선" 중심으로 제한한다. 실시간 매매, 주문 실행, 복잡한 상시 서버 인프라는 계속 비목표다.
 
-| 항목 | 필요 조건 | 비고 |
-|---|---|---|
-| **한국 주식 추가** | pykrx + 한경/매경 RSS | 환율 처리 레이어 필요 |
+### 10.1 P1 실행 트랙
+
+P1은 새 기능 확장보다 운영 신뢰도를 높이는 트랙이다. 기본 정책은 report/shadow mode에서 충분한 증거를 쌓은 뒤, 필요할 때만 enforce 또는 provider mode를 명시적으로 켜는 것이다.
+
+| 트랙 | 목표 | 검증 산출물 | 완료 기준 |
+|---|---|---|---|
+| Search evidence provider 검증 | cache-only 계약을 유지한 채 제한된 live provider 검증으로 근거 coverage와 freshness를 높일 수 있는지 확인 | `search_evidence.json`, `search_audit.json`, `performance_baseline.json`의 evidence summary, provider call/error log | 기본 `mode: cache` 유지, 제한 실행에서 provider error와 stale-cache reuse가 구분되고, `max_search_tickers_per_run` cap이 보존됨 |
+| BudgetGuard report/enforce 검토 | optional LLM 경로의 would-block이 품질과 비용에 미치는 영향을 측정하고 enforce 전환 조건을 정의 | `cost_log.json`의 BudgetGuard counts, guarded path outcomes, routing counts, deep-pass value summary | 월 $5 목표 안에서 shadow decision 표본이 충분하고, enforce 전환 시 skipped path와 품질 손실 기준이 문서화됨 |
+| Analysis performance 품질 루프 | signal 결과, conviction calibration, regime/factor별 성과를 관측해 decision 품질 개선 후보를 찾음 | `analysis_performance.json`, `signal_quality.json`, `routing_outcome.json`, `backtest_summary.json` | 지표가 공식 decision을 자동 변경하지 않고, 개선 후보는 별도 shadow/report 실험으로만 연결됨 |
+| Output schema 안정화 | 생성 JSON과 web mirror 계약을 깨지 않도록 schema 최소 조건과 fixture를 강화 | `python -m src.cli.output_health_check`, output schema snapshot, web-public mirror byte match | 신규/변경 payload는 additive 우선이고, breaking change는 migration 및 fixture 업데이트가 함께 있음 |
+
+P1 공통 검증:
+
+- `python -m compileall main.py src tests`
+- 관련 단위 테스트: search evidence, BudgetGuard/model config, analysis performance, output health/schema
+- 생성 artifact 검증: `python -m src.cli.output_health_check`
+
+| 우선순위 | 항목 | 필요 조건 | 경계/주의 |
+|---|---|---|---|
+| P1 | Search evidence provider 검증 | OpenAI Web Search request shape 검증, `SEARCH_EVIDENCE_MODE=openai` 제한 실행, cache hit/stale-cache 지표 확인 | 기본값은 계속 `cache`; `max_search_tickers_per_run` cap을 늘리지 않음 |
+| P1 | BudgetGuard report/enforce 전환 검토 | shadow decision 누적, would-block 대비 품질 영향 분석, 일별/월별 비용 리포트 확인 | enforce 전환은 명시적 운영 결정 필요; 공식 decision 품질 저하 여부를 먼저 측정 |
+| P1 | Analysis performance 품질 루프 | `analysis_performance.json`, `signal_quality.json`, `routing_outcome.json`의 표본 수 확대 | 성능 지표는 관측용이며 factor weight나 공식 decision을 자동 변경하지 않음 |
+| P1 | Output schema 안정화 | `output_health_check`, snapshot fixture, web mirror byte-for-byte 검증 확대 | schema 변경은 additive 우선; breaking change는 migration 문서 필요 |
+| P1 | Risk intelligence calibration | `risk_intel_graph.json` calibration fixture, score/cap/band 회귀, stale rule health warning 표본 확대 | Phase 1 daily batch는 Tier 2 provider를 호출하지 않음; alert는 설명 artifact이며 공식 decision을 변경하지 않음 |
+| P2 | 한국 주식 추가 | pykrx, 한국 거래소 캘린더, 한경/매경/전자공시 RSS, KRW/USD 환율 레이어 | Collector 전용 provider로 격리; 미국 주식 payload와 혼합 시 통화/휴장일 표준화 필요 |
+| P2 | Portfolio tax/cash layer | 현금, 입출금, 배당, 실현손익, 환전 단가 입력 모델 | 투자/세무 조언이 아니라 기록/계산 레이어로 제한 |
+| P2 | Sector explorer 고도화 | sector ETF provider, 섹터별 breadth, 정책 tailwind, peer rank 개선 | sector payload는 output artifact이며 official ticker decision을 대체하지 않음 |
+| P2 | LLM audit gate 운영화 | `src.eval.runner` 정기 실행, R3 evidence consistency, numeric grounding, contradiction trend 확인 | audit 실패는 먼저 관측/리포트; pipeline hard fail은 별도 정책 필요 |
+| P2 | Local workflow 안전장치 | local portfolio editor delete/overwrite UX, watchlist 중복 방지, dev bridge status 개선 | Vite local bridge는 개발 편의 기능이며 production logic이 아님 |
+| P3 | Factor calibration 실험 | purged walk-forward, factor attribution 표본 확대, regime별 calibration 리포트 | 자동 재학습 금지; shadow/report mode로만 비교 |
+| P3 | Datastore retention/compaction | SQLite history growth 측정, 오래된 generated artifact 보존 정책, index 최적화 | datastore API를 우회하지 않음 |
+| P3 | Multi-currency/risk dashboard | KRW/USD, sector/country exposure, beta/macro sensitivity 통합 표시 | 웹은 finalized JSON 소비자; risk 계산은 state/utils/output 경계 안에서 수행 |
+
+확장 판단 기준:
+
+- 비용이 월 $5 목표를 넘지 않거나 초과 사유가 문서화되어야 한다.
+- 외부 API 호출은 collector 경계 안에 있어야 한다.
+- 공식 `buy` / `watch` / `avoid`는 decision layer만 생성한다.
+- 성능, 라우팅, 검색 근거, audit 산출물은 기본적으로 read-only telemetry다.
+- 웹과 GitHub Actions는 business logic의 source of truth가 아니다.

@@ -1,15 +1,4 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Cell,
-  ReferenceLine,
-  Legend,
-} from 'recharts'
+import { memo, useMemo } from 'react'
 import type { EarningsPattern, QuarterlyFinancialRow } from '../types'
 
 interface Props {
@@ -25,11 +14,15 @@ interface ChartRow {
   surprisePct: string
 }
 
+const CHART_WIDTH = 640
+const CHART_HEIGHT = 240
+const PADDING = { top: 18, right: 18, bottom: 42, left: 48 }
+
 function parseEps(v?: string): number | null {
   if (!v || v === 'N/A') return null
   const cleaned = v.replace(/[^0-9.\-+]/g, '')
-  const n = parseFloat(cleaned)
-  return isNaN(n) ? null : n
+  const n = Number.parseFloat(cleaned)
+  return Number.isNaN(n) ? null : n
 }
 
 const BEAT_MISS_LABELS: Record<string, string> = {
@@ -47,61 +40,132 @@ const SURPRISE_TREND_LABELS: Record<string, string> = {
 }
 
 function beatMissColor(bm: string): string {
-  if (bm === 'beat') return '#26a69a'
-  if (bm === 'miss') return '#ef5350'
-  return '#888'
+  if (bm === 'beat') return 'var(--pos)'
+  if (bm === 'miss') return 'var(--neg)'
+  return 'var(--cozy-muted)'
 }
 
-export function EpsSurpriseChart({ quarters, earningsPattern }: Props) {
-  if (quarters.length === 0) return null
-
-  const chartData: ChartRow[] = quarters
+function normalizeChartRows(quarters: QuarterlyFinancialRow[]): ChartRow[] {
+  return quarters
     .slice()
     .reverse()
-    .map((q) => ({
-      quarter: q.quarter,
-      actualEps: parseEps(q.eps) ?? 0,
-      estimatedEps: parseEps(q.estimated_eps),
-      beatMiss: q.beat_miss ?? 'N/A',
-      surprisePct: q.surprise_pct ?? '',
+    .map((quarter) => ({
+      quarter: quarter.quarter,
+      actualEps: parseEps(quarter.eps) ?? 0,
+      estimatedEps: parseEps(quarter.estimated_eps),
+      beatMiss: quarter.beat_miss ?? 'N/A',
+      surprisePct: quarter.surprise_pct ?? '',
     }))
-    .filter((r) => r.actualEps !== 0 || r.estimatedEps !== null)
+    .filter((row) => row.actualEps !== 0 || row.estimatedEps !== null)
+}
+
+function buildScale(rows: ChartRow[]) {
+  if (rows.length === 0) {
+    const yFor = () => CHART_HEIGHT / 2
+    return {
+      maxValue: 1,
+      minValue: -1,
+      yFor,
+      zeroY: yFor(),
+    }
+  }
+
+  const values = rows.flatMap((row) => [row.actualEps, row.estimatedEps ?? 0, 0])
+  const minValue = Math.min(...values)
+  const maxValue = Math.max(...values)
+  const range = maxValue - minValue || Math.max(1, Math.abs(maxValue))
+  const plotHeight = CHART_HEIGHT - PADDING.top - PADDING.bottom
+  const yFor = (value: number) =>
+    PADDING.top + ((maxValue - value) / range) * plotHeight
+  return {
+    maxValue,
+    minValue,
+    yFor,
+    zeroY: yFor(0),
+  }
+}
+
+function barGeometry(value: number, zeroY: number, yFor: (value: number) => number) {
+  const y = yFor(value)
+  return {
+    y: Math.min(y, zeroY),
+    height: Math.max(1, Math.abs(zeroY - y)),
+  }
+}
+
+export const EpsSurpriseChart = memo(function EpsSurpriseChart({ quarters, earningsPattern }: Props) {
+  const chartData = useMemo(() => normalizeChartRows(quarters), [quarters])
+  const scale = useMemo(() => buildScale(chartData), [chartData])
 
   if (chartData.length === 0) return null
 
+  const plotWidth = CHART_WIDTH - PADDING.left - PADDING.right
+  const slotWidth = plotWidth / chartData.length
+  const groupWidth = Math.min(48, slotWidth * 0.64)
+  const barWidth = Math.max(8, groupWidth / 2 - 3)
+  const chartLabel = `EPS surprise chart with ${chartData.length} quarters`
+
   return (
     <div className="eps-surprise-wrapper">
-      <ResponsiveContainer width="100%" height={240}>
-        <BarChart data={chartData} margin={{ top: 8, right: 16, left: 8, bottom: 0 }} barGap={2}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-          <XAxis dataKey="quarter" tick={{ fontSize: 11 }} tickLine={false} />
-          <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 8,
-              fontSize: 12,
-            }}
-            formatter={(value, name) => {
-              const numericValue = typeof value === 'number' ? value : Number(value ?? 0)
-              const label = name === 'estimatedEps' ? 'EPS 추정' : 'EPS 실제'
-              return [`$${numericValue.toFixed(2)}`, label]
-            }}
-          />
-          <Legend
-            formatter={(value) => (value === 'estimatedEps' ? 'EPS 추정' : 'EPS 실제')}
-            wrapperStyle={{ fontSize: 11 }}
-          />
-          <ReferenceLine y={0} stroke="var(--color-neutral)" strokeDasharray="2 2" />
-          <Bar dataKey="estimatedEps" fill="#888" opacity={0.4} radius={[2, 2, 0, 0]} barSize={18} />
-          <Bar dataKey="actualEps" radius={[2, 2, 0, 0]} barSize={18}>
-            {chartData.map((entry) => (
-              <Cell key={entry.quarter} fill={beatMissColor(entry.beatMiss)} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      <svg className="performance-svg-chart eps-surprise-svg" viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} role="img" aria-label={chartLabel}>
+        <title>EPS Surprise</title>
+        <desc>{chartLabel}</desc>
+        {[scale.minValue, 0, scale.maxValue].map((value, index) => (
+          <g key={`${value}-${index}`}>
+            <line
+              className={value === 0 ? 'performance-svg-zero' : 'performance-svg-grid'}
+              x1={PADDING.left}
+              x2={CHART_WIDTH - PADDING.right}
+              y1={scale.yFor(value)}
+              y2={scale.yFor(value)}
+            />
+            <text className="performance-svg-axis" x={PADDING.left - 8} y={scale.yFor(value) + 4} textAnchor="end">
+              {value.toFixed(2)}
+            </text>
+          </g>
+        ))}
+        {chartData.map((row, index) => {
+          const centerX = PADDING.left + slotWidth * index + slotWidth / 2
+          const estimated = row.estimatedEps === null
+            ? null
+            : barGeometry(row.estimatedEps, scale.zeroY, scale.yFor)
+          const actual = barGeometry(row.actualEps, scale.zeroY, scale.yFor)
+          return (
+            <g key={row.quarter}>
+              {estimated ? (
+                <rect
+                  x={centerX - barWidth - 2}
+                  y={estimated.y}
+                  width={barWidth}
+                  height={estimated.height}
+                  rx="3"
+                  fill="var(--cozy-muted)"
+                  opacity="0.46"
+                >
+                  <title>
+                    {row.quarter} estimate: ${row.estimatedEps?.toFixed(2)}
+                  </title>
+                </rect>
+              ) : null}
+              <rect
+                x={centerX + 2}
+                y={actual.y}
+                width={barWidth}
+                height={actual.height}
+                rx="3"
+                fill={beatMissColor(row.beatMiss)}
+              >
+                <title>
+                  {row.quarter} actual: ${row.actualEps.toFixed(2)} {BEAT_MISS_LABELS[row.beatMiss] ?? row.beatMiss}
+                </title>
+              </rect>
+              <text className="performance-svg-axis" x={centerX} y={CHART_HEIGHT - 18} textAnchor="middle">
+                {row.quarter}
+              </text>
+            </g>
+          )
+        })}
+      </svg>
       <div className="eps-surprise-legend">
         {chartData.map((row) => (
           <span key={row.quarter} className={`eps-chip ${row.beatMiss}`}>
@@ -124,4 +188,4 @@ export function EpsSurpriseChart({ quarters, earningsPattern }: Props) {
       ) : null}
     </div>
   )
-}
+})

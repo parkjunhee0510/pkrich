@@ -11,6 +11,15 @@
 * Location: `config/watchlist.yaml`
 * Single source of truth for tickers
 
+## Sector Explorer
+
+* Location: `config/sectors.yaml`
+* Read-only sector explorer grouping for theme/sector cards
+* Each sector should define `id`, display `name`, optional `description`, optional `benchmark_etf`, `news_keywords`, and a balanced ticker list
+* Display `name` and `description` values are Korean for the sector explorer UI; `news_keywords` stay mostly English to preserve source search quality
+* Energy coverage uses `benchmark_etf: XLE` and should avoid duplicating utility/grid infrastructure names already tracked under power-grid style themes
+* Materials/critical minerals, cloud/enterprise software, and transport/logistics are default expansion sectors for macro sensitivity, enterprise IT spending, and freight-cycle coverage
+
 ## Rules
 
 * No hardcoding of:

@@ -5,6 +5,10 @@ import { parseNumericChange, parsePrice } from '../utils/format'
 const DATA_URL = `${import.meta.env.BASE_URL}output/data/price_history.json`
 const POLL_INTERVAL_MS = 30_000
 
+let cachedPriceHistoryRows: PriceHistoryRow[] | null = null
+let cachedPriceHistorySignature = ''
+let cachedPriceHistoryLastUpdated: string | null = null
+
 export interface PriceHistoryTickerSummary {
   ticker: string
   latestPrice: string
@@ -38,11 +42,11 @@ function buildTickerSummaries(rows: PriceHistoryRow[]): PriceHistoryTickerSummar
 }
 
 export function usePriceHistoryLive() {
-  const [allRows, setAllRows] = useState<PriceHistoryRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null)
-  const signatureRef = useRef('')
-  const hasLoadedRef = useRef(false)
+  const [allRows, setAllRows] = useState<PriceHistoryRow[]>(() => cachedPriceHistoryRows ?? [])
+  const [loading, setLoading] = useState(() => cachedPriceHistoryRows === null)
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() => cachedPriceHistoryLastUpdated)
+  const signatureRef = useRef(cachedPriceHistorySignature)
+  const hasLoadedRef = useRef(cachedPriceHistoryRows !== null)
 
   const refresh = useCallback(async () => {
     try {
@@ -55,11 +59,16 @@ export function usePriceHistoryLive() {
       const nextSignature = JSON.stringify(nextRows)
       if (signatureRef.current !== nextSignature) {
         signatureRef.current = nextSignature
+        cachedPriceHistorySignature = nextSignature
+        cachedPriceHistoryRows = nextRows
         setAllRows(nextRows)
       }
-      setLastUpdated(new Date().toISOString())
+      const nextLastUpdated = new Date().toISOString()
+      cachedPriceHistoryLastUpdated = nextLastUpdated
+      setLastUpdated(nextLastUpdated)
     } catch {
       if (signatureRef.current === '') {
+        cachedPriceHistoryRows = []
         setAllRows([])
       }
     } finally {

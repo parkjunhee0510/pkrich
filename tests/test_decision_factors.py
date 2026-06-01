@@ -112,6 +112,39 @@ class DecisionFactorTests(unittest.TestCase):
         self.assertLess(score.value, 0)
         self.assertTrue(score.reasoning)
 
+    def test_portfolio_risk_factor_disabled_in_risk_on_regime(self) -> None:
+        factor = PortfolioRiskFactor()
+        signal_stats = {
+            "_portfolio_risk": {
+                "sector_exposure": {"Technology": 46.0},
+                "correlation_pairs": [{"ticker_1": "TEST", "ticker_2": "MSFT", "correlation": "0.80", "warning": "고상관"}],
+            }
+        }
+        score = factor.score(
+            _make_analysis(),
+            _make_collected(),
+            MarketRegime(regime="risk_on"),
+            signal_stats,
+        )
+        self.assertEqual(score.value, 0)
+        self.assertIn("risk_on", score.reasoning)
+
+    def test_portfolio_risk_factor_active_in_risk_off_regime(self) -> None:
+        factor = PortfolioRiskFactor()
+        signal_stats = {
+            "_portfolio_risk": {
+                "sector_exposure": {"Technology": 46.0},
+                "correlation_pairs": [{"ticker_1": "TEST", "ticker_2": "MSFT", "correlation": "0.80", "warning": "고상관"}],
+            }
+        }
+        score = factor.score(
+            _make_analysis(),
+            _make_collected(),
+            MarketRegime(regime="risk_off"),
+            signal_stats,
+        )
+        self.assertLess(score.value, 0)
+
     def test_peer_rank_factor_rewards_value_momentum_sweet_spot(self) -> None:
         factor = PeerRankFactor()
         score = factor.score(

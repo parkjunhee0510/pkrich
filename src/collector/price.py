@@ -274,6 +274,9 @@ def _collect_single_ticker(
             if beta_value is not None:
                 yfinance_beta = f"{beta_value:.2f}"
             options_summary = collect_options_summary(item.ticker)
+            # IV comes from the option chain (options_summary), not yfinance
+            # equity `.info` (which has no impliedVolatility key → always N/A).
+            implied_volatility = options_summary.get("implied_volatility", implied_volatility)
             quarterly_financials = _extract_yfinance_quarterly_financials(ticker)
             if earnings_growth == "N/A":
                 earnings_growth = _derive_growth_from_quarterly_financials(quarterly_financials)

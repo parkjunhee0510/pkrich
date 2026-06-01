@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from typing import Any
 from urllib.parse import quote_plus
 
+from src.collector.feed_fetch import parse_feed
 from src.types import NewsItem
 from src.utils.env import is_env_flag_enabled
 from src.utils.network import can_open_tcp_connection
@@ -27,7 +28,10 @@ class MacroShockRule:
     direction: str
     expires_in_days: int
     any_keywords: tuple[str, ...]
-    all_keywords: tuple[str, ...] = ()
+    # Synonym group: an event matches when it contains a primary `any_keywords`
+    # term AND (if set) ANY ONE of these qualifiers. These are alternatives, not
+    # a conjunction — do not change the matching logic to require all of them.
+    qualifier_keywords: tuple[str, ...] = ()
 
 
 _RSS_PROVIDERS = (
@@ -56,7 +60,7 @@ _RULES: tuple[MacroShockRule, ...] = (
         direction="mixed",
         expires_in_days=7,
         any_keywords=("strait of hormuz", "hormuz"),
-        all_keywords=("close", "closure", "block", "blockade", "shut"),
+        qualifier_keywords=("close", "closure", "block", "blockade", "shut"),
     ),
     MacroShockRule(
         event_type="middle_east_escalation",
@@ -68,7 +72,7 @@ _RULES: tuple[MacroShockRule, ...] = (
         direction="risk_off",
         expires_in_days=5,
         any_keywords=("iran", "israel", "middle east", "tehran", "gaza", "red sea"),
-        all_keywords=("strike", "attack", "missile", "escalat", "retaliat", "conflict", "war"),
+        qualifier_keywords=("strike", "attack", "missile", "escalat", "retaliat", "conflict", "war"),
     ),
     MacroShockRule(
         event_type="opec_supply_shock",
@@ -80,7 +84,7 @@ _RULES: tuple[MacroShockRule, ...] = (
         direction="mixed",
         expires_in_days=10,
         any_keywords=("opec", "opec+"),
-        all_keywords=("cut", "output", "production", "supply"),
+        qualifier_keywords=("cut", "output", "production", "supply"),
     ),
     MacroShockRule(
         event_type="shipping_disruption",
@@ -92,7 +96,7 @@ _RULES: tuple[MacroShockRule, ...] = (
         direction="risk_off",
         expires_in_days=7,
         any_keywords=("red sea", "shipping", "container", "freight", "suez", "port strike"),
-        all_keywords=("disrupt", "halt", "delay", "surge", "reroute", "attack"),
+        qualifier_keywords=("disrupt", "halt", "delay", "surge", "reroute", "attack"),
     ),
     MacroShockRule(
         event_type="sanctions_escalation",
@@ -150,7 +154,7 @@ def _collect_google_news(query: str, provider: dict[str, str]) -> list[NewsItem]
         site_filter = provider.get("site_filter", "").strip()
         if site_filter:
             query_with_site = f"{query} site:{site_filter}"
-        feed = feedparser.parse(f"https://news.google.com/rss/search?q={quote_plus(query_with_site)}")
+        feed = parse_feed(f"https://news.google.com/rss/search?q={quote_plus(query_with_site)}")
         items: list[NewsItem] = []
         for entry in feed.entries[:4]:
             title = str(getattr(entry, "title", "")).strip()
@@ -220,7 +224,7 @@ def _classify_macro_shock_event(item: NewsItem, run_date: date) -> dict[str, Any
     for rule in _RULES:
         if not any(keyword in text for keyword in rule.any_keywords):
             continue
-        if rule.all_keywords and not any(keyword in text for keyword in rule.all_keywords):
+        if rule.qualifier_keywords and not any(keyword in text for keyword in rule.qualifier_keywords):
             continue
         summary = _build_summary(rule)
         return {
@@ -304,7 +308,7 @@ def _macro_news_rank_key(item: NewsItem) -> tuple[int, str]:
     for rule in _RULES:
         if any(keyword in text for keyword in rule.any_keywords):
             score += _SEVERITY_SCORE.get(rule.severity, 1) * 10
-        if rule.all_keywords and any(keyword in text for keyword in rule.all_keywords):
+        if rule.qualifier_keywords and any(keyword in text for keyword in rule.qualifier_keywords):
             score += 5
     source = (item.source or "").lower()
     if "reuters" in source:

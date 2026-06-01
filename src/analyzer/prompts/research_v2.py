@@ -44,6 +44,7 @@ PROMPT_SET = {
             "peer_rank가 주어지면 PER/RS/ROE percentile을 짧게 활용할 수 있지만, percentile만으로 과장된 결론을 만들지 마세요.\n\n"
             "macro_event_summary가 주어지면 업종 전이 경로가 분명한 거시 충격만 1문장 안에서 짧게 반영하고, 공포감을 과장하지 마세요.\n\n"
             + _ANTI_HALLUCINATION_USER_RULE
+            + "financial_highlights의 숫자는 payload에 있는 값만 그대로 사용하고, 새 비율이나 가격을 계산하지 마세요.\n"
             + "금지 예시: 입력에 없는 실적일, 계약, 경영진 이름, 목표가를 단정적으로 쓰지 마세요.\n"
             "모범 예시: 확인되지 않은 슬롯은 '—' 또는 'N/A'로 두고, 검증 가능한 수치만 서술하세요.\n\n"
             "{batch_payload_json}"
@@ -61,6 +62,7 @@ PROMPT_SET = {
         user_template=(
             "각 티커에 대해 측정 가능한 리스크와 감시 사인을 최대 4개 작성해주세요. 가격, 날짜, 수치 임계값 중 하나를 반드시 포함해주세요.\n\n"
             + _ANTI_HALLUCINATION_USER_RULE
+            + "가격/날짜/수치 트리거는 payload에 있는 값만 사용하고, 새 트리거 값을 계산하거나 반올림해 만들지 마세요.\n"
             + "\n"
             "{batch_payload_json}"
         ),

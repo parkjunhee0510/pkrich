@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -75,6 +75,14 @@ vi.mock('../hooks/useDashboardData', () => ({
   }),
 }))
 
+vi.mock('../hooks/useSearchEvidenceData', () => ({
+  useSearchEvidenceData: () => ({ searchEvidence: null, loading: false, error: null }),
+}))
+
+vi.mock('../hooks/useQualityReliabilityLoopData', () => ({
+  useQualityReliabilityLoopData: () => ({ qualityLoop: null, loading: false, error: null }),
+}))
+
 vi.mock('../components/TraderDashboardPanels', () => ({
   TodaySetupBoard: () => <div data-testid="today-setup-board" />,
   EarningsBoard: () => <div data-testid="earnings-board" />,
@@ -139,8 +147,12 @@ describe('Dashboard today decision strip', () => {
       target: { value: 'NO_MATCH' },
     })
 
-    expect(screen.getByText('CAT WATCH capped')).toBeInTheDocument()
-    expect(screen.getByText('ALAB WATCH -> BUY')).toBeInTheDocument()
+    const strip = document.querySelector<HTMLElement>('.today-decision-strip-section')
+    expect(strip).not.toBeNull()
+    const stripQueries = within(strip!)
+
+    expect(stripQueries.getByText('CAT WATCH capped')).toBeInTheDocument()
+    expect(stripQueries.getByText('ALAB WATCH -> BUY')).toBeInTheDocument()
     expect(screen.getByText('현재 보기: 0 / 2')).toBeInTheDocument()
   })
 })

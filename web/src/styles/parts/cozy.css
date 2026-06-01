@@ -12,8 +12,6 @@
    swaps tokens, softens corners, warms the palette.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Gaegu:wght@400;700&family=Nanum+Pen+Script&display=swap');
-
 /* :root override block removed — variables consolidated into base :root above */
 
 
@@ -52,7 +50,7 @@ h1 { font-weight: 700; }
 .header {
   background: var(--cozy-banner-gradient);
   border: var(--cozy-border);
-  border-radius: 26px;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-hard);
   padding: 18px 24px;
   position: relative;
@@ -96,7 +94,6 @@ h1 { font-weight: 700; }
 .macro-calendar-card,
 .macro-series-card,
 .portfolio-risk-card,
-.portfolio-group-card,
 .portfolio-risk-summary-card,
 .portfolio-summary-card,
 .signal-highlight-card,
@@ -198,8 +195,6 @@ button:active { transform: translateY(0); }
 .decision-factor-chip,
 .decision-ensemble-badge,
 .ticker-ensemble-badge,
-.ticker-third-review-badge,
-.decision-third-pass-badge,
 .setup-score-badge,
 .valuation-score-badge,
 .options-context-badge,
@@ -225,18 +220,18 @@ button:active { transform: translateY(0); }
 .signal-direction-chip.bull,
 .setup-direction.bull,
 .tone-badge.bull,
-.tone-positive { background: var(--cozy-mint); border-color: #7db991; }
+.tone-positive { background: var(--cozy-mint); border-color: var(--color-positive-soft-border); }
 
 .watchlist-decision-pill.watch,
 .decision-action-badge.watch,
-.tone-neutral { background: var(--cozy-peach); border-color: #e0a870; }
+.tone-neutral { background: var(--cozy-peach); border-color: var(--color-caution-soft-border); }
 
 .watchlist-decision-pill.avoid,
 .decision-action-badge.avoid,
 .signal-direction-chip.bear,
 .setup-direction.bear,
 .tone-badge.bear,
-.tone-negative { background: var(--neg-block); border-color: #d98585; }
+.tone-negative { background: var(--neg-block); border-color: var(--color-negative-soft-border); }
 
 /* ???? inputs ?????????????????????????????????????????????????????????????????????????????????????????????????? */
 input, select, textarea,
@@ -265,7 +260,7 @@ table {
   background: var(--paper);
 }
 th {
-  background: #fceccb;
+  background: var(--cozy-cream-2);
   color: var(--cozy-ink);
   font-family: var(--font-display);
   letter-spacing: 0.02em;
@@ -273,7 +268,7 @@ th {
 }
 td { border-bottom: 1px dashed var(--cozy-gold-soft); }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: rgba(252,236,203,0.45); }
+tr:hover td { background: var(--color-accent-soft-bg); }
 
 /* ???? score badges ?????????????????????????????????????????????????????????????????????????????????????? */
 .watchlist-card-score,
@@ -290,7 +285,7 @@ tr:hover td { background: rgba(252,236,203,0.45); }
 /* ???? conviction meter ?????????????????????????????????????????????????????????????????????????????? */
 .decision-conviction-bar,
 .portfolio-risk-gauge-bar {
-  background: rgba(184,134,47,0.18);
+  background: var(--color-accent-soft-bg);
   border-radius: var(--cozy-pill-radius);
   overflow: hidden;
   border: 1px solid var(--cozy-gold-soft);
@@ -304,7 +299,7 @@ tr:hover td { background: rgba(252,236,203,0.45); }
 /* ???? toast / misc ?????????????????????????????????????????????????????????????????????????????????????? */
 .dashboard-toast,
 .dashboard-toast-stack > * {
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   border: var(--cozy-border);
   background: var(--paper);
   box-shadow: var(--shadow-hard);
@@ -374,9 +369,9 @@ body::before, body::after { display: none !important; }
 
 /* ???? skeleton loaders ?????????????????????????????????????????????????????????????????????????????? */
 .skeleton, .skeleton-row {
-  background: linear-gradient(90deg, #fceccb 0%, #fff7e4 50%, #fceccb 100%);
+  background: linear-gradient(90deg, var(--cozy-paper-2) 0%, var(--cozy-paper) 50%, var(--cozy-paper-2) 100%);
   background-size: 200% 100%;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   animation: cozyShimmer 1.6s ease-in-out infinite;
 }
 @keyframes cozyShimmer {
@@ -399,7 +394,7 @@ body::before, body::after { display: none !important; }
 .watchlist-dnd-toolbar {
   background: var(--cozy-soft-panel-bg);
   border: var(--cozy-border);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   padding: 10px 14px;
   box-shadow: var(--shadow-hard-sm);
   backdrop-filter: blur(4px);
@@ -448,7 +443,7 @@ body::before, body::after { display: none !important; }
 .valuation-score-badge.valuation-fair,
 .valuation-score-badge.valuation-overvalued,
 .signal-overall-badge {
-  color: #fff !important;
+  color: var(--color-on-bright-badge) !important;
 }
 
 /* chart container: cozy shell + ensure lightweight-charts canvas fits */
@@ -529,10 +524,10 @@ body::before, body::after { display: none !important; }
   height: 8px;
   border-radius: 50%;
   background: var(--cozy-good);
-  box-shadow: 0 0 0 4px rgba(63,169,107,.2);
+  box-shadow: 0 0 0 4px var(--color-positive-soft-bg);
 }
-.cozy-eyebrow .dot.warn { background: var(--cozy-warn); box-shadow: 0 0 0 4px rgba(217,154,58,.2); }
-.cozy-eyebrow .dot.bad  { background: var(--cozy-bad);  box-shadow: 0 0 0 4px rgba(194,90,78,.2); }
+.cozy-eyebrow .dot.warn { background: var(--cozy-warn); box-shadow: 0 0 0 4px var(--color-caution-soft-bg); }
+.cozy-eyebrow .dot.bad  { background: var(--cozy-bad);  box-shadow: 0 0 0 4px var(--color-negative-soft-bg); }
 
 .cozy-headline {
   font-family: var(--font-serif);
@@ -540,7 +535,7 @@ body::before, body::after { display: none !important; }
   font-weight: 700;
   color: var(--cozy-ink);
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
   line-height: 1.15;
 }
 .cozy-headline em { font-style: italic; color: var(--cozy-gold); }
@@ -554,40 +549,10 @@ body::before, body::after { display: none !important; }
   margin: 0;
 }
 
-.cozy-body {
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--cozy-ink-soft);
-}
-
-.cozy-caption {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--cozy-muted);
-  font-weight: 700;
-}
-
-.cozy-numeric {
-  font-family: var(--font-sans);
-  font-variant-numeric: tabular-nums;
-}
-
-.cozy-numeric-xl {
-  font-family: var(--font-serif);
-  font-size: 42px;
-  font-weight: 700;
-  color: var(--cozy-ink);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
 /* Component utilities */
 .cozy-pill {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   color: var(--cozy-ink);
   background: var(--cozy-gold-soft);
@@ -599,9 +564,9 @@ body::before, body::after { display: none !important; }
 
 .cozy-chip {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   padding: 6px 10px;
-  background: rgba(255,255,255,0.7);
+  background: var(--cozy-soft-panel-bg);
   border: 1px solid var(--cozy-border-color);
   border-radius: var(--radius-chip);
   color: var(--cozy-ink-soft);
@@ -611,8 +576,6 @@ body::before, body::after { display: none !important; }
   gap: 6px;
 }
 .cozy-chip b { color: var(--cozy-ink); font-weight: 600; }
-.cozy-chip .score-plus  { color: var(--cozy-good); font-weight: 700; }
-.cozy-chip .score-minus { color: var(--cozy-bad);  font-weight: 700; }
 
 /* ============================================================
    COZY PREMIUM — Market Regime Banner
@@ -653,7 +616,7 @@ body::before, body::after { display: none !important; }
   gap: 6px;
 }
 .market-regime-banner.cozy-premium-banner .cozy-chip.regime-driver-chip {
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--cozy-soft-panel-bg);
   border: 1px solid var(--cozy-border-color);
   color: var(--cozy-ink);
 }
@@ -667,7 +630,7 @@ body::before, body::after { display: none !important; }
 .cozy-nav-date {
   margin-left: auto;
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--cozy-muted);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.5px;
@@ -734,22 +697,22 @@ body::before, body::after { display: none !important; }
 .cozy-premium-watchlist .watchlist-decision-pill.decision-pill-buy,
 .cozy-premium-watchlist .watchlist-decision-pill.decision-pill-long,
 .cozy-premium-watchlist .watchlist-decision-pill.decision-pill-add {
-  background: rgba(63,169,107,.14);
-  color: #2a7a4a;
-  border-color: rgba(63,169,107,.3);
+  background: var(--color-positive-soft-bg);
+  color: var(--color-positive-soft-fg);
+  border-color: var(--color-positive-soft-border);
 }
 .cozy-premium-watchlist .watchlist-decision-pill.decision-pill-watch,
 .cozy-premium-watchlist .watchlist-decision-pill.decision-pill-hold {
-  background: rgba(217,154,58,.15);
-  color: #8a5e16;
-  border-color: rgba(217,154,58,.35);
+  background: var(--color-caution-soft-bg);
+  color: var(--color-caution-soft-fg);
+  border-color: var(--color-caution-soft-border);
 }
 .cozy-premium-watchlist .watchlist-decision-pill.decision-pill-avoid,
 .cozy-premium-watchlist .watchlist-decision-pill.decision-pill-reduce,
 .cozy-premium-watchlist .watchlist-decision-pill.decision-pill-short {
-  background: rgba(194,90,78,.12);
-  color: #8a3e34;
-  border-color: rgba(194,90,78,.3);
+  background: var(--color-negative-soft-bg);
+  color: var(--color-negative-soft-fg);
+  border-color: var(--color-negative-soft-border);
 }
 
 /* Score block: serif number, tabular-nums */
@@ -769,7 +732,7 @@ body::before, body::after { display: none !important; }
 .cozy-premium-decision-board h3 {
   font-family: var(--font-serif);
   color: var(--cozy-ink);
-  letter-spacing: -0.3px;
+  letter-spacing: 0;
 }
 
 .cozy-premium-decision-board .price-action-card,

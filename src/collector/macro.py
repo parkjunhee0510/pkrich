@@ -211,6 +211,25 @@ def _safe_parse_date(date_str: str) -> date | None:
         return None
 
 
+def _build_yield_curve_10y_2y(us10y: float | None, us2y: float | None) -> dict[str, str] | None:
+    """Long-end minus short-end spread.
+
+    The short end uses ^FVX (US 5Y) as the closest liquid yfinance proxy —
+    yfinance exposes no clean 2Y series. The dict key is intentionally kept as
+    ``yield_curve_10y_2y`` for backward-compat with the web contract and
+    ``market_regime``, but the human-facing label is honest about the 5Y proxy.
+    """
+    if us10y is None or us2y is None:
+        return None
+    spread = us10y - us2y
+    return {
+        "label": "10Y-5Y Spread (2Y proxy)",
+        "level": f"{spread:+.2f}",
+        "spread_bps": f"{spread * 100:+.0f}",
+        "status": _curve_status(spread),
+    }
+
+
 def _collect_macro_market_series() -> dict[str, Any]:
     if not can_open_tcp_connection("query1.finance.yahoo.com", 443):
         return {}
@@ -265,13 +284,9 @@ def _collect_macro_market_series() -> dict[str, Any]:
     us10y = level_by_key.get("us10y")
     us2y = level_by_key.get("us2y")
     us3m = level_by_key.get("us3m")
-    if us10y is not None and us2y is not None:
-        derived["yield_curve_10y_2y"] = {
-            "label": "10Y-2Y Spread",
-            "level": f"{us10y - us2y:+.2f}",
-            "spread_bps": f"{(us10y - us2y) * 100:+.0f}",
-            "status": _curve_status(us10y - us2y),
-        }
+    curve_10y_2y = _build_yield_curve_10y_2y(us10y, us2y)
+    if curve_10y_2y is not None:
+        derived["yield_curve_10y_2y"] = curve_10y_2y
     if us10y is not None and us3m is not None:
         derived["yield_curve_10y_3m"] = {
             "label": "10Y-3M Spread",

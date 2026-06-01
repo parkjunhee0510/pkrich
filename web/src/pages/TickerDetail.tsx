@@ -1,10 +1,14 @@
 ﻿import { Suspense, lazy, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import type { KeyboardEvent } from 'react'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { usePriceHistory } from '../hooks/usePriceHistory'
 import { useTickerTimeline } from '../hooks/useTickerTimeline'
 import { usePolicyData } from '../hooks/usePolicyData'
 import { useTickerAnalysis } from '../hooks/useTickerAnalysis'
+import { useQualityReliabilityLoopData } from '../hooks/useQualityReliabilityLoopData'
+import { useRiskIntelData } from '../hooks/useRiskIntelData'
+import { useSearchEvidenceData } from '../hooks/useSearchEvidenceData'
 import { DataSnapshot } from '../components/DataSnapshot'
 import { NewsItem } from '../components/NewsItem'
 import { SecFilingBadges } from '../components/SecFilingBadges'
@@ -13,12 +17,17 @@ import { DecisionCard } from '../components/DecisionCard'
 import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
 import { CommitteeDetailPanel } from '../components/CommitteeDetailPanel'
 import { SearchEvidencePanel } from '../components/SearchEvidenceBadge'
-import { TickerDetailSkeleton } from '../components/Skeleton'
+import { TickerResearchBrief } from '../components/TickerResearchBrief'
+import { InlineLoadingState, TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
+import { EmptyState } from '../components/ui/EmptyState'
 import type { SectorComparison, SignalHistoryEntry, SignalHistoryRow } from '../types'
-import { parseNumericChange, changeColor } from '../utils/format'
+import { parseNumericChange } from '../utils/format'
 import { EpsSurpriseChart } from '../components/EpsSurpriseChart'
 import { buildPositionSizingSummary, buildPriceActionTags, extractActionPlan, getLatestCatalystItem } from '../utils/trader'
+import { buildTodayPriorityQueue } from '../utils/todayPriorityQueue'
+import { findPreviousValidDay } from '../utils/actionChangeFeed'
+import { getRovingTabIndex } from '../lib/rovingTabs'
 
 const HEADER_ENSEMBLE_BADGES: Record<string, { symbol: string; label: string; className: string }> = {
   agree: { symbol: '✓✓', label: '합의 일치', className: 'ticker-ensemble-badge-agree' },
@@ -78,6 +87,41 @@ type PositionSizingSummary = {
   riskReward: string
 }
 
+function getDetailTabId(tab: DetailTab): string {
+  return `ticker-detail-tab-${DETAIL_TABS.indexOf(tab)}`
+}
+
+function getDetailPanelId(tab: DetailTab): string {
+  return `ticker-detail-panel-${DETAIL_TABS.indexOf(tab)}`
+}
+
+function getFilingTabId(tab: FilingTab): string {
+  return `ticker-filing-tab-${FILING_TABS.indexOf(tab)}`
+}
+
+function getFilingPanelId(tab: FilingTab): string {
+  return `ticker-filing-panel-${FILING_TABS.indexOf(tab)}`
+}
+
+function handleTabListKeyDown<T extends string>(
+  event: KeyboardEvent<HTMLElement>,
+  tabs: readonly T[],
+  active: T,
+  activate: (tab: T) => void,
+  getTabId: (tab: T) => string,
+) {
+  const currentIndex = Math.max(0, tabs.indexOf(active))
+  const nextIndex = getRovingTabIndex(event.key, currentIndex, tabs.length)
+  if (nextIndex === null) {
+    return
+  }
+
+  event.preventDefault()
+  const nextTab = tabs[nextIndex]
+  activate(nextTab)
+  window.requestAnimationFrame(() => document.getElementById(getTabId(nextTab))?.focus())
+}
+
 const PriceChart = lazy(() =>
   import('../components/PriceChart').then((module) => ({ default: module.PriceChart })),
 )
@@ -89,6 +133,9 @@ export function TickerDetail() {
   const { data, loading, error } = useDashboardData()
   const { rows: priceRows, loading: priceLoading } = usePriceHistory(ticker)
   const { entries: timelineEntries, loading: timelineLoading } = useTickerTimeline(ticker)
+  const { summary: riskIntelSummary } = useRiskIntelData()
+  const { searchEvidence } = useSearchEvidenceData()
+  const { qualityLoop } = useQualityReliabilityLoopData()
   const [timelineWindow, setTimelineWindow] = useState<'30' | '90'>('30')
   const [activeTab, setActiveTab] = useState<DetailTab>('개요')
   const [selectedFilingTab, setSelectedFilingTab] = useState<FilingTab>('실적')
@@ -96,7 +143,29 @@ export function TickerDetail() {
   const [filingQuery, setFilingQuery] = useState('')
   const [selectedFormType, setSelectedFormType] = useState('ALL')
 
-  const latestDay = data?.days[data.days.length - 1]
+  const days = data?.days
+  const latestDayIndex = (days?.length ?? 0) - 1
+  const latestDay = days?.[latestDayIndex]
+  const previousDay = useMemo(
+    () => (days ? findPreviousValidDay(days, latestDayIndex) : null),
+    [days, latestDayIndex],
+  )
+  const researchQueue = useMemo(
+    () =>
+      latestDay
+        ? buildTodayPriorityQueue({
+            day: latestDay,
+            previousDay,
+            searchEvidence,
+            riskIntelSummary,
+            qualityLoop,
+            limit: 8,
+          })
+        : null,
+    [latestDay, previousDay, searchEvidence, riskIntelSummary, qualityLoop],
+  )
+  const normalizedTicker = ticker?.toUpperCase()
+  const researchBriefItem = researchQueue?.items.find((item) => item.ticker === normalizedTicker) ?? null
   // Prefer the per-ticker shard (full payload incl. risks_or_watchpoints,
   // key_news, financial_highlights, signal_history, quarterly_financials).
   // Fall back to the slim index.json entry only when the shard is missing.
@@ -181,6 +250,10 @@ export function TickerDetail() {
         .sort((left, right) => compareFilingsByDate(left.published_at, right.published_at, filingSort)),
     [activeFormType, activeTabFilings, filingQuery, filingSort],
   )
+  const activeDetailTabId = getDetailTabId(activeTab)
+  const activeDetailPanelId = getDetailPanelId(activeTab)
+  const activeFilingTabId = getFilingTabId(activeFilingTab)
+  const activeFilingPanelId = getFilingPanelId(activeFilingTab)
 
   useEffect(() => {
     if (analysis) {
@@ -192,8 +265,23 @@ export function TickerDetail() {
 
   if (loading) return <TickerDetailSkeleton />
   if (error) return <ErrorState message={error} />
-  if (!data || !ticker) return <p className="status">No data available.</p>
-  if (!analysis) return <p className="status">Ticker {ticker} not found.</p>
+  if (!data || !ticker) {
+    return (
+      <EmptyState
+        title="표시할 종목 데이터가 없습니다."
+        description="대시보드 출력과 종목 파라미터를 확인한 뒤 다시 열어주세요."
+      />
+    )
+  }
+  if (!analysis) {
+    return (
+      <EmptyState
+        title={`Ticker ${ticker} not found.`}
+        description="현재 출력 파일에서 해당 티커를 찾지 못했습니다."
+        tone="warning"
+      />
+    )
+  }
   const headerEnsemble = HEADER_ENSEMBLE_BADGES[analysis.decision?.ensemble_agreement ?? 'single'] ?? HEADER_ENSEMBLE_BADGES.single
   const headerSelectionReason = analysis.analysis_consensus?.selection_reason
     ? HEADER_SELECTION_REASON_LABELS[analysis.analysis_consensus.selection_reason] ?? analysis.analysis_consensus.selection_reason
@@ -259,7 +347,7 @@ export function TickerDetail() {
         </div>
         <div className="ticker-price-group">
           <span className="ticker-price">{analysis.data_snapshot['Price']}</span>
-          <span style={{ color: changeColor(pct), fontWeight: 600, fontSize: '1.1rem' }}>
+          <span className={`ticker-daily-change ${changeToneClass(pct)}`}>
             {analysis.data_snapshot['Daily Change']}
           </span>
         </div>
@@ -268,6 +356,8 @@ export function TickerDetail() {
       {analysis.decision && (
         <DecisionCard decision={analysis.decision} analysisConsensus={analysis.analysis_consensus} />
       )}
+
+      <TickerResearchBrief ticker={analysis.ticker} item={researchBriefItem} />
 
       <SearchEvidencePanel ticker={analysis} />
 
@@ -319,13 +409,21 @@ export function TickerDetail() {
           </section>
         )
       })()}
-      <div className="ticker-detail-tabs" role="tablist" aria-label="종목 상세 섹션">
+      <div
+        className="ticker-detail-tabs"
+        role="tablist"
+        aria-label="종목 상세 섹션"
+        onKeyDown={(event) => handleTabListKeyDown(event, DETAIL_TABS, activeTab, setActiveTab, getDetailTabId)}
+      >
         {DETAIL_TABS.map((tab) => (
           <button
             key={tab}
+            id={getDetailTabId(tab)}
             type="button"
             role="tab"
             aria-selected={activeTab === tab}
+            aria-controls={getDetailPanelId(tab)}
+            tabIndex={activeTab === tab ? 0 : -1}
             className={`ticker-detail-tab ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
@@ -334,7 +432,12 @@ export function TickerDetail() {
         ))}
       </div>
 
-      <div className="ticker-detail-tab-panel" role="tabpanel">
+      <div
+        id={activeDetailPanelId}
+        className="ticker-detail-tab-panel"
+        role="tabpanel"
+        aria-labelledby={activeDetailTabId}
+      >
         {activeTab === '재무' && (
           <section className="earnings-hero-section">
             <div className="section-header-with-kicker">
@@ -396,9 +499,9 @@ export function TickerDetail() {
           <section>
             <h3>Price History</h3>
             {priceLoading ? (
-              <p>Loading chart...</p>
+              <InlineLoadingState label="가격 차트를 불러오는 중" />
             ) : (
-              <Suspense fallback={<p>Loading chart...</p>}>
+              <Suspense fallback={<InlineLoadingState label="가격 차트를 불러오는 중" />}>
                 <PriceChart rows={priceRows} />
               </Suspense>
             )}
@@ -474,13 +577,22 @@ export function TickerDetail() {
               {secFilings.length > 0 ? (
                 <>
                   <div className="filing-toolbar">
-                    <div className="filing-tabs" role="tablist" aria-label="SEC filings">
+                    <div
+                      className="filing-tabs"
+                      role="tablist"
+                      aria-label="SEC filings"
+                      onKeyDown={(event) =>
+                        handleTabListKeyDown(event, availableFilingTabs, activeFilingTab, setSelectedFilingTab, getFilingTabId)}
+                    >
                       {availableFilingTabs.map((tag) => (
                         <button
                           key={tag}
+                          id={getFilingTabId(tag)}
                           type="button"
                           role="tab"
                           aria-selected={activeFilingTab === tag}
+                          aria-controls={getFilingPanelId(tag)}
+                          tabIndex={activeFilingTab === tag ? 0 : -1}
                           className={`filing-tab ${activeFilingTab === tag ? 'active' : ''}`}
                           onClick={() => setSelectedFilingTab(tag)}
                         >
@@ -494,10 +606,16 @@ export function TickerDetail() {
                         type="search"
                         className="filing-search"
                         placeholder="공시 제목 또는 폼 검색"
+                        aria-label="공시 제목 또는 폼 검색"
                         value={filingQuery}
                         onChange={(event) => setFilingQuery(event.target.value)}
                       />
-                      <select className="filing-form-filter" value={activeFormType} onChange={(event) => setSelectedFormType(event.target.value)}>
+                      <select
+                        className="filing-form-filter"
+                        value={activeFormType}
+                        aria-label="공시 폼 유형 필터"
+                        onChange={(event) => setSelectedFormType(event.target.value)}
+                      >
                         <option value="ALL">전체 폼</option>
                         {availableFormTypes.map((formType) => (
                           <option key={formType} value={formType}>{formType}</option>
@@ -509,26 +627,33 @@ export function TickerDetail() {
                       </div>
                     </div>
                   </div>
-                  {visibleSecFilings.length > 0 ? (
-                    <ul className="news-list">
-                      {visibleSecFilings.map((filing, index) => (
-                        <li key={`${filing.published_at}-${filing.title}-${index}`} className="news-item">
-                          <SecFilingBadges tags={filing.tag ? [filing.tag] : []} />
-                          {filing.catalyst_type && <span className={`filing-catalyst-badge catalyst-${filing.catalyst_type}`}>{filing.catalyst_type} catalyst</span>}
-                          {filing.form_type && <span className="filing-form-chip">{filing.form_type}</span>}
-                          {filing.item_number && <span className="filing-form-chip">Item {filing.item_number}</span>}
-                          {filing.link ? (
-                            <a href={filing.link} target="_blank" rel="noopener noreferrer">{filing.title}</a>
-                          ) : (
-                            <span>{filing.title}</span>
-                          )}
-                          <span className="news-meta">{filing.source && ` · ${filing.source}`}{filing.published_at && ` (${filing.published_at})`}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="empty">조건에 맞는 공시자료가 없습니다.</p>
-                  )}
+                  <div
+                    id={activeFilingPanelId}
+                    className="filing-tab-panel"
+                    role="tabpanel"
+                    aria-labelledby={activeFilingTabId}
+                  >
+                    {visibleSecFilings.length > 0 ? (
+                      <ul className="news-list">
+                        {visibleSecFilings.map((filing, index) => (
+                          <li key={`${filing.published_at}-${filing.title}-${index}`} className="news-item">
+                            <SecFilingBadges tags={filing.tag ? [filing.tag] : []} />
+                            {filing.catalyst_type && <span className={`filing-catalyst-badge catalyst-${filing.catalyst_type}`}>{filing.catalyst_type} catalyst</span>}
+                            {filing.form_type && <span className="filing-form-chip">{filing.form_type}</span>}
+                            {filing.item_number && <span className="filing-form-chip">Item {filing.item_number}</span>}
+                            {filing.link ? (
+                              <a href={filing.link} target="_blank" rel="noopener noreferrer">{filing.title}</a>
+                            ) : (
+                              <span>{filing.title}</span>
+                            )}
+                            <span className="news-meta">{filing.source && ` · ${filing.source}`}{filing.published_at && ` (${filing.published_at})`}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="empty">조건에 맞는 공시자료가 없습니다.</p>
+                    )}
+                  </div>
                 </>
               ) : (
                 <p className="empty">표시할 공시자료가 없습니다.</p>
@@ -544,7 +669,7 @@ export function TickerDetail() {
                 </div>
               </div>
               {timelineLoading ? (
-                <p>Loading timeline...</p>
+                <InlineLoadingState label="종목 타임라인을 불러오는 중" />
               ) : visibleTimeline.length > 0 ? (
                 <ul className="timeline-list">
                   {visibleTimeline.map((entry) => (
@@ -1162,6 +1287,12 @@ function classifyDdayTone(value: string): EarningsCardTone {
   if (Number.isNaN(numeric)) return 'neutral'
   if (numeric <= 7) return 'negative'
   if (numeric <= 21) return 'caution'
+  return 'neutral'
+}
+
+function changeToneClass(value: number): 'positive' | 'negative' | 'neutral' {
+  if (value > 0) return 'positive'
+  if (value < 0) return 'negative'
   return 'neutral'
 }
 

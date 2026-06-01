@@ -139,7 +139,7 @@ export function PortfolioRiskPanel({ risk }: { risk?: PortfolioRisk | null }) {
       </div>
 
       {(risk.correlation_pairs ?? []).length > 0 && (
-        <div className="portfolio-risk-card" style={{ marginBottom: '1rem' }}>
+        <div className="portfolio-risk-card u-mb-4">
           <span className="price-action-label">고상관 종목 쌍</span>
           <div className="portfolio-risk-list">
             {risk.correlation_pairs!.map((pair) => (

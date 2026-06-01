@@ -3,19 +3,50 @@ import type { DashboardRepository } from '../data/DashboardRepository'
 import { staticRepository } from '../data/StaticJsonRepository'
 import type { DashboardData } from '../types'
 
+type DashboardInFlightRequest = {
+  refreshToken: number
+  promise: Promise<DashboardData>
+}
+
+const dashboardDataCache = new WeakMap<DashboardRepository, DashboardData>()
+const dashboardRequestCache = new WeakMap<DashboardRepository, DashboardInFlightRequest>()
+
 type UseDashboardDataOptions = {
   pollIntervalMs?: number
   repository?: DashboardRepository
 }
 
+function loadDashboardWithCache(repository: DashboardRepository, refreshToken: number) {
+  const inFlight = dashboardRequestCache.get(repository)
+  if (inFlight?.refreshToken === refreshToken) {
+    return inFlight.promise
+  }
+
+  const promise = repository
+    .loadDashboard(refreshToken)
+    .then((payload) => {
+      dashboardDataCache.set(repository, payload)
+      dashboardRequestCache.delete(repository)
+      return payload
+    })
+    .catch((error: unknown) => {
+      dashboardRequestCache.delete(repository)
+      throw error
+    })
+
+  dashboardRequestCache.set(repository, { refreshToken, promise })
+  return promise
+}
+
 export function useDashboardData(options: UseDashboardDataOptions = {}) {
   const { pollIntervalMs = 0, repository = staticRepository } = options
-  const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const cachedDashboardData = dashboardDataCache.get(repository)
+  const [data, setData] = useState<DashboardData | null>(() => cachedDashboardData ?? null)
+  const [loading, setLoading] = useState(() => !cachedDashboardData)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [refreshToken, setRefreshToken] = useState(0)
-  const hasLoadedRef = useRef(false)
+  const hasLoadedRef = useRef(Boolean(cachedDashboardData))
 
   const refresh = useCallback(() => {
     setError(null)
@@ -26,8 +57,7 @@ export function useDashboardData(options: UseDashboardDataOptions = {}) {
   useEffect(() => {
     let cancelled = false
 
-    repository
-      .loadDashboard(refreshToken)
+    loadDashboardWithCache(repository, refreshToken)
       .then((payload) => {
         if (cancelled) return
         setData(payload)

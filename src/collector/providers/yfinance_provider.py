@@ -284,6 +284,9 @@ class YFinanceProvider(DataProvider):
             options_summary = collect_options_summary(ticker_symbol)
         except Exception:  # noqa: BLE001
             options_summary = {}
+        # IV comes from the option chain (options_summary), not yfinance equity
+        # `.info` (which has no impliedVolatility key → always N/A).
+        implied_volatility = options_summary.get("implied_volatility", implied_volatility)
 
         return {
             "price": price,

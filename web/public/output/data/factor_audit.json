@@ -4,47 +4,1550 @@
     "5": {
       "horizon": 5,
       "collinearity": {
-        "status": "insufficient_data",
-        "sample_size": 0,
-        "pairs": [],
-        "threshold": 0.6
+        "status": "ok",
+        "sample_size": 316,
+        "horizon": 5,
+        "threshold": 0.6,
+        "pairs": [
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "macro_regime",
+            "rho": 0.863,
+            "n": 261,
+            "collinear": true
+          },
+          {
+            "factor_a": "macro_event",
+            "factor_b": "macro_regime",
+            "rho": -0.659,
+            "n": 261,
+            "collinear": true
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "macro_event",
+            "rho": -0.604,
+            "n": 272,
+            "collinear": true
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "valuation",
+            "rho": -0.583,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "portfolio_risk",
+            "rho": -0.548,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "portfolio_risk",
+            "factor_b": "macro_regime",
+            "rho": -0.398,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "portfolio_risk",
+            "factor_b": "macro_event",
+            "rho": 0.373,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "peer_rank",
+            "rho": -0.371,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "macro_event",
+            "rho": -0.315,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "macro_regime",
+            "factor_b": "policy_tailwind",
+            "rho": -0.31,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "policy_tailwind",
+            "rho": -0.3,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "signal_track_record",
+            "rho": 0.299,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "signal_track_record",
+            "rho": 0.294,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "momentum",
+            "rho": 0.286,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "peer_rank",
+            "rho": 0.282,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "peer_rank",
+            "rho": 0.282,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "peer_rank",
+            "rho": 0.256,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "portfolio_risk",
+            "rho": -0.245,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "macro_event",
+            "rho": 0.242,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "macro_regime",
+            "rho": 0.238,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "valuation",
+            "rho": -0.233,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "macro_event",
+            "rho": -0.225,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "portfolio_risk",
+            "factor_b": "policy_tailwind",
+            "rho": 0.22,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "peer_rank",
+            "factor_b": "policy_tailwind",
+            "rho": -0.211,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "macro_regime",
+            "rho": 0.208,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "macro_event",
+            "rho": 0.19,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "peer_rank",
+            "rho": 0.188,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "peer_rank",
+            "rho": 0.187,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "policy_tailwind",
+            "rho": 0.173,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "news_tone",
+            "rho": 0.171,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "peer_rank",
+            "factor_b": "macro_regime",
+            "rho": 0.169,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "valuation",
+            "rho": -0.159,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "portfolio_risk",
+            "rho": -0.153,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "macro_regime",
+            "rho": -0.148,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "fundamentals",
+            "rho": 0.145,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "peer_rank",
+            "factor_b": "portfolio_risk",
+            "rho": -0.141,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "news_tone",
+            "rho": 0.139,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "news_tone",
+            "rho": 0.138,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "regime_adjustment",
+            "rho": 0.128,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "valuation",
+            "rho": -0.126,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "valuation",
+            "rho": -0.121,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "signal_track_record",
+            "rho": 0.119,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "macro_event",
+            "factor_b": "policy_tailwind",
+            "rho": 0.118,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "macro_event",
+            "rho": -0.115,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "signal_track_record",
+            "rho": 0.114,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "peer_rank",
+            "factor_b": "macro_event",
+            "rho": -0.114,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "portfolio_risk",
+            "rho": -0.11,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "regime_adjustment",
+            "rho": -0.11,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "policy_tailwind",
+            "rho": 0.103,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "regime_adjustment",
+            "rho": 0.102,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "policy_tailwind",
+            "rho": -0.091,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "portfolio_risk",
+            "rho": -0.087,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "policy_tailwind",
+            "rho": 0.083,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "macro_regime",
+            "rho": 0.082,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "momentum",
+            "rho": 0.08,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "policy_tailwind",
+            "rho": 0.076,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "fundamentals",
+            "rho": 0.074,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "macro_regime",
+            "rho": -0.074,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "portfolio_risk",
+            "rho": 0.074,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "macro_event",
+            "rho": -0.07,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "momentum",
+            "rho": 0.069,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "macro_event",
+            "rho": -0.065,
+            "n": 272,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "portfolio_risk",
+            "rho": -0.064,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "earnings_pattern",
+            "rho": 0.062,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "policy_tailwind",
+            "rho": -0.058,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "valuation",
+            "rho": 0.057,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "policy_tailwind",
+            "rho": -0.056,
+            "n": 228,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "peer_rank",
+            "rho": 0.045,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "regime_adjustment",
+            "rho": -0.04,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "news_tone",
+            "rho": 0.039,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "signal_track_record",
+            "rho": 0.039,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "macro_regime",
+            "rho": 0.028,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "portfolio_risk",
+            "rho": -0.027,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "macro_regime",
+            "rho": 0.017,
+            "n": 261,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "regime_adjustment",
+            "rho": -0.01,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "peer_rank",
+            "rho": -0.008,
+            "n": 294,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "valuation",
+            "rho": -0.004,
+            "n": 316,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "signal_track_record",
+            "rho": -0.003,
+            "n": 316,
+            "collinear": false
+          }
+        ],
+        "collinear_pairs": [
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "macro_regime",
+            "rho": 0.863,
+            "n": 261,
+            "collinear": true
+          },
+          {
+            "factor_a": "macro_event",
+            "factor_b": "macro_regime",
+            "rho": -0.659,
+            "n": 261,
+            "collinear": true
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "macro_event",
+            "rho": -0.604,
+            "n": 272,
+            "collinear": true
+          }
+        ]
       },
       "factor_ir": {
-        "status": "insufficient_data",
-        "sample_size": 0,
-        "factors": [],
-        "weak_factors": [],
-        "threshold": 0.1
+        "status": "ok",
+        "sample_size": 316,
+        "horizon": 5,
+        "threshold": 0.1,
+        "factors": [
+          {
+            "factor": "macro_regime",
+            "ir": 0.197,
+            "n": 261,
+            "mean_return_when_positive": 6.763,
+            "mean_return_when_negative": 8.091,
+            "weak": false
+          },
+          {
+            "factor": "momentum",
+            "ir": 0.13,
+            "n": 316,
+            "mean_return_when_positive": 6.307,
+            "mean_return_when_negative": 0.0,
+            "weak": false
+          },
+          {
+            "factor": "macro_event",
+            "ir": -0.124,
+            "n": 272,
+            "mean_return_when_positive": 4.664,
+            "mean_return_when_negative": 5.866,
+            "weak": false
+          },
+          {
+            "factor": "news_tone",
+            "ir": 0.117,
+            "n": 316,
+            "mean_return_when_positive": 8.689,
+            "mean_return_when_negative": 9.559,
+            "weak": false
+          },
+          {
+            "factor": "catalyst_recency",
+            "ir": 0.115,
+            "n": 316,
+            "mean_return_when_positive": 6.475,
+            "mean_return_when_negative": 3.347,
+            "weak": false
+          },
+          {
+            "factor": "portfolio_risk",
+            "ir": -0.115,
+            "n": 294,
+            "mean_return_when_positive": 0.0,
+            "mean_return_when_negative": 7.46,
+            "weak": false
+          },
+          {
+            "factor": "valuation",
+            "ir": -0.109,
+            "n": 316,
+            "mean_return_when_positive": 6.307,
+            "mean_return_when_negative": 0.0,
+            "weak": false
+          },
+          {
+            "factor": "regime_adjustment",
+            "ir": 0.106,
+            "n": 316,
+            "mean_return_when_positive": 6.307,
+            "mean_return_when_negative": 0.0,
+            "weak": false
+          },
+          {
+            "factor": "policy_tailwind",
+            "ir": -0.047,
+            "n": 228,
+            "mean_return_when_positive": 6.123,
+            "mean_return_when_negative": 7.684,
+            "weak": true
+          },
+          {
+            "factor": "signal_track_record",
+            "ir": 0.021,
+            "n": 316,
+            "mean_return_when_positive": 5.634,
+            "mean_return_when_negative": 4.377,
+            "weak": true
+          },
+          {
+            "factor": "earnings_pattern",
+            "ir": -0.008,
+            "n": 316,
+            "mean_return_when_positive": 7.64,
+            "mean_return_when_negative": 25.499,
+            "weak": true
+          },
+          {
+            "factor": "peer_rank",
+            "ir": -0.008,
+            "n": 294,
+            "mean_return_when_positive": 5.319,
+            "mean_return_when_negative": 9.63,
+            "weak": true
+          },
+          {
+            "factor": "fundamentals",
+            "ir": 0.002,
+            "n": 316,
+            "mean_return_when_positive": 6.307,
+            "mean_return_when_negative": 0.0,
+            "weak": true
+          }
+        ],
+        "weak_factors": [
+          "policy_tailwind",
+          "signal_track_record",
+          "earnings_pattern",
+          "peer_rank",
+          "fundamentals"
+        ]
       },
       "weight_decays": {
-        "status": "insufficient_data",
+        "status": "ok",
         "horizon": 5,
-        "sample_size": 0,
+        "sample_size": 316,
         "min_required_per_factor": 50,
-        "suggestions": []
+        "decay_factor": 0.5,
+        "suggestions": [
+          {
+            "factor": "policy_tailwind",
+            "ir": -0.047,
+            "n": 228,
+            "current": {
+              "min": -8.0,
+              "max": 8.0
+            },
+            "suggested": {
+              "min": -4.0,
+              "max": 4.0
+            },
+            "reason": "|IR|=0.047 < 0.1"
+          },
+          {
+            "factor": "signal_track_record",
+            "ir": 0.021,
+            "n": 316,
+            "current": {
+              "min": -10.0,
+              "max": 15.0
+            },
+            "suggested": {
+              "min": -5.0,
+              "max": 7.5
+            },
+            "reason": "|IR|=0.021 < 0.1"
+          },
+          {
+            "factor": "earnings_pattern",
+            "ir": -0.008,
+            "n": 316,
+            "current": {
+              "min": -10.0,
+              "max": 10.0
+            },
+            "suggested": {
+              "min": -5.0,
+              "max": 5.0
+            },
+            "reason": "|IR|=0.008 < 0.1"
+          },
+          {
+            "factor": "peer_rank",
+            "ir": -0.008,
+            "n": 294,
+            "current": {
+              "min": -4.0,
+              "max": 8.0
+            },
+            "suggested": {
+              "min": -2.0,
+              "max": 4.0
+            },
+            "reason": "|IR|=0.008 < 0.1"
+          },
+          {
+            "factor": "fundamentals",
+            "ir": 0.002,
+            "n": 316,
+            "current": {
+              "min": 0.0,
+              "max": 10.0
+            },
+            "suggested": {
+              "min": 0.0,
+              "max": 5.0
+            },
+            "reason": "|IR|=0.002 < 0.1"
+          }
+        ]
       }
     },
     "20": {
       "horizon": 20,
       "collinearity": {
-        "status": "insufficient_data",
-        "sample_size": 0,
-        "pairs": [],
-        "threshold": 0.6
+        "status": "ok",
+        "sample_size": 132,
+        "horizon": 20,
+        "threshold": 0.6,
+        "pairs": [
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "macro_regime",
+            "rho": 0.883,
+            "n": 77,
+            "collinear": true
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "portfolio_risk",
+            "rho": -0.7,
+            "n": 110,
+            "collinear": true
+          },
+          {
+            "factor_a": "macro_event",
+            "factor_b": "macro_regime",
+            "rho": -0.653,
+            "n": 77,
+            "collinear": true
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "macro_regime",
+            "rho": 0.626,
+            "n": 77,
+            "collinear": true
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "valuation",
+            "rho": -0.565,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "signal_track_record",
+            "rho": 0.558,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "macro_event",
+            "rho": -0.536,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "peer_rank",
+            "rho": -0.525,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "portfolio_risk",
+            "factor_b": "macro_regime",
+            "rho": -0.51,
+            "n": 77,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "macro_event",
+            "rho": -0.471,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "policy_tailwind",
+            "rho": -0.462,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "portfolio_risk",
+            "rho": -0.452,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "peer_rank",
+            "factor_b": "policy_tailwind",
+            "rho": -0.448,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "portfolio_risk",
+            "factor_b": "macro_event",
+            "rho": 0.447,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "macro_event",
+            "rho": 0.433,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "macro_event",
+            "rho": -0.429,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "portfolio_risk",
+            "factor_b": "policy_tailwind",
+            "rho": 0.391,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "macro_regime",
+            "factor_b": "policy_tailwind",
+            "rho": -0.377,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "peer_rank",
+            "rho": 0.343,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "peer_rank",
+            "rho": 0.334,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "macro_regime",
+            "rho": -0.326,
+            "n": 77,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "policy_tailwind",
+            "rho": 0.322,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "peer_rank",
+            "rho": 0.309,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "momentum",
+            "rho": 0.3,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "signal_track_record",
+            "rho": 0.3,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "macro_regime",
+            "rho": -0.27,
+            "n": 77,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "regime_adjustment",
+            "rho": -0.264,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "macro_regime",
+            "rho": -0.262,
+            "n": 77,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "regime_adjustment",
+            "rho": -0.237,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "peer_rank",
+            "rho": 0.228,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "peer_rank",
+            "factor_b": "macro_regime",
+            "rho": 0.226,
+            "n": 77,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "macro_event",
+            "rho": 0.221,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "news_tone",
+            "rho": 0.215,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "macro_event",
+            "factor_b": "policy_tailwind",
+            "rho": 0.206,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "portfolio_risk",
+            "rho": 0.203,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "macro_regime",
+            "rho": 0.203,
+            "n": 77,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "fundamentals",
+            "rho": 0.2,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "peer_rank",
+            "factor_b": "portfolio_risk",
+            "rho": -0.194,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "peer_rank",
+            "rho": 0.19,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "policy_tailwind",
+            "rho": 0.184,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "macro_regime",
+            "rho": 0.182,
+            "n": 77,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "portfolio_risk",
+            "rho": -0.181,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "policy_tailwind",
+            "rho": -0.178,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "peer_rank",
+            "rho": 0.172,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "policy_tailwind",
+            "rho": -0.16,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "valuation",
+            "rho": 0.154,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "valuation",
+            "rho": -0.148,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "policy_tailwind",
+            "rho": -0.135,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "policy_tailwind",
+            "rho": 0.127,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "earnings_pattern",
+            "rho": -0.126,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "macro_event",
+            "rho": 0.112,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "peer_rank",
+            "factor_b": "macro_event",
+            "rho": -0.108,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "macro_event",
+            "rho": 0.107,
+            "n": 88,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "portfolio_risk",
+            "rho": -0.104,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "valuation",
+            "rho": -0.103,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "regime_adjustment",
+            "rho": -0.094,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "signal_track_record",
+            "rho": 0.092,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "valuation",
+            "rho": -0.081,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "macro_regime",
+            "rho": -0.076,
+            "n": 77,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "regime_adjustment",
+            "rho": -0.072,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "momentum",
+            "rho": -0.069,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "news_tone",
+            "rho": 0.064,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "policy_tailwind",
+            "rho": 0.063,
+            "n": 44,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "signal_track_record",
+            "rho": 0.063,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "valuation",
+            "rho": -0.063,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "signal_track_record",
+            "rho": 0.053,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "momentum",
+            "rho": -0.052,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "portfolio_risk",
+            "rho": 0.051,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "valuation",
+            "factor_b": "portfolio_risk",
+            "rho": 0.042,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "regime_adjustment",
+            "rho": -0.037,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "portfolio_risk",
+            "rho": 0.032,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "valuation",
+            "rho": 0.03,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "news_tone",
+            "rho": -0.029,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "catalyst_recency",
+            "factor_b": "peer_rank",
+            "rho": 0.028,
+            "n": 110,
+            "collinear": false
+          },
+          {
+            "factor_a": "fundamentals",
+            "factor_b": "signal_track_record",
+            "rho": 0.028,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "momentum",
+            "factor_b": "news_tone",
+            "rho": -0.013,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "earnings_pattern",
+            "factor_b": "fundamentals",
+            "rho": -0.008,
+            "n": 132,
+            "collinear": false
+          },
+          {
+            "factor_a": "news_tone",
+            "factor_b": "macro_event",
+            "rho": -0.001,
+            "n": 88,
+            "collinear": false
+          }
+        ],
+        "collinear_pairs": [
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "macro_regime",
+            "rho": 0.883,
+            "n": 77,
+            "collinear": true
+          },
+          {
+            "factor_a": "regime_adjustment",
+            "factor_b": "portfolio_risk",
+            "rho": -0.7,
+            "n": 110,
+            "collinear": true
+          },
+          {
+            "factor_a": "macro_event",
+            "factor_b": "macro_regime",
+            "rho": -0.653,
+            "n": 77,
+            "collinear": true
+          },
+          {
+            "factor_a": "signal_track_record",
+            "factor_b": "macro_regime",
+            "rho": 0.626,
+            "n": 77,
+            "collinear": true
+          }
+        ]
       },
       "factor_ir": {
-        "status": "insufficient_data",
-        "sample_size": 0,
-        "factors": [],
-        "weak_factors": [],
-        "threshold": 0.1
+        "status": "ok",
+        "sample_size": 132,
+        "horizon": 20,
+        "threshold": 0.1,
+        "factors": [
+          {
+            "factor": "portfolio_risk",
+            "ir": -0.509,
+            "n": 110,
+            "mean_return_when_positive": 0.0,
+            "mean_return_when_negative": 32.438,
+            "weak": false
+          },
+          {
+            "factor": "macro_event",
+            "ir": -0.48,
+            "n": 88,
+            "mean_return_when_positive": 7.993,
+            "mean_return_when_negative": 21.35,
+            "weak": false
+          },
+          {
+            "factor": "macro_regime",
+            "ir": 0.453,
+            "n": 77,
+            "mean_return_when_positive": 17.883,
+            "mean_return_when_negative": 14.176,
+            "weak": false
+          },
+          {
+            "factor": "momentum",
+            "ir": 0.417,
+            "n": 132,
+            "mean_return_when_positive": 16.393,
+            "mean_return_when_negative": 0.0,
+            "weak": false
+          },
+          {
+            "factor": "valuation",
+            "ir": -0.306,
+            "n": 132,
+            "mean_return_when_positive": 16.393,
+            "mean_return_when_negative": 0.0,
+            "weak": false
+          },
+          {
+            "factor": "fundamentals",
+            "ir": 0.226,
+            "n": 132,
+            "mean_return_when_positive": 16.393,
+            "mean_return_when_negative": 0.0,
+            "weak": false
+          },
+          {
+            "factor": "peer_rank",
+            "ir": 0.182,
+            "n": 110,
+            "mean_return_when_positive": 28.148,
+            "mean_return_when_negative": 0.0,
+            "weak": false
+          },
+          {
+            "factor": "regime_adjustment",
+            "ir": 0.135,
+            "n": 132,
+            "mean_return_when_positive": 16.393,
+            "mean_return_when_negative": 0.0,
+            "weak": false
+          },
+          {
+            "factor": "news_tone",
+            "ir": 0.096,
+            "n": 132,
+            "mean_return_when_positive": 18.152,
+            "mean_return_when_negative": 6.264,
+            "weak": true
+          },
+          {
+            "factor": "earnings_pattern",
+            "ir": -0.043,
+            "n": 132,
+            "mean_return_when_positive": 15.483,
+            "mean_return_when_negative": 0.0,
+            "weak": true
+          },
+          {
+            "factor": "signal_track_record",
+            "ir": 0.032,
+            "n": 132,
+            "mean_return_when_positive": 17.623,
+            "mean_return_when_negative": 15.405,
+            "weak": true
+          },
+          {
+            "factor": "policy_tailwind",
+            "ir": 0.022,
+            "n": 44,
+            "mean_return_when_positive": 22.489,
+            "mean_return_when_negative": 32.226,
+            "weak": true
+          },
+          {
+            "factor": "catalyst_recency",
+            "ir": -0.016,
+            "n": 132,
+            "mean_return_when_positive": 16.878,
+            "mean_return_when_negative": -4.437,
+            "weak": true
+          }
+        ],
+        "weak_factors": [
+          "news_tone",
+          "earnings_pattern",
+          "signal_track_record",
+          "policy_tailwind",
+          "catalyst_recency"
+        ]
       },
       "weight_decays": {
-        "status": "insufficient_data",
+        "status": "ok",
         "horizon": 20,
-        "sample_size": 0,
+        "sample_size": 132,
         "min_required_per_factor": 50,
-        "suggestions": []
+        "decay_factor": 0.5,
+        "suggestions": [
+          {
+            "factor": "news_tone",
+            "ir": 0.096,
+            "n": 132,
+            "current": {
+              "min": -5.0,
+              "max": 10.0
+            },
+            "suggested": {
+              "min": -2.5,
+              "max": 5.0
+            },
+            "reason": "|IR|=0.096 < 0.1"
+          },
+          {
+            "factor": "earnings_pattern",
+            "ir": -0.043,
+            "n": 132,
+            "current": {
+              "min": -10.0,
+              "max": 10.0
+            },
+            "suggested": {
+              "min": -5.0,
+              "max": 5.0
+            },
+            "reason": "|IR|=0.043 < 0.1"
+          },
+          {
+            "factor": "signal_track_record",
+            "ir": 0.032,
+            "n": 132,
+            "current": {
+              "min": -10.0,
+              "max": 15.0
+            },
+            "suggested": {
+              "min": -5.0,
+              "max": 7.5
+            },
+            "reason": "|IR|=0.032 < 0.1"
+          },
+          {
+            "factor": "catalyst_recency",
+            "ir": -0.016,
+            "n": 132,
+            "current": {
+              "min": -10.0,
+              "max": 20.0
+            },
+            "suggested": {
+              "min": -5.0,
+              "max": 10.0
+            },
+            "reason": "|IR|=0.016 < 0.1"
+          }
+        ]
       }
     }
   }

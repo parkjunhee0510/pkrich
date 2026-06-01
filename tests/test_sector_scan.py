@@ -50,9 +50,9 @@ class SectorScanTests(unittest.TestCase):
     def setUp(self):
         # Stub yfinance module so _fetch_yfinance_snapshot can import it.
         self._yf_rows = [("2025-01-01", 100.0), ("2025-01-02", 102.0)]
-        fake_yf = mock.MagicMock()
-        fake_yf.Ticker.return_value = _FakeTicker(self._yf_rows)
-        self._yf_patcher = mock.patch.dict(sys.modules, {"yfinance": fake_yf})
+        self._fake_yf = mock.MagicMock()
+        self._fake_yf.Ticker.return_value = _FakeTicker(self._yf_rows)
+        self._yf_patcher = mock.patch.dict(sys.modules, {"yfinance": self._fake_yf})
         self._yf_patcher.start()
 
         # Force "external_enabled + yfinance_ready" path.
@@ -103,6 +103,10 @@ class SectorScanTests(unittest.TestCase):
         self.assertEqual(rkl.change_percent, "+2.00%")
         self.assertEqual(len(rkl.history), 2)
         self.assertEqual(rkl.history[-1].close, 102.0)
+
+    def test_scan_configures_yfinance_cache_before_fetching_prices(self):
+        scan_sectors([self._sample_config()], date(2025, 1, 2))
+        self.assertTrue(self._fake_yf.set_tz_cache_location.called)
 
     def test_benchmark_etf_fetched_and_attached(self):
         result = scan_sectors(

@@ -120,6 +120,29 @@ class ValidationWarningsExportTests(unittest.TestCase):
             self.assertTrue(mirror_path.exists())
             self.assertEqual(source_path.read_bytes(), mirror_path.read_bytes())
 
+    def test_write_validation_warnings_syncs_when_project_root_is_provided(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_root = Path(tmp)
+            data_dir = project_root / "output" / "data"
+            web_data_dir = project_root / "web" / "public" / "output" / "data"
+            data_dir.mkdir(parents=True)
+            (project_root / "web").mkdir()
+            original_cwd = os.getcwd()
+            os.chdir(project_root)
+            try:
+                _write_validation_warnings_json(data_dir, project_root=project_root)
+            finally:
+                os.chdir(original_cwd)
+
+            source_path = data_dir / "validation_warnings.json"
+            mirror_path = web_data_dir / "validation_warnings.json"
+            mirror_exists = mirror_path.exists()
+            source_bytes = source_path.read_bytes()
+            mirror_bytes = mirror_path.read_bytes() if mirror_exists else b""
+
+        self.assertTrue(mirror_exists)
+        self.assertEqual(source_bytes, mirror_bytes)
+
 
 class DroppedUnsupportedLoggerTests(unittest.TestCase):
     def test_dropped_unsupported_count_accumulates_into_summary(self) -> None:

@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url'
 import type { Plugin } from 'vite'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { resolvePortfolioSaveHoldings } from './src/utils/localPortfolioSave.ts'
+import type { PortfolioHoldingInput } from './src/types'
 
 const WEB_ROOT = fileURLToPath(new URL('.', import.meta.url))
 const REPO_ROOT = path.resolve(WEB_ROOT, '..')
@@ -36,13 +38,6 @@ type LocalResearchStatus = {
   finishedAt: string | null
   updatedAt: string | null
   lastResult: 'idle' | 'running' | 'success' | 'error'
-}
-
-type PortfolioHoldingInput = {
-  ticker: string
-  shares: number
-  avg_cost: number
-  currency: string
 }
 
 type LocalPortfolioStatus = {
@@ -267,7 +262,10 @@ async function handleLocalPortfolioRequest(req: IncomingMessage, res: ServerResp
     if (req.method === 'POST' && req.url === '/api/local-portfolio/save') {
       const payload = await readJsonBody(req)
       const rawHoldings = Array.isArray(payload?.holdings) ? payload.holdings : []
-      const holdings = validatePortfolioHoldings(rawHoldings)
+      const existingHoldings = await readPortfolioHoldings()
+      const holdings = resolvePortfolioSaveHoldings(existingHoldings, validatePortfolioHoldings(rawHoldings), {
+        allowTruncate: payload?.allowTruncate === true,
+      })
       await writePortfolioHoldings(holdings)
       await syncWatchlistFromPortfolio(holdings)
 

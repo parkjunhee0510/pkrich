@@ -54,6 +54,7 @@
 - `/` : 대시보드 검색창 포커스
 - `R` : 페이지 새로고침
 - `Esc` : 햄버거 메뉴 닫기 / 포커스 해제
+- `더보기` 메뉴: `Enter`/`Space` 또는 `ArrowDown`/`ArrowUp`으로 열기, `ArrowDown`/`ArrowUp`/`Home`/`End`로 항목 이동, `Esc`로 닫기
 
 ### 반응형
 - `≤ 768px`: 햄버거 토글, compact 밀도
@@ -96,11 +97,13 @@
 ### 4.1 Dashboard `/` — 워치리스트
 일일 종목 스캔과 우선순위 추출의 메인 허브.
 - **핵심 위젯**: `WatchlistTable`, `TraderDashboardPanels` (TodaySetupBoard · EarningsBoard · SignalPerformanceBoard · CatalystFeed), `MarketRegimeBanner`, `MacroContextBar`, `MarketOverview`
+- **Today Priority Queue**: 첫 화면 근처에 일일 점검 큐를 표시한다. 리스크, 기회, 근거 상태, 공식 판단 변화 맥락을 읽기전용으로 합쳐 오늘 먼저 열어볼 종목을 제안하며, 큐 점수는 화면용 우선순위일 뿐 공식 `buy/watch/avoid` 판단을 바꾸지 않는다.
 - **인터랙션**: 섹터 필터, 계좌 규모 선택(10K–100K), 정렬 모드(점수/실적/촉매), 검색창 (`/` 단축키), 워치리스트 DnD 정렬
 
 ### 4.2 TickerDetail `/ticker/:ticker` — 종목 상세
 단일 종목 깊이 있는 분석.
 - **섹션**: 가격 차트(`PriceChart`), 결정 카드(`DecisionCard` / `TraderDecisionBoard`), 펀더멘털 스냅샷(`DataSnapshot`), EPS 서프라이즈(`EpsSurpriseChart`), 52주 배지(`FiftyTwoWeekBadge`), SEC 공시(`SecFilingBadges`), 뉴스(`NewsItem`), 거시경제 영향(티커별 macro sensitivity), 매크로 컨텍스트, 타임라인
+- **Ticker Research Brief**: 오늘 점검 큐에 오른 이유를 종목 상세 상단에서 보여준다. 리스크, 기회, 근거 상태, 핵심 사유, 다음 확인점을 요약하고, 큐에 없는 종목은 중립 fallback을 표시해 기존 상세 흐름을 유지한다.
 - **인터랙션**: 차트 모드 전환 (캔들↔라인), 이벤트 타임라인 기간 토글
 
 ### 4.3 PriceHistory `/prices` — 시세
@@ -109,8 +112,12 @@
 
 ### 4.4 Portfolio `/portfolio` — 포트폴리오
 포지션 추적과 리스크 평가.
-- **핵심**: `EquityCurveChart`, `PortfolioRiskPanel`(등급 A–D, HHI, `CorrelationHeatmap`), 포지션 편집 모드
-- **인터랙션**: 주식 수/평균 단가 입력, 통화(USD/KRW), 로컬 저장(`useLocalPortfolioEditor`)
+- **핵심**: `PortfolioCommandCenter`, `EquityCurveChart`, `PortfolioRiskPanel`(등급 A–D, HHI, `CorrelationHeatmap`), 포지션 편집 모드
+- **Command Center**: PM 이벤트 노출, 교체 후보, 종목 집중도, 고상관 페어를 우선순위 큐로 합쳐 요약 카드보다 먼저 표시한다.
+- **리스크 용어 설명**: HHI, Beta, VaR, 상관계수, 이벤트 노출, 교체 후보, ATR은 `InfoTooltip`으로 같은 화면에서 한국어 설명을 제공한다.
+- **인터랙션**: 큐 항목 클릭 시 같은 페이지에서 상세 근거/확인점을 전환하고, 관련 종목은 `/ticker/:ticker` 상세로 연결한다. 주식 수/평균 단가 입력, 통화(USD/KRW), 로컬 저장(`useLocalPortfolioEditor`)도 유지한다.
+- **Quick edit**: 편집 모드는 모든 lot 행을 바로 보여주며 티커는 목록에서 클릭 선택하고, 수량, 평균단가, 통화, 삭제, 추가, 저장을 한 화면에서 처리한다. 티커 선택 메뉴는 popover z-index 토큰을 사용하고 모바일에서는 1열로 접혀 편집 행에 묻히지 않게 유지한다.
+- **Quick edit default cost**: 신규 또는 평균단가가 비어 있는 lot에서 티커를 선택하면 현재가를 평균단가 기본값으로 채운다. 자동 입력된 평균단가는 티커를 다시 바꿀 때 새 티커 현재가로 갱신하고, 사용자가 직접 입력한 non-zero 평균단가는 보존한다.
 
 ### 4.5 Signals `/signals` — 시그널 통계
 과거 신호 성과 집계.
@@ -187,10 +194,11 @@ AI 기반 종목 질의.
 | 컴포넌트 | 설명 |
 |---|---|
 | `Layout` | 헤더 · 네비 · 메인 셸 |
-| `Skeleton` | DashboardSkeleton · TablePageSkeleton · TickerDetailSkeleton |
+| `Skeleton` | DashboardSkeleton · TablePageSkeleton · TickerDetailSkeleton · InlineLoadingState |
 | `ErrorState` | 오류 메시지 |
 | `InfoTooltip` | 물음표 호버 툴팁 |
 | `WatchlistTable` | DnD 가능한 워치리스트 테이블 |
+| `PortfolioCommandCenter` | 포트폴리오 PM 검토 큐 + 리스크 용어 설명 |
 | `PortfolioRiskPanel` | 리스크 등급·HHI·드로다운 |
 
 ---
@@ -234,7 +242,7 @@ StaticJsonRepository (정적 JSON)
 - **편집 폼**: 포지션(수량·단가·통화), 시나리오 가중치 슬라이더
 - **차트 조작**: 기간 토글, 캔들/라인 전환
 - **지속성**: `localStorage`에 워치리스트 순서, 포트폴리오 편집, 대화 히스토리
-- **로딩/에러**: `Skeleton`·`ErrorState`, Suspense fallback
+- **로딩/에러**: `Skeleton`·`InlineLoadingState`·`ErrorState`, Suspense fallback. 페이지 전환은 전체 skeleton을 남발하지 않고, 차트/타임라인 같은 부분 로딩은 접근성 있는 inline status로 처리한다.
 
 ---
 
@@ -242,8 +250,8 @@ StaticJsonRepository (정적 JSON)
 
 - **코드 스플릿**: 모든 페이지 `React.lazy` + `Suspense`
 - **메모이제이션**: `useMemo`로 필터/정렬 결과 캐싱
-- **시맨틱**: `header` / `nav` / `main`, 햄버거 `aria-label`·`aria-expanded`
-- **키보드**: `/`, `R`, `Esc` 단축키
+- **시맨틱**: `header` / `nav` / `main`, 햄버거 `aria-label`·`aria-expanded`, 포털 메뉴 `role="menu"` / `role="menuitem"`
+- **키보드**: `/`, `R`, `Esc` 단축키와 더보기 메뉴 roving focus
 - **반응형 밀도**: compact / comfortable / focus
 
 ---

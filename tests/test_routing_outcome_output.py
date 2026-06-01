@@ -28,6 +28,13 @@ class RoutingOutcomeOutputTests(unittest.TestCase):
                                 "max_daily_ensemble": 0,
                                 "portfolio_priority": True,
                                 "deep_pass_count": 2,
+                                "selected_tickers": ["AAPL", "KO"],
+                                "skipped_due_to_priority": ["MSFT"],
+                                "router_budget_estimate": {
+                                    "selected_count": 2,
+                                    "estimated_incremental_cost_usd": 0.0246,
+                                    "estimated_monthly_cost_usd": 0.5412,
+                                },
                                 "tickers": [
                                     {
                                         "ticker": "AAPL",
@@ -36,6 +43,9 @@ class RoutingOutcomeOutputTests(unittest.TestCase):
                                         "in_portfolio": False,
                                         "conviction": 60,
                                         "action": "buy",
+                                        "router_priority_score": 27.5,
+                                        "router_reason_codes": ["uncertainty_boundary", "signal_importance"],
+                                        "skipped_due_to_priority": False,
                                     },
                                     {
                                         "ticker": "MSFT",
@@ -44,6 +54,9 @@ class RoutingOutcomeOutputTests(unittest.TestCase):
                                         "in_portfolio": False,
                                         "conviction": 20,
                                         "action": "watch",
+                                        "router_priority_score": 8.0,
+                                        "router_reason_codes": ["volatility"],
+                                        "skipped_due_to_priority": True,
                                     },
                                     {
                                         "ticker": "KO",
@@ -52,6 +65,9 @@ class RoutingOutcomeOutputTests(unittest.TestCase):
                                         "in_portfolio": True,
                                         "conviction": 15,
                                         "action": "watch",
+                                        "router_priority_score": 30.0,
+                                        "router_reason_codes": ["portfolio_exposure"],
+                                        "skipped_due_to_priority": False,
                                     },
                                 ],
                             }
@@ -135,6 +151,21 @@ class RoutingOutcomeOutputTests(unittest.TestCase):
             self.assertEqual(payload["summary"]["portfolio_priority_hit_rate"], 0.0)
             self.assertEqual(payload["periods"][0]["period"], "2026-04")
             self.assertEqual(payload["latest_run"]["deep_pass_count"], 2)
+            self.assertEqual(payload["latest_run"]["selected_tickers"], ["AAPL", "KO"])
+            self.assertEqual(payload["latest_run"]["skipped_due_to_priority"], ["MSFT"])
+            self.assertEqual(payload["latest_run"]["router_budget_estimate"]["selected_count"], 2)
+            latest_aapl = next(
+                row for row in payload["latest_run"]["tickers"] if row["ticker"] == "AAPL"
+            )
+            latest_msft = next(
+                row for row in payload["latest_run"]["tickers"] if row["ticker"] == "MSFT"
+            )
+            self.assertEqual(latest_aapl["router_priority_score"], 27.5)
+            self.assertEqual(
+                latest_aapl["router_reason_codes"],
+                ["uncertainty_boundary", "signal_importance"],
+            )
+            self.assertTrue(latest_msft["skipped_due_to_priority"])
             self.assertTrue((data_dir / "routing_outcome.json").exists())
 
 

@@ -1,0 +1,2766 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-05-29",
+  "summary": {
+    "sample_count": 440,
+    "decision_count": 25,
+    "completed_return_windows": [
+      "1d",
+      "5d",
+      "20d"
+    ],
+    "mode": "shadow_observational",
+    "notes": [
+      "Performance analytics are observational and do not change official decisions.",
+      "Factor attribution is observed association, not causal proof."
+    ]
+  },
+  "signal_performance": {
+    "buy": {
+      "1d": {
+        "sample_count": 128,
+        "completed_count": 119,
+        "avg_return": 1.9544,
+        "median_return": 0.89,
+        "win_rate": 0.5714,
+        "loss_rate": 0.4286,
+        "directional_win_rate": 0.5714,
+        "missing_count": 9,
+        "return_distribution": {
+          "positive": 68,
+          "negative": 51,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {
+          "hit": 58,
+          "pending": 9,
+          "stop": 52
+        }
+      },
+      "5d": {
+        "sample_count": 128,
+        "completed_count": 95,
+        "avg_return": 6.1661,
+        "median_return": 3.54,
+        "win_rate": 0.6737,
+        "loss_rate": 0.3263,
+        "directional_win_rate": 0.6737,
+        "missing_count": 33,
+        "return_distribution": {
+          "positive": 64,
+          "negative": 30,
+          "flat": 1
+        },
+        "triple_barrier_outcomes": {
+          "hit": 50,
+          "stop": 45
+        }
+      },
+      "20d": {
+        "sample_count": 128,
+        "completed_count": 45,
+        "avg_return": 17.7329,
+        "median_return": 9.62,
+        "win_rate": 0.8889,
+        "loss_rate": 0.1111,
+        "directional_win_rate": 0.8889,
+        "missing_count": 83,
+        "return_distribution": {
+          "positive": 40,
+          "negative": 5,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {
+          "hit": 24,
+          "stop": 21
+        }
+      }
+    },
+    "watch": {
+      "1d": {
+        "sample_count": 288,
+        "completed_count": 272,
+        "avg_return": 1.6209,
+        "median_return": 0.315,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 16,
+        "return_distribution": {
+          "positive": 142,
+          "negative": 129,
+          "flat": 1
+        },
+        "triple_barrier_outcomes": {
+          "hit": 113,
+          "pending": 41,
+          "stop": 118
+        }
+      },
+      "5d": {
+        "sample_count": 288,
+        "completed_count": 221,
+        "avg_return": 6.3674,
+        "median_return": 2.27,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 67,
+        "return_distribution": {
+          "positive": 151,
+          "negative": 70,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {
+          "hit": 113,
+          "pending": 10,
+          "stop": 98
+        }
+      },
+      "20d": {
+        "sample_count": 288,
+        "completed_count": 87,
+        "avg_return": 15.7002,
+        "median_return": 9.58,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 201,
+        "return_distribution": {
+          "positive": 70,
+          "negative": 17,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {
+          "hit": 51,
+          "stop": 36
+        }
+      }
+    },
+    "avoid": {
+      "1d": {
+        "sample_count": 0,
+        "completed_count": 0,
+        "avg_return": null,
+        "median_return": null,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 0,
+        "return_distribution": {
+          "positive": 0,
+          "negative": 0,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {}
+      },
+      "5d": {
+        "sample_count": 0,
+        "completed_count": 0,
+        "avg_return": null,
+        "median_return": null,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 0,
+        "return_distribution": {
+          "positive": 0,
+          "negative": 0,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {}
+      },
+      "20d": {
+        "sample_count": 0,
+        "completed_count": 0,
+        "avg_return": null,
+        "median_return": null,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 0,
+        "return_distribution": {
+          "positive": 0,
+          "negative": 0,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {}
+      }
+    },
+    "unknown": {
+      "1d": {
+        "sample_count": 24,
+        "completed_count": 24,
+        "avg_return": 0.0017,
+        "median_return": 0.0,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 0,
+        "return_distribution": {
+          "positive": 7,
+          "negative": 7,
+          "flat": 10
+        },
+        "triple_barrier_outcomes": {
+          "hit": 6,
+          "stop": 18
+        }
+      },
+      "5d": {
+        "sample_count": 24,
+        "completed_count": 24,
+        "avg_return": 9.1196,
+        "median_return": 0.5,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 0,
+        "return_distribution": {
+          "positive": 17,
+          "negative": 7,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {
+          "hit": 6,
+          "stop": 18
+        }
+      },
+      "20d": {
+        "sample_count": 24,
+        "completed_count": 24,
+        "avg_return": 23.4117,
+        "median_return": 12.5,
+        "win_rate": null,
+        "loss_rate": null,
+        "directional_win_rate": null,
+        "missing_count": 0,
+        "return_distribution": {
+          "positive": 18,
+          "negative": 6,
+          "flat": 0
+        },
+        "triple_barrier_outcomes": {
+          "hit": 6,
+          "stop": 18
+        }
+      }
+    }
+  },
+  "conviction_calibration": {
+    "status": "observational",
+    "bucket_edges": [
+      "0_35",
+      "35_50",
+      "50_65",
+      "65_80",
+      "80_100"
+    ],
+    "buckets": {
+      "0_35": {
+        "sample_count": 0,
+        "action_counts": {},
+        "avg_return_1d": null,
+        "avg_return_5d": null,
+        "avg_return_20d": null,
+        "buy_win_rate": null,
+        "avoid_win_rate": null
+      },
+      "35_50": {
+        "sample_count": 26,
+        "action_counts": {
+          "watch": 26
+        },
+        "avg_return_1d": 0.1515,
+        "avg_return_5d": 8.0932,
+        "avg_return_20d": 29.546,
+        "buy_win_rate": null,
+        "avoid_win_rate": null
+      },
+      "50_65": {
+        "sample_count": 262,
+        "action_counts": {
+          "watch": 262
+        },
+        "avg_return_1d": 1.7762,
+        "avg_return_5d": 6.1766,
+        "avg_return_20d": 14.856,
+        "buy_win_rate": null,
+        "avoid_win_rate": null
+      },
+      "65_80": {
+        "sample_count": 128,
+        "action_counts": {
+          "buy": 128
+        },
+        "avg_return_1d": 1.9544,
+        "avg_return_5d": 6.1661,
+        "avg_return_20d": 17.7329,
+        "buy_win_rate": 0.6737,
+        "avoid_win_rate": null
+      },
+      "80_100": {
+        "sample_count": 0,
+        "action_counts": {},
+        "avg_return_1d": null,
+        "avg_return_5d": null,
+        "avg_return_20d": null,
+        "buy_win_rate": null,
+        "avoid_win_rate": null
+      }
+    }
+  },
+  "regime_performance": {
+    "risk_on": {
+      "buy": {
+        "1d": {
+          "sample_count": 128,
+          "completed_count": 119,
+          "avg_return": 1.9544,
+          "median_return": 0.89,
+          "win_rate": 0.5714,
+          "loss_rate": 0.4286,
+          "directional_win_rate": 0.5714,
+          "missing_count": 9,
+          "return_distribution": {
+            "positive": 68,
+            "negative": 51,
+            "flat": 0
+          },
+          "triple_barrier_outcomes": {
+            "hit": 58,
+            "pending": 9,
+            "stop": 52
+          }
+        },
+        "5d": {
+          "sample_count": 128,
+          "completed_count": 95,
+          "avg_return": 6.1661,
+          "median_return": 3.54,
+          "win_rate": 0.6737,
+          "loss_rate": 0.3263,
+          "directional_win_rate": 0.6737,
+          "missing_count": 33,
+          "return_distribution": {
+            "positive": 64,
+            "negative": 30,
+            "flat": 1
+          },
+          "triple_barrier_outcomes": {
+            "hit": 50,
+            "stop": 45
+          }
+        },
+        "20d": {
+          "sample_count": 128,
+          "completed_count": 45,
+          "avg_return": 17.7329,
+          "median_return": 9.62,
+          "win_rate": 0.8889,
+          "loss_rate": 0.1111,
+          "directional_win_rate": 0.8889,
+          "missing_count": 83,
+          "return_distribution": {
+            "positive": 40,
+            "negative": 5,
+            "flat": 0
+          },
+          "triple_barrier_outcomes": {
+            "hit": 24,
+            "stop": 21
+          }
+        }
+      },
+      "watch": {
+        "1d": {
+          "sample_count": 288,
+          "completed_count": 272,
+          "avg_return": 1.6209,
+          "median_return": 0.315,
+          "win_rate": null,
+          "loss_rate": null,
+          "directional_win_rate": null,
+          "missing_count": 16,
+          "return_distribution": {
+            "positive": 142,
+            "negative": 129,
+            "flat": 1
+          },
+          "triple_barrier_outcomes": {
+            "hit": 113,
+            "pending": 41,
+            "stop": 118
+          }
+        },
+        "5d": {
+          "sample_count": 288,
+          "completed_count": 221,
+          "avg_return": 6.3674,
+          "median_return": 2.27,
+          "win_rate": null,
+          "loss_rate": null,
+          "directional_win_rate": null,
+          "missing_count": 67,
+          "return_distribution": {
+            "positive": 151,
+            "negative": 70,
+            "flat": 0
+          },
+          "triple_barrier_outcomes": {
+            "hit": 113,
+            "pending": 10,
+            "stop": 98
+          }
+        },
+        "20d": {
+          "sample_count": 288,
+          "completed_count": 87,
+          "avg_return": 15.7002,
+          "median_return": 9.58,
+          "win_rate": null,
+          "loss_rate": null,
+          "directional_win_rate": null,
+          "missing_count": 201,
+          "return_distribution": {
+            "positive": 70,
+            "negative": 17,
+            "flat": 0
+          },
+          "triple_barrier_outcomes": {
+            "hit": 51,
+            "stop": 36
+          }
+        }
+      }
+    },
+    "unknown": {
+      "unknown": {
+        "1d": {
+          "sample_count": 24,
+          "completed_count": 24,
+          "avg_return": 0.0017,
+          "median_return": 0.0,
+          "win_rate": null,
+          "loss_rate": null,
+          "directional_win_rate": null,
+          "missing_count": 0,
+          "return_distribution": {
+            "positive": 7,
+            "negative": 7,
+            "flat": 10
+          },
+          "triple_barrier_outcomes": {
+            "hit": 6,
+            "stop": 18
+          }
+        },
+        "5d": {
+          "sample_count": 24,
+          "completed_count": 24,
+          "avg_return": 9.1196,
+          "median_return": 0.5,
+          "win_rate": null,
+          "loss_rate": null,
+          "directional_win_rate": null,
+          "missing_count": 0,
+          "return_distribution": {
+            "positive": 17,
+            "negative": 7,
+            "flat": 0
+          },
+          "triple_barrier_outcomes": {
+            "hit": 6,
+            "stop": 18
+          }
+        },
+        "20d": {
+          "sample_count": 24,
+          "completed_count": 24,
+          "avg_return": 23.4117,
+          "median_return": 12.5,
+          "win_rate": null,
+          "loss_rate": null,
+          "directional_win_rate": null,
+          "missing_count": 0,
+          "return_distribution": {
+            "positive": 18,
+            "negative": 6,
+            "flat": 0
+          },
+          "triple_barrier_outcomes": {
+            "hit": 6,
+            "stop": 18
+          }
+        }
+      }
+    }
+  },
+  "factor_attribution": {
+    "status": "observed_association",
+    "missing_factor_sample_count": 24,
+    "factors": {
+      "catalyst_recency": {
+        "sample_count": 416,
+        "avg_score": 9.9567,
+        "positive_score_count": 392,
+        "negative_score_count": 24,
+        "avg_forward_return_5d": 6.3069,
+        "avg_forward_return_20d": 16.3932,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 221,
+          "avg_return_5d": 6.3674
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 95,
+          "avg_return_5d": 6.1661
+        }
+      },
+      "earnings_pattern": {
+        "sample_count": 200,
+        "avg_score": 5.1,
+        "positive_score_count": 180,
+        "negative_score_count": 20,
+        "avg_forward_return_5d": 9.6111,
+        "avg_forward_return_20d": 15.4827,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 82,
+          "avg_return_5d": 12.9985
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 63,
+          "avg_return_5d": 5.2021
+        }
+      },
+      "fundamentals": {
+        "sample_count": 416,
+        "avg_score": 7.6635,
+        "positive_score_count": 416,
+        "negative_score_count": 0,
+        "avg_forward_return_5d": 6.3069,
+        "avg_forward_return_20d": 16.3932,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 221,
+          "avg_return_5d": 6.3674
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 95,
+          "avg_return_5d": 6.1661
+        }
+      },
+      "macro_event": {
+        "sample_count": 307,
+        "avg_score": -2.4821,
+        "positive_score_count": 103,
+        "negative_score_count": 204,
+        "avg_forward_return_5d": 5.4551,
+        "avg_forward_return_20d": 16.5905,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 147,
+          "avg_return_5d": 5.8983
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 84,
+          "avg_return_5d": 4.6795
+        }
+      },
+      "macro_regime": {
+        "sample_count": 349,
+        "avg_score": 3.0344,
+        "positive_score_count": 299,
+        "negative_score_count": 50,
+        "avg_forward_return_5d": 6.9626,
+        "avg_forward_return_20d": 17.2088,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 172,
+          "avg_return_5d": 7.1584
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 81,
+          "avg_return_5d": 6.5469
+        }
+      },
+      "momentum": {
+        "sample_count": 416,
+        "avg_score": 13.3822,
+        "positive_score_count": 416,
+        "negative_score_count": 0,
+        "avg_forward_return_5d": 6.3069,
+        "avg_forward_return_20d": 16.3932,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 221,
+          "avg_return_5d": 6.3674
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 95,
+          "avg_return_5d": 6.1661
+        }
+      },
+      "news_tone": {
+        "sample_count": 176,
+        "avg_score": 3.8523,
+        "positive_score_count": 151,
+        "negative_score_count": 25,
+        "avg_forward_return_5d": 8.8308,
+        "avg_forward_return_20d": 15.7742,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 79,
+          "avg_return_5d": 9.1766
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 44,
+          "avg_return_5d": 8.21
+        }
+      },
+      "peer_rank": {
+        "sample_count": 69,
+        "avg_score": 6.3043,
+        "positive_score_count": 67,
+        "negative_score_count": 2,
+        "avg_forward_return_5d": 5.4947,
+        "avg_forward_return_20d": 28.1481,
+        "best_action_context": {
+          "action": "buy",
+          "sample_count": 35,
+          "avg_return_5d": 6.1131
+        },
+        "worst_action_context": {
+          "action": "watch",
+          "sample_count": 14,
+          "avg_return_5d": 3.9486
+        }
+      },
+      "policy_tailwind": {
+        "sample_count": 202,
+        "avg_score": 1.7574,
+        "positive_score_count": 127,
+        "negative_score_count": 75,
+        "avg_forward_return_5d": 6.6927,
+        "avg_forward_return_20d": 25.3744,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 84,
+          "avg_return_5d": 7.7254
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 53,
+          "avg_return_5d": 5.056
+        }
+      },
+      "portfolio_risk": {
+        "sample_count": 68,
+        "avg_score": -6.0,
+        "positive_score_count": 0,
+        "negative_score_count": 68,
+        "avg_forward_return_5d": 7.4603,
+        "avg_forward_return_20d": 32.438,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 39,
+          "avg_return_5d": 7.6985
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 29,
+          "avg_return_5d": 7.14
+        }
+      },
+      "regime_adjustment": {
+        "sample_count": 416,
+        "avg_score": 10.8774,
+        "positive_score_count": 416,
+        "negative_score_count": 0,
+        "avg_forward_return_5d": 6.3069,
+        "avg_forward_return_20d": 16.3932,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 221,
+          "avg_return_5d": 6.3674
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 95,
+          "avg_return_5d": 6.1661
+        }
+      },
+      "signal_track_record": {
+        "sample_count": 299,
+        "avg_score": 9.0635,
+        "positive_score_count": 253,
+        "negative_score_count": 46,
+        "avg_forward_return_5d": 5.3932,
+        "avg_forward_return_20d": 16.9482,
+        "best_action_context": {
+          "action": "buy",
+          "sample_count": 87,
+          "avg_return_5d": 6.2029
+        },
+        "worst_action_context": {
+          "action": "watch",
+          "sample_count": 132,
+          "avg_return_5d": 4.8595
+        }
+      },
+      "valuation": {
+        "sample_count": 416,
+        "avg_score": 10.2548,
+        "positive_score_count": 416,
+        "negative_score_count": 0,
+        "avg_forward_return_5d": 6.3069,
+        "avg_forward_return_20d": 16.3932,
+        "best_action_context": {
+          "action": "watch",
+          "sample_count": 221,
+          "avg_return_5d": 6.3674
+        },
+        "worst_action_context": {
+          "action": "buy",
+          "sample_count": 95,
+          "avg_return_5d": 6.1661
+        }
+      }
+    }
+  },
+  "action_change_reasons": [
+    {
+      "ticker": "AAPL",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 62.0,
+      "current_conviction": 62,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged"
+      ],
+      "summary": "AAPL stayed watch; main changes: action_unchanged.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -5.0,
+          "current": -5.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 13.0,
+          "current": 11.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": -3.0,
+          "current": -1.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 12.0,
+          "current": 12.0
+        }
+      ]
+    },
+    {
+      "ticker": "ALAB",
+      "previous_action": "buy",
+      "current_action": "buy",
+      "previous_conviction": 72.0,
+      "current_conviction": 71,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_decreased"
+      ],
+      "summary": "ALAB stayed buy; main changes: action_unchanged, conviction_decreased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -5.0,
+          "current": -5.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": -1.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 8.0,
+          "current": 8.0
+        }
+      ]
+    },
+    {
+      "ticker": "AMD",
+      "previous_action": "buy",
+      "current_action": "buy",
+      "previous_conviction": 68.0,
+      "current_conviction": 66,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_decreased"
+      ],
+      "summary": "AMD stayed buy; main changes: action_unchanged, conviction_decreased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -5.0,
+          "current": -5.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 5.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": -2.0,
+          "current": -1.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 8.0,
+          "current": 8.0
+        }
+      ]
+    },
+    {
+      "ticker": "ATKR",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 60.0,
+      "current_conviction": 63,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased"
+      ],
+      "summary": "ATKR stayed watch; main changes: action_unchanged, conviction_increased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 7.0,
+          "current": 7.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -6.0,
+          "current": -6.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 1.0,
+          "current": 2.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 5.0,
+          "current": 10.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "AVAV",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 47.0,
+      "current_conviction": 54,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased"
+      ],
+      "summary": "AVAV stayed watch; main changes: action_unchanged, conviction_increased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": -5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": -8.0,
+          "current": -8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 7.0,
+          "current": 7.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 16.0,
+          "current": 16.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 0.0,
+          "current": 5.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 12.0,
+          "current": 12.0
+        }
+      ]
+    },
+    {
+      "ticker": "CAT",
+      "previous_action": "buy",
+      "current_action": "buy",
+      "previous_conviction": 65.0,
+      "current_conviction": 65,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged"
+      ],
+      "summary": "CAT stayed buy; main changes: action_unchanged.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -6.0,
+          "current": -6.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 15.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 5.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "COHR",
+      "previous_action": "buy",
+      "current_action": "watch",
+      "previous_conviction": 66.0,
+      "current_conviction": 59,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_downgraded",
+        "conviction_decreased",
+        "conviction_fell_below_buy_threshold",
+        "top_factor_changed"
+      ],
+      "summary": "COHR changed buy -> watch; main changes: action_downgraded, conviction_decreased, conviction_fell_below_buy_threshold, top_factor_changed.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -5.0,
+          "current": -5.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 9.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 10.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "DD",
+      "previous_action": "buy",
+      "current_action": "buy",
+      "previous_conviction": 66.0,
+      "current_conviction": 65,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_decreased"
+      ],
+      "summary": "DD stayed buy; main changes: action_unchanged, conviction_decreased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 3.0,
+          "current": 3.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 8.0,
+          "current": 5.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": -2.0,
+          "current": 0.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 12.0,
+          "current": 12.0
+        }
+      ]
+    },
+    {
+      "ticker": "FLNC",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 58.0,
+      "current_conviction": 58,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged"
+      ],
+      "summary": "FLNC stayed watch; main changes: action_unchanged.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 7.0,
+          "current": 7.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 3.0,
+          "current": 3.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": -3.0,
+          "current": -3.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 19.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": -3.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 7.0,
+          "current": 4.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 10.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 8.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "HUM",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 57.0,
+      "current_conviction": 56,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_decreased"
+      ],
+      "summary": "HUM stayed watch; main changes: action_unchanged, conviction_decreased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 1.0,
+          "current": 1.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": -3.0,
+          "current": -3.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": -2.0,
+          "current": -1.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 8.0,
+          "current": 8.0
+        }
+      ]
+    },
+    {
+      "ticker": "IONQ",
+      "previous_action": "buy",
+      "current_action": "buy",
+      "previous_conviction": 70.0,
+      "current_conviction": 70,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged"
+      ],
+      "summary": "IONQ stayed buy; main changes: action_unchanged.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 2.0,
+          "current": 2.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -5.0,
+          "current": -5.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 3.0,
+          "current": 3.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "KEY",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 58.0,
+      "current_conviction": 60,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased"
+      ],
+      "summary": "KEY stayed watch; main changes: action_unchanged, conviction_increased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 3.0,
+          "current": 3.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 13.0,
+          "current": 15.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 1.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 12.0,
+          "current": 12.0
+        }
+      ]
+    },
+    {
+      "ticker": "KO",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 54.0,
+      "current_conviction": 55,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased"
+      ],
+      "summary": "KO stayed watch; main changes: action_unchanged, conviction_increased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 8.0,
+          "current": 7.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 1.0,
+          "current": 1.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": -3.0,
+          "current": -3.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 13.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": -1.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "KTOS",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 57.0,
+      "current_conviction": 60,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased",
+        "top_factor_changed"
+      ],
+      "summary": "KTOS stayed watch; main changes: action_unchanged, conviction_increased, top_factor_changed.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 13.0,
+          "current": 11.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": -10.0,
+          "current": 0.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 12.0,
+          "current": 12.0
+        }
+      ]
+    },
+    {
+      "ticker": "MOD",
+      "previous_action": "buy",
+      "current_action": "buy",
+      "previous_conviction": 69.0,
+      "current_conviction": 66,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_decreased"
+      ],
+      "summary": "MOD stayed buy; main changes: action_unchanged, conviction_decreased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -8.0,
+          "current": -8.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 19.0,
+          "current": 15.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 2.0,
+          "current": 1.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 12.0
+        }
+      ]
+    },
+    {
+      "ticker": "NXT",
+      "previous_action": "buy",
+      "current_action": "buy",
+      "previous_conviction": 67.0,
+      "current_conviction": 67,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged"
+      ],
+      "summary": "NXT stayed buy; main changes: action_unchanged.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -5.0,
+          "current": -5.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 19.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 3.0,
+          "current": 2.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "ORA",
+      "previous_action": "watch",
+      "current_action": "buy",
+      "previous_conviction": 62.0,
+      "current_conviction": 65,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_upgraded",
+        "conviction_increased",
+        "conviction_crossed_buy_threshold"
+      ],
+      "summary": "ORA changed watch -> buy; main changes: action_upgraded, conviction_increased, conviction_crossed_buy_threshold.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 3.0,
+          "current": 3.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": -3.0,
+          "current": -3.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 2.0,
+          "current": 8.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "OXY",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 61.0,
+      "current_conviction": 63,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased",
+        "top_factor_changed"
+      ],
+      "summary": "OXY stayed watch; main changes: action_unchanged, conviction_increased, top_factor_changed.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 6.0,
+          "current": 6.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 2.0,
+          "current": 2.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 8.0,
+          "current": 10.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 2.0,
+          "current": 4.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 10.0,
+          "current": 12.0
+        }
+      ]
+    },
+    {
+      "ticker": "PLUG",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 58.0,
+      "current_conviction": 59,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased"
+      ],
+      "summary": "PLUG stayed watch; main changes: action_unchanged, conviction_increased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 7.0,
+          "current": 7.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -6.0,
+          "current": -6.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 3.0,
+          "current": 4.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 8.0,
+          "current": 10.0
+        }
+      ]
+    },
+    {
+      "ticker": "RDW",
+      "previous_action": "watch",
+      "current_action": "buy",
+      "previous_conviction": 63.0,
+      "current_conviction": 65,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_upgraded",
+        "conviction_increased",
+        "conviction_crossed_buy_threshold"
+      ],
+      "summary": "RDW changed watch -> buy; main changes: action_upgraded, conviction_increased, conviction_crossed_buy_threshold.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 3.0,
+          "current": 3.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 19.0,
+          "current": 19.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 8.0,
+          "current": 8.0
+        }
+      ]
+    },
+    {
+      "ticker": "RKLB",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 60.0,
+      "current_conviction": 60,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged"
+      ],
+      "summary": "RKLB stayed watch; main changes: action_unchanged.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": -5.0,
+          "current": -5.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 19.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 8.0,
+          "current": 8.0
+        }
+      ]
+    },
+    {
+      "ticker": "SPIR",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 55.0,
+      "current_conviction": 58,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased"
+      ],
+      "summary": "SPIR stayed watch; main changes: action_unchanged, conviction_increased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 2.0,
+          "current": 2.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -6.0,
+          "current": -6.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 17.0,
+          "current": 17.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 5.0,
+          "current": 10.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 8.0,
+          "current": 8.0
+        }
+      ]
+    },
+    {
+      "ticker": "T",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 53.0,
+      "current_conviction": 54,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased"
+      ],
+      "summary": "T stayed watch; main changes: action_unchanged, conviction_increased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -4.0,
+          "current": -4.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 5.0,
+          "current": 7.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": -1.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 15.0,
+          "current": 15.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 12.0,
+          "current": 12.0
+        }
+      ]
+    },
+    {
+      "ticker": "XOM",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 61.0,
+      "current_conviction": 59,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_decreased"
+      ],
+      "summary": "XOM stayed watch; main changes: action_unchanged, conviction_decreased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": 6.0,
+          "current": 6.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 2.0,
+          "current": 2.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 4.0,
+          "current": 5.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 5.0,
+          "current": 0.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 16.0,
+          "current": 16.0
+        }
+      ]
+    },
+    {
+      "ticker": "XYL",
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 50.0,
+      "current_conviction": 51,
+      "previous_regime": "risk_on",
+      "current_regime": "risk_on",
+      "reason_codes": [
+        "action_unchanged",
+        "conviction_increased"
+      ],
+      "summary": "XYL stayed watch; main changes: action_unchanged, conviction_increased.",
+      "contributors": [
+        {
+          "factor": "catalyst_recency",
+          "previous": 8.0,
+          "current": 8.0
+        },
+        {
+          "factor": "earnings_pattern",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "fundamentals",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "macro_event",
+          "previous": -6.0,
+          "current": -6.0
+        },
+        {
+          "factor": "macro_regime",
+          "previous": 4.0,
+          "current": 4.0
+        },
+        {
+          "factor": "momentum",
+          "previous": 3.0,
+          "current": 5.0
+        },
+        {
+          "factor": "news_tone",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "peer_rank",
+          "previous": 5.0,
+          "current": 5.0
+        },
+        {
+          "factor": "policy_tailwind",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "portfolio_risk",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "regime_adjustment",
+          "previous": 10.0,
+          "current": 10.0
+        },
+        {
+          "factor": "signal_track_record",
+          "previous": 0.0,
+          "current": 0.0
+        },
+        {
+          "factor": "valuation",
+          "previous": 12.0,
+          "current": 12.0
+        }
+      ]
+    }
+  ]
+}

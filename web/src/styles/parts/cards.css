@@ -53,20 +53,3 @@
 
 /* List-row variant — for tabular rows inside larger panels (signal rows,
    api-provider rows). Border-bottom only, no radius, no shadow. */
-.surface-card--list-row {
-  background: var(--color-bg-card);
-  border: 0;
-  border-bottom: 1px solid var(--color-border-subtle);
-  border-radius: 0;
-  box-shadow: none;
-  padding: var(--space-3) var(--space-card-pad);
-  transition: background-color 120ms ease;
-}
-
-.surface-card--list-row:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-.surface-card--list-row:last-child {
-  border-bottom: 0;
-}

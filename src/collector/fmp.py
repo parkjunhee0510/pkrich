@@ -573,10 +573,25 @@ def collect_fmp_financial_ratios(ticker: str) -> dict[str, str]:
         return {}
 
 
+def _dividend_5y_cagr(annual_divs: list[float]) -> str | None:
+    """True 5-year dividend CAGR.
+
+    ``annual_divs`` is ordered most-recent-year first. A genuine 5-year span
+    needs 6 annual buckets (year 0 vs year -5), so we require >= 6 entries and
+    use exponent 1/5. (The most-recent bucket can be a partial current year,
+    which understates the rate slightly — an accepted simplification.)
+    """
+    if len(annual_divs) >= 6 and annual_divs[0] > 0 and annual_divs[5] > 0:
+        cagr = (annual_divs[0] / annual_divs[5]) ** (1 / 5) - 1
+        return f"{cagr * 100:.1f}%"
+    return None
+
+
 def collect_fmp_dividend_history(ticker: str) -> dict[str, str]:
     """Fetch dividend history: recent dividend, 5-year CAGR, consecutive increase years."""
     try:
-        data = _fetch_json("stable/historical-dividend", {"symbol": ticker, "limit": "20"})
+        # limit 24 ~= 6 years of quarterly payments, enough for a true 5y CAGR.
+        data = _fetch_json("stable/historical-dividend", {"symbol": ticker, "limit": "24"})
         if not data or not isinstance(data, list):
             return {}
 
@@ -610,10 +625,10 @@ def collect_fmp_dividend_history(ticker: str) -> dict[str, str]:
         if annual_divs:
             result["annual_dividend"] = f"${annual_divs[0]:.2f}"
 
-        # 5-year CAGR
-        if len(annual_divs) >= 5 and annual_divs[-1] > 0 and annual_divs[0] > 0:
-            cagr = (annual_divs[0] / annual_divs[4]) ** (1 / 4) - 1
-            result["dividend_5y_cagr"] = f"{cagr * 100:.1f}%"
+        # 5-year CAGR (true 5-year span; see _dividend_5y_cagr)
+        cagr_str = _dividend_5y_cagr(annual_divs)
+        if cagr_str is not None:
+            result["dividend_5y_cagr"] = cagr_str
 
         # Consecutive increase years
         consecutive = 0

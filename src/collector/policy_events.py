@@ -22,7 +22,16 @@ from src.types import POLICY_CATEGORIES, PolicyEvent
 
 def hash_event_id(headline: str, url: str, published_at: str) -> str:
     raw = f"{headline}|{url}|{published_at}".encode("utf-8")
+    # Non-cryptographic dedup id for a short-lived (7-day) event cache; 48 bits
+    # is ample for this volume, and keeping the format stable avoids
+    # invalidating the existing dedupe cache (which would re-emit events).
     return hashlib.sha1(raw).hexdigest()[:12]
+
+
+def _sanitize_text(value: str) -> str:
+    """Collapse whitespace/newlines from untrusted web-search content to limit
+    the prompt-injection surface before it reaches downstream LLM prompts."""
+    return " ".join(str(value or "").split())
 
 
 def _parse_iso(value: str) -> datetime:
@@ -58,6 +67,10 @@ def filter_events(
         url = (ev.get("source_url") or "").strip()
         if not url:
             continue
+        # Reject non-web schemes (javascript:, data:, file:, ...) before the URL
+        # is persisted or rendered/fetched downstream.
+        if not url.lower().startswith(("http://", "https://")):
+            continue
 
         published_at = ev.get("published_at") or ""
         try:
@@ -78,7 +91,7 @@ def filter_events(
         if category not in POLICY_CATEGORIES:
             category = "other"
 
-        headline = ev.get("headline", "").strip()
+        headline = _sanitize_text(ev.get("headline", ""))
         if not headline:
             continue
 
@@ -90,8 +103,8 @@ def filter_events(
             id=evt_id,
             category=category,
             headline=headline,
-            summary=(ev.get("summary") or "")[:1200],
-            raw_excerpt=(ev.get("raw_excerpt") or "")[:4000],
+            summary=_sanitize_text(ev.get("summary", ""))[:1200],
+            raw_excerpt=_sanitize_text(ev.get("raw_excerpt", ""))[:4000],
             source_url=url,
             source_domain=domain,
             published_at=published_at,

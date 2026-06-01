@@ -294,7 +294,7 @@ class NewsCollectionTests(unittest.TestCase):
         item = WatchlistItem(ticker='CAT', name='Caterpillar Inc.', sector='Industrials')
         provider = {'name': 'Yahoo Finance', 'site_filter': 'finance.yahoo.com'}
 
-        with patch.dict(sys.modules, {'feedparser': fake_module}):
+        with patch('src.collector.news_rss.parse_feed', side_effect=fake_module.parse):
             with patch('src.collector.news_rss.record_pipeline_event') as logged:
                 items = _collect_google_news_provider(item, provider)
 

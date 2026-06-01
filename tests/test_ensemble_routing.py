@@ -83,6 +83,24 @@ class EnsembleRoutingTests(unittest.TestCase):
         selected = _select_target_tickers(["A", "B", "C"], decisions, watchlist, cfg)
         self.assertEqual(set(selected), {"A", "B", "C"})
 
+    def test_select_uses_router_scores_when_available(self) -> None:
+        cfg = _config(max_daily_ensemble=1)
+        watchlist = _watchlist(["A", "B"])
+        decisions = {"A": _decision("A", 50), "B": _decision("B", 50)}
+
+        selected = _select_target_tickers(
+            ["A", "B"],
+            decisions,
+            watchlist,
+            cfg,
+            router_scores={
+                "A": {"priority_score": 10.0},
+                "B": {"priority_score": 25.0},
+            },
+        )
+
+        self.assertEqual(selected, ["B"])
+
     def test_classify_reason_covers_all_cases(self) -> None:
         cfg = _config()
         self.assertEqual(_classify_routing_reason(None, cfg, in_portfolio=False), "no_decision")
@@ -104,17 +122,33 @@ class EnsembleRoutingTests(unittest.TestCase):
             config=cfg,
             portfolio_tickers={"B"},
             run_date=date(2026, 4, 17),
+            router_scores={
+                "A": {"priority_score": 12.0, "reason_codes": ["uncertainty_boundary"]},
+                "B": {"priority_score": 30.0, "reason_codes": ["portfolio_exposure"]},
+            },
+            skipped_due_to_priority=["B"],
+            router_budget_estimate={
+                "selected_count": 1,
+                "estimated_incremental_cost_usd": 0.0123,
+                "estimated_monthly_cost_usd": 0.2706,
+            },
         )
         self.assertEqual(log["schema_version"], 1)
         self.assertEqual(log["run_date"], "2026-04-17")
         self.assertEqual(log["portfolio_priority"], True)
         self.assertEqual(log["deep_pass_count"], 1)
+        self.assertEqual(log["skipped_due_to_priority"], ["B"])
+        self.assertEqual(log["router_budget_estimate"]["selected_count"], 1)
         a_entry = next(e for e in log["tickers"] if e["ticker"] == "A")
         b_entry = next(e for e in log["tickers"] if e["ticker"] == "B")
         self.assertTrue(a_entry["selected_for_deep"])
         self.assertFalse(b_entry["selected_for_deep"])
         self.assertTrue(b_entry["in_portfolio"])
         self.assertEqual(b_entry["reason"], "portfolio_priority")
+        self.assertEqual(a_entry["router_priority_score"], 12.0)
+        self.assertEqual(a_entry["router_reason_codes"], ["uncertainty_boundary"])
+        self.assertFalse(a_entry["skipped_due_to_priority"])
+        self.assertTrue(b_entry["skipped_due_to_priority"])
 
 
 if __name__ == "__main__":

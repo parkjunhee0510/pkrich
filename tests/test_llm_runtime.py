@@ -424,7 +424,7 @@ class MissingTickerRetryTests(unittest.TestCase):
 
 
 class SplitBatchesModuleBatchCapTests(unittest.TestCase):
-    def test_signal_takeaway_batches_are_capped_at_three(self) -> None:
+    def test_signal_takeaway_batches_use_configured_cost_cap(self) -> None:
         module = _FakeStructuredModule()
         module.name = "signal_takeaway_module"
         model_profile = ModelProfile(
@@ -449,10 +449,10 @@ class SplitBatchesModuleBatchCapTests(unittest.TestCase):
         tickers = ["AAPL", "MSFT", "AMD", "CAT", "XOM", "T", "KO"]
         batches = _split_batches(module, ctx, tickers)
 
-        self.assertTrue(all(len(batch) <= 3 for batch in batches))
+        self.assertTrue(all(len(batch) <= 5 for batch in batches))
         self.assertEqual(sum(len(batch) for batch in batches), len(tickers))
-        self.assertEqual([batch[0] for batch in batches], ["AAPL", "CAT", "KO"])
-        self.assertEqual([len(batch) for batch in batches], [3, 3, 1])
+        self.assertEqual([batch[0] for batch in batches], ["AAPL", "T"])
+        self.assertEqual([len(batch) for batch in batches], [5, 2])
 
     def test_module_without_override_is_unbounded(self) -> None:
         module = _FakeStructuredModule()
@@ -538,9 +538,27 @@ class ParallelBatchExecutionTests(unittest.TestCase):
         )
         fake_client = _FakeOpenAIClient(
             [
-                _FakeResponse({"tickers": [{"ticker": "AAPL", "summary": "AAPL"}, {"ticker": "MSFT", "summary": "MSFT"}, {"ticker": "AMD", "summary": "AMD"}]}, delay_seconds=0.1),
-                _FakeResponse({"tickers": [{"ticker": "CAT", "summary": "CAT"}, {"ticker": "XOM", "summary": "XOM"}, {"ticker": "T", "summary": "T"}]}, delay_seconds=0.1),
-                _FakeResponse({"tickers": [{"ticker": "KO", "summary": "KO"}]}, delay_seconds=0.1),
+                _FakeResponse(
+                    {
+                        "tickers": [
+                            {"ticker": "AAPL", "summary": "AAPL"},
+                            {"ticker": "MSFT", "summary": "MSFT"},
+                            {"ticker": "AMD", "summary": "AMD"},
+                            {"ticker": "CAT", "summary": "CAT"},
+                            {"ticker": "XOM", "summary": "XOM"},
+                        ]
+                    },
+                    delay_seconds=0.1,
+                ),
+                _FakeResponse(
+                    {
+                        "tickers": [
+                            {"ticker": "T", "summary": "T"},
+                            {"ticker": "KO", "summary": "KO"},
+                        ]
+                    },
+                    delay_seconds=0.1,
+                ),
             ]
         )
 
@@ -561,10 +579,10 @@ class ParallelBatchExecutionTests(unittest.TestCase):
             elapsed = time.monotonic() - start
 
         self.assertLess(elapsed, 0.25)
-        self.assertEqual(result.diagnostics["batch_count"], 3)
-        self.assertEqual(result.diagnostics["parallel_batch_workers"], 3)
+        self.assertEqual(result.diagnostics["batch_count"], 2)
+        self.assertEqual(result.diagnostics["parallel_batch_workers"], 2)
         self.assertEqual(result.results_by_ticker["KO"]["summary"], "KO")
-        self.assertEqual(len(fake_client.responses.calls), 3)
+        self.assertEqual(len(fake_client.responses.calls), 2)
 
 
 if __name__ == "__main__":

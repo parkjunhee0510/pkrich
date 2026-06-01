@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import os
 import re
 from datetime import date
 from typing import Any
@@ -13,7 +14,15 @@ from src.utils.network import can_open_tcp_connection
 from src.utils.pipeline_logging import record_pipeline_event
 
 _SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
-_SEC_USER_AGENT = "pkrich-stock-research/1.0 (contact: local-automation)"
+def sec_user_agent() -> str:
+    """User-Agent for SEC EDGAR requests.
+
+    SEC's fair-access policy requires a real contact (email). Set
+    SEC_CONTACT_EMAIL to a valid address; otherwise we fall back to a
+    placeholder that SEC may rate-limit or block.
+    """
+    contact = os.getenv("SEC_CONTACT_EMAIL", "").strip() or "local-automation"
+    return f"pkrich-stock-research/1.0 (contact: {contact})"
 _DEFAULT_MAX_FILINGS = 3
 _ITEM_PATTERN = re.compile(r"item\s+(\d+\.\d+)", re.IGNORECASE)
 _RELEVANT_FORMS = {
@@ -82,7 +91,7 @@ def _download_submissions_payload(cik: str) -> dict[str, Any]:
     sec_request = request.Request(
         request_url,
         headers={
-            "User-Agent": _SEC_USER_AGENT,
+            "User-Agent": sec_user_agent(),
             "Accept-Encoding": "gzip, deflate",
             "Host": "data.sec.gov",
         },

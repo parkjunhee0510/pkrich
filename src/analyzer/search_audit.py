@@ -11,7 +11,115 @@ from src.types import TickerAnalysis
 
 _NUMBER_RE = re.compile(r"\d+(?:\.\d+)?")
 _TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
+_CLAIM_SPLIT_RE = re.compile(r"(?<=[.!?。！？])\s+|\s+\|\s+")
+_SEC_FORM_RE = re.compile(r"\b(?:form\s*)?(?:10|8|6|20|40)\s*[- ]\s*(?:q|k|f)\b", re.IGNORECASE)
 _PLACEHOLDERS = {"", "-", "n/a", "na", "\u2014"}
+_INTERNAL_MARKET_TERMS = (
+    "주가",
+    "현재가",
+    "달러",
+    "usd",
+    "sma",
+    "sma50",
+    "sma200",
+    "rsi",
+    "52주",
+    "52w",
+    "30d",
+    "30일",
+    "7d",
+    "7일",
+    "atr",
+    "rvol",
+    "maxpain",
+    "netΔ",
+    "netdelta",
+    "net delta",
+    "옵션",
+    "call",
+    "put",
+    "고점",
+    "저점",
+    "진입 트리거",
+    "진입",
+    "목표",
+    "손절",
+    "돌파",
+    "이탈",
+    "저항",
+    "지지",
+    "rs vs sector",
+    "sector etf",
+    "per",
+    "p/e",
+    "roe",
+    "fcf",
+    "yield",
+    "forward eps",
+    "ttm eps",
+    "eps growth",
+    "pcr",
+    "oi p/c",
+    "short float",
+    "market cap",
+    "analyst target",
+    "analyst buy",
+    "price target",
+    "next earnings",
+    "시가총액",
+    "성장률",
+    "entry",
+    "target",
+    "stop",
+    "support",
+    "resistance",
+)
+_EXTERNAL_EVIDENCE_TERMS = (
+    "revenue",
+    "sales",
+    "guidance",
+    "backlog",
+    "margin",
+    "dividend",
+    "filing",
+    "filed",
+    "files",
+    "reported",
+    "reports",
+    "report",
+    "results",
+    "announced",
+    "beat",
+    "beats",
+    "miss",
+    "misses",
+    "upgrade",
+    "downgrade",
+    "sec",
+    "contract",
+    "demand",
+    "supply",
+    "lawsuit",
+    "regulatory",
+    "recall",
+    "매출",
+    "실적",
+    "가이던스",
+    "백로그",
+    "수주",
+    "마진",
+    "배당",
+    "공시",
+    "계약",
+    "수요",
+    "공급",
+    "소송",
+    "규제",
+    "리콜",
+    "제출",
+    "발표",
+    "호조",
+)
 
 
 def build_search_audit_payload(
@@ -52,14 +160,16 @@ def extract_analysis_claims(analysis: TickerAnalysis, max_claims: int = 8) -> li
     claims: list[dict[str, str]] = []
     seen: set[str] = set()
     for field, text in candidates:
-        claim = str(text or "").strip()
-        normalized = claim.lower()
-        if normalized in _PLACEHOLDERS or normalized in seen:
-            continue
-        seen.add(normalized)
-        claims.append({"field": field, "claim": claim})
-        if len(claims) >= max_claims:
-            break
+        for claim in _claim_fragments(text):
+            normalized = claim.lower()
+            if normalized in _PLACEHOLDERS or normalized in seen:
+                continue
+            if not _is_web_auditable_claim(claim):
+                continue
+            seen.add(normalized)
+            claims.append({"field": field, "claim": claim})
+            if len(claims) >= max_claims:
+                return claims
     return claims
 
 
@@ -159,7 +269,44 @@ def _tokenize(text: str) -> set[str]:
 
 
 def _numbers(text: str) -> set[str]:
-    return set(_NUMBER_RE.findall(str(text or "")))
+    normalized = _SEC_FORM_RE.sub(" ", str(text or ""))
+    return set(_NUMBER_RE.findall(normalized))
+
+
+def _claim_fragments(text: Any) -> list[str]:
+    value = str(text or "").strip()
+    if not value:
+        return []
+    fragments: list[str] = []
+    for line in value.splitlines():
+        stripped = line.strip(" \t-*•")
+        if not stripped:
+            continue
+        fragments.extend(part.strip() for part in _CLAIM_SPLIT_RE.split(stripped) if part.strip())
+    return fragments
+
+
+def _is_web_auditable_claim(claim: str) -> bool:
+    normalized = str(claim or "").casefold()
+    tokens = _tokenize(claim)
+    has_internal_market_term = _has_term(normalized, tokens, _INTERNAL_MARKET_TERMS)
+    has_external_evidence_term = _has_term(normalized, tokens, _EXTERNAL_EVIDENCE_TERMS)
+    if has_internal_market_term and not has_external_evidence_term:
+        return False
+    return has_external_evidence_term
+
+
+def _has_term(normalized_text: str, tokens: set[str], terms: tuple[str, ...]) -> bool:
+    for term in terms:
+        normalized_term = term.casefold()
+        if term.isascii():
+            term_tokens = _tokenize(normalized_term)
+            if term_tokens and term_tokens <= tokens:
+                return True
+            continue
+        if normalized_term in normalized_text:
+            return True
+    return False
 
 
 def _status_counts(issues: list[dict[str, Any]]) -> dict[str, int]:

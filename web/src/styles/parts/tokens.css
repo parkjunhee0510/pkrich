@@ -3,8 +3,6 @@
    paper, ink, rules, hazard. mono-first. hard shadows. no blur.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap');
-
 :root {
   /* surfaces */
   --bone: var(--cozy-cream);
@@ -14,7 +12,7 @@
   --ink: var(--cozy-ink);
   --ink-2: var(--cozy-ink-2);
   --ink-soft: var(--cozy-ink-2);
-  --muted: var(--cozy-muted);
+  --muted: #f3ead8;
   --rule: var(--cozy-gold);
 
   /* signals (block swatches) */
@@ -44,10 +42,62 @@
   --on-info-block:    #fff;
   --on-hazard:        #fff;
 
-  /* type */
-  --font-mono: 'Gowun Dodum', 'JetBrains Mono', ui-monospace, Menlo, monospace;
-  --font-display: 'Gaegu', 'Gowun Dodum', 'Archivo Black', sans-serif;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* type — local system stack only; no render-blocking external font request */
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', '맑은 고딕', monospace;
+  --font-display: 'Apple SD Gothic Neo', 'Segoe UI', '맑은 고딕', system-ui, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', '맑은 고딕', system-ui, sans-serif;
+
+  /* shadcn/ui-compatible semantic tokens */
+  --background: #fbf6ec;
+  --foreground: #241a0d;
+  --card: #fffdf5;
+  --card-foreground: #241a0d;
+  --popover: #fffdf5;
+  --popover-foreground: #241a0d;
+  --primary: #7a4f10;
+  --primary-hover: #5f3c0b;
+  --primary-foreground: #fffaf0;
+  --secondary: #f1e4c7;
+  --secondary-foreground: #2a1f10;
+  --muted-surface: var(--muted);
+  --muted-foreground: #5f513a;
+  --accent: #236b74;
+  --accent-foreground: #ffffff;
+  --destructive: #b7352f;
+  --destructive-foreground: #ffffff;
+  --border: #d8c397;
+  --input: #d8c397;
+  --ring: #236b74;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.35rem;
+  --font-size-2xs: 0.68rem;
+  --font-size-caption: 0.72rem;
+  --font-size-ui: 0.82rem;
+  --font-size-body: 0.95rem;
+  --font-size-page: 17px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-pill: var(--radius-md);
+  --touch-target: 44px;
+  --z-popover: 3000;
+  --duration-fast: 150ms;
+  --duration-base: 220ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* readable measure tokens — 한글에는 더 넉넉한 line-height 권장 */
+  --leading-tight: 1.35;
+  --leading-normal: 1.65;
+  --leading-loose: 1.8;
+
+  /* focus ring (accessibility) */
+  --focus-ring: 0 0 0 2px var(--paper), 0 0 0 4px var(--cozy-gold);
+  --focus-ring-tight: 0 0 0 2px var(--cozy-gold-soft);
 
   /* legacy aliases used across the codebase */
   --color-bg-base: var(--cozy-cream);
@@ -62,7 +112,7 @@
   --color-up:      var(--pos);
   --color-down:    var(--neg);
   --color-caution: var(--caution);
-  --color-neutral: var(--muted);
+  --color-neutral: var(--cozy-muted);
 
   --tone-positive-border: var(--cozy-gold-soft);
   --tone-positive-bg: var(--cozy-mint);
@@ -71,8 +121,7 @@
   --tone-caution-border: var(--cozy-gold-soft);
   --tone-caution-bg: var(--cozy-peach);
 
-  --radius: 14px;
-  --radius-lg: 22px;
+  --radius: var(--radius-md);
 
   --shadow-hard: 0 4px 0 0 rgba(184,134,47,0.18), 0 8px 22px -10px rgba(122,90,46,0.28);
   --shadow-hard-sm: 0 2px 0 0 rgba(184,134,47,0.16), 0 4px 12px -6px rgba(122,90,46,0.22);
@@ -108,11 +157,16 @@
   --cozy-banner-gradient: linear-gradient(180deg, #fff7e4 0%, #fceccb 100%);
   --cozy-primary-gradient: linear-gradient(180deg, #ffe1a8 0%, #f3bf60 100%);
   --cozy-primary-gradient-hover: linear-gradient(180deg, #ffd98a 0%, #e8ac47 100%);
+  --app-background:
+    radial-gradient(1100px 380px at 12% 8%, rgba(255,255,255,0.85), transparent 65%),
+    radial-gradient(900px 320px at 88% 14%, rgba(255,255,255,0.7), transparent 60%),
+    radial-gradient(800px 260px at 50% 92%, rgba(255,244,230,0.8), transparent 65%),
+    linear-gradient(180deg, var(--cozy-sky-1) 0%, var(--cozy-sky-2) 55%, var(--cozy-sky-3) 100%);
   --cozy-border: 1.5px solid var(--cozy-gold-soft);
   --cozy-border-strong: 1.5px solid var(--cozy-gold);
-  --cozy-pill-radius: 999px;
+  --cozy-pill-radius: var(--radius-md);
   --cozy-card-radius: 6px;
-  --cozy-input-radius: 14px;
+  --cozy-input-radius: var(--radius-md);
   --cozy-soft-panel-bg: rgba(255,253,245,0.7);
   --cozy-inset-shadow: inset 0 1px 2px rgba(184,134,47,0.08);
   --cozy-pill-shadow: 0 2px 0 rgba(184,134,47,0.12);
@@ -124,9 +178,8 @@
   --cozy-bad: #c25a4e;
   --cozy-warn: #d99a3a;
   --font-serif: Georgia, "Times New Roman", serif;
-  --radius-card: 16px;
+  --radius-card: 8px;
   --radius-chip: 8px;
-  --radius-pill: 999px;
   --space-card-gap: 20px;
   --space-card-pad: 22px;
   --shadow-sm: 0 1px 2px rgba(80,60,30,.04);
@@ -198,6 +251,25 @@
   --color-accent-soft-border: rgba(184, 134, 47, 0.3);
   --color-accent-outline-fg: #7a5a2e;
   --color-accent-outline-border: var(--cozy-gold);
+  --color-neutral-soft-bg: rgba(127, 127, 127, 0.1);
+  --color-neutral-soft-border: rgba(127, 127, 127, 0.25);
+  --newsdesk-positive: var(--color-positive-outline-fg);
+  --newsdesk-positive-bg: var(--color-positive-soft-bg);
+  --newsdesk-positive-border: var(--color-positive-soft-border);
+  --newsdesk-negative: var(--color-negative-outline-fg);
+  --newsdesk-negative-bg: var(--color-negative-soft-bg);
+  --newsdesk-negative-border: var(--color-negative-soft-border);
+  --newsdesk-warning: var(--color-caution-outline-fg);
+  --newsdesk-warning-bg: var(--color-caution-soft-bg);
+  --newsdesk-warning-border: var(--color-caution-soft-border);
+  --newsdesk-info: var(--color-info-outline-fg);
+  --newsdesk-info-bg: var(--color-info-soft-bg);
+  --newsdesk-info-border: var(--color-info-soft-border);
+  --newsdesk-neutral: var(--color-fg-body);
+  --newsdesk-neutral-bg: var(--color-neutral-soft-bg);
+  --newsdesk-neutral-border: var(--color-neutral-soft-border);
+  --color-neutral-track: rgba(127, 127, 127, 0.4);
+  --color-on-bright-badge: #000000;
 
   /* ============================================================
      Tier 2 — Spacing scale (8pt grid, Plan A.3)
@@ -230,25 +302,172 @@
 
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #11130f;
+    --foreground: #f8f4e8;
+    --card: #181a14;
+    --card-foreground: #f8f4e8;
+    --popover: #1d1f18;
+    --popover-foreground: #f8f4e8;
+    --primary: #f0bf63;
+    --primary-hover: #ffd178;
+    --primary-foreground: #21180b;
+    --secondary: #2a2d23;
+    --secondary-foreground: #f8f4e8;
+    --muted: #23271f;
+    --muted-surface: var(--muted);
+    --muted-foreground: #c8bfa9;
+    --accent: #73d0c6;
+    --accent-foreground: #081715;
+    --destructive: #ff8179;
+    --destructive-foreground: #23100e;
+    --border: #4c4737;
+    --input: #5a523f;
+    --ring: #73d0c6;
+
+    --bone: #11130f;
+    --bone-dim: #191b15;
+    --paper: #181a14;
+    --paper-raised: #20231b;
+    --ink: #f8f4e8;
+    --ink-2: #d7cbb4;
+    --ink-soft: #c8bfa9;
+    --rule: #665d43;
+
+    --pos: #72d391;
+    --neg: #ff8179;
+    --caution: #e8bc63;
+    --pos-block: #173f2a;
+    --neg-block: #512421;
+    --caution-block: #4d3718;
+    --info-block: #173852;
+    --hazard: #e8bc63;
+    --on-pos-block: #eafff1;
+    --on-neg-block: #fff1ee;
+    --on-caution-block: #fff5dc;
+    --on-info-block: #edf7ff;
+    --on-hazard: #20170a;
+
+    --cozy-sky-1: #121711;
+    --cozy-sky-2: #161b15;
+    --cozy-sky-3: #211d15;
+    --cozy-cream: #11130f;
+    --cozy-cream-2: #191b15;
+    --cozy-gold: #f0bf63;
+    --cozy-gold-2: #ffd178;
+    --cozy-gold-soft: #665d43;
+    --cozy-rose: #ff9aa2;
+    --cozy-mint: #173f2a;
+    --cozy-peach: #4d3718;
+    --cozy-lav: #514a73;
+    --cozy-leaf: #72d391;
+    --cozy-ink: #f8f4e8;
+    --cozy-ink-2: #d7cbb4;
+    --cozy-muted: #9e947d;
+    --cozy-paper: #181a14;
+    --cozy-paper-2: #20231b;
+    --cozy-ink-soft: #e7dfcc;
+    --cozy-border-color: #4c4737;
+    --cozy-good: #72d391;
+    --cozy-bad: #ff8179;
+    --cozy-warn: #e8bc63;
+    --color-positive-fg: #07130b;
+    --color-positive-soft-bg: rgba(114, 211, 145, 0.18);
+    --color-positive-soft-fg: #c7f8d6;
+    --color-positive-soft-border: rgba(114, 211, 145, 0.38);
+    --color-positive-outline-fg: #c7f8d6;
+    --color-positive-outline-border: var(--cozy-good);
+    --color-negative-fg: #23100e;
+    --color-negative-soft-bg: rgba(255, 129, 121, 0.18);
+    --color-negative-soft-fg: #ffd2ce;
+    --color-negative-soft-border: rgba(255, 129, 121, 0.38);
+    --color-negative-outline-fg: #ffd2ce;
+    --color-negative-outline-border: var(--cozy-bad);
+    --color-caution-fg: #20170a;
+    --color-caution-soft-bg: rgba(232, 188, 99, 0.18);
+    --color-caution-soft-fg: #ffe5a9;
+    --color-caution-soft-border: rgba(232, 188, 99, 0.38);
+    --color-caution-outline-fg: #ffe5a9;
+    --color-caution-outline-border: var(--cozy-warn);
+    --color-info-fg: #081715;
+    --color-info-soft-bg: rgba(115, 208, 198, 0.18);
+    --color-info-soft-fg: #c4f2ed;
+    --color-info-soft-border: rgba(115, 208, 198, 0.38);
+    --color-info-outline-fg: #c4f2ed;
+    --color-info-outline-border: var(--accent);
+    --color-accent-fg: #20170a;
+    --color-accent-soft-bg: rgba(240, 191, 99, 0.18);
+    --color-accent-soft-fg: #ffe5a9;
+    --color-accent-soft-border: rgba(240, 191, 99, 0.38);
+    --color-accent-outline-fg: #ffe5a9;
+    --color-accent-outline-border: var(--cozy-gold);
+    --color-neutral-soft-bg: rgba(200, 191, 169, 0.12);
+    --color-neutral-soft-border: rgba(200, 191, 169, 0.26);
+    --newsdesk-positive: var(--color-positive-outline-fg);
+    --newsdesk-positive-bg: var(--color-positive-soft-bg);
+    --newsdesk-positive-border: var(--color-positive-soft-border);
+    --newsdesk-negative: var(--color-negative-outline-fg);
+    --newsdesk-negative-bg: var(--color-negative-soft-bg);
+    --newsdesk-negative-border: var(--color-negative-soft-border);
+    --newsdesk-warning: var(--color-caution-outline-fg);
+    --newsdesk-warning-bg: var(--color-caution-soft-bg);
+    --newsdesk-warning-border: var(--color-caution-soft-border);
+    --newsdesk-info: var(--color-info-outline-fg);
+    --newsdesk-info-bg: var(--color-info-soft-bg);
+    --newsdesk-info-border: var(--color-info-soft-border);
+    --newsdesk-neutral: var(--color-fg-body);
+    --newsdesk-neutral-bg: var(--color-neutral-soft-bg);
+    --newsdesk-neutral-border: var(--color-neutral-soft-border);
+    --color-neutral-track: rgba(200, 191, 169, 0.42);
+    --color-on-bright-badge: #21180b;
+    --cozy-soft-panel-bg: rgba(24, 26, 20, 0.78);
+    --cozy-surface-gradient: linear-gradient(180deg, #181a14 0%, #20231b 100%);
+    --cozy-banner-gradient: linear-gradient(180deg, #20231b 0%, #2a2d23 100%);
+    --cozy-primary-gradient: linear-gradient(180deg, #f0bf63 0%, #bf8a36 100%);
+    --cozy-primary-gradient-hover: linear-gradient(180deg, #ffd178 0%, #c89443 100%);
+
+    --nav-hover-bg: #f0bf63;
+    --nav-hover-gold: #11130f;
+    --nav-hover-fire: #73d0c6;
+    --focus-ring: 0 0 0 2px var(--paper), 0 0 0 4px var(--ring);
+    --focus-ring-tight: 0 0 0 2px var(--ring);
+    --shadow-hard: 0 1px 0 rgba(255, 255, 255, 0.06), 0 12px 30px -18px rgba(0, 0, 0, 0.82);
+    --shadow-hard-sm: 0 1px 0 rgba(255, 255, 255, 0.05), 0 8px 18px -14px rgba(0, 0, 0, 0.74);
+    --shadow-hard-lg: 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 44px -22px rgba(0, 0, 0, 0.86);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.32);
+    --shadow: 0 12px 32px -24px rgba(0, 0, 0, 0.82);
+    --shadow-lg: 0 24px 54px -28px rgba(0, 0, 0, 0.86);
+    --shadow-card: var(--shadow-hard-sm);
+    --app-background:
+      radial-gradient(900px 360px at 8% 0%, rgba(115, 208, 198, 0.12), transparent 62%),
+      radial-gradient(860px 320px at 92% 8%, rgba(240, 191, 99, 0.14), transparent 64%),
+      linear-gradient(180deg, #11130f 0%, #171914 54%, #211d15 100%);
+  }
+}
+
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { background: var(--bone); }
+html {
+  background: var(--background);
+  color-scheme: light dark;
+  text-size-adjust: 100%;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
   font-family: var(--font-sans);
-  background: radial-gradient(1100px 380px at 12% 8%,  rgba(255,255,255,0.85), transparent 65%),
-    radial-gradient(900px  320px at 88% 14%, rgba(255,255,255,0.7),  transparent 60%),
-    radial-gradient(800px  260px at 50% 92%, rgba(255,244,230,0.8),  transparent 65%),
-    linear-gradient(180deg, var(--cozy-sky-1) 0%, var(--cozy-sky-2) 55%, var(--cozy-sky-3) 100%);
-  color: var(--cozy-ink);
-  font-size: 17px;
+  background: var(--app-background);
+  color: var(--foreground);
+  font-size: var(--font-size-page);
   line-height: 1.6;
   letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
   font-variant-numeric: tabular-nums slashed-zero;
   min-height: 100vh;
-  background-attachment: fixed;
+  background-attachment: scroll;
 }
 
 ::selection {
@@ -276,7 +495,7 @@ code, pre, kbd { font-family: var(--font-mono); }
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 900;
-  color: var(--cozy-ink);
+  color: var(--foreground);
 }
 
 hr { border: 0; border-top: var(--rule-weight) solid var(--ink); }

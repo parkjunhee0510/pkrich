@@ -13,7 +13,8 @@ Load the smallest useful context for the current task.
 3. Identify the task type and primary layer.
 4. Open only the linked docs for that layer or task.
 5. Apply any nested `AGENTS.md` file whose scope contains files you touch.
-6. Open source files only after the relevant docs are known.
+6. Open source files on `collect -> analyze -> state -> output -> store -> log`
+ly after the relevant docs are known.
 
 ## Default Rules
 
@@ -154,4 +155,4 @@ Before finishing, confirm:
 - only relevant docs were loaded
 - layer boundaries were preserved
 - any changed behavior, contracts, outputs, or routing rules were reflected in related docs
-- changes still respect `collect -> analyze -> state -> output -> store -> log`
+- changes still respect

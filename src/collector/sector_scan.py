@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Iterable
 
+from src.collector.helpers.yfinance_helpers import _configure_yfinance_cache
 from src.types import NewsItem, WatchlistItem
 from src.utils.config import SectorConfig, SectorTickerConfig
 from src.utils.env import is_env_flag_enabled
@@ -229,6 +230,7 @@ def _fetch_yfinance_snapshot(ticker: str) -> tuple[str, str, str, list[SectorPri
     """
     import yfinance as yf  # type: ignore
 
+    _configure_yfinance_cache(yf)
     handle = yf.Ticker(ticker)
     # auto_adjust=True matches `collector/price.py` so chart bases stay
     # consistent across the app.

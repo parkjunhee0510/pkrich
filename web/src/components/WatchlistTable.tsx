@@ -1,22 +1,14 @@
-import { useState, useCallback } from 'react'
+import {
+  Suspense,
+  lazy,
+  useState,
+  type CSSProperties,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type MouseEvent,
+  type Ref,
+} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core'
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import type { TickerAnalysisData } from '../types'
 import { parseNumericChange, changeColor, extractSignalDirection } from '../utils/format'
 import { SignalBadge } from './SignalBadge'
@@ -36,7 +28,13 @@ import {
   summarizeUnusualActivityShort,
 } from '../utils/trader'
 
-type DensityMode = 'compact' | 'comfortable' | 'focus'
+const WatchlistDndList = lazy(() =>
+  import('./WatchlistDndList').then((module) => ({ default: module.WatchlistDndList })),
+)
+
+export type DensityMode = 'compact' | 'comfortable' | 'focus'
+type DragHandleProps = HTMLAttributes<HTMLSpanElement>
+type DropTargetProps = Pick<HTMLAttributes<HTMLElement>, 'onDragOver' | 'onDrop'>
 
 const DECISION_LABEL: Record<string, string> = {
   buy: '매수',
@@ -75,37 +73,19 @@ export function WatchlistTable({
   const [customOrder, setCustomOrder] = useState<string[]>(() => loadCustomOrder())
   const [isDndEnabled, setIsDndEnabled] = useState(customOrder.length > 0)
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  )
-
   const orderedTickers = isDndEnabled
     ? reorderByCustom(tickers, customOrder)
     : tickers
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event
-      if (!over || active.id === over.id) return
-
-      const currentIds = orderedTickers.map((t) => t.ticker)
-      const oldIndex = currentIds.indexOf(active.id as string)
-      const newIndex = currentIds.indexOf(over.id as string)
-      if (oldIndex === -1 || newIndex === -1) return
-
-      const newOrder = arrayMove(currentIds, oldIndex, newIndex)
-      setCustomOrder(newOrder)
-      saveCustomOrder(newOrder)
-      if (!isDndEnabled) setIsDndEnabled(true)
-    },
-    [orderedTickers, isDndEnabled],
-  )
 
   const handleResetOrder = () => {
     setCustomOrder([])
     saveCustomOrder([])
     setIsDndEnabled(false)
+  }
+
+  const handleOrderChange = (newOrder: string[]) => {
+    setCustomOrder(newOrder)
+    saveCustomOrder(newOrder)
   }
 
   return (
@@ -114,6 +94,7 @@ export function WatchlistTable({
         <label className="watchlist-dnd-toggle">
           <input
             type="checkbox"
+            aria-label="워치리스트 커스텀 정렬 사용"
             checked={isDndEnabled}
             onChange={(e) => {
               setIsDndEnabled(e.target.checked)
@@ -128,52 +109,67 @@ export function WatchlistTable({
           </button>
         )}
       </div>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={orderedTickers.map((t) => t.ticker)} strategy={verticalListSortingStrategy}>
-          <div className="watchlist-list" data-density={density}>
-            {orderedTickers.map((ticker) => (
-              <SortableWatchlistCard
-                key={ticker.ticker}
-                ticker={ticker}
-                accountSize={accountSize}
-                density={density}
-                isDndEnabled={isDndEnabled}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+      {isDndEnabled ? (
+        <Suspense fallback={<WatchlistStaticList tickers={orderedTickers} accountSize={accountSize} density={density} />}>
+          <WatchlistDndList
+            tickers={orderedTickers}
+            accountSize={accountSize}
+            density={density}
+            onOrderChange={handleOrderChange}
+          />
+        </Suspense>
+      ) : (
+        <WatchlistStaticList tickers={tickers} accountSize={accountSize} density={density} />
+      )}
     </div>
   )
 }
 
-function SortableWatchlistCard({
+function WatchlistStaticList({
+  tickers,
+  accountSize,
+  density,
+}: {
+  tickers: TickerAnalysisData[]
+  accountSize: number
+  density: DensityMode
+}) {
+  return (
+    <div className="watchlist-list" data-density={density}>
+      {tickers.map((ticker) => (
+        <WatchlistCard
+          key={ticker.ticker}
+          ticker={ticker}
+          accountSize={accountSize}
+          density={density}
+          isDndEnabled={false}
+        />
+      ))}
+    </div>
+  )
+}
+
+export function WatchlistCard({
   ticker,
   accountSize,
   density,
   isDndEnabled,
+  cardRef,
+  dragStyle,
+  dragHandleProps,
+  dropTargetProps,
+  isDragging = false,
 }: {
   ticker: TickerAnalysisData
   accountSize: number
   density: DensityMode
   isDndEnabled: boolean
+  cardRef?: Ref<HTMLElement>
+  dragStyle?: CSSProperties
+  dragHandleProps?: DragHandleProps
+  dropTargetProps?: DropTargetProps
+  isDragging?: boolean
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: ticker.ticker })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 10 : undefined,
-  }
-
   const navigate = useNavigate()
   const pct = parseNumericChange(ticker.data_snapshot['Daily Change'] ?? '0')
   const signalDirection = extractSignalDirection(ticker.signal_or_takeaway)
@@ -192,26 +188,47 @@ function SortableWatchlistCard({
   const unusualActivitySummary = summarizeUnusualActivityShort(ticker.options_summary?.unusual_activity)
   const unusualMeta = getUnusualActivityMeta(ticker.options_summary?.unusual_activity)
   const contextSummary = buildContextSummary(ticker)
+  const dragHandleTitle = dragHandleProps?.title ?? 'Drag to reorder'
 
-  function handleCardClick(e: React.MouseEvent<HTMLElement>) {
+  function navigateToTicker() {
+    navigate(`/ticker/${ticker.ticker}`)
+  }
+
+  function handleCardClick(e: MouseEvent<HTMLElement>) {
     if (isDragging) return
     const target = e.target as HTMLElement
     if (target.closest('a, button, [role="button"]')) return
-    navigate(`/ticker/${ticker.ticker}`)
+    navigateToTicker()
+  }
+
+  function handleCardKeyDown(e: KeyboardEvent<HTMLElement>) {
+    if (isDragging) return
+    const target = e.target as HTMLElement
+    if (target.closest('a, button, [role="button"]')) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      navigateToTicker()
+    }
   }
 
   return (
     <article
-      ref={setNodeRef}
-      style={{ ...style, cursor: 'pointer' }}
+      ref={cardRef}
+      style={{ ...dragStyle, cursor: 'pointer' }}
       className={`watchlist-card ${getSetupToneClass(displayScore)}${isDragging ? ' dragging' : ''}`}
+      role="link"
+      tabIndex={0}
+      aria-label={`${ticker.ticker} 상세 페이지 열기`}
       onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      onDragOver={dropTargetProps?.onDragOver}
+      onDrop={dropTargetProps?.onDrop}
     >
       <div className="watchlist-card-head">
         <div className="watchlist-card-title-block">
           <div className="watchlist-card-title-row">
             {isDndEnabled && (
-              <span className="watchlist-drag-handle" {...attributes} {...listeners} title="드래그하여 순서 변경">
+              <span className="watchlist-drag-handle" {...dragHandleProps} title={dragHandleTitle}>
                 ⠿
               </span>
             )}

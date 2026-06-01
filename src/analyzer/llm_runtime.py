@@ -147,8 +147,18 @@ def run_structured_llm_module(
                         diagnostics=diagnostics,
                     )
                     if retry_validated is not None:
+                        dropped = _dropped_unsupported(validated.counts, retry_validated.counts)
                         validated = retry_validated
                         retried_validation = True
+                        if dropped > 0:
+                            record_pipeline_event(
+                                "analyzer",
+                                "info",
+                                "openai_validation_pruned",
+                                module=module.name,
+                                ticker=ticker,
+                                dropped_unsupported_count=dropped,
+                            )
                 if validated.warnings:
                     counts = validated.counts
                     record_pipeline_event(
@@ -598,6 +608,19 @@ def _should_retry_validation(validated: Any) -> bool:
     return counts.get("fact_warning", 0) > 0 or counts.get("hallucination_warning", 0) > 0
 
 
+def _dropped_unsupported(before_counts: dict[str, Any], after_counts: dict[str, Any]) -> int:
+    """How many fact/hallucination warnings the pruning retry removed.
+
+    Honest population for `dropped_unsupported_count` (previously dead
+    telemetry): the count of unsupported-claim warnings present before the
+    pruning pass minus those still present after it.
+    """
+    cats = ("fact_warning", "hallucination_warning")
+    before = sum(int(before_counts.get(c, 0) or 0) for c in cats)
+    after = sum(int(after_counts.get(c, 0) or 0) for c in cats)
+    return max(0, before - after)
+
+
 def _retry_single_ticker_on_validation(
     *,
     client: Any,
@@ -692,16 +715,22 @@ def _retry_single_ticker_on_validation(
 
 def _build_stricter_prompt_template(prompt_template: PromptTemplate) -> PromptTemplate:
     strict_system_suffix = (
-        " Validation retry mode: do not paraphrase or invent unsupported values. "
-        "Use only values explicitly present in the payload. "
-        "If a numeric or event slot is uncertain, write '—' or 'N/A'."
+        " Validation retry mode (PRUNING PASS): the prior response had hallucinated content. "
+        "Your task is NOT to rewrite — it is to REMOVE every unsupported claim. "
+        "Use only values literally present in the payload. "
+        "Prefer shorter output over invented detail. Empty arrays are acceptable. "
+        "If a numeric or event slot is uncertain, write '—' or 'N/A' rather than guessing."
     )
     strict_user_suffix = (
-        "\n\n[VALIDATION RETRY RULES]\n"
-        "- 이번 재시도에서는 입력 payload에 있는 값만 그대로 사용하세요.\n"
-        "- 숫자, 이벤트 날짜, 인물명, 가격 레벨은 추측하거나 보정하지 마세요.\n"
-        "- key_news는 한국어 요약으로 쓰고, 영문 제목을 보존해야 하면 입력 title을 그대로 복사하세요.\n"
+        "\n\n[VALIDATION RETRY RULES — PRUNING MODE]\n"
+        "직전 응답이 환각으로 분류되었습니다. 이번 재시도는 '재작성'이 아니라 '제거'입니다.\n"
+        "- 입력 payload에 명시되지 않은 값은 모두 출력에서 제거하세요. 짧은 출력이 좋습니다.\n"
+        "- key_news는 입력 news 배열에 있는 헤드라인만 요약 대상이 되며, 검증 불가능한 항목은 통째로 빼세요.\n"
+        "  (빈 배열도 허용. 검증되지 않은 5개보다 검증된 1개가 낫습니다.)\n"
+        "- 숫자, 날짜, 인물명, 가격 레벨, 거래 규모, 규제 조치는 입력에 그대로 있는 값만 사용하세요.\n"
+        "- 추론·외삽·일반 시장 지식 도입 금지. 입력 너머의 사실은 출력하지 마세요.\n"
         "- signal_or_takeaway의 목표/손절은 must_use_values에 있는 값만 쓰고, 없으면 목표 N/A/N/A 또는 손절 N/A를 쓰세요.\n"
+        "- news_tone.reasoning은 남아 있는 key_news에 등장한 사실만 인용해야 합니다.\n"
         "- 근거가 없으면 '—' 또는 'N/A'를 쓰세요.\n"
     )
     return replace(
@@ -712,6 +741,12 @@ def _build_stricter_prompt_template(prompt_template: PromptTemplate) -> PromptTe
 
 
 def _build_validation_retry_profile(model_profile: Any) -> Any:
+    """Adjust sampling for the validation retry.
+
+    Non-reasoning models: drop temperature to 0.1 for tighter, less-creative output.
+    Reasoning models (o1/o3/gpt-5*): API rejects temperature — the differentiator is
+    the stricter pruning-mode prompt built by `_build_stricter_prompt_template`.
+    """
     model_name = str(getattr(model_profile, "model", "")).strip().lower()
     if model_name.startswith(("o1", "o3", "gpt-5")):
         return model_profile

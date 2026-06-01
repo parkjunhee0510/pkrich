@@ -1,8 +1,10 @@
 import type { TickerAnalysisData } from '../types'
+import { cn } from '../lib/utils'
 import {
   buildSearchEvidenceBadge,
   type SearchEvidenceBadgeData,
 } from '../utils/searchEvidenceBadge'
+import { Badge } from './ui/Badge'
 
 export function SearchEvidenceBadge({
   badge,
@@ -12,13 +14,14 @@ export function SearchEvidenceBadge({
   className?: string
 }) {
   return (
-    <span
-      className={`search-evidence-badge ${badge.className} ${className}`.trim()}
+    <Badge
+      variant="unstyled"
+      className={cn('search-evidence-badge', badge.className, className)}
       aria-label={badge.detail}
       title={badge.detail}
     >
       {badge.label}
-    </span>
+    </Badge>
   )
 }
 

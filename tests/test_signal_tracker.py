@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import csv
+import json
 import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
 
-from src.types import NewsItem, TickerAnalysis
+from src.types import MarketRegime, NewsItem, TickerAnalysis, TickerDecision
 from src.utils.signal_tracker import load_recent_signals, load_signal_stats, record_signals, update_signal_returns
 
 
@@ -61,6 +62,51 @@ class SignalTrackerTests(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["signal_direction"], "bull")
             self.assertEqual(rows[0]["catalyst_tag"], "실적")
+
+    def test_record_signals_writes_lf_line_endings(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "signal_tracker.csv"
+            record_signals([_analysis()], date(2026, 4, 8), {"AAPL": 100.0}, csv_path)
+
+            contents = csv_path.read_bytes()
+
+        self.assertIn(b"\n", contents)
+        self.assertNotIn(b"\r", contents)
+
+    def test_record_signals_persists_decision_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "signal_tracker.csv"
+            decision = TickerDecision(
+                ticker="AAPL",
+                action="buy",
+                conviction=72,
+                raw_conviction=80,
+                factors={"momentum": 1.5, "valuation": -0.5},
+                factor_reasoning={"momentum": "price trend improved"},
+                confidence_meta={"data_quality_score": 0.88},
+            )
+            regime = MarketRegime(regime="risk_on", sub_regime="growth", confidence=70)
+
+            record_signals(
+                [_analysis()],
+                date(2026, 4, 8),
+                {"AAPL": 100.0},
+                csv_path,
+                decisions=[decision],
+                market_regime=regime,
+            )
+
+            with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+
+        self.assertEqual(rows[0]["action"], "buy")
+        self.assertEqual(rows[0]["conviction"], "72")
+        self.assertEqual(rows[0]["raw_conviction"], "80")
+        self.assertEqual(rows[0]["regime"], "risk_on")
+        self.assertEqual(rows[0]["sub_regime"], "growth")
+        self.assertEqual(json.loads(rows[0]["factors_json"]), {"momentum": 1.5, "valuation": -0.5})
+        self.assertEqual(json.loads(rows[0]["factor_reasoning_json"]), {"momentum": "price trend improved"})
+        self.assertEqual(json.loads(rows[0]["confidence_meta_json"]), {"data_quality_score": 0.88})
 
     def test_update_signal_returns_uses_trading_day_horizons(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

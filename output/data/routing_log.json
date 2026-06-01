@@ -1,117 +1,427 @@
 {
   "schema_version": 1,
-  "run_date": "2026-04-17",
+  "run_date": "2026-05-29",
+  "ensemble_enabled": true,
   "trigger_range": [
     25,
     75
   ],
-  "max_daily_ensemble": 0,
+  "max_daily_ensemble": 5,
   "portfolio_priority": false,
-  "deep_pass_count": 13,
+  "deep_pass_count": 5,
+  "selected_tickers": [
+    "CAT",
+    "AMD",
+    "XOM",
+    "IONQ",
+    "AAPL"
+  ],
+  "skipped_due_to_priority": [
+    "KO",
+    "T",
+    "OXY",
+    "ORA",
+    "SPIR",
+    "PLUG",
+    "COHR",
+    "ALAB",
+    "MOD",
+    "FLNC",
+    "ATKR",
+    "NXT",
+    "KTOS",
+    "AVAV",
+    "RKLB",
+    "RDW",
+    "HUM",
+    "KEY",
+    "XYL",
+    "DD"
+  ],
+  "router_budget_estimate": {
+    "profile": "deep",
+    "model": "gpt-5.4-mini",
+    "selected_count": 5,
+    "input_tokens_per_ticker": 6000,
+    "output_tokens_per_ticker": 4000,
+    "estimated_incremental_cost_usd": 0.121,
+    "estimated_monthly_cost_usd": 2.662,
+    "trading_days_per_month": 22
+  },
   "tickers": [
     {
       "ticker": "AAPL",
-      "conviction": 58,
-      "action": "buy",
-      "in_portfolio": true,
+      "name": "Apple Inc.",
       "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "in_portfolio": true,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 63,
+      "router_priority_score": 56.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "portfolio_exposure"
+      ],
+      "skipped_due_to_priority": false
     },
     {
       "ticker": "CAT",
-      "conviction": 53,
-      "action": "watch",
-      "in_portfolio": true,
+      "name": "Caterpillar Inc.",
       "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "in_portfolio": true,
+      "reason": "in_trigger_range",
+      "action": "buy",
+      "conviction": 66,
+      "router_priority_score": 68.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "portfolio_exposure",
+        "signal_importance"
+      ],
+      "skipped_due_to_priority": false
     },
     {
       "ticker": "XOM",
-      "conviction": 51,
-      "action": "watch",
-      "in_portfolio": true,
+      "name": "Exxon Mobil Corporation",
       "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "in_portfolio": true,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 59,
+      "router_priority_score": 63.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "portfolio_exposure",
+        "event_proximity"
+      ],
+      "skipped_due_to_priority": false
     },
     {
       "ticker": "AMD",
-      "conviction": 55,
-      "action": "watch",
-      "in_portfolio": true,
+      "name": "Advanced Micro Devices, Inc.",
       "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "in_portfolio": true,
+      "reason": "in_trigger_range",
+      "action": "buy",
+      "conviction": 68,
+      "router_priority_score": 64.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "portfolio_exposure",
+        "signal_importance"
+      ],
+      "skipped_due_to_priority": false
     },
     {
       "ticker": "KO",
-      "conviction": 44,
-      "action": "avoid",
-      "in_portfolio": true,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "name": "The Coca-Cola Company",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 56,
+      "router_priority_score": 27.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "event_proximity"
+      ],
+      "skipped_due_to_priority": true
     },
     {
       "ticker": "T",
-      "conviction": 51,
-      "action": "watch",
+      "name": "AT&T Inc.",
+      "selected_for_deep": false,
       "in_portfolio": true,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 54,
+      "router_priority_score": 38.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "portfolio_exposure"
+      ],
+      "skipped_due_to_priority": true
     },
     {
       "ticker": "IONQ",
-      "conviction": 59,
-      "action": "buy",
-      "in_portfolio": true,
+      "name": "IonQ, Inc.",
       "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "in_portfolio": true,
+      "reason": "in_trigger_range",
+      "action": "buy",
+      "conviction": 70,
+      "router_priority_score": 60.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "portfolio_exposure",
+        "signal_importance"
+      ],
+      "skipped_due_to_priority": false
     },
     {
       "ticker": "OXY",
-      "conviction": 50,
-      "action": "watch",
+      "name": "Occidental Petroleum Corporation",
+      "selected_for_deep": false,
       "in_portfolio": false,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 62,
+      "router_priority_score": 39.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "event_proximity"
+      ],
+      "skipped_due_to_priority": true
     },
     {
       "ticker": "ORA",
-      "conviction": 49,
-      "action": "watch",
+      "name": "Ormat Technologies, Inc.",
+      "selected_for_deep": false,
       "in_portfolio": false,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 63,
+      "router_priority_score": 41.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "event_proximity"
+      ],
+      "skipped_due_to_priority": true
     },
     {
       "ticker": "SPIR",
-      "conviction": 47,
-      "action": "watch",
+      "name": "Spire Global, Inc.",
+      "selected_for_deep": false,
       "in_portfolio": false,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 55,
+      "router_priority_score": 15.228,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "volatility"
+      ],
+      "skipped_due_to_priority": true
     },
     {
       "ticker": "PLUG",
-      "conviction": 56,
-      "action": "buy",
+      "name": "Plug Power Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": true,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 58,
+      "router_priority_score": 46.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "portfolio_exposure"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "COHR",
+      "name": "Coherent Corp.",
+      "selected_for_deep": false,
       "in_portfolio": false,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 62,
+      "router_priority_score": 24.0,
+      "router_reason_codes": [
+        "uncertainty_boundary"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "ALAB",
+      "name": "Astera Labs, Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "buy",
+      "conviction": 72,
+      "router_priority_score": 26.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "signal_importance"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "MOD",
+      "name": "Modine Manufacturing Company",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "buy",
+      "conviction": 67,
+      "router_priority_score": 36.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "signal_importance"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "FLNC",
+      "name": "Fluence Energy, Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 59,
+      "router_priority_score": 28.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "volatility"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "ATKR",
+      "name": "Atkore Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 60,
+      "router_priority_score": 20.0,
+      "router_reason_codes": [
+        "uncertainty_boundary"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "NXT",
+      "name": "Nextracker Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "buy",
+      "conviction": 68,
+      "router_priority_score": 44.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "volatility",
+        "signal_importance"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "KTOS",
+      "name": "Kratos Defense & Security Solutions, Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 56,
+      "router_priority_score": 12.0,
+      "router_reason_codes": [
+        "uncertainty_boundary"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "AVAV",
+      "name": "AeroVironment, Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 51,
+      "router_priority_score": 2.0,
+      "router_reason_codes": [
+        "uncertainty_boundary"
+      ],
+      "skipped_due_to_priority": true
     },
     {
       "ticker": "RKLB",
-      "conviction": 54,
-      "action": "watch",
+      "name": "Rocket Lab USA, Inc.",
+      "selected_for_deep": false,
       "in_portfolio": false,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 61,
+      "router_priority_score": 22.0,
+      "router_reason_codes": [
+        "uncertainty_boundary"
+      ],
+      "skipped_due_to_priority": true
     },
     {
-      "ticker": "PL",
-      "conviction": 51,
-      "action": "watch",
+      "ticker": "RDW",
+      "name": "Redwire Corporation",
+      "selected_for_deep": false,
       "in_portfolio": false,
-      "selected_for_deep": true,
-      "reason": "in_trigger_range"
+      "reason": "in_trigger_range",
+      "action": "buy",
+      "conviction": 65,
+      "router_priority_score": 45.135,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "volatility",
+        "signal_importance"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "HUM",
+      "name": "Humana Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 57,
+      "router_priority_score": 14.0,
+      "router_reason_codes": [
+        "uncertainty_boundary"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "KEY",
+      "name": "KeyCorp",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 59,
+      "router_priority_score": 33.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "event_proximity"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "XYL",
+      "name": "Xylem Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "watch",
+      "conviction": 51,
+      "router_priority_score": 2.0,
+      "router_reason_codes": [
+        "uncertainty_boundary"
+      ],
+      "skipped_due_to_priority": true
+    },
+    {
+      "ticker": "DD",
+      "name": "DuPont de Nemours, Inc.",
+      "selected_for_deep": false,
+      "in_portfolio": false,
+      "reason": "in_trigger_range",
+      "action": "buy",
+      "conviction": 65,
+      "router_priority_score": 40.0,
+      "router_reason_codes": [
+        "uncertainty_boundary",
+        "signal_importance"
+      ],
+      "skipped_due_to_priority": true
     }
   ]
 }

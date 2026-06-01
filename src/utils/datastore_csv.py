@@ -1,6 +1,8 @@
 ﻿from __future__ import annotations
 
 import csv
+import os
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -88,10 +90,20 @@ def _write_price_rows(
     updated_rows.sort(key=lambda row: (row['date'], row['ticker']))
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open('w', encoding='utf-8', newline='') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=FIELDNAMES)
-        writer.writeheader()
-        writer.writerows(updated_rows)
+    # Atomic replace: never truncate the existing price history on a crash.
+    fd, tmp_name = tempfile.mkstemp(dir=str(path.parent), prefix='price_history.', suffix='.tmp')
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8', newline='') as csv_file:
+            writer = csv.DictWriter(csv_file, fieldnames=FIELDNAMES)
+            writer.writeheader()
+            writer.writerows(updated_rows)
+        os.replace(tmp_name, path)
+    except BaseException:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
 
 
 def _parse_date(raw_value: str) -> date | None:

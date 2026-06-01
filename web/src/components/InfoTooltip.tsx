@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 
 type InfoTooltipProps = {
   label?: string
@@ -6,12 +6,19 @@ type InfoTooltipProps = {
 }
 
 export function InfoTooltip({ label = 'i', content }: InfoTooltipProps) {
+  const tooltipId = useId()
+
   return (
-    <span className="info-tooltip" tabIndex={0} aria-label={typeof content === 'string' ? content : undefined}>
-      <span className="info-tooltip-trigger" aria-hidden="true">
-        {label}
-      </span>
-      <span className="info-tooltip-bubble" role="tooltip">
+    <span className="info-tooltip">
+      <button
+        type="button"
+        className="info-tooltip-trigger"
+        aria-label={typeof content === 'string' ? content : '도움말 보기'}
+        aria-describedby={tooltipId}
+      >
+        <span>{label}</span>
+      </button>
+      <span id={tooltipId} className="info-tooltip-bubble" role="tooltip">
         {content}
       </span>
     </span>

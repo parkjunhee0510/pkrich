@@ -1,10 +1,8 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo } from 'react'
 import { ErrorState } from '../components/ErrorState'
 import { TablePageSkeleton } from '../components/Skeleton'
+import { useJsonResource } from '../hooks/useJsonResource'
 import type { ApiProviderSummary, ApiProviderState, ApiStatusSummary, ApiTickerMatrixRow } from '../types'
-
-const STATUS_URL = `${import.meta.env.BASE_URL}output/data/api_status.json`
-const MATRIX_URL = `${import.meta.env.BASE_URL}output/data/api_ticker_matrix.json`
 
 const PROVIDER_LABELS: Record<string, string> = {
   yfinance: 'yfinance',
@@ -69,31 +67,21 @@ type ApiStatusData = {
 }
 
 export function ApiStatus() {
-  const [data, setData] = useState<ApiStatusData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { data: summary, loading: summaryLoading, error: summaryError } =
+    useJsonResource<ApiStatusSummary>('output/data/api_status.json')
+  const { data: matrix, loading: matrixLoading, error: matrixError } =
+    useJsonResource<ApiTickerMatrixRow[]>('output/data/api_ticker_matrix.json')
 
   useEffect(() => {
     document.title = 'API 상태 · Stock Research'
   }, [])
 
-  useEffect(() => {
-    Promise.all([
-      fetch(STATUS_URL, { cache: 'no-store' }).then((response) => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return response.json()
-      }),
-      fetch(MATRIX_URL, { cache: 'no-store' }).then((response) => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return response.json()
-      }),
-    ])
-      .then(([summary, matrix]: [ApiStatusSummary, ApiTickerMatrixRow[]]) => {
-        setData({ summary, matrix })
-      })
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoading(false))
-  }, [])
+  const data = useMemo<ApiStatusData | null>(
+    () => (summary && matrix ? { summary, matrix } : null),
+    [summary, matrix],
+  )
+  const loading = (summaryLoading || matrixLoading) && !data
+  const error = summaryError || matrixError
 
   const providerEntries = useMemo(
     () => Object.entries(data?.summary.providers ?? {}),

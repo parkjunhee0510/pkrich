@@ -41,6 +41,12 @@ Pipeline must run end-to-end.
 
 * No unnecessary API usage
 
+### Operational Stability
+
+* `python -m src.cli.output_health_check` should pass with no hard issues before generated artifacts are committed.
+* Warning-level diagnostics such as cost over budget, BudgetGuard would-block paths, provider errors, and stale candidates should be reviewed but do not fail the command unless promoted to hard issues by a later approved policy.
+* When watchlist tickers change, verify ticker shard completeness, markdown output, web mirror consistency, price history inclusion, and sector inclusion when the sector explorer is in scope.
+
 ## Failure Policy
 
 * Continue on non-critical failure

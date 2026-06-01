@@ -115,7 +115,10 @@ def _extract_metrics(info: dict[str, Any]) -> dict[str, str]:
 
 def _compute_30d_change(handle: Any) -> float | None:
     try:
-        hist = handle.history(period="2mo", interval="1d", auto_adjust=False)
+        # auto_adjust=True for parity with the main price path; otherwise a
+        # split in the window injects a discontinuity and the 30d % change is
+        # wrong by the split ratio.
+        hist = handle.history(period="2mo", interval="1d", auto_adjust=True)
     except Exception:
         return None
     if hist is None or hist.empty or "Close" not in hist.columns:

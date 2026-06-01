@@ -46,7 +46,7 @@ function Invoke-GhJson {
 
 function Write-LogLine {
     param([string]$Message)
-    Write-Host $Message
+    Write-Host $Message 
     $script:LogBuffer.Add($Message) | Out-Null
 }
 
@@ -71,7 +71,7 @@ function Add-RunSummaryRows {
         $RunInfo,
         $Jobs
     )
-
+    
     if ($null -eq $RunInfo) {
         return
     }

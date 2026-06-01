@@ -17,6 +17,8 @@ Maintain reproducible derived state across pipeline runs.
 * Record newly generated signals per ticker and run date
 * Update `1d`, `5d`, and `20d` return windows from stored price history
 * Maintain signal statistics used by the decision layer, backtests, and admin views
+* Persist decision metadata such as action, conviction, regime, factors, and confidence metadata with each signal row for downstream performance analytics
+* Legacy signal rows can be backfilled from finalized dashboard history with `python -m src.cli.backfill_signal_metadata`; the backfill only fills empty metadata fields and does not recompute decisions
 * Output `state_metadata` should make timing explicit: decision-time signal statistics do not include current-run signals, while output-time signal statistics may include them after `record_signals`
 
 ### Outcome Labeling
@@ -28,6 +30,7 @@ Maintain reproducible derived state across pipeline runs.
 
 * Compute portfolio summary inputs for analysis and output
 * Support portfolio-risk-aware decision adjustments
+* Local portfolio editor saves to `config/portfolio.yaml` must treat lot-count reductions as explicit deletions; ticker/share/cost edits should preserve the full holding list to avoid accidental truncation.
 
 ### Peer Selection Cache
 

@@ -1,16 +1,24 @@
 ﻿import { useEffect, useMemo } from 'react'
+import { AnalysisPerformancePanel } from '../components/AnalysisPerformancePanel'
 import { EquityCurveChart } from '../components/EquityCurveChart'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { useJsonResource } from '../hooks/useJsonResource'
 import { ErrorState } from '../components/ErrorState'
 import { TablePageSkeleton } from '../components/Skeleton'
-import type { BacktestSummary, BacktestTickerRow, MonthlySummaryData, RoutingOutcomePayload } from '../types'
+import type {
+  AnalysisPerformancePayload,
+  BacktestSummary,
+  BacktestTickerRow,
+  MonthlySummaryData,
+  RoutingOutcomePayload,
+} from '../types'
 
 export function Backtest() {
   const { data: dashboardData, loading: dashboardLoading, error: dashboardError } = useDashboardData()
   const { data: backtest, loading: backtestLoading, error: backtestError } = useJsonResource<BacktestSummary>('output/data/backtest_summary.json')
   const { data: monthly, loading: monthlyLoading, error: monthlyError } = useJsonResource<MonthlySummaryData>('output/data/monthly_summary.json')
   const { data: routingOutcome, loading: routingLoading, error: routingError } = useJsonResource<RoutingOutcomePayload>('output/data/routing_outcome.json')
+  const { data: analysisPerformance } = useJsonResource<AnalysisPerformancePayload>('output/data/analysis_performance.json')
 
   useEffect(() => {
     document.title = '백테스트 · 주간 성과'
@@ -33,6 +41,8 @@ export function Backtest() {
   const routingSummary = routingOutcome?.summary
   const routingPeriods = routingOutcome?.periods ?? []
   const latestRoutingRun = routingOutcome?.latest_run && 'run_date' in routingOutcome.latest_run ? routingOutcome.latest_run : null
+  const latestRouterRows = latestRoutingRun?.tickers ?? []
+  const routerBudgetEstimate = latestRoutingRun?.router_budget_estimate
   const routingHasEvaluatedData = (routingOutcome?.evaluated_signals ?? 0) > 0
   const routingDeepOnlyState = Boolean(
     routingSummary &&
@@ -71,6 +81,8 @@ export function Backtest() {
           <EquityCurveChart points={backtest.equity_curve} title="전략 누적 수익 곡선" />
         </section>
       ) : null}
+
+      <AnalysisPerformancePanel payload={analysisPerformance} />
 
       {(backtest?.bull || backtest?.bear) ? (
         <section className="signals-meta-section">
@@ -209,7 +221,46 @@ export function Backtest() {
                 value={latestRoutingRun.portfolio_priority ? '활성' : '비활성'}
                 note={`일일 제한 ${latestRoutingRun.max_daily_ensemble === 0 ? '무제한' : latestRoutingRun.max_daily_ensemble}`}
               />
+              {routerBudgetEstimate?.estimated_monthly_cost_usd !== undefined ? (
+                <SummaryMetricCard
+                  label="예상 월간 deep 비용"
+                  value={formatCurrency(routerBudgetEstimate.estimated_monthly_cost_usd, 4)}
+                  note={`이번 deep ${routerBudgetEstimate.selected_count ?? latestRoutingRun.deep_pass_count}건 · 증분 ${formatCurrency(routerBudgetEstimate.estimated_incremental_cost_usd, 4)}`}
+                />
+              ) : null}
             </div>
+          ) : null}
+
+          {latestRouterRows.length > 0 ? (
+            <>
+              <h4 className="u-mt-4">Smart Router 우선순위</h4>
+              <div className="watchlist-table-shell">
+                <table className="watchlist-table">
+                  <thead>
+                    <tr>
+                      <th>티커</th>
+                      <th>상태</th>
+                      <th>점수</th>
+                      <th>이유 코드</th>
+                      <th>판정</th>
+                      <th>확신도</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {latestRouterRows.map((row) => (
+                      <tr key={`${row.ticker}-${row.router_priority_score ?? 'na'}`}>
+                        <td>{row.ticker}</td>
+                        <td>{formatRouterSelection(row.selected_for_deep, row.skipped_due_to_priority)}</td>
+                        <td>{formatRouterScore(row.router_priority_score)}</td>
+                        <td>{formatRouterReasonCodes(row.router_reason_codes)}</td>
+                        <td>{row.action ?? 'N/A'}</td>
+                        <td>{row.conviction ?? 'N/A'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           ) : null}
         </section>
       ) : null}
@@ -308,6 +359,27 @@ function formatPercentValue(value: number | null | undefined) {
 function formatRatio(value: number | null | undefined) {
   if (value === null || value === undefined || Number.isNaN(value)) return '데이터 축적 중'
   return `${value.toFixed(1)}%`
+}
+
+function formatCurrency(value: number | null | undefined, digits: number) {
+  if (value === null || value === undefined || Number.isNaN(value)) return 'N/A'
+  return `$${value.toFixed(digits)}`
+}
+
+function formatRouterScore(value: number | null | undefined) {
+  if (value === null || value === undefined || Number.isNaN(value)) return 'N/A'
+  return value.toFixed(2)
+}
+
+function formatRouterReasonCodes(codes: string[] | null | undefined) {
+  if (!codes || codes.length === 0) return 'N/A'
+  return codes.join(', ')
+}
+
+function formatRouterSelection(selected: boolean, skippedDueToPriority: boolean | undefined) {
+  if (selected) return 'selected'
+  if (skippedDueToPriority) return 'priority skip'
+  return 'economy'
 }
 
 function buildRoutingMetricNote(

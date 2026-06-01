@@ -1,4 +1,39 @@
 /* ========== Global form inputs ========== */
+.u-mt-1 { margin-top: var(--space-1); }
+.u-mt-2 { margin-top: var(--space-2); }
+.u-mt-3 { margin-top: var(--space-3); }
+.u-mt-4 { margin-top: var(--space-4); }
+.u-mt-6 { margin-top: var(--space-6); }
+.u-mb-2 { margin-bottom: var(--space-2); }
+.u-mb-3 { margin-bottom: var(--space-3); }
+.u-mb-4 { margin-bottom: var(--space-4); }
+.u-inline-cluster-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.u-chip-compact {
+  padding-inline: var(--space-3);
+  font-size: var(--font-size-xs);
+}
+.u-text-xs { font-size: var(--font-size-xs); }
+.u-text-sm { font-size: var(--font-size-sm); }
+.u-font-bold { font-weight: 700; }
+.u-cursor-pointer { cursor: pointer; }
+.u-price-delta {
+  margin-left: var(--space-2);
+  font-size: var(--font-size-xs);
+}
+.u-inline-separator {
+  margin-inline: var(--space-1);
+  color: var(--muted-foreground);
+}
+.u-muted-meta {
+  margin-left: var(--space-2);
+  color: var(--muted-foreground);
+  font-size: var(--font-size-xs);
+}
+
 input[type='text'],
 input[type='number'],
 input[type='search'],
@@ -7,21 +42,26 @@ textarea {
   font-family: var(--font-mono);
   color: var(--ink);
   background: var(--paper);
-  border: 1.5px solid var(--ink);
-  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
 }
 input:focus, select:focus, textarea:focus {
   outline: none;
   outline-offset: 1px;
-  border-color: var(--cozy-gold);
-  box-shadow: 0 0 0 3px rgba(236,207,141,0.35);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 28%, transparent);
 }
 
 /* ========== Focus-visible: keyboard accessibility ========== */
 .nav-link:focus-visible {
-  outline: 2px solid var(--nav-hover-gold);
-  outline-offset: -2px;
-  color: var(--nav-hover-gold);
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  color: var(--foreground);
 }
 
 /* ========== Hamburger nav toggle ========== */
@@ -30,14 +70,25 @@ input:focus, select:focus, textarea:focus {
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  padding: 0.5rem 0.6rem;
+  width: var(--touch-target);
+  min-width: var(--touch-target);
+  padding: 0;
   margin-left: auto;
-  background: none;
-  border: var(--rule-weight) solid var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--shadow-sm);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
-.header-hamburger:hover { background: var(--caution-block); }
+.header-hamburger:hover {
+  background: var(--muted-surface);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
 .hamburger-line {
   display: block;
   width: 20px;
@@ -70,26 +121,6 @@ input:focus, select:focus, textarea:focus {
 .ticker-link:focus-visible {
   outline: 2px solid var(--hazard);
   outline-offset: 1px;
-}
-
-/* global scrollbars */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--cozy-gold-soft);
-  border: 2px solid transparent;
-  border-radius: var(--cozy-pill-radius);
-  background-clip: padding-box;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--cozy-gold);
-  background-clip: padding-box;
-  border: 2px solid transparent;
 }
 
 /* tooltip arrow */
@@ -137,7 +168,6 @@ input:focus, select:focus, textarea:focus {
     align-items: center;
   }
   .ticker-price-group .signal-badge { display: none; }
-  .ticker-detail-primary-section { padding: 0.85rem 0.95rem; }
   .dashboard-header, .market-overview { flex-direction: column; gap: 0.6rem; }
   .dashboard-header-main { width: 100%; }
   .dashboard-controls { grid-template-columns: 1fr; }

@@ -175,6 +175,7 @@ class ModelConfigTests(unittest.TestCase):
                         '  second_model: deep',
                         '  second_prompt: research_v2',
                         '  max_daily_ensemble: 3',
+                        '  emit_routing_log: true',
                         'profiles:',
                         '  economy:',
                         '    model: gpt-5.4-mini',
@@ -208,6 +209,7 @@ class ModelConfigTests(unittest.TestCase):
         self.assertEqual(ensemble.second_model, 'deep')
         self.assertEqual(ensemble.second_prompt, 'research_v2')
         self.assertEqual(ensemble.max_daily_ensemble, 3)
+        self.assertTrue(ensemble.emit_routing_log)
 
     def test_load_ensemble_config_rejects_invalid_values(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

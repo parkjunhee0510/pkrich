@@ -1,0 +1,1078 @@
+{
+  "__type__": "object",
+  "keys": {
+    "action_change_reasons": {
+      "__type__": "array",
+      "item": {
+        "__type__": "object",
+        "keys": {
+          "contributors": {
+            "__type__": "array",
+            "item": {
+              "__type__": "object",
+              "keys": {
+                "current": {
+                  "__type__": "float"
+                },
+                "factor": {
+                  "__type__": "str"
+                },
+                "previous": {
+                  "__type__": "float"
+                }
+              }
+            }
+          },
+          "current_action": {
+            "__type__": "str"
+          },
+          "current_conviction": {
+            "__type__": "int"
+          },
+          "current_regime": {
+            "__type__": "str"
+          },
+          "previous_action": {
+            "__type__": "str"
+          },
+          "previous_conviction": {
+            "__type__": "float"
+          },
+          "previous_regime": {
+            "__type__": "str"
+          },
+          "reason_codes": {
+            "__type__": "array",
+            "item": {
+              "__type__": "str"
+            }
+          },
+          "summary": {
+            "__type__": "str"
+          },
+          "ticker": {
+            "__type__": "str"
+          }
+        }
+      }
+    },
+    "as_of": {
+      "__type__": "str"
+    },
+    "conviction_calibration": {
+      "__type__": "object",
+      "keys": {
+        "bucket_edges": {
+          "__type__": "array",
+          "item": {
+            "__type__": "str"
+          }
+        },
+        "buckets": {
+          "__type__": "object",
+          "keys": {
+            "0_35": {
+              "__type__": "object",
+              "keys": {
+                "action_counts": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "avg_return_1d": {
+                  "__type__": "null"
+                },
+                "avg_return_20d": {
+                  "__type__": "null"
+                },
+                "avg_return_5d": {
+                  "__type__": "null"
+                },
+                "avoid_win_rate": {
+                  "__type__": "null"
+                },
+                "buy_win_rate": {
+                  "__type__": "null"
+                },
+                "sample_count": {
+                  "__type__": "int"
+                }
+              }
+            },
+            "35_50": {
+              "__type__": "object",
+              "keys": {
+                "action_counts": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "avg_return_1d": {
+                  "__type__": "null"
+                },
+                "avg_return_20d": {
+                  "__type__": "null"
+                },
+                "avg_return_5d": {
+                  "__type__": "null"
+                },
+                "avoid_win_rate": {
+                  "__type__": "null"
+                },
+                "buy_win_rate": {
+                  "__type__": "null"
+                },
+                "sample_count": {
+                  "__type__": "int"
+                }
+              }
+            },
+            "50_65": {
+              "__type__": "object",
+              "keys": {
+                "action_counts": {
+                  "__type__": "object",
+                  "keys": {
+                    "watch": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "avg_return_1d": {
+                  "__type__": "float"
+                },
+                "avg_return_20d": {
+                  "__type__": "null"
+                },
+                "avg_return_5d": {
+                  "__type__": "float"
+                },
+                "avoid_win_rate": {
+                  "__type__": "null"
+                },
+                "buy_win_rate": {
+                  "__type__": "null"
+                },
+                "sample_count": {
+                  "__type__": "int"
+                }
+              }
+            },
+            "65_80": {
+              "__type__": "object",
+              "keys": {
+                "action_counts": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "avg_return_1d": {
+                  "__type__": "null"
+                },
+                "avg_return_20d": {
+                  "__type__": "null"
+                },
+                "avg_return_5d": {
+                  "__type__": "null"
+                },
+                "avoid_win_rate": {
+                  "__type__": "null"
+                },
+                "buy_win_rate": {
+                  "__type__": "null"
+                },
+                "sample_count": {
+                  "__type__": "int"
+                }
+              }
+            },
+            "80_100": {
+              "__type__": "object",
+              "keys": {
+                "action_counts": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "avg_return_1d": {
+                  "__type__": "null"
+                },
+                "avg_return_20d": {
+                  "__type__": "null"
+                },
+                "avg_return_5d": {
+                  "__type__": "null"
+                },
+                "avoid_win_rate": {
+                  "__type__": "null"
+                },
+                "buy_win_rate": {
+                  "__type__": "null"
+                },
+                "sample_count": {
+                  "__type__": "int"
+                }
+              }
+            }
+          }
+        },
+        "status": {
+          "__type__": "str"
+        }
+      }
+    },
+    "factor_attribution": {
+      "__type__": "object",
+      "keys": {
+        "factors": {
+          "__type__": "object",
+          "keys": {
+            "momentum": {
+              "__type__": "object",
+              "keys": {
+                "avg_forward_return_20d": {
+                  "__type__": "null"
+                },
+                "avg_forward_return_5d": {
+                  "__type__": "float"
+                },
+                "avg_score": {
+                  "__type__": "float"
+                },
+                "best_action_context": {
+                  "__type__": "object",
+                  "keys": {
+                    "action": {
+                      "__type__": "str"
+                    },
+                    "avg_return_5d": {
+                      "__type__": "float"
+                    },
+                    "sample_count": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "negative_score_count": {
+                  "__type__": "int"
+                },
+                "positive_score_count": {
+                  "__type__": "int"
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "worst_action_context": {
+                  "__type__": "object",
+                  "keys": {
+                    "action": {
+                      "__type__": "str"
+                    },
+                    "avg_return_5d": {
+                      "__type__": "float"
+                    },
+                    "sample_count": {
+                      "__type__": "int"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "missing_factor_sample_count": {
+          "__type__": "int"
+        },
+        "status": {
+          "__type__": "str"
+        }
+      }
+    },
+    "regime_performance": {
+      "__type__": "object",
+      "keys": {
+        "neutral": {
+          "__type__": "object",
+          "keys": {
+            "watch": {
+              "__type__": "object",
+              "keys": {
+                "1d": {
+                  "__type__": "object",
+                  "keys": {
+                    "avg_return": {
+                      "__type__": "float"
+                    },
+                    "completed_count": {
+                      "__type__": "int"
+                    },
+                    "directional_win_rate": {
+                      "__type__": "null"
+                    },
+                    "loss_rate": {
+                      "__type__": "null"
+                    },
+                    "median_return": {
+                      "__type__": "float"
+                    },
+                    "missing_count": {
+                      "__type__": "int"
+                    },
+                    "return_distribution": {
+                      "__type__": "object",
+                      "keys": {
+                        "flat": {
+                          "__type__": "int"
+                        },
+                        "negative": {
+                          "__type__": "int"
+                        },
+                        "positive": {
+                          "__type__": "int"
+                        }
+                      }
+                    },
+                    "sample_count": {
+                      "__type__": "int"
+                    },
+                    "triple_barrier_outcomes": {
+                      "__type__": "object",
+                      "keys": {
+                        "take_profit": {
+                          "__type__": "int"
+                        }
+                      }
+                    },
+                    "win_rate": {
+                      "__type__": "null"
+                    }
+                  }
+                },
+                "20d": {
+                  "__type__": "object",
+                  "keys": {
+                    "avg_return": {
+                      "__type__": "null"
+                    },
+                    "completed_count": {
+                      "__type__": "int"
+                    },
+                    "directional_win_rate": {
+                      "__type__": "null"
+                    },
+                    "loss_rate": {
+                      "__type__": "null"
+                    },
+                    "median_return": {
+                      "__type__": "null"
+                    },
+                    "missing_count": {
+                      "__type__": "int"
+                    },
+                    "return_distribution": {
+                      "__type__": "object",
+                      "keys": {
+                        "flat": {
+                          "__type__": "int"
+                        },
+                        "negative": {
+                          "__type__": "int"
+                        },
+                        "positive": {
+                          "__type__": "int"
+                        }
+                      }
+                    },
+                    "sample_count": {
+                      "__type__": "int"
+                    },
+                    "triple_barrier_outcomes": {
+                      "__type__": "object",
+                      "keys": {}
+                    },
+                    "win_rate": {
+                      "__type__": "null"
+                    }
+                  }
+                },
+                "5d": {
+                  "__type__": "object",
+                  "keys": {
+                    "avg_return": {
+                      "__type__": "float"
+                    },
+                    "completed_count": {
+                      "__type__": "int"
+                    },
+                    "directional_win_rate": {
+                      "__type__": "null"
+                    },
+                    "loss_rate": {
+                      "__type__": "null"
+                    },
+                    "median_return": {
+                      "__type__": "float"
+                    },
+                    "missing_count": {
+                      "__type__": "int"
+                    },
+                    "return_distribution": {
+                      "__type__": "object",
+                      "keys": {
+                        "flat": {
+                          "__type__": "int"
+                        },
+                        "negative": {
+                          "__type__": "int"
+                        },
+                        "positive": {
+                          "__type__": "int"
+                        }
+                      }
+                    },
+                    "sample_count": {
+                      "__type__": "int"
+                    },
+                    "triple_barrier_outcomes": {
+                      "__type__": "object",
+                      "keys": {
+                        "take_profit": {
+                          "__type__": "int"
+                        }
+                      }
+                    },
+                    "win_rate": {
+                      "__type__": "null"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schema_version": {
+      "__type__": "int"
+    },
+    "signal_performance": {
+      "__type__": "object",
+      "keys": {
+        "avoid": {
+          "__type__": "object",
+          "keys": {
+            "1d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            },
+            "20d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            },
+            "5d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            }
+          }
+        },
+        "buy": {
+          "__type__": "object",
+          "keys": {
+            "1d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            },
+            "20d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            },
+            "5d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            }
+          }
+        },
+        "unknown": {
+          "__type__": "object",
+          "keys": {
+            "1d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            },
+            "20d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            },
+            "5d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            }
+          }
+        },
+        "watch": {
+          "__type__": "object",
+          "keys": {
+            "1d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "float"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "float"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {
+                    "take_profit": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            },
+            "20d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "null"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "null"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {}
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            },
+            "5d": {
+              "__type__": "object",
+              "keys": {
+                "avg_return": {
+                  "__type__": "float"
+                },
+                "completed_count": {
+                  "__type__": "int"
+                },
+                "directional_win_rate": {
+                  "__type__": "null"
+                },
+                "loss_rate": {
+                  "__type__": "null"
+                },
+                "median_return": {
+                  "__type__": "float"
+                },
+                "missing_count": {
+                  "__type__": "int"
+                },
+                "return_distribution": {
+                  "__type__": "object",
+                  "keys": {
+                    "flat": {
+                      "__type__": "int"
+                    },
+                    "negative": {
+                      "__type__": "int"
+                    },
+                    "positive": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "sample_count": {
+                  "__type__": "int"
+                },
+                "triple_barrier_outcomes": {
+                  "__type__": "object",
+                  "keys": {
+                    "take_profit": {
+                      "__type__": "int"
+                    }
+                  }
+                },
+                "win_rate": {
+                  "__type__": "null"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "__type__": "object",
+      "keys": {
+        "completed_return_windows": {
+          "__type__": "array",
+          "item": {
+            "__type__": "str"
+          }
+        },
+        "decision_count": {
+          "__type__": "int"
+        },
+        "mode": {
+          "__type__": "str"
+        },
+        "notes": {
+          "__type__": "array",
+          "item": {
+            "__type__": "str"
+          }
+        },
+        "sample_count": {
+          "__type__": "int"
+        }
+      }
+    }
+  }
+}

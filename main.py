@@ -92,6 +92,11 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Run sector explorer refresh after the main watchlist pipeline. Skipped by default to keep normal runs fast.",
     )
+    parser.add_argument(
+        "--no-progress",
+        action="store_true",
+        help="Disable human-readable CLI progress messages.",
+    )
     return parser
 
 
@@ -101,10 +106,12 @@ def main(argv: list[str] | None = None) -> None:
 
     from src.pipeline import collect_only, run_pipeline
 
+    show_progress = not args.no_progress
+
     if args.collect_only:
-        collect_only()
+        collect_only(show_progress=show_progress)
     else:
-        run_pipeline(with_sectors=args.with_sectors)
+        run_pipeline(with_sectors=args.with_sectors, show_progress=show_progress)
 
 
 if __name__ == "__main__":

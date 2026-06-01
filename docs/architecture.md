@@ -188,6 +188,8 @@ Decision output owns:
 
 Decision logic is rule-based even when upstream analysis uses LLMs.
 
+Action-change reasons are deterministic comparison metadata derived after official decisions exist. They explain ticker action and conviction changes for output consumers, but they do not mutate `TickerDecision` or feed back into decision thresholds.
+
 The data-quality gate is shadow-only by default. It records whether low quality would cap a `buy` to `watch`, and `DECISION_DATA_QUALITY_GATE_MODE=enforce` can promote that cap into official action behavior.
 
 The search-quality gate is also shadow-only by default. The pipeline collects normalized search evidence, generates official decisions, then attaches search evidence score and gate metadata before state/output serialization. `DECISION_SEARCH_QUALITY_GATE_MODE=enforce` can cap a weak-evidence `buy` to `watch`; missing search payloads remain unavailable metadata and do not cap official actions.
@@ -231,6 +233,7 @@ Primary artifact families:
 - `output/data/tickers/<TICKER>/history.json`
 - `output/data/api_status.json`
 - `output/data/analysis_quality.json`
+- `output/data/analysis_performance.json`
 - `output/data/cost_log.json`
 - `output/data/routing_outcome.json`
 - `output/data/llm_evidence/<DATE>.jsonl`
@@ -392,6 +395,7 @@ The web UI reads finalized JSON payloads such as `index.json`, ticker histories,
 Web constraints:
 
 - No recomputation of official decisions
+- No recomputation of analysis performance telemetry
 - No hidden analysis logic
 - No direct provider calls
 - UI may present committee and PM review data, but official actions remain from the decision layer

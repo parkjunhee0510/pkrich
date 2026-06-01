@@ -29,7 +29,13 @@ Search evidence quality is attached to `TickerDecision.confidence_meta` after of
 
 Set `DECISION_SEARCH_QUALITY_GATE_MODE=enforce` to promote the search gate from shadow mode. In enforced mode, a `buy` with `search_evidence_score < 0.55` is capped to `watch`, `confidence_meta.search_quality_gate.enforced` is set to `true`, and the reason text records that the search-evidence gate was applied. Missing search payloads are marked as unavailable and do not penalize a ticker.
 
+`confidence_meta.search_quality_gate` carries collector status fields through to output: `evidence_status`, `provider_status`, and `priority_for_refresh`. Operational gaps such as `provider_unavailable`, `provider_error`, `cache_error`, and `not_refreshed` set `search_evidence_score` to `null` and do not cap a `buy`, even in enforce mode. A real `no_evidence` result remains a low search-quality signal and may cap a `buy` when enforcement is enabled.
+
 `src.decision.search_quality.attach_search_quality_shadow(...)` consumes the normalized `search_evidence.json` contract from the collector/output side. It does not fetch data, call an LLM, or write artifacts.
+
+## Action Change Reasons
+
+Ticker action-change reasons compare the current decision with the previous tracked signal row for the same ticker. They are deterministic explanation metadata for `analysis_performance.json` and must not mutate `TickerDecision`, adjust conviction thresholds, or change official `buy` / `watch` / `avoid` behavior.
 
 ## Key Components
 

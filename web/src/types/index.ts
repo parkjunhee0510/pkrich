@@ -289,6 +289,10 @@ export interface LocalPortfolioStatus {
   holdings: PortfolioHoldingInput[]
 }
 
+export interface LocalPortfolioSaveOptions {
+  allowTruncate?: boolean
+}
+
 export interface PortfolioSummaryData {
   positions: PortfolioPosition[]
   total_market_value: number
@@ -620,6 +624,181 @@ export interface BacktestSummary {
   }
 }
 
+export interface AnalysisPerformanceWindowStats {
+  sample_count: number
+  completed_count: number
+  avg_return: number | null
+  median_return: number | null
+  win_rate: number | null
+  loss_rate: number | null
+  directional_win_rate: number | null
+  missing_count: number
+  return_distribution: {
+    positive: number
+    negative: number
+    flat: number
+  }
+  triple_barrier_outcomes: Record<string, number>
+}
+
+export interface AnalysisPerformanceConvictionBucket {
+  sample_count: number
+  action_counts: Record<string, number>
+  avg_return_1d: number | null
+  avg_return_5d: number | null
+  avg_return_20d: number | null
+  buy_win_rate: number | null
+  avoid_win_rate: number | null
+}
+
+export interface AnalysisPerformanceFactorStats {
+  sample_count: number
+  avg_score: number | null
+  positive_score_count: number
+  negative_score_count: number
+  avg_forward_return_5d: number | null
+  avg_forward_return_20d: number | null
+  best_action_context?: {
+    action: string
+    sample_count: number
+    avg_return_5d: number | null
+  }
+  worst_action_context?: {
+    action: string
+    sample_count: number
+    avg_return_5d: number | null
+  }
+}
+
+export interface AnalysisPerformanceActionChange {
+  ticker: string
+  previous_action: string
+  current_action: string
+  previous_conviction: number | null
+  current_conviction: number | null
+  previous_regime: string
+  current_regime: string
+  reason_codes: string[]
+  summary: string
+  contributors: Array<{ factor: string; previous: number | null; current: number | null }>
+}
+
+export interface AnalysisPerformancePayload {
+  schema_version?: number
+  as_of: string
+  summary: {
+    sample_count: number
+    decision_count: number
+    completed_return_windows: string[]
+    mode: string
+    notes: string[]
+  }
+  signal_performance: Record<string, Record<string, AnalysisPerformanceWindowStats>>
+  conviction_calibration?: {
+    status: string
+    bucket_edges: string[]
+    buckets: Record<string, AnalysisPerformanceConvictionBucket>
+  }
+  regime_performance?: Record<string, Record<string, Record<string, AnalysisPerformanceWindowStats>>>
+  factor_attribution?: {
+    status: string
+    missing_factor_sample_count: number
+    factors: Record<string, AnalysisPerformanceFactorStats>
+  }
+  action_change_reasons?: AnalysisPerformanceActionChange[]
+}
+
+export interface PerformanceJsonHealth {
+  status: string
+  invalid_json_count: number
+  issues?: Array<{ path: string; error: string }>
+}
+
+export interface PerformanceCostSummary {
+  total_cost_usd: number
+  estimated_monthly_cost_usd: number
+  monthly_budget_usd: number
+  budget_usage_ratio: number
+  llm_calls: number
+  ticker_count_for_rate: number
+  llm_calls_per_ticker: number
+  deep_selected_count: number
+  routing_conflicted_count: number
+  budget_guard_would_block_count: number
+  budget_guard_blocked_count: number
+}
+
+export interface PerformanceQualitySummary {
+  validated_ticker_count: number
+  validation_failure_count: number
+  validation_failure_rate: number
+  hallucination_warning_count: number
+  hallucination_ratio: number
+  fact_warning_count: number
+  consistency_warning_count: number
+}
+
+export interface PerformanceEvidenceSummary {
+  provider: string
+  ticker_count: number
+  covered_ticker_count: number
+  coverage_ratio: number
+  average_coverage_score: number
+  average_freshness_score: number
+  candidate_ticker_count: number
+  searched_ticker_count: number
+  cache_ttl_hours: number
+  cache_hit_count: number
+  stale_cache_hit_count: number
+  cache_hit_ratio: number
+  stale_cache_hit_ratio: number
+  average_cache_age_hours: number
+  max_cache_age_hours: number
+  provider_candidate_count: number
+  status_counts: Record<string, number>
+  priority_ticker_count: number
+  priority_covered_ticker_count: number
+  priority_coverage_ratio: number
+  priority_status_counts: Record<string, number>
+}
+
+export interface PerformanceSignalSummary {
+  turnover_status: string
+  avg_turnover: number
+  kelly_status: string
+}
+
+export interface PerformanceBaselinePayload {
+  schema_version?: number
+  as_of: string
+  status: string
+  latest_run_date: string
+  monthly_budget_usd: number
+  json_health: PerformanceJsonHealth
+  cost: PerformanceCostSummary
+  quality: PerformanceQualitySummary
+  evidence: PerformanceEvidenceSummary
+  signals: PerformanceSignalSummary
+}
+
+export interface PerformanceTrendRun {
+  run_date: string
+  success: boolean
+  total_cost_usd: number
+  llm_calls: number
+  hallucination_ratio: number
+  validation_failure_count: number
+  deep_selected_count: number
+  budget_guard_would_block_count: number
+}
+
+export interface PerformanceTrendsPayload {
+  schema_version?: number
+  as_of: string
+  monthly_budget_usd: number
+  runs: PerformanceTrendRun[]
+}
+
 export interface MonthlySummaryData {
   month: string
   status: string
@@ -785,6 +964,13 @@ export interface RoutingOutcomePayload {
     max_daily_ensemble: number
     portfolio_priority: boolean
     deep_pass_count: number
+    selected_tickers?: string[]
+    skipped_due_to_priority?: string[]
+    router_budget_estimate?: {
+      selected_count?: number
+      estimated_incremental_cost_usd?: number
+      estimated_monthly_cost_usd?: number
+    }
     tickers: Array<{
       ticker: string
       selected_for_deep: boolean
@@ -792,8 +978,202 @@ export interface RoutingOutcomePayload {
       in_portfolio?: boolean
       conviction?: number
       action?: string
+      router_priority_score?: number
+      router_reason_codes?: string[]
+      skipped_due_to_priority?: boolean
     }>
   }
+}
+
+export interface SearchEvidenceTickerSummary {
+  coverage_score?: number
+  source_diversity?: number
+  freshness_score?: number
+  evidence_count?: number
+  average_relevance_score?: number
+  top_domains?: string[]
+  evidence_status?: string
+  provider_status?: string
+  priority_for_refresh?: boolean
+  priority_refresh_reasons?: string[]
+  cache_source_date?: string
+  cache_age_hours?: number
+}
+
+export interface SearchEvidenceRunSummary {
+  candidate_ticker_count?: number
+  searched_ticker_count?: number
+  cache_hit_count?: number
+  cache_error_count?: number
+  stale_cache_hit_count?: number
+  cache_ttl_hours?: number
+  provider_call_count?: number
+  provider_error_count?: number
+  priority_tickers?: string[]
+  priority_ticker_count?: number
+  priority_refresh_reasons?: Record<string, number>
+  priority_status_counts?: Record<string, number>
+  priority_refresh_candidate_count?: number
+  provider_candidate_count?: number
+  skipped_ticker_count?: number
+  status_counts?: Record<string, number>
+}
+
+export interface SearchEvidencePayload {
+  schema_version?: number
+  date?: string
+  generated_at?: string
+  provider?: string
+  items?: unknown[]
+  by_ticker?: Record<string, SearchEvidenceTickerSummary>
+  run_summary?: SearchEvidenceRunSummary
+}
+
+export interface QualityReliabilityLoopPayload {
+  schema_version?: number
+  as_of?: string
+  status?: string
+  summary?: {
+    decision_quality_status?: string
+    artifact_reliability_status?: string
+    evidence_status?: string
+    cost_status?: string
+  }
+  evidence_quality?: {
+    status?: string
+    ticker_count?: number
+    covered_ticker_count?: number
+    coverage_ratio?: number
+    priority_ticker_count?: number
+    priority_covered_ticker_count?: number
+    priority_coverage_ratio?: number
+    priority_refresh_reasons?: Record<string, number>
+    priority_not_refreshed_count?: number
+    priority_no_evidence_count?: number
+    provider_issue_status?: string
+    operational_issue_count?: number
+  }
+  warnings?: string[]
+}
+
+export type RiskIntelStatus = 'ok' | 'partial' | 'degraded' | 'error'
+export type RiskIntelAlertLevel = 'observation' | 'warning' | 'alert'
+
+export interface RiskIntelGeneration {
+  run_id: string
+  as_of?: string
+  generated_at?: string
+  scoring_config_version?: string
+  confidence_config_version?: string
+  source_config_version?: string
+}
+
+export interface RiskIntelTickerDetail {
+  ticker: string
+  exposure_type: 'holding' | 'watchlist' | 'sector' | string
+  exposure_label_ko: string
+  is_holding: boolean
+}
+
+export interface RiskIntelSummaryCard {
+  id: string
+  alert_level: RiskIntelAlertLevel
+  alert_level_label_ko: string
+  title_ko: string
+  summary_ko: string
+  affected_sectors: string[]
+  affected_tickers: RiskIntelTickerDetail[]
+  evidence_counts: Record<string, number>
+  top_evidence_refs: string[]
+  rationale_ko: string
+  detail_node_id?: string
+  score?: number
+  raw_score?: number
+  score_kind?: string
+  cap_value?: number | null
+  caps_applied?: string[]
+  guardrails_applied?: string[]
+}
+
+export interface RiskIntelSummaryPayload {
+  schema_version: string
+  as_of: string
+  status: RiskIntelStatus
+  cards: RiskIntelSummaryCard[]
+  counts: {
+    cards: number
+    alert_paths: number
+  }
+  source_tier_status: Record<string, string>
+  empty_states: {
+    ko: string
+  }
+  generation: RiskIntelGeneration
+  derived_from_graph_run_id: string
+}
+
+export interface RiskIntelGraphNode {
+  id: string
+  node_type: string
+  label?: string
+  label_ko?: string
+  summary_ko?: string
+}
+
+export interface RiskIntelGraphEdge {
+  id: string
+  source_id: string
+  target_id: string
+  relationship?: string
+  relationship_label_ko?: string
+  evidence_type: string
+  evidence_label_ko?: string
+  confidence: number
+  severity_delta: number
+  evidence_refs: string[]
+  inference_refs: string[]
+  explanation_ko: string
+}
+
+export interface RiskIntelAlertPath {
+  id: string
+  canonical_issue_id: string
+  target_group_type: string
+  target_group_id: string
+  alert_level: RiskIntelAlertLevel
+  alert_level_label_ko: string
+  path_node_ids: string[]
+  path_edge_ids: string[]
+  affected_sector_ids: string[]
+  affected_ticker_ids: string[]
+  representative_target_id: string
+  raw_score: number
+  score: number
+  score_kind: string
+  cap_value?: number | null
+  caps_applied: string[]
+  guardrails_applied: string[]
+  top_evidence_refs: string[]
+  rationale_ko: string
+}
+
+export interface RiskIntelHealthWarning {
+  code: string
+  severity: string
+  message_ko: string
+  ref_type?: string
+  ref_id?: string
+}
+
+export interface RiskIntelGraphPayload {
+  schema_version: string
+  as_of: string
+  status: RiskIntelStatus
+  generation: RiskIntelGeneration
+  nodes: RiskIntelGraphNode[]
+  edges: RiskIntelGraphEdge[]
+  alert_paths: RiskIntelAlertPath[]
+  health_warnings: RiskIntelHealthWarning[]
 }
 
 export type ApiProviderState = 'used' | 'failed' | 'throttled' | 'unavailable' | 'not_used'

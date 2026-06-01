@@ -73,6 +73,14 @@ vi.mock('../hooks/useDashboardData', () => ({
   }),
 }))
 
+vi.mock('../hooks/useSearchEvidenceData', () => ({
+  useSearchEvidenceData: () => ({ searchEvidence: null, loading: false, error: null }),
+}))
+
+vi.mock('../hooks/useQualityReliabilityLoopData', () => ({
+  useQualityReliabilityLoopData: () => ({ qualityLoop: null, loading: false, error: null }),
+}))
+
 vi.mock('../components/TraderDashboardPanels', () => ({
   TodaySetupBoard: () => <div data-testid="today-setup-board" />,
   EarningsBoard: () => <div data-testid="earnings-board" />,

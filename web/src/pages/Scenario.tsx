@@ -35,7 +35,7 @@ export function Scenario() {
         </div>
       </div>
 
-      <div className="watchlist-table-shell" style={{ marginTop: '1rem' }}>
+      <div className="watchlist-table-shell u-mt-4">
         <table className="watchlist-table">
           <thead>
             <tr>
@@ -58,6 +58,7 @@ export function Scenario() {
                     className="scenario-adjustment-input"
                     type="number"
                     step={1}
+                    aria-label={`${position.ticker} 목표 비중 조정`}
                     value={adjustments[position.ticker] || ''}
                     placeholder="0"
                     onChange={(event) =>
@@ -76,7 +77,7 @@ export function Scenario() {
         </table>
       </div>
 
-      <div className="portfolio-summary-grid" style={{ marginTop: '1rem' }}>
+      <div className="portfolio-summary-grid u-mt-4">
         <ScenarioCard label="총 ATR 리스크" value={`$${scenario.totalRisk.toFixed(2)}`} sub={`기존 $${scenario.currentTotalRisk.toFixed(2)}`} />
         <ScenarioCard
           label="리스크 변화"

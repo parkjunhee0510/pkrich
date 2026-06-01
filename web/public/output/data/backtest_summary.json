@@ -1,9 +1,1511 @@
 {
   "schema_version": 1,
-  "status": "awaiting_evaluation",
-  "strategy": "bull/bear 시그널을 20거래일 기준으로 평가",
-  "signals": 0,
-  "pending_signals": 170,
-  "first_eval_date": "2026-05-08",
-  "message": "2026-05-08부터 백테스트 통계 집계 시작 예정 · 대기 signal 170건"
+  "status": "ok",
+  "strategy": "Evaluate bull/bear signals separately on a 20-trading-day horizon.",
+  "signals": 129,
+  "win_rate": "69.8%",
+  "avg_return": "+11.51%",
+  "cumulative_return": "+4905248.80%",
+  "best_return": "+91.16%",
+  "worst_return": "-51.22%",
+  "bull": {
+    "direction": "bull",
+    "signals": 94,
+    "win_rate": "86.2%",
+    "avg_return": "+19.23%",
+    "cumulative_return": "+266676104.61%",
+    "best_return": "+91.16%",
+    "worst_return": "-14.95%",
+    "best_raw_return": "+91.16%",
+    "worst_raw_return": "-14.95%"
+  },
+  "bear": {
+    "direction": "bear",
+    "signals": 35,
+    "win_rate": "25.7%",
+    "avg_return": "-9.24%",
+    "cumulative_return": "-98.16%",
+    "best_return": "+19.36%",
+    "worst_return": "-51.22%",
+    "best_raw_return": "+51.22%",
+    "worst_raw_return": "-19.36%"
+  },
+  "equity_curve": [
+    {
+      "date": "2026-04-10",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+85.76%",
+      "equity_multiple": 1.8576,
+      "cumulative_return": "+85.76%"
+    },
+    {
+      "date": "2026-04-11",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+85.76%",
+      "equity_multiple": 3.4507,
+      "cumulative_return": "+245.07%"
+    },
+    {
+      "date": "2026-04-12",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+12.50%",
+      "equity_multiple": 3.882,
+      "cumulative_return": "+288.20%"
+    },
+    {
+      "date": "2026-04-12",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+85.76%",
+      "equity_multiple": 7.2112,
+      "cumulative_return": "+621.12%"
+    },
+    {
+      "date": "2026-04-12",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+13.51%",
+      "equity_multiple": 8.1855,
+      "cumulative_return": "+718.55%"
+    },
+    {
+      "date": "2026-04-12",
+      "ticker": "IONQ",
+      "signal_direction": "bull",
+      "strategy_return": "+71.03%",
+      "equity_multiple": 13.9996,
+      "cumulative_return": "+1299.96%"
+    },
+    {
+      "date": "2026-04-12",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+1.23%",
+      "equity_multiple": 14.1718,
+      "cumulative_return": "+1317.18%"
+    },
+    {
+      "date": "2026-04-12",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+13.87%",
+      "equity_multiple": 16.1374,
+      "cumulative_return": "+1513.74%"
+    },
+    {
+      "date": "2026-04-12",
+      "ticker": "T",
+      "signal_direction": "bull",
+      "strategy_return": "-4.91%",
+      "equity_multiple": 15.3451,
+      "cumulative_return": "+1434.51%"
+    },
+    {
+      "date": "2026-04-12",
+      "ticker": "XOM",
+      "signal_direction": "bull",
+      "strategy_return": "-5.21%",
+      "equity_multiple": 14.5456,
+      "cumulative_return": "+1354.56%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+12.92%",
+      "equity_multiple": 16.4249,
+      "cumulative_return": "+1542.49%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+85.87%",
+      "equity_multiple": 30.5289,
+      "cumulative_return": "+2952.89%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+17.06%",
+      "equity_multiple": 35.7372,
+      "cumulative_return": "+3473.72%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "IONQ",
+      "signal_direction": "bull",
+      "strategy_return": "+91.16%",
+      "equity_multiple": 68.3152,
+      "cumulative_return": "+6731.52%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+2.94%",
+      "equity_multiple": 70.3236,
+      "cumulative_return": "+6932.36%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+10.11%",
+      "equity_multiple": 77.4334,
+      "cumulative_return": "+7643.34%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+27.08%",
+      "equity_multiple": 98.4023,
+      "cumulative_return": "+9740.23%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "SPIR",
+      "signal_direction": "bear",
+      "strategy_return": "+19.36%",
+      "equity_multiple": 117.453,
+      "cumulative_return": "+11645.30%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "T",
+      "signal_direction": "bull",
+      "strategy_return": "-2.89%",
+      "equity_multiple": 114.0586,
+      "cumulative_return": "+11305.86%"
+    },
+    {
+      "date": "2026-04-13",
+      "ticker": "XOM",
+      "signal_direction": "bull",
+      "strategy_return": "-1.94%",
+      "equity_multiple": 111.8459,
+      "cumulative_return": "+11084.59%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+13.90%",
+      "equity_multiple": 127.3925,
+      "cumulative_return": "+12639.25%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+75.75%",
+      "equity_multiple": 223.8922,
+      "cumulative_return": "+22289.22%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+14.84%",
+      "equity_multiple": 257.1178,
+      "cumulative_return": "+25611.78%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "IONQ",
+      "signal_direction": "bull",
+      "strategy_return": "+56.24%",
+      "equity_multiple": 401.7209,
+      "cumulative_return": "+40072.09%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+5.44%",
+      "equity_multiple": 423.5745,
+      "cumulative_return": "+42257.45%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+9.99%",
+      "equity_multiple": 465.8896,
+      "cumulative_return": "+46488.96%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "OXY",
+      "signal_direction": "bull",
+      "strategy_return": "+1.61%",
+      "equity_multiple": 473.3905,
+      "cumulative_return": "+47239.05%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+21.09%",
+      "equity_multiple": 573.2285,
+      "cumulative_return": "+57222.85%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "SPIR",
+      "signal_direction": "bull",
+      "strategy_return": "-14.95%",
+      "equity_multiple": 487.5308,
+      "cumulative_return": "+48653.08%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "T",
+      "signal_direction": "bull",
+      "strategy_return": "-1.52%",
+      "equity_multiple": 480.1204,
+      "cumulative_return": "+47912.04%"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "XOM",
+      "signal_direction": "bull",
+      "strategy_return": "+0.93%",
+      "equity_multiple": 484.5855,
+      "cumulative_return": "+48358.55%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "AAPL",
+      "signal_direction": "bear",
+      "strategy_return": "-11.93%",
+      "equity_multiple": 426.7744,
+      "cumulative_return": "+42577.44%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+74.22%",
+      "equity_multiple": 743.5264,
+      "cumulative_return": "+74252.64%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "CAT",
+      "signal_direction": "bear",
+      "strategy_return": "-19.48%",
+      "equity_multiple": 598.6875,
+      "cumulative_return": "+59768.75%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "IONQ",
+      "signal_direction": "bear",
+      "strategy_return": "-32.88%",
+      "equity_multiple": 401.839,
+      "cumulative_return": "+40083.90%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "KO",
+      "signal_direction": "bear",
+      "strategy_return": "-6.83%",
+      "equity_multiple": 374.3934,
+      "cumulative_return": "+37339.34%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+19.01%",
+      "equity_multiple": 445.5656,
+      "cumulative_return": "+44456.56%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "OXY",
+      "signal_direction": "bear",
+      "strategy_return": "-1.81%",
+      "equity_multiple": 437.5009,
+      "cumulative_return": "+43650.09%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "PLUG",
+      "signal_direction": "bear",
+      "strategy_return": "-29.35%",
+      "equity_multiple": 309.0944,
+      "cumulative_return": "+30809.44%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "SPIR",
+      "signal_direction": "bull",
+      "strategy_return": "-11.30%",
+      "equity_multiple": 274.1667,
+      "cumulative_return": "+27316.67%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "T",
+      "signal_direction": "bear",
+      "strategy_return": "+3.18%",
+      "equity_multiple": 282.8852,
+      "cumulative_return": "+28188.52%"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "XOM",
+      "signal_direction": "bear",
+      "strategy_return": "-2.53%",
+      "equity_multiple": 275.7282,
+      "cumulative_return": "+27472.82%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+10.22%",
+      "equity_multiple": 303.9076,
+      "cumulative_return": "+30290.76%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "AMD",
+      "signal_direction": "bear",
+      "strategy_return": "-51.22%",
+      "equity_multiple": 148.2461,
+      "cumulative_return": "+14724.61%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+8.72%",
+      "equity_multiple": 161.1732,
+      "cumulative_return": "+16017.32%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "IONQ",
+      "signal_direction": "bull",
+      "strategy_return": "+6.99%",
+      "equity_multiple": 172.4392,
+      "cumulative_return": "+17143.92%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+7.21%",
+      "equity_multiple": 184.8721,
+      "cumulative_return": "+18387.21%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "ORA",
+      "signal_direction": "bear",
+      "strategy_return": "-14.33%",
+      "equity_multiple": 158.3799,
+      "cumulative_return": "+15737.99%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "OXY",
+      "signal_direction": "bear",
+      "strategy_return": "-10.99%",
+      "equity_multiple": 140.974,
+      "cumulative_return": "+13997.40%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+24.10%",
+      "equity_multiple": 174.9487,
+      "cumulative_return": "+17394.87%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "SPIR",
+      "signal_direction": "bear",
+      "strategy_return": "+1.74%",
+      "equity_multiple": 177.9928,
+      "cumulative_return": "+17699.28%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "T",
+      "signal_direction": "bear",
+      "strategy_return": "+7.85%",
+      "equity_multiple": 191.9652,
+      "cumulative_return": "+19096.52%"
+    },
+    {
+      "date": "2026-04-17",
+      "ticker": "XOM",
+      "signal_direction": "bull",
+      "strategy_return": "+9.59%",
+      "equity_multiple": 210.3747,
+      "cumulative_return": "+20937.47%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+9.08%",
+      "equity_multiple": 229.4767,
+      "cumulative_return": "+22847.67%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+8.21%",
+      "equity_multiple": 248.3168,
+      "cumulative_return": "+24731.68%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "IONQ",
+      "signal_direction": "bull",
+      "strategy_return": "+2.05%",
+      "equity_multiple": 253.4073,
+      "cumulative_return": "+25240.73%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+7.58%",
+      "equity_multiple": 272.6155,
+      "cumulative_return": "+27161.55%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+15.70%",
+      "equity_multiple": 315.4162,
+      "cumulative_return": "+31441.62%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "OXY",
+      "signal_direction": "bull",
+      "strategy_return": "+9.58%",
+      "equity_multiple": 345.633,
+      "cumulative_return": "+34463.30%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+7.14%",
+      "equity_multiple": 370.3112,
+      "cumulative_return": "+36931.12%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "SPIR",
+      "signal_direction": "bear",
+      "strategy_return": "-5.79%",
+      "equity_multiple": 348.8702,
+      "cumulative_return": "+34787.02%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "T",
+      "signal_direction": "bear",
+      "strategy_return": "+6.68%",
+      "equity_multiple": 372.1747,
+      "cumulative_return": "+37117.47%"
+    },
+    {
+      "date": "2026-04-20",
+      "ticker": "XOM",
+      "signal_direction": "bull",
+      "strategy_return": "+8.67%",
+      "equity_multiple": 404.4423,
+      "cumulative_return": "+40344.23%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "AAPL",
+      "signal_direction": "bear",
+      "strategy_return": "-13.56%",
+      "equity_multiple": 349.5999,
+      "cumulative_return": "+34859.99%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+57.33%",
+      "equity_multiple": 550.0255,
+      "cumulative_return": "+54902.55%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+9.01%",
+      "equity_multiple": 599.5828,
+      "cumulative_return": "+59858.28%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "IONQ",
+      "signal_direction": "bull",
+      "strategy_return": "+13.38%",
+      "equity_multiple": 679.807,
+      "cumulative_return": "+67880.70%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+9.17%",
+      "equity_multiple": 742.1453,
+      "cumulative_return": "+74114.53%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+21.85%",
+      "equity_multiple": 904.3041,
+      "cumulative_return": "+90330.41%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "OXY",
+      "signal_direction": "bull",
+      "strategy_return": "+4.51%",
+      "equity_multiple": 945.0882,
+      "cumulative_return": "+94408.82%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+7.47%",
+      "equity_multiple": 1015.6863,
+      "cumulative_return": "+101468.63%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "SPIR",
+      "signal_direction": "bull",
+      "strategy_return": "+7.15%",
+      "equity_multiple": 1088.3078,
+      "cumulative_return": "+108730.78%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "T",
+      "signal_direction": "bull",
+      "strategy_return": "-3.67%",
+      "equity_multiple": 1048.3669,
+      "cumulative_return": "+104736.69%"
+    },
+    {
+      "date": "2026-04-21",
+      "ticker": "XOM",
+      "signal_direction": "bull",
+      "strategy_return": "+5.34%",
+      "equity_multiple": 1104.3497,
+      "cumulative_return": "+110334.97%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "AAPL",
+      "signal_direction": "bear",
+      "strategy_return": "-10.65%",
+      "equity_multiple": 986.7365,
+      "cumulative_return": "+98573.65%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+47.49%",
+      "equity_multiple": 1455.3377,
+      "cumulative_return": "+145433.77%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "CAT",
+      "signal_direction": "bear",
+      "strategy_return": "-7.87%",
+      "equity_multiple": 1340.8026,
+      "cumulative_return": "+133980.26%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+9.27%",
+      "equity_multiple": 1465.095,
+      "cumulative_return": "+146409.50%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+23.16%",
+      "equity_multiple": 1804.411,
+      "cumulative_return": "+180341.10%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "OXY",
+      "signal_direction": "bull",
+      "strategy_return": "+3.19%",
+      "equity_multiple": 1861.9717,
+      "cumulative_return": "+186097.17%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+3.76%",
+      "equity_multiple": 1931.9818,
+      "cumulative_return": "+193098.18%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "SPIR",
+      "signal_direction": "bear",
+      "strategy_return": "-9.91%",
+      "equity_multiple": 1740.5224,
+      "cumulative_return": "+173952.24%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "T",
+      "signal_direction": "bull",
+      "strategy_return": "-4.04%",
+      "equity_multiple": 1670.2053,
+      "cumulative_return": "+166920.53%"
+    },
+    {
+      "date": "2026-04-22",
+      "ticker": "XOM",
+      "signal_direction": "bear",
+      "strategy_return": "-4.54%",
+      "equity_multiple": 1594.378,
+      "cumulative_return": "+159337.80%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "AAPL",
+      "signal_direction": "bear",
+      "strategy_return": "-11.54%",
+      "equity_multiple": 1410.3868,
+      "cumulative_return": "+140938.68%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+3.68%",
+      "equity_multiple": 1462.289,
+      "cumulative_return": "+146128.90%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "IONQ",
+      "signal_direction": "bear",
+      "strategy_return": "-34.98%",
+      "equity_multiple": 950.7803,
+      "cumulative_return": "+94978.03%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "KO",
+      "signal_direction": "bear",
+      "strategy_return": "-6.41%",
+      "equity_multiple": 889.8353,
+      "cumulative_return": "+88883.53%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+17.85%",
+      "equity_multiple": 1048.6709,
+      "cumulative_return": "+104767.09%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+18.87%",
+      "equity_multiple": 1246.5551,
+      "cumulative_return": "+124555.51%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "SPIR",
+      "signal_direction": "bull",
+      "strategy_return": "+9.52%",
+      "equity_multiple": 1365.2271,
+      "cumulative_return": "+136422.71%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "T",
+      "signal_direction": "bear",
+      "strategy_return": "+4.77%",
+      "equity_multiple": 1430.3485,
+      "cumulative_return": "+142934.85%"
+    },
+    {
+      "date": "2026-04-23",
+      "ticker": "XOM",
+      "signal_direction": "bear",
+      "strategy_return": "-3.16%",
+      "equity_multiple": 1385.1495,
+      "cumulative_return": "+138414.95%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+13.75%",
+      "equity_multiple": 1575.6075,
+      "cumulative_return": "+157460.75%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+44.88%",
+      "equity_multiple": 2282.7402,
+      "cumulative_return": "+228174.02%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+9.36%",
+      "equity_multiple": 2496.4047,
+      "cumulative_return": "+249540.47%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "IONQ",
+      "signal_direction": "bull",
+      "strategy_return": "+49.03%",
+      "equity_multiple": 3720.3919,
+      "cumulative_return": "+371939.19%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+5.00%",
+      "equity_multiple": 3906.4114,
+      "cumulative_return": "+390541.14%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+22.69%",
+      "equity_multiple": 4792.7762,
+      "cumulative_return": "+479177.62%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "OXY",
+      "signal_direction": "bull",
+      "strategy_return": "+0.60%",
+      "equity_multiple": 4821.5329,
+      "cumulative_return": "+482053.29%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+22.29%",
+      "equity_multiple": 5896.2525,
+      "cumulative_return": "+589525.25%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "SPIR",
+      "signal_direction": "bull",
+      "strategy_return": "+43.85%",
+      "equity_multiple": 8481.7593,
+      "cumulative_return": "+848075.93%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "T",
+      "signal_direction": "bull",
+      "strategy_return": "-4.50%",
+      "equity_multiple": 8100.0801,
+      "cumulative_return": "+809908.01%"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "XOM",
+      "signal_direction": "bear",
+      "strategy_return": "-0.60%",
+      "equity_multiple": 8051.4796,
+      "cumulative_return": "+805047.96%"
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+15.22%",
+      "equity_multiple": 9276.9148,
+      "cumulative_return": "+927591.48%"
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+50.58%",
+      "equity_multiple": 13969.1783,
+      "cumulative_return": "+1396817.83%"
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+9.62%",
+      "equity_multiple": 15313.0133,
+      "cumulative_return": "+1531201.33%"
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "KO",
+      "signal_direction": "bear",
+      "strategy_return": "-6.65%",
+      "equity_multiple": 14294.6979,
+      "cumulative_return": "+1429369.79%"
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "OXY",
+      "signal_direction": "bear",
+      "strategy_return": "-0.33%",
+      "equity_multiple": 14247.5254,
+      "cumulative_return": "+1424652.54%"
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "SPIR",
+      "signal_direction": "bear",
+      "strategy_return": "-44.73%",
+      "equity_multiple": 7874.6073,
+      "cumulative_return": "+787360.73%"
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "T",
+      "signal_direction": "bull",
+      "strategy_return": "-1.96%",
+      "equity_multiple": 7720.265,
+      "cumulative_return": "+771926.50%"
+    },
+    {
+      "date": "2026-04-27",
+      "ticker": "XOM",
+      "signal_direction": "bear",
+      "strategy_return": "-1.09%",
+      "equity_multiple": 7636.1141,
+      "cumulative_return": "+763511.41%"
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+14.83%",
+      "equity_multiple": 8768.5498,
+      "cumulative_return": "+876754.98%"
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+53.32%",
+      "equity_multiple": 13443.9406,
+      "cumulative_return": "+1344294.06%"
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+11.26%",
+      "equity_multiple": 14957.7283,
+      "cumulative_return": "+1495672.83%"
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+4.17%",
+      "equity_multiple": 15581.4656,
+      "cumulative_return": "+1558046.56%"
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "OXY",
+      "signal_direction": "bull",
+      "strategy_return": "-2.93%",
+      "equity_multiple": 15124.9286,
+      "cumulative_return": "+1512392.86%"
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "PLUG",
+      "signal_direction": "bear",
+      "strategy_return": "-36.63%",
+      "equity_multiple": 9584.6673,
+      "cumulative_return": "+958366.73%"
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "SPIR",
+      "signal_direction": "bull",
+      "strategy_return": "+59.75%",
+      "equity_multiple": 15311.506,
+      "cumulative_return": "+1531050.60%"
+    },
+    {
+      "date": "2026-04-28",
+      "ticker": "T",
+      "signal_direction": "bear",
+      "strategy_return": "+4.49%",
+      "equity_multiple": 15998.9926,
+      "cumulative_return": "+1599799.26%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "AAPL",
+      "signal_direction": "bull",
+      "strategy_return": "+15.67%",
+      "equity_multiple": 18506.0347,
+      "cumulative_return": "+1850503.47%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "AMD",
+      "signal_direction": "bull",
+      "strategy_return": "+53.69%",
+      "equity_multiple": 28441.9247,
+      "cumulative_return": "+2844092.47%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "CAT",
+      "signal_direction": "bull",
+      "strategy_return": "+9.58%",
+      "equity_multiple": 31166.6611,
+      "cumulative_return": "+3116566.11%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "KO",
+      "signal_direction": "bull",
+      "strategy_return": "+1.95%",
+      "equity_multiple": 31774.411,
+      "cumulative_return": "+3177341.10%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "ORA",
+      "signal_direction": "bull",
+      "strategy_return": "+24.80%",
+      "equity_multiple": 39654.465,
+      "cumulative_return": "+3965346.50%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "OXY",
+      "signal_direction": "bull",
+      "strategy_return": "-5.66%",
+      "equity_multiple": 37410.0222,
+      "cumulative_return": "+3740902.22%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "PLUG",
+      "signal_direction": "bull",
+      "strategy_return": "+20.82%",
+      "equity_multiple": 45198.7889,
+      "cumulative_return": "+4519778.89%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "T",
+      "signal_direction": "bear",
+      "strategy_return": "+3.38%",
+      "equity_multiple": 46726.5079,
+      "cumulative_return": "+4672550.79%"
+    },
+    {
+      "date": "2026-04-29",
+      "ticker": "XOM",
+      "signal_direction": "bear",
+      "strategy_return": "+4.98%",
+      "equity_multiple": 49053.488,
+      "cumulative_return": "+4905248.80%"
+    }
+  ],
+  "ticker_rows": [
+    {
+      "ticker": "AMD",
+      "signals": 13,
+      "avg_return": "+57.63%",
+      "win_rate": "92.3%",
+      "bull_signals": 12,
+      "bear_signals": 1,
+      "best_return": "+85.87%",
+      "worst_return": "-51.22%"
+    },
+    {
+      "ticker": "IONQ",
+      "signals": 9,
+      "avg_return": "+24.67%",
+      "win_rate": "77.8%",
+      "bull_signals": 7,
+      "bear_signals": 2,
+      "best_return": "+91.16%",
+      "worst_return": "-34.98%"
+    },
+    {
+      "ticker": "ORA",
+      "signals": 10,
+      "avg_return": "+15.08%",
+      "win_rate": "90.0%",
+      "bull_signals": 9,
+      "bear_signals": 1,
+      "best_return": "+24.80%",
+      "worst_return": "-14.33%"
+    },
+    {
+      "ticker": "PLUG",
+      "signals": 12,
+      "avg_return": "+8.38%",
+      "win_rate": "83.3%",
+      "bull_signals": 10,
+      "bear_signals": 2,
+      "best_return": "+27.08%",
+      "worst_return": "-36.63%"
+    },
+    {
+      "ticker": "CAT",
+      "signals": 13,
+      "avg_return": "+6.73%",
+      "win_rate": "84.6%",
+      "bull_signals": 11,
+      "bear_signals": 2,
+      "best_return": "+17.06%",
+      "worst_return": "-19.48%"
+    },
+    {
+      "ticker": "AAPL",
+      "signals": 13,
+      "avg_return": "+5.42%",
+      "win_rate": "69.2%",
+      "bull_signals": 9,
+      "bear_signals": 4,
+      "best_return": "+15.67%",
+      "worst_return": "-13.56%"
+    },
+    {
+      "ticker": "SPIR",
+      "signals": 11,
+      "avg_return": "+4.97%",
+      "win_rate": "54.5%",
+      "bull_signals": 6,
+      "bear_signals": 5,
+      "best_return": "+59.75%",
+      "worst_return": "-44.73%"
+    },
+    {
+      "ticker": "KO",
+      "signals": 13,
+      "avg_return": "+2.62%",
+      "win_rate": "76.9%",
+      "bull_signals": 10,
+      "bear_signals": 3,
+      "best_return": "+9.27%",
+      "worst_return": "-6.83%"
+    },
+    {
+      "ticker": "XOM",
+      "signals": 12,
+      "avg_return": "+0.87%",
+      "win_rate": "41.7%",
+      "bull_signals": 6,
+      "bear_signals": 6,
+      "best_return": "+9.59%",
+      "worst_return": "-5.21%"
+    },
+    {
+      "ticker": "T",
+      "signals": 13,
+      "avg_return": "+0.53%",
+      "win_rate": "46.2%",
+      "bull_signals": 7,
+      "bear_signals": 6,
+      "best_return": "+7.85%",
+      "worst_return": "-4.91%"
+    },
+    {
+      "ticker": "OXY",
+      "signals": 10,
+      "avg_return": "-0.22%",
+      "win_rate": "50.0%",
+      "bull_signals": 7,
+      "bear_signals": 3,
+      "best_return": "+9.58%",
+      "worst_return": "-10.99%"
+    }
+  ],
+  "signal_meta": {
+    "meta_analysis": {
+      "status": "ok",
+      "total_evaluated": 340,
+      "by_news_tone": {
+        "neutral": {
+          "count": 122,
+          "avg_return": "+3.95%",
+          "win_rate": "+50.00%",
+          "best": "+61.38%",
+          "worst": "-11.00%"
+        },
+        "bullish": {
+          "count": 105,
+          "avg_return": "+8.63%",
+          "win_rate": "+60.95%",
+          "best": "+75.36%",
+          "worst": "-15.22%"
+        },
+        "중립": {
+          "count": 22,
+          "avg_return": "+10.07%",
+          "win_rate": "+50.00%",
+          "best": "+56.59%",
+          "worst": "-5.22%"
+        },
+        "bearish": {
+          "count": 21,
+          "avg_return": "+9.17%",
+          "win_rate": "+47.62%",
+          "best": "+98.20%",
+          "worst": "-21.56%"
+        },
+        "긍정": {
+          "count": 19,
+          "avg_return": "+6.13%",
+          "win_rate": "+63.16%",
+          "best": "+33.68%",
+          "worst": "-14.39%"
+        },
+        "강세": {
+          "count": 16,
+          "avg_return": "+3.87%",
+          "win_rate": "+18.75%",
+          "best": "+24.84%",
+          "worst": "-15.51%"
+        },
+        "약세": {
+          "count": 8,
+          "avg_return": "+3.13%",
+          "win_rate": "+50.00%",
+          "best": "+9.57%",
+          "worst": "-2.52%"
+        },
+        "중립-강세": {
+          "count": 5,
+          "avg_return": "+2.60%",
+          "win_rate": "+60.00%",
+          "best": "+8.22%",
+          "worst": "-0.96%"
+        },
+        "긍정적": {
+          "count": 5,
+          "avg_return": "+2.98%",
+          "win_rate": "+60.00%",
+          "best": "+16.40%",
+          "worst": "-11.09%"
+        },
+        "중립-약세": {
+          "count": 4,
+          "avg_return": "+11.33%",
+          "win_rate": "+50.00%",
+          "best": "+24.94%",
+          "worst": "+2.78%"
+        },
+        "중립~약강세": {
+          "count": 3,
+          "avg_return": "+1.02%",
+          "win_rate": "+33.33%",
+          "best": "+2.45%",
+          "worst": "-0.90%"
+        },
+        "중립~강세": {
+          "count": 2,
+          "avg_return": "+4.55%",
+          "win_rate": "+50.00%",
+          "best": "+6.58%",
+          "worst": "+2.53%"
+        },
+        "중립-약강세": {
+          "count": 2,
+          "avg_return": "+17.18%",
+          "win_rate": "+50.00%",
+          "best": "+33.83%",
+          "worst": "+0.54%"
+        },
+        "중립-약부정": {
+          "count": 1,
+          "avg_return": "-1.39%",
+          "win_rate": "+0.00%",
+          "best": "-1.39%",
+          "worst": "-1.39%"
+        },
+        "중립~약세": {
+          "count": 1,
+          "avg_return": "+3.61%",
+          "win_rate": "+0.00%",
+          "best": "+3.61%",
+          "worst": "+3.61%"
+        },
+        "중립-변동성": {
+          "count": 1,
+          "avg_return": "+9.92%",
+          "win_rate": "+100.00%",
+          "best": "+9.92%",
+          "worst": "+9.92%"
+        },
+        "중립적": {
+          "count": 1,
+          "avg_return": "+4.99%",
+          "win_rate": "+100.00%",
+          "best": "+4.99%",
+          "worst": "+4.99%"
+        },
+        "중립-긍정": {
+          "count": 1,
+          "avg_return": "+49.26%",
+          "win_rate": "+100.00%",
+          "best": "+49.26%",
+          "worst": "+49.26%"
+        },
+        "강한 긍정": {
+          "count": 1,
+          "avg_return": "+19.69%",
+          "win_rate": "+0.00%",
+          "best": "+19.69%",
+          "worst": "+19.69%"
+        }
+      },
+      "by_catalyst_tag": {
+        "실적": {
+          "count": 227,
+          "avg_return": "+4.51%",
+          "win_rate": "+51.54%",
+          "best": "+75.36%",
+          "worst": "-21.56%"
+        },
+        "기타 공시": {
+          "count": 110,
+          "avg_return": "+10.77%",
+          "win_rate": "+54.55%",
+          "best": "+98.20%",
+          "worst": "-11.09%"
+        },
+        "일반 이슈": {
+          "count": 3,
+          "avg_return": "+0.85%",
+          "win_rate": "+66.67%",
+          "best": "+1.46%",
+          "worst": "-0.36%"
+        }
+      },
+      "streak": {
+        "current_streak": 4,
+        "current_streak_type": "loss",
+        "max_win_streak": 7,
+        "max_loss_streak": 6
+      },
+      "ticker_performance": [
+        {
+          "ticker": "RDW",
+          "signals": 8,
+          "avg_return": "+40.93%",
+          "win_rate": "+87.50%"
+        },
+        {
+          "ticker": "FLNC",
+          "signals": 8,
+          "avg_return": "+27.65%",
+          "win_rate": "+37.50%"
+        },
+        {
+          "ticker": "RKLB",
+          "signals": 8,
+          "avg_return": "+22.79%",
+          "win_rate": "+50.00%"
+        },
+        {
+          "ticker": "ALAB",
+          "signals": 8,
+          "avg_return": "+19.44%",
+          "win_rate": "+50.00%"
+        },
+        {
+          "ticker": "IONQ",
+          "signals": 23,
+          "avg_return": "+18.41%",
+          "win_rate": "+43.48%"
+        },
+        {
+          "ticker": "AMD",
+          "signals": 23,
+          "avg_return": "+14.29%",
+          "win_rate": "+73.91%"
+        },
+        {
+          "ticker": "HUM",
+          "signals": 8,
+          "avg_return": "+8.47%",
+          "win_rate": "+62.50%"
+        },
+        {
+          "ticker": "AVAV",
+          "signals": 8,
+          "avg_return": "+6.69%",
+          "win_rate": "+50.00%"
+        },
+        {
+          "ticker": "NXT",
+          "signals": 8,
+          "avg_return": "+5.11%",
+          "win_rate": "+75.00%"
+        },
+        {
+          "ticker": "PLUG",
+          "signals": 23,
+          "avg_return": "+4.97%",
+          "win_rate": "+34.78%"
+        },
+        {
+          "ticker": "ATKR",
+          "signals": 8,
+          "avg_return": "+3.82%",
+          "win_rate": "+37.50%"
+        },
+        {
+          "ticker": "COHR",
+          "signals": 8,
+          "avg_return": "+3.22%",
+          "win_rate": "+50.00%"
+        },
+        {
+          "ticker": "MOD",
+          "signals": 8,
+          "avg_return": "+3.22%",
+          "win_rate": "+62.50%"
+        },
+        {
+          "ticker": "AAPL",
+          "signals": 23,
+          "avg_return": "+3.00%",
+          "win_rate": "+60.87%"
+        },
+        {
+          "ticker": "ORA",
+          "signals": 20,
+          "avg_return": "+2.92%",
+          "win_rate": "+40.00%"
+        },
+        {
+          "ticker": "CAT",
+          "signals": 23,
+          "avg_return": "+2.90%",
+          "win_rate": "+73.91%"
+        },
+        {
+          "ticker": "KTOS",
+          "signals": 8,
+          "avg_return": "+1.88%",
+          "win_rate": "+62.50%"
+        },
+        {
+          "ticker": "SPIR",
+          "signals": 20,
+          "avg_return": "+1.51%",
+          "win_rate": "+60.00%"
+        },
+        {
+          "ticker": "KO",
+          "signals": 23,
+          "avg_return": "+0.36%",
+          "win_rate": "+43.48%"
+        },
+        {
+          "ticker": "OXY",
+          "signals": 20,
+          "avg_return": "+0.17%",
+          "win_rate": "+35.00%"
+        },
+        {
+          "ticker": "T",
+          "signals": 23,
+          "avg_return": "-0.43%",
+          "win_rate": "+69.57%"
+        },
+        {
+          "ticker": "KEY",
+          "signals": 8,
+          "avg_return": "-0.54%",
+          "win_rate": "+50.00%"
+        },
+        {
+          "ticker": "XOM",
+          "signals": 23,
+          "avg_return": "-0.95%",
+          "win_rate": "+26.09%"
+        }
+      ]
+    },
+    "summary_by_direction": {
+      "bull": {
+        "count": 230,
+        "evaluated_5d": 197,
+        "win_rate_5d": "+70.56%",
+        "avg_return_5d": "+6.93%"
+      },
+      "bear": {
+        "count": 72,
+        "evaluated_5d": 72,
+        "win_rate_5d": "+40.28%",
+        "avg_return_5d": "+4.46%"
+      },
+      "neutral": {
+        "count": 138,
+        "evaluated_5d": 71,
+        "win_rate_5d": "+15.49%",
+        "avg_return_5d": "+7.40%"
+      }
+    }
+  },
+  "pending_signals": 173,
+  "first_eval_date": "2026-05-29"
 }

@@ -21,6 +21,7 @@ from src.analyzer.derive import (
     sort_sec_filings,
 )
 from src.output.pm_view import build_pm_view
+from src.output.json_writer import write_json_file
 from src.output.schema import SCHEMA_VERSION
 from src.output.sharded_export import write_sharded_outputs
 from src.output.direction_alignment import write_direction_alignment_output
@@ -107,9 +108,7 @@ def write_json_outputs(
         if backtest_summary is not None
         else build_backtest_summary(data_dir / "signal_tracker.csv")
     )
-    (data_dir / "backtest_summary.json").write_text(
-        json.dumps(backtest_payload, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    write_json_file(data_dir / "backtest_summary.json", backtest_payload)
     _write_calibration_json(data_dir)
     _write_factor_audit_json(data_dir)
     _write_signal_quality_json(data_dir)
@@ -246,10 +245,16 @@ def _write_dashboard_jsons(
         history_payload["state_metadata"] = state_metadata
 
     if emit_legacy_dashboard:
-        latest_path.write_text(json.dumps(latest_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        retry_io(
+            lambda: write_json_file(latest_path, latest_payload),
+            what=f"write {latest_path}",
+        )
     elif latest_path.exists():
         latest_path.unlink()
-    history_path.write_text(json.dumps(history_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    retry_io(
+        lambda: write_json_file(history_path, history_payload),
+        what=f"write {history_path}",
+    )
     return new_day, merged
 
 
@@ -669,7 +674,12 @@ def _write_tuning_report_json(data_dir: Path) -> None:
     )
 
 
-def _write_validation_warnings_json(data_dir: Path, *, window_days: int = 14) -> None:
+def _write_validation_warnings_json(
+    data_dir: Path,
+    *,
+    window_days: int = 14,
+    project_root: Path | None = None,
+) -> None:
     """Aggregate recent LLM validation warnings into a histogram for Admin.
 
     Reads the last `window_days` of pipeline summary files (cheap — one
@@ -719,9 +729,9 @@ def _write_validation_warnings_json(data_dir: Path, *, window_days: int = 14) ->
         "totals": totals,
         "series": series,
     }
-    (data_dir / "validation_warnings.json").write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    write_json_file(data_dir / "validation_warnings.json", payload)
+    if project_root is not None:
+        _sync_web_public_data(data_dir, project_root)
 
 
 def _sync_web_public_data(data_dir: Path, project_root: Path) -> None:

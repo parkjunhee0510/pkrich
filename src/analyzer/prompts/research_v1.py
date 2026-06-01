@@ -242,6 +242,7 @@ PROMPT_SET = {
             "peer_rank가 주어지면 PER 하위 구간과 RS 상위 구간 같은 정량 비교를 짧게 반영할 수 있지만, 숫자 gap이 없으면 과장하지 마세요.\n\n"
             "macro_event_summary가 주어지면 호르무즈 봉쇄 같은 거시 충격의 업종 영향만 짧게 반영하되, 같은 내용을 반복 확대 해석하지 마세요.\n\n"
             + _ANTI_HALLUCINATION_USER_RULE
+            + "financial_highlights의 숫자는 payload에 있는 값만 그대로 사용하고, 새 비율이나 가격을 계산하지 마세요.\n"
             + "금지 예시: 입력에 없는 목표가, CEO 이름, 실적 날짜를 임의로 쓰지 마세요.\n"
             "모범 예시: 근거가 없는 수치는 '—'로 두고, 확인 가능한 값만 요약하세요.\n\n"
             "{batch_payload_json}"
@@ -259,6 +260,7 @@ PROMPT_SET = {
         user_template=(
             "각 티커에 대해 최대 4개의 리스크 체크포인트를 작성해주세요. 모든 항목은 측정 가능한 트리거를 포함해야 합니다.\n"
             + _ANTI_HALLUCINATION_USER_RULE
+            + "가격/날짜/수치 트리거는 payload에 있는 값만 사용하고, 새 트리거 값을 계산하거나 반올림해 만들지 마세요.\n"
             + "\n"
             "{batch_payload_json}"
         ),

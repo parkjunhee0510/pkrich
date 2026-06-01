@@ -62,6 +62,12 @@ DEFAULT_CACHE_TTL_HOURS: dict[str, float] = {
     #   price, technicals, options, news, historical_prices
 }
 
+# Data types that must always be fetched fresh. A provider emitting any of
+# these is never cached (see CollectionOrchestrator._resolve_ttl).
+VOLATILE_DATA_TYPES: frozenset[str] = frozenset(
+    {"price", "technicals", "options", "news", "historical_prices"}
+)
+
 
 @dataclass(frozen=True)
 class OrchestrationReport:
@@ -321,17 +327,23 @@ class CollectionOrchestrator:
         return result
 
     def _resolve_ttl(self, provider: DataProvider) -> float:
-        """Maximum cache TTL among the data types this provider emits.
+        """Cache TTL (hours) for this provider's results, or 0.0 (no caching).
 
-        We use the MAX so that a provider offering both `fundamentals`
-        (24h) and `price` (0h) ends up with 24h — avoiding the churn of
-        re-fetching fundamentals just because price is also in the mix.
+        A provider that emits ANY volatile data type (see VOLATILE_DATA_TYPES:
+        price/technicals/options/news/historical_prices) is never cached. The
+        cache stores a single payload per provider, so we cannot keep the
+        cacheable fields (e.g. fundamentals) while always refreshing the
+        volatile ones — caching the whole payload would serve a stale price on
+        a same-date intraday re-run. The only provider this affects is the free
+        primary source (yfinance), so the extra refetch costs nothing.
 
-        NOTE: this is a simplification. A more precise design would
-        cache each data type independently. That optimization is
-        deferred to Phase 1-3 when we split Polygon's options fields.
+        For stable-only providers we use the MAX TTL among their data types, so
+        a provider offering both `fundamentals` (24h) and a longer-lived type
+        keeps the longer window (and paid providers' caching is unchanged).
         """
         if not provider.provides:
+            return 0.0
+        if provider.provides & VOLATILE_DATA_TYPES:
             return 0.0
         return max(
             (self._cache_ttl.get(dt, 0.0) for dt in provider.provides),

@@ -2,7 +2,9 @@ default_profile: deep
 module_profile_overrides:
   signal_takeaway_module: standard
 module_batch_size_overrides:
-  signal_takeaway_module: 3
+  # Signal takeaway payloads are compact; batching 5 tickers cuts standard-profile
+  # call overhead on the 25-ticker watchlist without changing model selection.
+  signal_takeaway_module: 5
 policy:
   model_profile: deep
 committee:
@@ -18,6 +20,7 @@ ensemble:
   second_model: deep
   second_prompt: research_v2
   max_daily_ensemble: 5
+  emit_routing_log: true
 budget_guard:
   mode: shadow
   daily_cap_usd: 0.25

@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
 
-from src.types import NewsItem, TickerAnalysis
+from src.types import MarketRegime, NewsItem, TickerAnalysis, TickerDecision
 from src.utils.datastore import get_datastore
+from src.utils.signal_tracker import (
+    _classify_rule_direction,
+    _classify_signal_direction,
+)
 
 
 def _analysis() -> TickerAnalysis:
@@ -77,6 +82,92 @@ class SqliteDatastoreSignalApiTests(unittest.TestCase):
             stats = datastore.get_signal_stats()
             self.assertIsNotNone(stats)
             self.assertEqual(stats['summary_by_direction']['bull']['count'], 1)
+
+    def test_load_signal_rows_preserves_decision_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / 'output'
+            datastore = get_datastore(output_root=output_root, backend='sqlite')
+            datastore.record_signals(
+                [_analysis()],
+                date(2026, 4, 8),
+                {'AAPL': 100.0},
+                decisions=[
+                    TickerDecision(
+                        ticker='AAPL',
+                        action='buy',
+                        conviction=72,
+                        raw_conviction=80,
+                        factors={'momentum': 1.5},
+                        factor_reasoning={'momentum': 'trend improved'},
+                        confidence_meta={'data_quality_score': 0.88},
+                    )
+                ],
+                market_regime=MarketRegime(regime='risk_on', sub_regime='growth'),
+            )
+
+            rows = datastore.load_signal_rows_data()
+
+        self.assertEqual(rows[0]['action'], 'buy')
+        self.assertEqual(rows[0]['conviction'], '72')
+        self.assertEqual(rows[0]['raw_conviction'], '80')
+        self.assertEqual(rows[0]['regime'], 'risk_on')
+        self.assertEqual(rows[0]['sub_regime'], 'growth')
+        self.assertEqual(json.loads(rows[0]['factors_json']), {'momentum': 1.5})
+        self.assertEqual(json.loads(rows[0]['factor_reasoning_json']), {'momentum': 'trend improved'})
+        self.assertEqual(json.loads(rows[0]['confidence_meta_json']), {'data_quality_score': 0.88})
+
+
+class RuleDirectionClassifierTests(unittest.TestCase):
+    """`_classify_rule_direction` must be independent of LLM-generated text."""
+
+    def test_buy_action_maps_to_bull(self) -> None:
+        decision = TickerDecision(ticker='AAPL', action='buy', conviction=72)
+        self.assertEqual(_classify_rule_direction(decision), 'bull')
+
+    def test_avoid_action_maps_to_bear(self) -> None:
+        decision = TickerDecision(ticker='AAPL', action='avoid', conviction=30)
+        self.assertEqual(_classify_rule_direction(decision), 'bear')
+
+    def test_watch_action_maps_to_neutral(self) -> None:
+        decision = TickerDecision(ticker='AAPL', action='watch', conviction=50)
+        self.assertEqual(_classify_rule_direction(decision), 'neutral')
+
+    def test_missing_decision_falls_back(self) -> None:
+        self.assertEqual(_classify_rule_direction(None, fallback='bull'), 'bull')
+        self.assertEqual(_classify_rule_direction(None), 'neutral')
+
+    def test_rule_direction_can_diverge_from_llm_text_direction(self) -> None:
+        analysis = _analysis()  # LLM text leans bullish via news_tone='bullish'
+        llm_dir = _classify_signal_direction(analysis)
+        rule_dir = _classify_rule_direction(
+            TickerDecision(ticker='AAPL', action='avoid', conviction=30)
+        )
+        self.assertEqual(llm_dir, 'bull')
+        self.assertEqual(rule_dir, 'bear')
+        self.assertNotEqual(rule_dir, llm_dir)
+
+
+class SignalTrackerDirectionDecouplingTests(unittest.TestCase):
+    """Persisted rows must carry distinct rule vs LLM directions when they disagree."""
+
+    def test_recorded_row_has_independent_directions(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / 'output'
+            datastore = get_datastore(output_root=output_root, backend='csv')
+            datastore.record_signals(
+                [_analysis()],
+                date(2026, 4, 8),
+                {'AAPL': 100.0},
+                decisions=[
+                    TickerDecision(ticker='AAPL', action='avoid', conviction=28),
+                ],
+                market_regime=MarketRegime(regime='neutral'),
+            )
+            rows = datastore.load_signal_rows_data()
+
+        self.assertEqual(rows[0]['signal_direction'], 'bear')  # rule (avoid)
+        self.assertEqual(rows[0]['llm_direction'], 'bull')      # LLM text (bullish tone)
+        self.assertNotEqual(rows[0]['signal_direction'], rows[0]['llm_direction'])
 
 
 if __name__ == '__main__':

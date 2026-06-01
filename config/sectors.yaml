@@ -48,6 +48,19 @@ sectors:
       - { ticker: ESTC, name: Elastic }
       - { ticker: CFLT, name: Confluent }
 
+  - id: cloud_software
+    name: 클라우드·기업용 소프트웨어
+    description: SaaS, 클라우드 플랫폼, 기업 IT 지출
+    benchmark_etf: IGV
+    news_keywords: ["cloud software", "SaaS", "enterprise software", "AI software", "IT spending"]
+    tickers:
+      - { ticker: MSFT, name: Microsoft }
+      - { ticker: CRM, name: Salesforce }
+      - { ticker: NOW, name: ServiceNow }
+      - { ticker: ADBE, name: Adobe }
+      - { ticker: SNOW, name: Snowflake }
+      - { ticker: DDOG, name: Datadog }
+
   - id: power_grid
     name: 전력 인프라
     description: 발전 및 송전
@@ -59,6 +72,33 @@ sectors:
       - { ticker: SO, name: Southern Company }
       - { ticker: EXC, name: Exelon }
       - { ticker: CEG, name: Constellation Energy }
+
+  - id: energy
+    name: 에너지
+    description: 석유, 천연가스, LNG, 정제, 에너지 서비스
+    benchmark_etf: XLE
+    news_keywords: ["oil", "natural gas", "LNG", "OPEC", "refining", "shale"]
+    tickers:
+      - { ticker: XOM, name: Exxon Mobil }
+      - { ticker: CVX, name: Chevron }
+      - { ticker: COP, name: ConocoPhillips }
+      - { ticker: OXY, name: Occidental Petroleum }
+      - { ticker: SLB, name: SLB }
+      - { ticker: EOG, name: EOG Resources }
+
+  - id: materials
+    name: 소재·핵심 광물
+    description: 구리, 리튬, 철강, 산업 소재
+    benchmark_etf: XLB
+    news_keywords: ["copper", "lithium", "steel", "materials", "mining", "critical minerals"]
+    tickers:
+      - { ticker: LIN, name: Linde }
+      - { ticker: FCX, name: Freeport-McMoRan }
+      - { ticker: SCCO, name: Southern Copper }
+      - { ticker: NUE, name: Nucor }
+      - { ticker: STLD, name: Steel Dynamics }
+      - { ticker: ALB, name: Albemarle }
+      - { ticker: DD, name: DuPont de Nemours }
 
   - id: industrial_infra
     name: 산업 인프라
@@ -72,6 +112,20 @@ sectors:
       - { ticker: PH, name: Parker Hannifin }
       - { ticker: EMR, name: Emerson }
       - { ticker: HUBB, name: Hubbell }
+      - { ticker: XYL, name: Xylem }
+
+  - id: transport_logistics
+    name: 운송·물류
+    description: 철도, 소포, 화물, 공급망 물동량
+    benchmark_etf: IYT
+    news_keywords: ["freight", "logistics", "railroad", "shipping", "parcel volume", "supply chain"]
+    tickers:
+      - { ticker: UNP, name: Union Pacific }
+      - { ticker: CSX, name: CSX }
+      - { ticker: UPS, name: UPS }
+      - { ticker: FDX, name: FedEx }
+      - { ticker: JBHT, name: J.B. Hunt }
+      - { ticker: EXPD, name: Expeditors International }
 
   - id: robotics
     name: 로보틱스
@@ -118,6 +172,19 @@ sectors:
       - { ticker: PG, name: P&G }
       - { ticker: COST, name: Costco }
       - { ticker: WMT, name: Walmart }
+
+  - id: financials
+    name: 금융
+    description: 은행, 증권, 자산운용
+    benchmark_etf: XLF
+    news_keywords: ["financials", "banks", "interest rates", "credit", "capital markets"]
+    tickers:
+      - { ticker: JPM, name: JPMorgan Chase }
+      - { ticker: BAC, name: Bank of America }
+      - { ticker: GS, name: Goldman Sachs }
+      - { ticker: MS, name: Morgan Stanley }
+      - { ticker: BLK, name: BlackRock }
+      - { ticker: SCHW, name: Charles Schwab }
 
   - id: defense
     name: 방산

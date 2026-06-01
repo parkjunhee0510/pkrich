@@ -34,7 +34,7 @@ class IrrssProviderTests(unittest.TestCase):
         )
 
         with patch('src.collector.ir_rss.is_env_flag_enabled', return_value=True):
-            with patch.dict(sys.modules, {'feedparser': fake_module}):
+            with patch('src.collector.ir_rss.parse_feed', side_effect=fake_parse):
                 items = collect_ir_rss_news(item)
 
         self.assertEqual(len(items), 1)
@@ -65,7 +65,7 @@ class IrrssProviderTests(unittest.TestCase):
         )
 
         with patch('src.collector.ir_rss.is_env_flag_enabled', return_value=True):
-            with patch.dict(sys.modules, {'feedparser': fake_module}):
+            with patch('src.collector.ir_rss.parse_feed', side_effect=fake_parse):
                 items = collect_ir_rss_news(item)
 
         self.assertEqual(len(items), 1)
@@ -96,7 +96,7 @@ class IrrssProviderTests(unittest.TestCase):
 
         with patch('src.collector.ir_rss.is_env_flag_enabled', return_value=True):
             with patch('src.collector.ir_rss.load_simple_mapping', return_value={'ir_source_names': {'nvidianews.nvidia.com': 'NVIDIA Investor News'}}):
-                with patch.dict(sys.modules, {'feedparser': fake_module}):
+                with patch('src.collector.ir_rss.parse_feed', side_effect=fake_parse):
                     items = collect_ir_rss_news(item)
 
         self.assertEqual(len(items), 1)
@@ -128,7 +128,7 @@ class IrrssProviderTests(unittest.TestCase):
 
         with patch('src.collector.ir_rss.is_env_flag_enabled', return_value=True):
             with patch('src.collector.ir_rss.load_simple_mapping', return_value={'ir_source_names': {'news.microsoft.com': 'Microsoft Source'}}):
-                with patch.dict(sys.modules, {'feedparser': fake_module}):
+                with patch('src.collector.ir_rss.parse_feed', side_effect=fake_parse):
                     items = collect_ir_rss_news(item)
 
         self.assertEqual(len(items), 1)

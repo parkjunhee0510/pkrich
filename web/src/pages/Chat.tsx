@@ -105,11 +105,12 @@ export function Chat() {
         </div>
       </div>
 
-      <div className="dashboard-controls" style={{ marginTop: '1rem' }}>
+      <div className="dashboard-controls u-mt-4">
         <input
           className="dashboard-search"
           type="search"
           placeholder="예: AAPL이 왜 약해?"
+          aria-label="리서치 질문 입력"
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           onKeyDown={(event) => {

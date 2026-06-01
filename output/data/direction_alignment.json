@@ -1,29 +1,350 @@
 {
   "schema_version": 1,
   "summary": {
-    "total_signals": 202,
-    "comparable_signals": 90,
-    "agreement_count": 90,
-    "conflict_count": 0,
-    "agreement_rate": 100.0,
-    "latest_signal_date": "2026-05-05"
+    "total_signals": 440,
+    "comparable_signals": 328,
+    "agreement_count": 229,
+    "conflict_count": 99,
+    "agreement_rate": 69.8,
+    "latest_signal_date": "2026-05-29"
   },
   "by_pair": [
     {
       "rule_direction": "bull",
       "llm_direction": "bull",
-      "count": 57
+      "count": 160
+    },
+    {
+      "rule_direction": "neutral",
+      "llm_direction": "bull",
+      "count": 68
     },
     {
       "rule_direction": "bear",
       "llm_direction": "bear",
-      "count": 20
+      "count": 46
+    },
+    {
+      "rule_direction": "neutral",
+      "llm_direction": "bear",
+      "count": 28
     },
     {
       "rule_direction": "neutral",
       "llm_direction": "neutral",
-      "count": 13
+      "count": 23
+    },
+    {
+      "rule_direction": "bull",
+      "llm_direction": "neutral",
+      "count": 2
+    },
+    {
+      "rule_direction": "bull",
+      "llm_direction": "bear",
+      "count": 1
     }
   ],
-  "recent_conflicts": []
+  "recent_conflicts": [
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "XYL",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "51",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "XOM",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "59",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "T",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "54",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "SPIR",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "58",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "RKLB",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "기타 공시",
+      "conviction": "60",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "PLUG",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "59",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "OXY",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "63",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "KTOS",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "60",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "KO",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "55",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "KEY",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "60",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "HUM",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "56",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "FLNC",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "58",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "COHR",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "59",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "AVAV",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "기타 공시",
+      "conviction": "54",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "ATKR",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "63",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-29",
+      "ticker": "AAPL",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "62",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "XYL",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "50",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "XOM",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "61",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "T",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "53",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "SPIR",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "55",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "RKLB",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "기타 공시",
+      "conviction": "60",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "RDW",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "63",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "PLUG",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "58",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "OXY",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "61",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "ORA",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "62",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "KTOS",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "57",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "KO",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "54",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "KEY",
+      "signal_direction": "neutral",
+      "llm_direction": "bull",
+      "catalyst_tag": "실적",
+      "conviction": "58",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "HUM",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "57",
+      "action": "watch",
+      "regime": "risk_on"
+    },
+    {
+      "signal_date": "2026-05-28",
+      "ticker": "FLNC",
+      "signal_direction": "neutral",
+      "llm_direction": "bear",
+      "catalyst_tag": "실적",
+      "conviction": "58",
+      "action": "watch",
+      "regime": "risk_on"
+    }
+  ]
 }

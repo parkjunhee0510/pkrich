@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Any
 
@@ -16,7 +17,7 @@ DEFAULT_QUERY_TEMPLATES: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class SearchEvidenceConfig:
-    mode: str = "cache"
+    mode: str = "openai"
     provider: str = "openai"
     model_profile: str = "standard"
     tool_type: str = "web_search"
@@ -33,13 +34,14 @@ class SearchEvidenceConfig:
 
 def load_search_evidence_config(path: str = "config/search_evidence.yaml") -> SearchEvidenceConfig:
     raw = load_yaml_mapping(path, optional=True)
+    raw = _apply_env_overrides(raw)
     return search_evidence_config_from_mapping(raw)
 
 
 def search_evidence_config_from_mapping(raw: dict[str, Any] | None) -> SearchEvidenceConfig:
     raw = raw or {}
     return SearchEvidenceConfig(
-        mode=_choice(raw.get("mode"), {"cache", "openai", "off"}, default="cache"),
+        mode=_choice(raw.get("mode"), {"cache", "openai", "off"}, default="openai"),
         provider=_choice(raw.get("provider"), {"openai"}, default="openai"),
         model_profile=_text(raw.get("model_profile"), default="standard"),
         tool_type=_text(raw.get("tool_type"), default="web_search"),
@@ -58,6 +60,20 @@ def search_evidence_config_from_mapping(raw: dict[str, Any] | None) -> SearchEvi
 def _choice(value: Any, allowed: set[str], *, default: str) -> str:
     text = str(value or default).strip().lower()
     return text if text in allowed else default
+
+
+def _apply_env_overrides(raw: dict[str, Any] | None) -> dict[str, Any]:
+    merged = dict(raw or {})
+    overrides = {
+        "SEARCH_EVIDENCE_MODE": "mode",
+        "SEARCH_EVIDENCE_MAX_TICKERS_PER_RUN": "max_search_tickers_per_run",
+        "SEARCH_EVIDENCE_MAX_QUERIES_PER_TICKER": "max_queries_per_ticker",
+    }
+    for env_name, config_key in overrides.items():
+        value = os.getenv(env_name)
+        if value is not None and value.strip():
+            merged[config_key] = value.strip()
+    return merged
 
 
 def _text(value: Any, *, default: str) -> str:

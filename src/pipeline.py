@@ -1,5 +1,6 @@
 ﻿from __future__ import annotations
 
+import json
 import re
 from dataclasses import replace
 from datetime import date
@@ -44,25 +45,29 @@ from src.collector.search_evidence import collect_search_evidence
 from src.collector.sector_scan import scan_sectors
 from src.collector.shadow_compare import run_shadow_comparison
 from src.output.alert import evaluate_alert_rules
+from src.output.analysis_performance import write_analysis_performance_output
 from src.output.analysis_quality import write_analysis_quality_output
 from src.output.api_status import write_api_status_outputs
 from src.output.ab_test import write_ab_test_results
 from src.output.cost_log import write_cost_log_output
 from src.output.intraday_refresh import write_intraday_refresh_outputs
 from src.output.markdown import write_outputs
+from src.output.performance import write_performance_outputs
+from src.output.risk_intel_json import write_risk_intel_outputs
 from src.output.routing_outcome import write_routing_outcome_output
 from src.output.schema import SCHEMA_VERSION
 from src.output.search_audit_json import write_search_audit_output
 from src.output.search_evidence_json import write_search_evidence_output
 from src.output.sectors_json import write_sectors_json
 from src.output.slack import send_daily_summary, send_pipeline_failure_alert, send_signal_alerts
-from src.types import CollectedTickerData, MarketRegime, TickerAnalysis
+from src.types import CollectedTickerData, MarketRegime, PortfolioSummary, TickerAnalysis, TickerDecision
 from src.utils.config import load_portfolio, load_sectors, load_watchlist
 from src.utils.datastore import get_datastore
 from src.utils.env import is_env_flag_enabled, load_dotenv
 from src.utils.macro_sensitivity import attach_portfolio_macro_sensitivity
 from src.utils.model_config import load_committee_config
 from src.utils.portfolio import calculate_portfolio_summary
+from src.utils.cli_progress import create_collect_only_progress, create_pipeline_progress
 from src.utils.pipeline_logging import finalize_pipeline_logging, get_pipeline_logger, record_pipeline_event, start_pipeline_logging
 from src.output.json_export import _sync_web_public_data, _write_validation_warnings_json
 
@@ -179,10 +184,27 @@ def run_policy_stage(
         return None
 
 
-def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) -> None:
+def _load_json_output_payload(path: Path) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    return loaded if isinstance(loaded, dict) else None
+
+
+def run_pipeline(
+    run_date: date | None = None,
+    *,
+    with_sectors: bool = False,
+    show_progress: bool = False,
+) -> None:
+    progress = create_pipeline_progress(enabled=show_progress, with_sectors=with_sectors)
     load_dotenv()
     calendar_run_date = run_date or date.today()
     effective_date = calendar_run_date
+    progress.step("load_inputs")
     start_pipeline_logging(effective_date)
     record_pipeline_event("pipeline", "info", "pipeline_started", run_date=effective_date.isoformat())
 
@@ -193,12 +215,14 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
         portfolio_holdings = load_portfolio()
         datastore = get_datastore(output_root=Path("output"))
 
+        progress.step("collect")
         collected, effective_date, historical_price_rows, market_overview, macro_context = _collect_market_context(
             watchlist,
             effective_date,
             datastore,
         )
 
+        progress.step("news_context")
         # Phase 1-0e Step 5a: NewsOrchestrator primary dispatch.
         # When ENABLE_NEWS_ORCHESTRATOR_PRIMARY=true, the NewsOrchestrator
         # is the source of truth and legacy collect_news_for_watchlist()
@@ -257,6 +281,7 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
                 )
             except Exception:
                 record_pipeline_event("analyzer", "warning", "macro_narrative_failed")
+        progress.step("analysis")
         ensemble = _build_analysis_ensemble()
         ensemble_result = ensemble.analyze_with_consensus(
             watchlist,
@@ -346,6 +371,7 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
             }
 
         # Decision layer: market regime + per-ticker decisions
+        progress.step("decision")
         try:
             decisions = apply_consensus_to_decisions(
                 generate_decisions(
@@ -377,9 +403,20 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
             decisions = []
             record_pipeline_event("decision", "warning", "decision_failed")
 
-        search_evidence_payload = _collect_search_evidence_artifact(effective_date, analyses)
+        progress.step("evidence")
+        search_evidence_payload = _collect_search_evidence_artifact(
+            effective_date,
+            analyses,
+            priority_tickers=_routing_priority_tickers(ensemble_result.diagnostics),
+            priority_context_by_ticker=_search_evidence_priority_context(
+                decisions=decisions,
+                collected=collected,
+                portfolio_summary=portfolio_summary,
+            ),
+        )
         decisions = attach_search_quality_shadow(decisions, search_evidence_payload)
 
+        progress.step("state")
         datastore.record_signals(
             analyses,
             effective_date,
@@ -388,7 +425,15 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
             market_regime=market_regime,
         )
         signal_stats = datastore.load_signal_stats_data()
+        write_analysis_performance_output(
+            output_root=Path("output"),
+            run_date=effective_date,
+            decisions=decisions,
+            market_regime=market_regime,
+            signal_rows=datastore.load_signal_rows_data(),
+        )
 
+        progress.step("output")
         direct_period_changes = {
             ticker: {"7d": data.price_change_7d, "30d": data.price_change_30d}
             for ticker, data in collected.items()
@@ -414,6 +459,16 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
             state_metadata=state_metadata,
         )
         _write_search_evidence_artifact(effective_date, analyses, search_evidence_payload)
+        write_risk_intel_outputs(
+            output_root=Path("output"),
+            project_root=Path("."),
+            run_date=effective_date,
+            policy_payload=_load_json_output_payload(Path("output") / "data" / "policy_impact.json"),
+            search_evidence_payload=search_evidence_payload,
+            watchlist=watchlist,
+            portfolio_summary=portfolio_summary,
+            sector_payload=_load_json_output_payload(Path("output") / "data" / "sectors.json"),
+        )
         ab_test_payload = build_weekly_ab_test_payload(
             run_date=calendar_run_date,
             watchlist=watchlist,
@@ -426,6 +481,7 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
         )
         write_ab_test_results(ab_test_payload, output_root=Path("output"))
         if with_sectors:
+            progress.step("sectors")
             _run_sector_scan(watchlist, effective_date)
         else:
             record_pipeline_event(
@@ -435,6 +491,7 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
                 reason="disabled_by_default",
                 hint="run with --with-sectors to refresh sectors.json",
             )
+        progress.step("notify")
         send_daily_summary(
             analyses,
             effective_date,
@@ -450,6 +507,7 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
         record_pipeline_event("pipeline", "info", "pipeline_completed", ticker_count=len(analyses), updated_signal_rows=updated_signals)
         datastore.record_analysis_run(run_date=effective_date, success=True, logger=get_pipeline_logger())
     except Exception as exc:
+        progress.failed(f"{type(exc).__name__}: {exc}")
         send_pipeline_failure_alert(effective_date, str(exc))
         record_pipeline_event(
             "pipeline",
@@ -465,19 +523,30 @@ def run_pipeline(run_date: date | None = None, *, with_sectors: bool = False) ->
         )
         raise
     finally:
+        progress.step("finalize")
         finalize_pipeline_logging(success)
-        _write_validation_warnings_json(Path("output") / "data")
+        _write_validation_warnings_json(Path("output") / "data", project_root=Path("."))
         write_analysis_quality_output(output_root=Path("output"), logs_root=Path("logs") / "pipeline")
         write_cost_log_output(output_root=Path("output"), logs_root=Path("logs") / "pipeline")
         write_routing_outcome_output(output_root=Path("output"))
+        write_performance_outputs(
+            output_root=Path("output"),
+            logs_root=Path("logs") / "pipeline",
+            project_root=Path("."),
+            run_date=calendar_run_date,
+        )
         if watchlist:
             write_api_status_outputs(calendar_run_date, watchlist, output_root=Path("output"))
+        if success:
+            progress.done("파이프라인 종료")
 
 
-def collect_only(run_date: date | None = None) -> dict[str, object]:
+def collect_only(run_date: date | None = None, *, show_progress: bool = False) -> dict[str, object]:
+    progress = create_collect_only_progress(enabled=show_progress)
     load_dotenv()
     calendar_run_date = run_date or date.today()
     effective_date = calendar_run_date
+    progress.step("load_inputs")
     start_pipeline_logging(effective_date)
     record_pipeline_event("pipeline", "info", "collect_only_started", run_date=effective_date.isoformat())
 
@@ -486,6 +555,7 @@ def collect_only(run_date: date | None = None) -> dict[str, object]:
         watchlist = load_watchlist()
         portfolio_holdings = load_portfolio()
         datastore = get_datastore(output_root=Path("output"))
+        progress.step("collect")
         collected, effective_date, _historical_price_rows, market_overview, macro_context = _collect_market_context(
             watchlist,
             effective_date,
@@ -499,6 +569,7 @@ def collect_only(run_date: date | None = None) -> dict[str, object]:
             collected,
             watchlist,
         )
+        progress.step("output")
         refresh_payload = write_intraday_refresh_outputs(
             collected,
             effective_date,
@@ -517,6 +588,7 @@ def collect_only(run_date: date | None = None) -> dict[str, object]:
         )
         return refresh_payload
     except Exception as exc:
+        progress.failed(f"{type(exc).__name__}: {exc}")
         send_pipeline_failure_alert(effective_date, str(exc))
         record_pipeline_event(
             "pipeline",
@@ -527,7 +599,10 @@ def collect_only(run_date: date | None = None) -> dict[str, object]:
         )
         raise
     finally:
+        progress.step("finalize")
         finalize_pipeline_logging(success)
+        if success:
+            progress.done("collect-only 종료")
 
 
 def _persist_routing_log(
@@ -578,11 +653,19 @@ def _persist_routing_log(
     )
 
 
-def _collect_search_evidence_artifact(effective_date: date, analyses: list[TickerAnalysis]) -> dict[str, object] | None:
+def _collect_search_evidence_artifact(
+    effective_date: date,
+    analyses: list[TickerAnalysis],
+    *,
+    priority_tickers: list[str] | None = None,
+    priority_context_by_ticker: dict[str, dict[str, object]] | None = None,
+) -> dict[str, object] | None:
     try:
         return collect_search_evidence(
             run_date=effective_date,
             tickers=[analysis.ticker for analysis in analyses],
+            priority_tickers=priority_tickers or [],
+            priority_context_by_ticker=priority_context_by_ticker or {},
         )
     except Exception as exc:
         record_pipeline_event(
@@ -593,6 +676,54 @@ def _collect_search_evidence_artifact(effective_date: date, analyses: list[Ticke
             error_message=str(exc)[:200],
         )
         return None
+
+
+def _routing_priority_tickers(diagnostics: dict[str, object]) -> list[str]:
+    raw_selected = diagnostics.get("selected_tickers", [])
+    if not isinstance(raw_selected, (list, tuple, set)):
+        return []
+    selected: list[str] = []
+    seen: set[str] = set()
+    for ticker in raw_selected:
+        normalized = str(ticker or "").strip().upper()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        selected.append(normalized)
+    return selected
+
+
+def _search_evidence_priority_context(
+    *,
+    decisions: list[TickerDecision],
+    collected: dict[str, CollectedTickerData],
+    portfolio_summary: PortfolioSummary | None,
+) -> dict[str, dict[str, object]]:
+    context: dict[str, dict[str, object]] = {}
+    holding_tickers = {
+        str(position.ticker or "").strip().upper()
+        for position in (portfolio_summary.positions if portfolio_summary else [])
+        if str(position.ticker or "").strip()
+    }
+
+    for ticker, data in collected.items():
+        normalized = str(ticker or "").strip().upper()
+        if not normalized:
+            continue
+        context.setdefault(normalized, {})
+        context[normalized]["change_percent"] = data.change_percent
+        context[normalized]["atr_percent"] = data.atr_percent
+        context[normalized]["in_portfolio"] = normalized in holding_tickers
+
+    for decision in decisions:
+        normalized = str(decision.ticker or "").strip().upper()
+        if not normalized:
+            continue
+        context.setdefault(normalized, {})
+        context[normalized]["action"] = str(decision.action or "").strip().lower()
+        context[normalized].setdefault("in_portfolio", normalized in holding_tickers)
+
+    return context
 
 
 def _write_search_evidence_artifact(
@@ -683,7 +814,10 @@ def _extract_vix_from_overview(market_overview: list[dict[str, str]]) -> dict[st
         if entry.get("label") == "VIX" or entry.get("symbol") == "^VIX":
             return {
                 "price": entry.get("price", "N/A"),
-                "change_percent": entry.get("change_percent", "N/A"),
+                # market_overview entries use the key "change" (see
+                # collect_market_overview); reading "change_percent" here left
+                # macro_context.vix.change permanently "N/A".
+                "change_percent": entry.get("change", entry.get("change_percent", "N/A")),
             }
     return None
 

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-06-01",
+  "status": "partial",
+  "summary": {
+    "decision_quality_status": "ok",
+    "artifact_reliability_status": "ok",
+    "evidence_status": "partial",
+    "cost_status": "reported"
+  },
+  "decision_quality": {
+    "status": "ok",
+    "sample_count": 440,
+    "completed_return_window_count": 3,
+    "evaluated_signal_window_count": 9,
+    "populated_conviction_bucket_count": 3,
+    "factor_count": 13,
+    "action_change_coverage_ratio": 1.0,
+    "loop_readiness_status": "ready_for_quality_review",
+    "hallucination_ratio": 0.0318,
+    "validation_failure_rate": 0.0318,
+    "fact_warning_count": 2,
+    "consistency_warning_count": 2
+  },
+  "artifact_reliability": {
+    "status": "ok",
+    "json_health_status": "ok",
+    "invalid_json_count": 0,
+    "issue_count": 0,
+    "output_schema_status": "ready"
+  },
+  "evidence_quality": {
+    "status": "partial",
+    "ticker_count": 25,
+    "covered_ticker_count": 10,
+    "coverage_ratio": 0.4,
+    "candidate_ticker_count": 25,
+    "searched_ticker_count": 10,
+    "status_counts": {
+      "covered": 10,
+      "not_refreshed": 15
+    },
+    "priority_ticker_count": 5,
+    "priority_covered_ticker_count": 5,
+    "priority_coverage_ratio": 1.0,
+    "priority_status_counts": {
+      "covered": 5
+    },
+    "priority_refresh_reasons": {
+      "high_volatility": 2,
+      "important_action": 3,
+      "no_evidence": 5,
+      "portfolio_holding": 5,
+      "router_selected": 5
+    },
+    "priority_refresh_candidate_count": 5,
+    "priority_provider_error_count": 0,
+    "priority_not_refreshed_count": 0,
+    "priority_no_evidence_count": 0,
+    "provider_issue_status": "clean",
+    "operational_issue_count": 0
+  },
+  "cost_and_runtime": {
+    "status": "reported",
+    "cost_policy": "report_only",
+    "total_cost_usd": 0.4204665,
+    "estimated_monthly_cost_usd": 9.2503,
+    "llm_calls": 175,
+    "llm_calls_per_ticker": 7.0,
+    "budget_guard_would_block_count": 5,
+    "budget_guard_blocked_count": 0,
+    "budget_guard_status": "report_ready",
+    "budget_guard_mode": "shadow"
+  },
+  "trend_inputs": {
+    "run_count": 29,
+    "latest_run_date": "2026-06-01"
+  },
+  "warnings": []
+}

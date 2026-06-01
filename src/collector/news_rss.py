@@ -4,6 +4,7 @@ from datetime import date, datetime
 from email.utils import parsedate_to_datetime
 from urllib.parse import quote_plus, urlparse
 
+from src.collector.feed_fetch import parse_feed
 from src.collector.ir_rss import collect_ir_rss_news
 from src.collector.news_search import search_news
 from src.collector.news_title_utils import looks_like_unresolved_placeholder
@@ -168,7 +169,7 @@ def _collect_google_news_provider(item: WatchlistItem, provider: dict[str, str])
 
     try:
         query = _build_google_news_query(item, provider["site_filter"])
-        feed = feedparser.parse(f"https://news.google.com/rss/search?q={quote_plus(query)}")
+        feed = parse_feed(f"https://news.google.com/rss/search?q={quote_plus(query)}")
         entries: list[NewsItem] = []
         for entry in feed.entries[:5]:
             title = str(getattr(entry, "title", "")).strip()

@@ -1,6 +1,6 @@
-# Search evidence is cache-only by default. Switch to `openai` only when
-# OPENAI_API_KEY is available and the API request shape has been verified.
-mode: cache
+# Search evidence refreshes priority tickers with OpenAI Web Search by default.
+# Set SEARCH_EVIDENCE_MODE=cache for an offline/cache-only run.
+mode: openai
 provider: openai
 model_profile: standard
 tool_type: web_search

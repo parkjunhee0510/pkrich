@@ -36,9 +36,11 @@ def collect_options_summary(ticker_symbol: str) -> dict[str, str]:
         total_put_oi = sum(_coerce_float(item.get("openInterest")) or 0.0 for item in puts_records)
         put_call_ratio = total_put_oi / total_call_oi if total_call_oi > 0 else None
         iv_percentile = _estimate_iv_percentile(calls_records, puts_records, call_iv, put_iv)
+        representative_iv = _representative_iv(call_iv, put_iv)
 
         summary = {
             "expiry": str(expiry),
+            "implied_volatility": _format_percent(representative_iv),
             "atm_call_iv": _format_percent(call_iv),
             "atm_put_iv": _format_percent(put_iv),
             "put_call_ratio": _format_ratio(put_call_ratio),
@@ -97,6 +99,18 @@ def _estimate_iv_percentile(
         return None
     less_or_equal = sum(1 for value in valid if value <= current_iv)
     return (less_or_equal / len(valid)) * 100
+
+
+def _representative_iv(call_iv: float | None, put_iv: float | None) -> float | None:
+    """One canonical ATM implied vol from the ATM call/put legs.
+
+    Uses the mean of the two legs when both are present (≈ ATM-straddle IV),
+    otherwise whichever leg is available. Returns None when neither is.
+    """
+    legs = [v for v in (call_iv, put_iv) if v is not None]
+    if not legs:
+        return None
+    return sum(legs) / len(legs)
 
 
 def _coerce_float(value: Any) -> float | None:

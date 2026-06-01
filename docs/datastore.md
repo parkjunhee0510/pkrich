@@ -15,6 +15,7 @@ Provide the single persistence boundary for structured pipeline data.
 The datastore is responsible for:
 * price history queries and upserts
 * signal history and signal statistics
+* signal decision metadata needed by shadow analysis-performance outputs
 * analysis run metadata
 * backend-specific persistence details hidden from callers
 
@@ -29,6 +30,7 @@ The datastore is responsible for:
 
 * preferred for indexed queries and growing history
 * used by runtime features that need efficient lookups
+* preserves the same signal-history metadata columns as the CSV signal tracker
 
 ## Selection
 
@@ -37,6 +39,7 @@ The datastore is responsible for:
 
 ## Rules
 
-* No direct SQLite queries from output, analyzer, or decision code
+* Output, analyzer, and decision code must not issue direct SQLite queries against shared datastore backends
+* Risk Intelligence may use `output/data/risk_intel.sqlite` as an output-local canonical store for its graph/export contract, owned by `src/output/risk_intel_store.py`; this DB must not be used as the general datastore boundary or mirrored to web public data
 * No direct CSV mutation outside datastore helpers
 * Backend choice must not change business semantics

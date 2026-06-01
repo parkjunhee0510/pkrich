@@ -291,6 +291,51 @@ class OutputSchemaTests(unittest.TestCase):
         expected = load_snapshot_fixture(_FIXTURE_DIR / "analysis_quality.shape.json")
         self.assertEqual(normalize_json_shape(payload), expected)
 
+    def test_analysis_performance_json_matches_snapshot_shape(self) -> None:
+        from src.output.analysis_performance import write_analysis_performance_output
+        from src.types import MarketRegime
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            payload = write_analysis_performance_output(
+                output_root=Path(temp_dir) / "output",
+                run_date=date(2026, 5, 1),
+                decisions=[
+                    TickerDecision(
+                        ticker="AAPL",
+                        action="buy",
+                        conviction=68,
+                        factors={"momentum": 1.2},
+                        confidence_meta={"data_quality_score": 0.80},
+                    )
+                ],
+                market_regime=MarketRegime(regime="risk_on"),
+                signal_rows=[
+                    {
+                        "signal_date": "2026-04-30",
+                        "ticker": "AAPL",
+                        "action": "watch",
+                        "conviction": "58",
+                        "raw_conviction": "60",
+                        "regime": "neutral",
+                        "sub_regime": "",
+                        "factors_json": '{"momentum": 0.2}',
+                        "factor_reasoning_json": "{}",
+                        "confidence_meta_json": '{"data_quality_score": 0.55}',
+                        "return_1d": "+1.00%",
+                        "return_5d": "+2.00%",
+                        "return_20d": "N/A",
+                        "evaluated_1d": "True",
+                        "evaluated_5d": "True",
+                        "evaluated_20d": "False",
+                        "barrier_label": "take_profit",
+                    }
+                ],
+            )
+
+        self.assertEqual(payload["schema_version"], SCHEMA_VERSION)
+        expected = load_snapshot_fixture(_FIXTURE_DIR / "analysis_performance.shape.json")
+        self.assertEqual(normalize_json_shape(payload), expected)
+
     def test_analysis_quality_output_syncs_web_public_copy(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

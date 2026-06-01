@@ -11,7 +11,7 @@ interface Props {
  */
 export function Sparkline({ values, width = 160, height = 40, color }: Props) {
   if (values.length < 2) {
-    return <svg width={width} height={height} aria-hidden="true" />
+    return <svg width={width} height={height} aria-hidden="true" focusable="false" />
   }
   const min = Math.min(...values)
   const max = Math.max(...values)
@@ -30,7 +30,7 @@ export function Sparkline({ values, width = 160, height = 40, color }: Props) {
   const stroke = color ?? (last >= first ? '#26a69a' : '#ef5350')
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true" focusable="false">
       <polyline
         points={points}
         fill="none"

@@ -26,6 +26,7 @@ import logging
 from urllib.parse import quote_plus
 
 from src.collector.base import RateLimit
+from src.collector.feed_fetch import parse_feed
 from src.collector.news_base import NewsContext, NewsProvider, NewsResult
 from src.collector.news_title_utils import looks_like_unresolved_placeholder
 from src.types import NewsItem, WatchlistItem
@@ -89,7 +90,7 @@ class GoogleNewsNewsProvider(NewsProvider):
 
         items: list[NewsItem] = []
         for feed_meta in _GOOGLE_NEWS_FEEDS:
-            items.extend(self._collect_single_feed(ctx.watchlist_item, feed_meta, feedparser))
+            items.extend(self._collect_single_feed(ctx.watchlist_item, feed_meta))
         return NewsResult.success(self.name, items=items)
 
     # ------------------------------------------------------------------
@@ -99,12 +100,12 @@ class GoogleNewsNewsProvider(NewsProvider):
         self,
         item: WatchlistItem,
         feed_meta: dict[str, str],
-        feedparser_mod: object,
     ) -> list[NewsItem]:
         query = _build_query(item, feed_meta["site_filter"])
         url = f"https://{_FEED_HOST}/rss/search?q={quote_plus(query)}"
         try:
-            feed = feedparser_mod.parse(url)  # type: ignore[attr-defined]
+            # Bounded timeout + scheme guard (see feed_fetch.parse_feed).
+            feed = parse_feed(url)
         except Exception as err:  # noqa: BLE001 — per-feed failures are per-feed only
             record_pipeline_event(
                 "collector", "warning", "news_provider_failed",

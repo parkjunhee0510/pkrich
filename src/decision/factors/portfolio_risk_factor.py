@@ -15,7 +15,15 @@ class PortfolioRiskFactor(DecisionFactor):
         regime: MarketRegime,
         signal_stats: dict,
     ) -> FactorScore:
-        del regime
+        # risk_on 레짐에서는 집중 패널티 비활성: IC 분석상 risk_on 구간에서
+        # 집중 섹터 종목이 오히려 강세를 보여 패널티 방향이 역상관됨.
+        # 본 패널티는 risk_off 헤지 목적이므로 risk_on 구간에는 적용하지 않는다.
+        if regime is not None and regime.regime == "risk_on":
+            return FactorScore(
+                value=0,
+                confidence=0.6,
+                reasoning="risk_on 레짐: 포트폴리오 집중 패널티 비활성",
+            )
         portfolio_risk = signal_stats.get("_portfolio_risk", {}) if isinstance(signal_stats, dict) else {}
         if not isinstance(portfolio_risk, dict):
             return FactorScore(value=0, confidence=0.2, reasoning="포트폴리오 리스크 데이터가 없어 감점하지 않음")

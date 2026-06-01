@@ -33,6 +33,7 @@ _DEFAULT_FACTORS = {
     "macro_regime": {"min": -6, "max": 8},
     "peer_rank": {"min": -4, "max": 8},
     "portfolio_risk": {"min": -10, "max": 0},
+    "policy_tailwind": {"min": -8, "max": 8},
 }
 _DEFAULT_THRESHOLDS = {"buy": 65, "buy_risk_off": 75, "avoid": 35}
 _DEFAULT_VALID_UNTIL = {"earnings_window_days": 30, "default_days": 7}

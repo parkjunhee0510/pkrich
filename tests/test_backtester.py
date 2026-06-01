@@ -49,7 +49,8 @@ class BacktesterTests(unittest.TestCase):
         self.assertEqual(summary["signals"], 0)
         self.assertEqual(summary["pending_signals"], 2)
         self.assertEqual(summary["first_eval_date"], "2026-05-08")
-        self.assertIn("2026-05-08", summary["message"])
+        self.assertEqual(summary["message"], "Backtest statistics begin after 2026-05-08; pending signals: 2.")
+        self.assertEqual(summary["strategy"], "Evaluate bull/bear signals on a 20-trading-day horizon.")
 
 
 if __name__ == "__main__":

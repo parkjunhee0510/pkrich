@@ -128,7 +128,7 @@ function ICDecayTable({ payload }: { payload?: ICDecayPayload }) {
   if (!payload || payload.status !== 'ok' || payload.factors.length === 0) {
     return (
       <>
-        <h4 style={{ marginTop: 12 }}>IC 감쇠 (1D → 5D → 20D)</h4>
+        <h4 className="u-mt-3">IC 감쇠 (1D → 5D → 20D)</h4>
         <p className="empty">
           평가된 시그널이 부족합니다 (1D={payload?.sample_sizes?.['1d'] ?? 0} /
           5D={payload?.sample_sizes?.['5d'] ?? 0} /
@@ -140,7 +140,7 @@ function ICDecayTable({ payload }: { payload?: ICDecayPayload }) {
 
   return (
     <>
-      <h4 style={{ marginTop: 12 }}>IC 감쇠 (Spearman ρ, 지평선별)</h4>
+      <h4 className="u-mt-3">IC 감쇠 (Spearman ρ, 지평선별)</h4>
       <div className="watchlist-table-shell">
         <table className="watchlist-table">
           <thead>
@@ -173,7 +173,7 @@ function ICDecayTable({ payload }: { payload?: ICDecayPayload }) {
           </tbody>
         </table>
       </div>
-      <p className="section-kicker" style={{ marginTop: 6 }}>
+      <p className="section-kicker u-mt-2">
         건강한 팩터는 |IC_1D| ≥ |IC_5D| ≥ |IC_20D|. flat/inverted는 레짐 변화 또는 누수 의심.
       </p>
     </>
@@ -184,7 +184,7 @@ function RollingICTable({ payload }: { payload?: RollingICPayload }) {
   if (!payload || payload.status !== 'ok' || payload.factors.length === 0) {
     return (
       <>
-        <h4 style={{ marginTop: 16 }}>롤링 IC (90일 윈도우)</h4>
+        <h4 className="u-mt-4">롤링 IC (90일 윈도우)</h4>
         <p className="empty">
           롤링 IC 계산에 필요한 데이터가 부족합니다 (N={payload?.sample_size ?? 0}).
         </p>
@@ -193,7 +193,7 @@ function RollingICTable({ payload }: { payload?: RollingICPayload }) {
   }
   return (
     <>
-      <h4 style={{ marginTop: 16 }}>
+      <h4 className="u-mt-4">
         롤링 IC ({payload.window_days ?? 90}일 / {payload.step_days ?? 15}일 스텝)
       </h4>
       <div className="watchlist-table-shell">
@@ -253,7 +253,7 @@ function RollingSparkline({ series }: { series: RollingICPoint[] }) {
   const last = values[values.length - 1]
   const color = last >= 0 ? '#26a69a' : '#ef5350'
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} preserveAspectRatio="none">
+    <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <line x1={0} x2={w} y1={zeroY} y2={zeroY} stroke="rgba(128,128,128,0.3)" strokeWidth={0.5} />
       <polyline fill="none" stroke={color} strokeWidth={1.5} points={points} />
     </svg>
@@ -264,7 +264,7 @@ function KellyCards({ payload }: { payload?: KellyPayload }) {
   if (!payload || payload.status !== 'ok') {
     return (
       <>
-        <h4 style={{ marginTop: 16 }}>Kelly 베팅 사이즈 (방향별)</h4>
+        <h4 className="u-mt-4">Kelly 베팅 사이즈 (방향별)</h4>
         <p className="empty">방향별 샘플이 부족합니다.</p>
       </>
     )
@@ -272,7 +272,7 @@ function KellyCards({ payload }: { payload?: KellyPayload }) {
   const entries = Object.entries(payload.by_direction)
   return (
     <>
-      <h4 style={{ marginTop: 16 }}>
+      <h4 className="u-mt-4">
         Kelly 베팅 사이즈 (half-Kelly, haircut ×{payload.haircut})
       </h4>
       <div className="signal-summary-grid">
@@ -323,7 +323,7 @@ function KellyCards({ payload }: { payload?: KellyPayload }) {
           )
         })}
       </div>
-      <p className="section-kicker" style={{ marginTop: 6 }}>
+      <p className="section-kicker u-mt-2">
         f* = p - (1 - p) / b. half-Kelly가 실전 베팅 상한. 0이면 신호 에지 없음.
       </p>
     </>
@@ -334,7 +334,7 @@ function TurnoverSummary({ payload }: { payload?: TurnoverPayload }) {
   if (!payload || payload.status !== 'ok' || payload.points.length === 0) {
     return (
       <>
-        <h4 style={{ marginTop: 16 }}>시그널 세트 턴오버</h4>
+        <h4 className="u-mt-4">시그널 세트 턴오버</h4>
         <p className="empty">일자 수가 부족합니다 (N={payload?.sample_size ?? 0}).</p>
       </>
     )
@@ -342,8 +342,8 @@ function TurnoverSummary({ payload }: { payload?: TurnoverPayload }) {
   const recent = payload.points.slice(-20)
   return (
     <>
-      <h4 style={{ marginTop: 16 }}>시그널 세트 턴오버 (Jaccard 변화율)</h4>
-      <div className="signal-summary-grid" style={{ marginBottom: 12 }}>
+      <h4 className="u-mt-4">시그널 세트 턴오버 (Jaccard 변화율)</h4>
+      <div className="signal-summary-grid u-mb-3">
         <div className="signal-summary-card">
           <div className="signal-summary-direction">평균 턴오버</div>
           <div className="signal-summary-count">
