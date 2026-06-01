@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-05-29",
+  "date": "2026-06-01",
   "ticker": "T",
   "payload": {
     "ticker": "T",
@@ -75,35 +75,35 @@
     ],
     "signal_or_takeaway": "중립 경계 — SMA50 아래 약세와 2026-07-22 실적 대기 | 진입 트리거 26.36 상향 돌파 | 목표 25.61/29.79달러 | 손절 22.95달러",
     "data_snapshot": {
-      "Price": "24.80 USD",
-      "Daily Change": "-0.32%",
-      "Market Cap": "172.32B",
-      "Trailing P/E": "8.16",
+      "Price": "24.60 USD",
+      "Daily Change": "-0.81%",
+      "Market Cap": "170.93B",
+      "Trailing P/E": "8.09",
       "EPS": "3.04",
       "52W High": "29.79",
       "52W Low": "22.95",
       "50D SMA": "26.36",
       "200D SMA": "26.48",
-      "Volume": "88.21M",
+      "Volume": "17364110",
       "3M Avg Volume": "39.73M",
-      "Price/Book": "1.58",
+      "Price/Book": "1.57",
       "Dividend Yield": "4.48%",
       "Sector": "Communication Services",
-      "Open": "24.86",
-      "High": "24.87",
-      "Low": "24.56",
-      "Close": "24.80",
+      "Open": "24.75",
+      "High": "24.90",
+      "Low": "24.58",
+      "Close": "24.60",
       "RS vs Sector ETF": "-4.17%"
     },
     "fundamentals": {
-      "market_cap": "172.32B",
-      "trailing_pe": "8.16",
+      "market_cap": "170.93B",
+      "trailing_pe": "8.09",
       "eps": "3.04",
       "forward_eps": "2.55",
       "earnings_growth": "-11.30% YoY",
-      "price_to_book": "1.58",
+      "price_to_book": "1.57",
       "dividend_yield": "4.48%",
-      "volume": "88.21M",
+      "volume": "17364110",
       "avg_volume_3m": "39.73M",
       "52w_high": "29.79",
       "52w_low": "22.95",
@@ -114,7 +114,7 @@
       "analyst_count": "23명",
       "held_by_insiders": "0.09%",
       "held_by_institutions": "69.26%",
-      "implied_volatility": "30.7%"
+      "implied_volatility": "25.9%"
     },
     "earnings_setup": {
       "forward_eps": "2.55 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 3개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "0.54",
-      "atr_percent": "2.19%",
-      "relative_volume": "2.22x",
-      "gap_percent": "-0.08%",
-      "price_vs_sma50": "-5.92%",
-      "price_vs_sma200": "-6.33%",
-      "week52_position": "27%",
+      "atr_14d": "0.52",
+      "atr_percent": "2.11%",
+      "relative_volume": "0.44x",
+      "gap_percent": "-0.20%",
+      "price_vs_sma50": "-6.68%",
+      "price_vs_sma200": "-7.08%",
+      "week52_position": "24%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-4.17%"
+      "rs_vs_sector_etf": "-5.12%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-06-05",
-      "implied_volatility": "30.7%",
-      "atm_call_iv": "29.3%",
-      "atm_put_iv": "32.0%",
-      "put_call_ratio": "1.38x",
-      "iv_percentile_30d": "9th",
+      "implied_volatility": "25.9%",
+      "atm_call_iv": "28.5%",
+      "atm_put_iv": "23.2%",
+      "put_call_ratio": "1.44x",
+      "iv_percentile_30d": "6th",
       "tone": "bullish",
       "unusual_activity": "PUT $40, vol 8, OI 대비 32% ; PUT $40, vol 4, OI 대비 100%",
       "oi_change": "N/A"
@@ -384,8 +384,8 @@
       }
     },
     "period_changes": {
-      "7d": "-1.82%",
-      "30d": "-3.69%"
+      "7d": "-2.61%",
+      "30d": "-5.82%"
     },
     "sec_filing_tags": [
       "실적",
@@ -492,5 +492,6 @@
         }
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-06-01T19:18:27"
 }

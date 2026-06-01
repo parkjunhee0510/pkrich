@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-05-29",
+  "date": "2026-06-01",
   "ticker": "COHR",
   "payload": {
     "ticker": "COHR",
@@ -75,35 +75,35 @@
     ],
     "signal_or_takeaway": "중립 관찰 — [실적] COHERENT CORP., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 332.55–390.39 | 목표 380.62/404.85 | 손절 SMA50(319.98 USD) (R:R 0.5R)",
     "data_snapshot": {
-      "Price": "361.47 USD",
-      "Daily Change": "-4.11%",
-      "Market Cap": "70.72B",
-      "Trailing P/E": "172.13",
+      "Price": "361.91 USD",
+      "Daily Change": "+0.12%",
+      "Market Cap": "70.80B",
+      "Trailing P/E": "172.34",
       "EPS": "2.10",
       "52W High": "413.00",
       "52W Low": "73.85",
       "50D SMA": "319.98",
       "200D SMA": "203.17",
-      "Volume": "6.94M",
+      "Volume": "4999354",
       "3M Avg Volume": "7.36M",
-      "Price/Book": "6.62",
+      "Price/Book": "6.63",
       "Dividend Yield": "N/A",
       "Sector": "Technology",
-      "Open": "375.65",
-      "High": "378.27",
-      "Low": "343.51",
-      "Close": "361.47",
+      "Open": "350.93",
+      "High": "366.00",
+      "Low": "346.63",
+      "Close": "361.91",
       "RS vs Sector ETF": "-8.31%"
     },
     "fundamentals": {
-      "market_cap": "70.72B",
-      "trailing_pe": "172.13",
+      "market_cap": "70.80B",
+      "trailing_pe": "172.34",
       "eps": "2.10",
       "forward_eps": "8.10",
       "earnings_growth": "+11.18% YoY",
-      "price_to_book": "6.62",
+      "price_to_book": "6.63",
       "dividend_yield": "N/A",
-      "volume": "6.94M",
+      "volume": "4999354",
       "avg_volume_3m": "7.36M",
       "52w_high": "413.00",
       "52w_low": "73.85",
@@ -114,7 +114,7 @@
       "analyst_count": "21명",
       "held_by_insiders": "4.53%",
       "held_by_institutions": "89.36%",
-      "implied_volatility": "100.8%"
+      "implied_volatility": "97.0%"
     },
     "earnings_setup": {
       "forward_eps": "8.10 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "28.92",
-      "atr_percent": "8.00%",
-      "relative_volume": "0.94x",
-      "gap_percent": "-0.34%",
-      "price_vs_sma50": "+12.97%",
-      "price_vs_sma200": "+77.91%",
+      "atr_14d": "26.76",
+      "atr_percent": "7.39%",
+      "relative_volume": "0.68x",
+      "gap_percent": "-2.92%",
+      "price_vs_sma50": "+13.11%",
+      "price_vs_sma200": "+78.13%",
       "week52_position": "85%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-8.31%"
+      "rs_vs_sector_etf": "-11.15%"
     },
     "quarterly_financials": [
       {
@@ -216,11 +216,11 @@
     },
     "options_summary": {
       "expiry": "2026-06-05",
-      "implied_volatility": "100.8%",
-      "atm_call_iv": "104.8%",
-      "atm_put_iv": "96.7%",
-      "put_call_ratio": "1.89x",
-      "iv_percentile_30d": "25th",
+      "implied_volatility": "97.0%",
+      "atm_call_iv": "86.9%",
+      "atm_put_iv": "107.1%",
+      "put_call_ratio": "2.08x",
+      "iv_percentile_30d": "24th",
       "tone": "neutral",
       "unusual_activity": "PUT $390, vol 150, OI 대비 100% ; PUT $430, vol 12, OI 대비 109% ; PUT $440, vol 9, OI 대비 69%",
       "oi_change": "N/A"
@@ -375,8 +375,8 @@
       }
     },
     "period_changes": {
-      "7d": "-4.26%",
-      "30d": "+18.54%"
+      "7d": "-4.15%",
+      "30d": "+9.84%"
     },
     "sec_filing_tags": [
       "실적",
@@ -483,5 +483,6 @@
         }
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-06-01T19:18:27"
 }

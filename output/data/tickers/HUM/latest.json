@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-05-29",
+  "date": "2026-06-01",
   "ticker": "HUM",
   "payload": {
     "ticker": "HUM",
@@ -75,37 +75,37 @@
     ],
     "signal_or_takeaway": "매도 경계 — news_tone bearish와 RSI(14) 73.2 과열 부담 | 진입 트리거 231.61 하향 이탈 | 목표 244.61/163.11달러 | 손절 315.66달러",
     "data_snapshot": {
-      "Price": "305.42 USD",
-      "Daily Change": "-1.06%",
-      "Market Cap": "36.67B",
-      "Trailing P/E": "32.56",
+      "Price": "322.79 USD",
+      "Daily Change": "+5.69%",
+      "Market Cap": "38.75B",
+      "Trailing P/E": "34.41",
       "EPS": "9.38",
-      "52W High": "315.66",
+      "52W High": "333.31",
       "52W Low": "163.11",
       "50D SMA": "231.61",
       "200D SMA": "244.61",
-      "Volume": "872,035",
+      "Volume": "1344136",
       "3M Avg Volume": "1.73M",
-      "Price/Book": "1.97",
+      "Price/Book": "2.09",
       "Dividend Yield": "1.16%",
       "Sector": "Healthcare",
-      "Open": "309.13",
-      "High": "309.24",
-      "Low": "303.01",
-      "Close": "305.42",
+      "Open": "318.55",
+      "High": "333.31",
+      "Low": "318.00",
+      "Close": "322.79",
       "RS vs Sector ETF": "+27.76%"
     },
     "fundamentals": {
-      "market_cap": "36.67B",
-      "trailing_pe": "32.56",
+      "market_cap": "38.75B",
+      "trailing_pe": "34.41",
       "eps": "9.38",
       "forward_eps": "15.58",
       "earnings_growth": "-4.60% YoY",
-      "price_to_book": "1.97",
+      "price_to_book": "2.09",
       "dividend_yield": "1.16%",
-      "volume": "872,035",
+      "volume": "1344136",
       "avg_volume_3m": "1.73M",
-      "52w_high": "315.66",
+      "52w_high": "333.31",
       "52w_low": "163.11",
       "short_float_pct": "5.67%",
       "short_ratio": "2.99일",
@@ -114,7 +114,7 @@
       "analyst_count": "24명",
       "held_by_insiders": "0.21%",
       "held_by_institutions": "100.07%",
-      "implied_volatility": "58.6%"
+      "implied_volatility": "52.8%"
     },
     "earnings_setup": {
       "forward_eps": "15.58 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "11.11",
-      "atr_percent": "3.64%",
-      "relative_volume": "0.50x",
-      "gap_percent": "+0.14%",
-      "price_vs_sma50": "+31.87%",
-      "price_vs_sma200": "+24.86%",
-      "week52_position": "93%",
+      "atr_14d": "12.07",
+      "atr_percent": "3.74%",
+      "relative_volume": "0.78x",
+      "gap_percent": "+4.30%",
+      "price_vs_sma50": "+39.36%",
+      "price_vs_sma200": "+31.96%",
+      "week52_position": "94%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+27.76%"
+      "rs_vs_sector_etf": "+36.35%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-06-05",
-      "implied_volatility": "58.6%",
-      "atm_call_iv": "65.2%",
-      "atm_put_iv": "52.0%",
-      "put_call_ratio": "5.34x",
-      "iv_percentile_30d": "32th",
+      "implied_volatility": "52.8%",
+      "atm_call_iv": "51.5%",
+      "atm_put_iv": "54.1%",
+      "put_call_ratio": "5.13x",
+      "iv_percentile_30d": "16th",
       "tone": "neutral",
       "unusual_activity": "PUT $380, vol 309, OI 대비 103% ; PUT $360, vol 46, OI 대비 34% ; PUT $440, vol 4, OI 대비 200%",
       "oi_change": "N/A"
@@ -383,8 +383,8 @@
       }
     },
     "period_changes": {
-      "7d": "-0.82%",
-      "30d": "+25.63%"
+      "7d": "+4.82%",
+      "30d": "+38.16%"
     },
     "sec_filing_tags": [
       "실적",
@@ -491,5 +491,6 @@
         }
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-06-01T19:18:27"
 }

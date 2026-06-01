@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-05-29",
+  "date": "2026-06-01",
   "ticker": "RKLB",
   "payload": {
     "ticker": "RKLB",
@@ -75,35 +75,35 @@
     ],
     "signal_or_takeaway": "매수 관찰 — 현재가 143.48달러와 52주 고점 151.00달러 근접, RSI 67.8 및 MACD 상승 | 진입 트리거 151.00 상향 돌파 | 목표 151.00/162.03달러 | 손절 91.25달러",
     "data_snapshot": {
-      "Price": "143.48 USD",
-      "Daily Change": "-3.07%",
-      "Market Cap": "83.06B",
+      "Price": "124.36 USD",
+      "Daily Change": "-13.33%",
+      "Market Cap": "71.99B",
       "Trailing P/E": "N/A",
       "EPS": "-0.32",
       "52W High": "151.00",
       "52W Low": "25.24",
       "50D SMA": "91.25",
       "200D SMA": "69.12",
-      "Volume": "34.88M",
+      "Volume": "30454859",
       "3M Avg Volume": "25.26M",
-      "Price/Book": "36.48",
+      "Price/Book": "31.62",
       "Dividend Yield": "N/A",
       "Sector": "Industrials",
-      "Open": "139.94",
-      "High": "144.00",
-      "Low": "134.05",
-      "Close": "143.48",
+      "Open": "132.51",
+      "High": "135.63",
+      "Low": "121.75",
+      "Close": "124.36",
       "RS vs Sector ETF": "+81.96%"
     },
     "fundamentals": {
-      "market_cap": "83.06B",
+      "market_cap": "71.99B",
       "trailing_pe": "N/A",
       "eps": "-0.32",
       "forward_eps": "-0.01",
       "earnings_growth": "+41.67% YoY",
-      "price_to_book": "36.48",
+      "price_to_book": "31.62",
       "dividend_yield": "N/A",
-      "volume": "34.88M",
+      "volume": "30454859",
       "avg_volume_3m": "25.26M",
       "52w_high": "151.00",
       "52w_low": "25.24",
@@ -114,7 +114,7 @@
       "analyst_count": "16명",
       "held_by_insiders": "0.85%",
       "held_by_institutions": "58.87%",
-      "implied_volatility": "118.7%"
+      "implied_volatility": "113.9%"
     },
     "earnings_setup": {
       "forward_eps": "-0.01 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 3개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.2%"
     },
     "price_action": {
-      "atr_14d": "12.37",
-      "atr_percent": "8.62%",
-      "relative_volume": "1.38x",
-      "gap_percent": "-5.69%",
-      "price_vs_sma50": "+57.24%",
-      "price_vs_sma200": "+107.57%",
-      "week52_position": "94%",
+      "atr_14d": "12.50",
+      "atr_percent": "10.05%",
+      "relative_volume": "1.21x",
+      "gap_percent": "-7.65%",
+      "price_vs_sma50": "+36.28%",
+      "price_vs_sma200": "+79.91%",
+      "week52_position": "79%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+81.96%"
+      "rs_vs_sector_etf": "+57.98%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-06-05",
-      "implied_volatility": "118.7%",
-      "atm_call_iv": "118.7%",
-      "atm_put_iv": "118.8%",
-      "put_call_ratio": "1.54x",
-      "iv_percentile_30d": "11th",
+      "implied_volatility": "113.9%",
+      "atm_call_iv": "131.1%",
+      "atm_put_iv": "96.7%",
+      "put_call_ratio": "1.25x",
+      "iv_percentile_30d": "27th",
       "tone": "neutral",
       "unusual_activity": "PUT $210, vol 3, OI 대비 100% ; PUT $28, vol 40, OI 대비 68% ; PUT $165, vol 1, OI 대비 100%",
       "oi_change": "N/A"
@@ -381,8 +381,8 @@
       }
     },
     "period_changes": {
-      "7d": "+5.69%",
-      "30d": "+86.29%"
+      "7d": "-8.40%",
+      "30d": "+57.80%"
     },
     "sec_filing_tags": [
       "기타 공시"
@@ -477,5 +477,6 @@
         }
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-06-01T19:18:27"
 }
