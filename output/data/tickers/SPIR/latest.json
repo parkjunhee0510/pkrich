@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-06-01",
+  "date": "2026-06-02",
   "ticker": "SPIR",
   "payload": {
     "ticker": "SPIR",
@@ -75,36 +75,36 @@
     ],
     "signal_or_takeaway": "중립 관찰 — 30일 수익률 +25.63%와 높은 변동성 구간 | 진입 트리거 22.84 지지 확인 | 목표 25.93/26.25달러 | 손절 17.75달러",
     "data_snapshot": {
-      "Price": "20.56 USD",
-      "Daily Change": "-9.98%",
-      "Market Cap": "795.91M",
-      "Trailing P/E": "12.93",
+      "Price": "21.64 USD",
+      "Daily Change": "+5.25%",
+      "Market Cap": "837.72M",
+      "Trailing P/E": "13.61",
       "EPS": "1.59",
       "52W High": "25.93",
       "52W Low": "6.60",
-      "50D SMA": "17.75",
-      "200D SMA": "11.92",
-      "Volume": "1509440",
-      "3M Avg Volume": "1.69M",
-      "Price/Book": "6.03",
+      "50D SMA": "17.92",
+      "200D SMA": "11.97",
+      "Volume": "762289",
+      "3M Avg Volume": "1.71M",
+      "Price/Book": "6.34",
       "Dividend Yield": "N/A",
       "Sector": "Technology",
-      "Open": "22.04",
-      "High": "22.45",
-      "Low": "20.06",
-      "Close": "20.56",
+      "Open": "20.85",
+      "High": "21.97",
+      "Low": "20.45",
+      "Close": "21.64",
       "RS vs Sector ETF": "+7.62%"
     },
     "fundamentals": {
-      "market_cap": "795.91M",
-      "trailing_pe": "12.93",
+      "market_cap": "837.72M",
+      "trailing_pe": "13.61",
       "eps": "1.59",
       "forward_eps": "-0.25",
       "earnings_growth": "+11.36% YoY",
-      "price_to_book": "6.03",
+      "price_to_book": "6.34",
       "dividend_yield": "N/A",
-      "volume": "1509440",
-      "avg_volume_3m": "1.69M",
+      "volume": "762289",
+      "avg_volume_3m": "1.71M",
       "52w_high": "25.93",
       "52w_low": "6.60",
       "short_float_pct": "12.33%",
@@ -114,7 +114,7 @@
       "analyst_count": "4명",
       "held_by_insiders": "5.90%",
       "held_by_institutions": "39.70%",
-      "implied_volatility": "116.1%"
+      "implied_volatility": "115.8%"
     },
     "earnings_setup": {
       "forward_eps": "-0.25 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 2개 분기 연속 상회 · 최근 3개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "2.36",
-      "atr_percent": "11.47%",
-      "relative_volume": "0.89x",
-      "gap_percent": "-3.50%",
-      "price_vs_sma50": "+15.81%",
-      "price_vs_sma200": "+72.47%",
-      "week52_position": "72%",
+      "atr_14d": "2.34",
+      "atr_percent": "10.83%",
+      "relative_volume": "0.45x",
+      "gap_percent": "+1.41%",
+      "price_vs_sma50": "+20.76%",
+      "price_vs_sma200": "+80.81%",
+      "week52_position": "78%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-7.85%"
+      "rs_vs_sector_etf": "-2.64%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-06-18",
-      "implied_volatility": "116.1%",
-      "atm_call_iv": "120.6%",
-      "atm_put_iv": "111.5%",
-      "put_call_ratio": "0.57x",
-      "iv_percentile_30d": "16th",
+      "implied_volatility": "115.8%",
+      "atm_call_iv": "114.7%",
+      "atm_put_iv": "116.9%",
+      "put_call_ratio": "0.68x",
+      "iv_percentile_30d": "12th",
       "tone": "neutral",
       "unusual_activity": "PUT $30, vol 50, OI 대비 100% ; CALL $29, vol 24, OI 대비 100% ; CALL $34, vol 26, OI 대비 100%",
       "oi_change": "N/A"
@@ -385,8 +385,8 @@
       }
     },
     "period_changes": {
-      "7d": "-2.84%",
-      "30d": "+13.09%"
+      "7d": "-8.88%",
+      "30d": "+19.03%"
     },
     "sec_filing_tags": [
       "실적",
@@ -494,5 +494,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-06-01T22:31:56"
+  "intraday_refreshed_at": "2026-06-02T18:02:11"
 }
