@@ -86,7 +86,7 @@ vi.mock('../components/WatchlistTable', () => ({
 }))
 
 describe('Dashboard news desk integration', () => {
-  it('renders the news desk before the priority queue while preserving the watchlist', () => {
+  it('renders the news desk before the action change feed while preserving the watchlist', () => {
     window.matchMedia = vi.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
@@ -112,11 +112,15 @@ describe('Dashboard news desk integration', () => {
     expect(screen.getByTestId('watchlist-table')).toBeInTheDocument()
 
     const newsDesk = document.querySelector('.news-desk')
+    const actionChangeFeed = document.querySelector('.action-change-feed-section')
+    const decisionStrip = document.querySelector('.today-decision-strip-section')
     const priorityQueue = document.querySelector('.today-priority-queue-section')
 
     expect(newsDesk).not.toBeNull()
-    expect(priorityQueue).not.toBeNull()
-    expect(newsDesk?.compareDocumentPosition(priorityQueue as Element)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(actionChangeFeed).not.toBeNull()
+    expect(decisionStrip).toBeNull()
+    expect(priorityQueue).toBeNull()
+    expect(newsDesk?.compareDocumentPosition(actionChangeFeed as Element)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
   })
 })
 

@@ -161,7 +161,7 @@ five rows with:
 Best and worst examples are ranked by completed 20-day recommendation outcome
 when available. If 20-day data is missing, 5-day data may be used as a fallback
 for examples only.
-
+b 
 ## Computation Semantics
 
 Each `signal_tracker.csv` row is evaluated independently.
@@ -198,7 +198,7 @@ existing helpers in `src/utils/performance_analytics.py`.
 The helper should be pure and deterministic:
 
 - input: loaded signal tracker rows
-- output: a JSON-serializable dictionary
+- output: a JSON-serializable dictionary-
 - no file IO
 - no network IO
 - no LLM calls

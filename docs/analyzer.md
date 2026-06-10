@@ -33,6 +33,7 @@ Core pieces:
 ### Payload Flow
 
 * Raw payloads are built from collected inputs
+* FMP-style `fundamental_metrics` are compacted before LLM payload construction; prompts receive only core scalar metrics such as industry, ROE/ROIC, margin trend, FCF yield, debt, dividend durability, and beta
 * Fallback payloads guarantee schema-safe defaults
 * Intermediate module results merge by ticker
 * Portfolio-level module results are accumulated separately

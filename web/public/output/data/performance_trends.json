@@ -1,38 +1,8 @@
 {
   "schema_version": 1,
-  "as_of": "2026-06-01",
+  "as_of": "2026-06-08",
   "monthly_budget_usd": 5.0,
   "runs": [
-    {
-      "run_date": "2026-04-08",
-      "success": true,
-      "total_cost_usd": 0.0,
-      "llm_calls": 0,
-      "hallucination_ratio": 0.0,
-      "validation_failure_count": 0,
-      "deep_selected_count": 0,
-      "budget_guard_would_block_count": 0
-    },
-    {
-      "run_date": "2026-04-09",
-      "success": true,
-      "total_cost_usd": 0.0,
-      "llm_calls": 0,
-      "hallucination_ratio": 0.0,
-      "validation_failure_count": 0,
-      "deep_selected_count": 0,
-      "budget_guard_would_block_count": 0
-    },
-    {
-      "run_date": "2026-04-10",
-      "success": true,
-      "total_cost_usd": 0.0,
-      "llm_calls": 0,
-      "hallucination_ratio": 0.0,
-      "validation_failure_count": 0,
-      "deep_selected_count": 0,
-      "budget_guard_would_block_count": 0
-    },
     {
       "run_date": "2026-04-13",
       "success": true,
@@ -292,6 +262,46 @@
       "validation_failure_count": 9,
       "deep_selected_count": 5,
       "budget_guard_would_block_count": 5
+    },
+    {
+      "run_date": "2026-06-02",
+      "success": true,
+      "total_cost_usd": 0.40624085,
+      "llm_calls": 181,
+      "hallucination_ratio": 0.0448,
+      "validation_failure_count": 9,
+      "deep_selected_count": 5,
+      "budget_guard_would_block_count": 4
+    },
+    {
+      "run_date": "2026-06-04",
+      "success": true,
+      "total_cost_usd": 0.4795776,
+      "llm_calls": 195,
+      "hallucination_ratio": 0.0264,
+      "validation_failure_count": 11,
+      "deep_selected_count": 5,
+      "budget_guard_would_block_count": 11
+    },
+    {
+      "run_date": "2026-06-05",
+      "success": true,
+      "total_cost_usd": 0.47749645,
+      "llm_calls": 201,
+      "hallucination_ratio": 0.1003,
+      "validation_failure_count": 14,
+      "deep_selected_count": 5,
+      "budget_guard_would_block_count": 10
+    },
+    {
+      "run_date": "2026-06-08",
+      "success": true,
+      "total_cost_usd": 0.4760829,
+      "llm_calls": 189,
+      "hallucination_ratio": 0.0101,
+      "validation_failure_count": 8,
+      "deep_selected_count": 5,
+      "budget_guard_would_block_count": 10
     }
   ]
 }

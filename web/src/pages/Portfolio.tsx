@@ -297,7 +297,7 @@ export function Portfolio() {
       )}
 
       <div className="dashboard-header">
-        <h2>포트폴리오 · {latestDay.date}</h2>
+        <h1>포트폴리오 · {latestDay.date}</h1>
         <div className="portfolio-mode-row">
           <button
             type="button"

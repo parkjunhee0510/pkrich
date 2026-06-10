@@ -97,7 +97,7 @@
 ### 4.1 Dashboard `/` — 워치리스트
 일일 종목 스캔과 우선순위 추출의 메인 허브.
 - **핵심 위젯**: `WatchlistTable`, `TraderDashboardPanels` (TodaySetupBoard · EarningsBoard · SignalPerformanceBoard · CatalystFeed), `MarketRegimeBanner`, `MacroContextBar`, `MarketOverview`
-- **Today Priority Queue**: 첫 화면 근처에 일일 점검 큐를 표시한다. 리스크, 기회, 근거 상태, 공식 판단 변화 맥락을 읽기전용으로 합쳐 오늘 먼저 열어볼 종목을 제안하며, 큐 점수는 화면용 우선순위일 뿐 공식 `buy/watch/avoid` 판단을 바꾸지 않는다.
+- **우선순위 맥락**: 메인 화면은 독립 `TodayPriorityQueue`나 `TodayDecisionStrip` 섹션을 표시하지 않는다. 관련 우선순위 정보는 뉴스 데스크, `오늘 판단 변화` 카드의 quality/변화폭/섹터 메타, 종목 상세의 `Ticker Research Brief`에서 보조 맥락으로만 사용하며 공식 `buy/watch/avoid` 판단을 바꾸지 않는다.
 - **인터랙션**: 섹터 필터, 계좌 규모 선택(10K–100K), 정렬 모드(점수/실적/촉매), 검색창 (`/` 단축키), 워치리스트 DnD 정렬
 
 ### 4.2 TickerDetail `/ticker/:ticker` — 종목 상세
@@ -283,3 +283,19 @@ web/src/
 - 접근성 감사(대비, 포커스 링, 스크린리더 라벨)
 - 대시보드 위젯 재배치(사용자 커스터마이즈)
 - 모바일 테이블의 카드 뷰 대체
+
+## Local Options Live Panel
+
+- The ticker detail chart tab may include `OptionsLivePanel` below the main price chart.
+- The panel renders delayed Polygon/Massive Options Starter second aggregates for one explicit option contract, with a visible `DELAYED 15m` recency badge.
+- Contract lookup and WebSocket streaming go through the local API so provider credentials remain server-side.
+- Empty, missing-key, provider-access, auth, invalid-contract, and disconnected states must be visible in the panel without blocking the rest of the ticker detail page.
+- This panel is presentation-only. It must not rewrite static JSON, recompute official decisions, mutate portfolio state, or imply live trading execution.
+
+## Ticker Detail Research Desk
+
+- The ticker detail page starts with a shallow research desk grouping before the tabbed detail sections.
+- The first row pairs the official `DecisionCard` with `TickerResearchBrief` so the current action and today's review reason are read together.
+- `SearchEvidencePanel` remains a top-level read-only evidence panel directly below that row.
+- `TraderDecisionBoard` receives the current decision, previous-day decision, upcoming events, and current price from existing frontend data. This improves display context only and does not recompute official decisions.
+- The chart tab keeps the existing price chart and delayed options live panel behavior.

@@ -120,23 +120,26 @@ vi.mock('../utils/trader', () => ({
   getNextEarningsEvent: vi.fn(() => undefined),
 }))
 
-describe('Dashboard today decision strip', () => {
-  it('renders the strip above the action change feed', () => {
+describe('Dashboard action change consolidation', () => {
+  it('removes the today decision strip and adds its compact metrics to action change cards', () => {
     render(
       <MemoryRouter>
         <Dashboard />
       </MemoryRouter>,
     )
 
-    const stripHeading = screen.getByRole('heading', { name: '오늘 먼저 볼 판단' })
     const feedHeading = screen.getByRole('heading', { name: '오늘 판단 변화' })
+    const feed = feedHeading.closest('section')
+    expect(feed).not.toBeNull()
+    const feedQueries = within(feed!)
 
-    expect(screen.getByText('CAT WATCH capped')).toBeInTheDocument()
-    expect(screen.getByText('low quality')).toBeInTheDocument()
-    expect(stripHeading.compareDocumentPosition(feedHeading)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(screen.queryByRole('heading', { name: '오늘 먼저 볼 판단' })).not.toBeInTheDocument()
+    expect(feedQueries.getByText('quality 0.90')).toBeInTheDocument()
+    expect(feedQueries.getByText('+20p')).toBeInTheDocument()
+    expect(feedQueries.getByText('Technology')).toBeInTheDocument()
   })
 
-  it('keeps strip entries visible when watchlist filters hide all rows', () => {
+  it('keeps action change entries visible when watchlist filters hide all rows', () => {
     render(
       <MemoryRouter>
         <Dashboard />
@@ -147,12 +150,13 @@ describe('Dashboard today decision strip', () => {
       target: { value: 'NO_MATCH' },
     })
 
-    const strip = document.querySelector<HTMLElement>('.today-decision-strip-section')
-    expect(strip).not.toBeNull()
-    const stripQueries = within(strip!)
+    const feed = document.querySelector<HTMLElement>('.action-change-feed-section')
+    expect(feed).not.toBeNull()
+    const feedQueries = within(feed!)
 
-    expect(stripQueries.getByText('CAT WATCH capped')).toBeInTheDocument()
-    expect(stripQueries.getByText('ALAB WATCH -> BUY')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: '오늘 먼저 볼 판단' })).not.toBeInTheDocument()
+    expect(feedQueries.getByText('BUY -> WATCH')).toBeInTheDocument()
+    expect(feedQueries.getByText('WATCH -> BUY')).toBeInTheDocument()
     expect(screen.getByText('현재 보기: 0 / 2')).toBeInTheDocument()
   })
 })

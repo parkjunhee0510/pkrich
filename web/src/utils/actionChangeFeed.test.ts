@@ -23,6 +23,7 @@ function makeTicker({
   summary = `${ticker} summary`,
   searchEvidenceScore,
   searchWouldCapAction = false,
+  qualityScore,
 }: {
   ticker: string
   name?: string
@@ -35,6 +36,7 @@ function makeTicker({
   summary?: string
   searchEvidenceScore?: number
   searchWouldCapAction?: boolean
+  qualityScore?: number
 }): TickerAnalysisData {
   return {
     ticker,
@@ -90,9 +92,10 @@ function makeTicker({
           valid_until: '2026-05-10',
           factors: {},
           confidence_meta:
-            searchEvidenceScore === undefined && !searchWouldCapAction
+            searchEvidenceScore === undefined && !searchWouldCapAction && qualityScore === undefined
               ? undefined
               : {
+                  data_quality_score: qualityScore,
                   search_evidence_score: searchEvidenceScore,
                   search_quality_gate: {
                     would_cap_action: searchWouldCapAction,
@@ -163,6 +166,32 @@ describe('buildActionChangeFeed', () => {
       currentAction: 'watch',
       convictionDelta: -9,
       primaryLabel: 'BUY -> WATCH',
+    })
+  })
+
+  it('adds compact quality, conviction delta, and sector context to change entries', () => {
+    const previous = makeDay('2026-04-29', [
+      makeTicker({ ticker: 'XOM', sector: 'Energy', action: 'watch', conviction: 65 }),
+    ])
+    const current = makeDay('2026-05-01', [
+      makeTicker({
+        ticker: 'XOM',
+        sector: 'Energy',
+        action: 'buy',
+        conviction: 70,
+        qualityScore: 0.97,
+      }),
+    ])
+
+    const feed = buildActionChangeFeed(current, previous)
+
+    expect(feed.entries[0]).toMatchObject({
+      ticker: 'XOM',
+      sector: 'Energy',
+      convictionDelta: 5,
+      metricLabel: '+5p',
+      qualityDetail: 'quality 0.97',
+      qualityClassName: 'today-decision-quality-high',
     })
   })
 

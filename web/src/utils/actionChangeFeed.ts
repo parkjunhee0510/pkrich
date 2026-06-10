@@ -1,4 +1,5 @@
 import type { DailyEntry, TickerAnalysisData, TickerDecisionData } from '../types'
+import { classifyDecisionQuality } from './decisionQuality'
 import { buildSearchEvidenceBadge, type SearchEvidenceBadgeData } from './searchEvidenceBadge'
 
 export type ActionChangeType = 'action_change' | 'conviction_change' | 'new_ticker' | 'risk_added'
@@ -20,6 +21,9 @@ export interface ActionChangeFeedEntry {
   addedRisks: string[]
   primaryLabel: string
   secondaryLabel: string
+  qualityDetail?: string
+  qualityClassName?: string
+  metricLabel?: string | null
   summary: string
   evidenceBadge?: SearchEvidenceBadgeData
 }
@@ -166,6 +170,7 @@ function createEntry(
   const previousConviction = previousTicker ? numericConviction(previousTicker) : null
   const currentConviction = numericConviction(currentTicker)
   const ticker = normalizeTicker(currentTicker.ticker)
+  const quality = classifyDecisionQuality(currentTicker)
 
   return {
     id: `${type}-${ticker}`,
@@ -182,6 +187,9 @@ function createEntry(
     addedRisks,
     primaryLabel: primaryLabelFor(type, previousAction, currentAction, convictionDelta, addedRisks),
     secondaryLabel: secondaryLabelFor(previousConviction, currentConviction, convictionDelta),
+    qualityDetail: quality.score === null ? undefined : quality.detail,
+    qualityClassName: quality.className,
+    metricLabel: metricLabelFor(convictionDelta, addedRisks),
     summary: summaryFor(currentTicker, addedRisks),
     evidenceBadge: buildSearchEvidenceBadge(currentTicker),
   }
@@ -248,6 +256,18 @@ function secondaryLabelFor(
   }
 
   return 'Conviction N/A'
+}
+
+function metricLabelFor(convictionDelta: number | null, addedRisks: string[]): string | null {
+  if (convictionDelta !== null) {
+    return formatDelta(convictionDelta)
+  }
+
+  if (addedRisks.length > 0) {
+    return `risk x${addedRisks.length}`
+  }
+
+  return null
 }
 
 function toneForEntry(

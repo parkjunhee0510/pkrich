@@ -4,9 +4,10 @@ import json
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket
 from pydantic import BaseModel, Field
 
+from src.api import options_live
 from src.chat.engine import answer_question
 from src.utils.datastore import get_datastore
 
@@ -76,6 +77,22 @@ def backtest() -> dict[str, Any]:
 @app.get("/api/monthly")
 def monthly() -> dict[str, Any]:
     return _load_json(OUTPUT_ROOT / "data" / "monthly_summary.json", default={"status": "no_data"})
+
+
+@app.get("/api/options/contracts")
+def options_contracts(ticker: str, limit: int = 12, underlying_price: float | None = None) -> dict[str, Any]:
+    bounded_limit = max(1, min(int(limit or 12), 50))
+    return options_live.build_contract_lookup_payload(ticker, limit=bounded_limit, underlying_price=underlying_price)
+
+
+@app.websocket("/api/options/live")
+async def options_live_ws(websocket: WebSocket, contract: str, timespan: str = "second") -> None:
+    await websocket.accept()
+    if timespan != "second":
+        await websocket.send_json(options_live.status_payload("invalid_contract", "Only second aggregates are supported"))
+        await websocket.close()
+        return
+    await options_live.run_options_relay(contract, websocket.send_json)
 
 
 @app.get("/api/analytics/quality")

@@ -55,6 +55,9 @@ describe('Dashboard real data rendering', () => {
       expect(screen.getByRole('heading', { name: /부자 되고 싶어요/ })).toBeInTheDocument()
     })
 
+    // The page title must be the document-level h1 for a11y/SEO landmark structure.
+    expect(screen.getByRole('heading', { level: 1, name: /부자 되고 싶어요/ })).toBeInTheDocument()
+
     expect(screen.getByRole('region', { name: '오늘의 뉴스 데스크' })).toBeInTheDocument()
   })
 })

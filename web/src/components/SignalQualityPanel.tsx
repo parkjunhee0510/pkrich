@@ -165,7 +165,7 @@ function ICDecayTable({ payload }: { payload?: ICDecayPayload }) {
                   {row.monotonic_decay ? (
                     <span className="status">OK</span>
                   ) : (
-                    <span className="status" style={{ background: '#c98a2e' }}>flat/inverted</span>
+                    <span className="status" style={{ background: 'var(--color-caution)' }}>flat/inverted</span>
                   )}
                 </td>
               </tr>
@@ -217,7 +217,7 @@ function RollingICTable({ payload }: { payload?: RollingICPayload }) {
                 <td>{row.series.length}</td>
                 <td>
                   {row.fatigue ? (
-                    <span className="status" style={{ background: '#d98a7b' }}>fatigue</span>
+                    <span className="status" style={{ background: 'var(--color-negative)' }}>fatigue</span>
                   ) : (
                     <span className="status">ok</span>
                   )}

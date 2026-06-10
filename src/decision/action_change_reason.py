@@ -10,7 +10,7 @@ from typing import Any
 from src.types import MarketRegime, TickerDecision
 
 BUY_THRESHOLD = 65
-AVOID_THRESHOLD = 35
+AVOID_THRESHOLD = 56
 DATA_QUALITY_MOVE_THRESHOLD = 0.10
 _NUMBER_PATTERN = re.compile(r"[-+]?\d[\d,]*\.?\d*")
 

@@ -27,14 +27,14 @@ export function Sparkline({ values, width = 160, height = 40, color }: Props) {
 
   const first = values[0]
   const last = values[values.length - 1]
-  const stroke = color ?? (last >= first ? '#26a69a' : '#ef5350')
+  const stroke = color ?? (last >= first ? 'var(--color-positive)' : 'var(--color-negative)')
 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true" focusable="false">
       <polyline
         points={points}
         fill="none"
-        stroke={stroke}
+        style={{ stroke }}
         strokeWidth={1.5}
         strokeLinejoin="round"
         strokeLinecap="round"

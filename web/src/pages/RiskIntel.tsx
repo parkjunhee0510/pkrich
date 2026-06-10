@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { ErrorState } from '../components/ErrorState'
 import { RiskIntelPanel } from '../components/RiskIntelPanel'
 import { DashboardSkeleton } from '../components/Skeleton'
@@ -5,6 +6,10 @@ import { useRiskIntelData } from '../hooks/useRiskIntelData'
 
 export function RiskIntel() {
   const { summary, graph, loading, error, graphError } = useRiskIntelData()
+
+  useEffect(() => {
+    document.title = '리스크 인텔리전스 · Stock Research'
+  }, [])
 
   if (loading) return <DashboardSkeleton />
 
@@ -16,7 +21,7 @@ export function RiskIntel() {
           <header className="page-header">
             <div className="page-header__eyebrow">RISK INTELLIGENCE</div>
             <div className="page-header__row">
-              <h2 className="page-header__headline">리스크 인텔리전스</h2>
+              <h1 className="page-header__headline">리스크 인텔리전스</h1>
             </div>
             <p className="page-header__meta">
               아직 네트워크 데이터가 없습니다. 다음 일일 배치가 완료되면 정책·안보·사회 이슈의 전파 경로가 표시됩니다.

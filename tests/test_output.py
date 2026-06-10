@@ -12,7 +12,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from src.api.main import _load_dashboard_payload
-from src.output.json_export import _serialize_analysis, write_json_outputs
+from src.output.json_export import _serialize_analysis, _write_price_history_exports, write_json_outputs
 from src.output.markdown import append_price_history, render_daily_markdown, render_ticker_markdown
 from src.types import NewsItem, PortfolioPosition, PortfolioSummary, TickerAnalysis, TickerDecision
 
@@ -899,6 +899,48 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(json_rows[1]['date'], '2026-04-13')
             self.assertEqual(csv_rows[0]['price'], '250.75 USD')
             self.assertEqual(csv_rows[1]['date'], '2026-04-13')
+
+    def test_price_history_csv_export_retries_transient_invalid_argument(self) -> None:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            data_dir = Path(temp_dir) / 'output' / 'data'
+            data_dir.mkdir(parents=True, exist_ok=True)
+            json_path = data_dir / 'price_history.json'
+            csv_path = data_dir / 'price_history.csv'
+            rows = [
+                {
+                    'date': '2026-04-13',
+                    'ticker': 'AAPL',
+                    'price': '100.00 USD',
+                    'daily_change': '+1.23%',
+                    'market_cap': '1.00T',
+                    'trailing_pe': '25.00',
+                    'eps': '6.10',
+                    '52w_high': '110.00',
+                    '52w_low': '80.00',
+                    'open': '99.50',
+                    'high': '100.50',
+                    'low': '98.90',
+                    'close': '100.00',
+                    'volume': '12.30M',
+                }
+            ]
+            original_open = Path.open
+            failures = {'remaining': 1}
+
+            def flaky_open(path: Path, *args, **kwargs):
+                mode = args[0] if args else kwargs.get('mode', 'r')
+                if path == csv_path and mode == 'w' and failures['remaining'] > 0:
+                    failures['remaining'] -= 1
+                    raise OSError(22, 'Invalid argument')
+                return original_open(path, *args, **kwargs)
+
+            with patch.object(Path, 'open', flaky_open):
+                _write_price_history_exports(json_path, csv_path, rows)
+
+            self.assertEqual(failures['remaining'], 0)
+            with csv_path.open('r', encoding='utf-8', newline='') as handle:
+                csv_rows = list(csv.DictReader(handle))
+            self.assertEqual(csv_rows[0]['ticker'], 'AAPL')
 
 
 if __name__ == '__main__':

@@ -406,6 +406,7 @@ Primary config files:
 
 - `config/watchlist.yaml`
 - `config/models.yaml`
+- `config/macro_event_rules.yaml`
 - portfolio input files under config or state paths used by the pipeline
 
 Model config owns:

@@ -24,8 +24,8 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
   earnings: 'var(--color-accent)',
-  ex_dividend: '#f59e0b',
-  dividend: '#22c55e',
+  ex_dividend: 'var(--color-caution)',
+  dividend: 'var(--color-positive)',
   event: 'var(--color-neutral)',
 }
 
@@ -103,7 +103,7 @@ export function Calendar() {
   return (
     <div className="calendar-page">
       <div className="dashboard-header">
-        <h2>캘린더 · {latestDay.date}</h2>
+        <h1>캘린더 · {latestDay.date}</h1>
         <div className="calendar-stats">
           <span className="calendar-stat-badge">실적 {earningsCount}건</span>
           <span className="calendar-stat-badge calendar-stat-urgent">이번 주 {thisWeekCount}건</span>

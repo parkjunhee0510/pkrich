@@ -10,6 +10,7 @@ export function Chat() {
   const [question, setQuestion] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [loading, setLoading] = useState(false)
+  const [apiNotice, setApiNotice] = useState<string | null>(null)
 
   useEffect(() => {
     document.title = '리서치 채팅 · Stock Research'
@@ -41,6 +42,7 @@ export function Chat() {
     const trimmed = question.trim()
     if (!trimmed) return
     setQuestion('')
+    setApiNotice(null)
     setMessages((current) => [...current, { role: 'user', content: trimmed }])
     setLoading(true)
     try {
@@ -74,6 +76,7 @@ export function Chat() {
         ])
       }
     } catch {
+      setApiNotice('라이브 API 연결에 실패해 저장된 데이터 기반 응답으로 대체했습니다.')
       const fallback = buildFallbackResponse(trimmed, data)
       setMessages((current) => [
         ...current,
@@ -92,11 +95,15 @@ export function Chat() {
   return (
     <div className="signals-page">
       <div className="dashboard-header">
-        <h2>리서치 채팅</h2>
+        <h1>리서치 채팅</h1>
         <div className="signal-overall-badge">
           {API_BASE ? 'API 연결' : '정적 fallback 모드'}
         </div>
       </div>
+
+      {apiNotice ? (
+        <p className="status error" role="status" aria-live="polite">{apiNotice}</p>
+      ) : null}
 
       <div className="portfolio-editor-toolbar">
         <div>

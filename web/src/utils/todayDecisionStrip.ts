@@ -4,6 +4,11 @@ import {
   type ActionChangeFeedEntry,
   type ActionChangeFeedResult,
 } from './actionChangeFeed'
+import {
+  classifyDecisionQuality,
+  type DecisionQuality as TodayDecisionQuality,
+  type DecisionQualityLabel as TodayDecisionQualityLabel,
+} from './decisionQuality'
 import { buildSearchEvidenceBadge, type SearchEvidenceBadgeData } from './searchEvidenceBadge'
 
 export type TodayDecisionKind =
@@ -13,22 +18,10 @@ export type TodayDecisionKind =
   | 'risk_added'
   | 'new_ticker'
 
-export type TodayDecisionQualityLabel =
-  | 'high quality'
-  | 'watch quality'
-  | 'low quality'
-  | 'unknown'
-
 export type TodayDecisionStance = 'positive' | 'negative' | 'caution' | 'neutral' | 'info'
 
-export interface TodayDecisionQuality {
-  label: TodayDecisionQualityLabel
-  score: number | null
-  className: string
-  detail: string
-  hasGate: boolean
-  penalty: number | null
-}
+export { classifyDecisionQuality }
+export type { TodayDecisionQuality, TodayDecisionQualityLabel }
 
 export interface TodayDecisionStripEntry {
   id: string
@@ -108,55 +101,6 @@ export function buildTodayDecisionStrip(
     currentDate: currentDay.date,
     previousDate: feed.previousDate,
     entries: Array.from(deduped.values()).slice(0, limit),
-  }
-}
-
-export function classifyDecisionQuality(ticker: TickerAnalysisData): TodayDecisionQuality {
-  const meta = ticker.decision?.confidence_meta
-  const score = normalizeScore(meta?.data_quality_score ?? meta?.data_quality)
-  const penalty = normalizeScore(meta?.confidence_penalty)
-  const hasGate = meta?.data_quality_gate?.would_cap_action === true
-
-  if (score === null) {
-    return {
-      label: 'unknown',
-      score: null,
-      className: 'today-decision-quality-unknown',
-      detail: 'quality unknown',
-      hasGate,
-      penalty,
-    }
-  }
-
-  if (score < 0.6) {
-    return {
-      label: 'low quality',
-      score,
-      className: 'today-decision-quality-low',
-      detail: `quality ${score.toFixed(2)}`,
-      hasGate,
-      penalty,
-    }
-  }
-
-  if (score < 0.8) {
-    return {
-      label: 'watch quality',
-      score,
-      className: 'today-decision-quality-watch',
-      detail: `quality ${score.toFixed(2)}`,
-      hasGate,
-      penalty,
-    }
-  }
-
-  return {
-    label: 'high quality',
-    score,
-    className: 'today-decision-quality-high',
-    detail: `quality ${score.toFixed(2)}`,
-    hasGate,
-    penalty,
   }
 }
 

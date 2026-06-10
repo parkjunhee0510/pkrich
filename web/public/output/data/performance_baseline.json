@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "as_of": "2026-06-01",
+  "as_of": "2026-06-08",
   "status": "ok",
-  "latest_run_date": "2026-06-01",
+  "latest_run_date": "2026-06-08",
   "monthly_budget_usd": 5.0,
   "json_health": {
     "status": "ok",
@@ -10,34 +10,34 @@
     "issues": []
   },
   "cost": {
-    "total_cost_usd": 0.4204665,
-    "estimated_monthly_cost_usd": 9.2503,
+    "total_cost_usd": 0.4760829,
+    "estimated_monthly_cost_usd": 10.4738,
     "monthly_budget_usd": 5.0,
-    "budget_usage_ratio": 1.8501,
-    "llm_calls": 175,
+    "budget_usage_ratio": 2.0948,
+    "llm_calls": 189,
     "ticker_count_for_rate": 25,
-    "llm_calls_per_ticker": 7.0,
+    "llm_calls_per_ticker": 7.56,
     "deep_selected_count": 5,
     "routing_conflicted_count": 1,
-    "budget_guard_would_block_count": 5,
+    "budget_guard_would_block_count": 10,
     "budget_guard_blocked_count": 0
   },
   "quality": {
-    "validated_ticker_count": 283,
-    "validation_failure_count": 9,
-    "validation_failure_rate": 0.0318,
-    "hallucination_warning_count": 9,
-    "hallucination_ratio": 0.0318,
-    "fact_warning_count": 2,
-    "consistency_warning_count": 2
+    "validated_ticker_count": 297,
+    "validation_failure_count": 8,
+    "validation_failure_rate": 0.0269,
+    "hallucination_warning_count": 3,
+    "hallucination_ratio": 0.0101,
+    "fact_warning_count": 4,
+    "consistency_warning_count": 1
   },
   "evidence": {
     "provider": "openai",
     "ticker_count": 25,
     "covered_ticker_count": 10,
     "coverage_ratio": 0.4,
-    "average_coverage_score": 0.2832,
-    "average_freshness_score": 0.176,
+    "average_coverage_score": 0.2536,
+    "average_freshness_score": 0.22,
     "candidate_ticker_count": 25,
     "searched_ticker_count": 10,
     "cache_ttl_hours": 24,
@@ -60,7 +60,7 @@
     },
     "priority_refresh_reasons": {
       "high_volatility": 2,
-      "important_action": 3,
+      "important_action": 2,
       "no_evidence": 5,
       "portfolio_holding": 5,
       "router_selected": 5
@@ -72,7 +72,7 @@
   },
   "signals": {
     "turnover_status": "ok",
-    "avg_turnover": 0.034,
+    "avg_turnover": 0.029,
     "kelly_status": "ok"
   },
   "p1_readiness": {
@@ -109,24 +109,24 @@
         "enforce_review_status": "report_only_review_required",
         "decision_counts": {
           "allow": 1,
-          "would_block": 5
+          "would_block": 10
         },
         "guarded_path_status_counts": {
           "would_block": 3,
           "allow": 1
         },
-        "would_block_count": 5,
+        "would_block_count": 10,
         "blocked_count": 0,
         "guarded_path_count": 4,
         "would_block_path_count": 3,
         "blocked_path_count": 0,
         "allow_path_count": 1,
-        "total_estimated_incremental_cost_usd": 0.36505
+        "total_estimated_incremental_cost_usd": 0.59605
       },
       "analysis_performance": {
         "status": "ready",
         "mode": "shadow_observational",
-        "sample_count": 440,
+        "sample_count": 540,
         "decision_count": 25,
         "completed_return_windows": [
           "1d",

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useSectorsData } from '../hooks/useSectorsData'
 import { DashboardSkeleton } from '../components/Skeleton'
@@ -7,6 +8,10 @@ import { countFiftyTwoStrength } from '../utils/fiftyTwoWeek'
 
 export function Sectors() {
   const { data, loading, error } = useSectorsData()
+
+  useEffect(() => {
+    document.title = '섹터 탐색 · Stock Research'
+  }, [])
 
   if (loading) return <DashboardSkeleton />
   if (error) return <ErrorState message={`섹터 데이터를 불러오지 못했습니다: ${error}`} />

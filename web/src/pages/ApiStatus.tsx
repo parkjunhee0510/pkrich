@@ -97,7 +97,7 @@ export function ApiStatus() {
       <header className="page-header">
         <div className="page-header__eyebrow">DIAGNOSTICS · API STATUS</div>
         <div className="page-header__row">
-          <h2 className="page-header__headline">API 상태</h2>
+          <h1 className="page-header__headline">API 상태</h1>
           <div className="page-header__actions">
             <span className={`api-state-pill ${data.summary.pipeline_completed ? 'state-used' : 'state-failed'}`}>
               {data.summary.pipeline_completed ? 'pipeline completed' : 'pipeline incomplete'}

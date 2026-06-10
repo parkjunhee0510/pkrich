@@ -6,6 +6,8 @@ import type {
   StrategySimulatorPayload,
   StrategySimulatorPreset,
   StrategySimulatorRow,
+  StrategySimulatorTodayActionItem,
+  StrategySimulatorTodayActionPositionAlert,
 } from '../types'
 
 const PRESET_ORDER = ['conservative', 'balanced', 'aggressive']
@@ -18,6 +20,25 @@ const CANDIDATE_STATUS_PRIORITY: Record<string, number> = {
   max_positions_reached: 4,
   missing_entry_price: 5,
   simulated_entry_closed: 6,
+}
+const NEWS_STRENGTH_LABELS: Record<string, string> = {
+  strong: '뉴스 근거 강함',
+  moderate: '뉴스 근거 보통',
+  weak: '뉴스 근거 약함',
+  insufficient: '뉴스 근거 부족',
+}
+const NEWS_REASON_LABELS: Record<string, string> = {
+  positive_news: '긍정 뉴스',
+  negative_news: '부정 뉴스',
+  llm_bull_aligned: 'LLM 강세 일치',
+  llm_conflict: 'LLM 충돌',
+  recent_catalyst: '최근 촉매',
+  hard_catalyst: '강한 촉매',
+  source_coverage: '출처 충분',
+  source_limited: '출처 부족',
+  search_evidence: '검색 근거',
+  missing_news: '뉴스 근거 데이터 없음',
+  neutral_news: '중립 뉴스',
 }
 
 export function StrategySimulatorPanel({
@@ -85,6 +106,8 @@ export function StrategySimulatorPanel({
         })}
       </div>
 
+      {renderTodayActionQueue(payload)}
+
       <StrategySimulatorSection
         headingId="strategy-simulator-entry-candidates"
         title="오늘 진입 후보"
@@ -93,6 +116,8 @@ export function StrategySimulatorPanel({
         {renderEntryCandidateCards(selected)}
         {renderEntryCandidateTable(selected)}
       </StrategySimulatorSection>
+
+      {renderNewsShadow(payload)}
 
       <StrategySimulatorSection
         headingId="strategy-simulator-performance"
@@ -200,6 +225,125 @@ function StrategySimulatorSection({
   )
 }
 
+function renderTodayActionQueue(payload: StrategySimulatorPayload) {
+  const queue = payload.today_action_queue
+  if (!queue) return null
+
+  const items = queue.items ?? []
+  const alerts = queue.position_alerts ?? []
+  const hasRows = items.length > 0 || alerts.length > 0
+
+  return (
+    <StrategySimulatorSection
+      headingId="strategy-simulator-today-action-queue"
+      title="오늘 행동 큐"
+      description={`${queue.preset_label || '균형형'} 기준으로 오늘 확인할 진입 후보와 보유 관리 대상을 정리합니다.`}
+    >
+      <div className="today-action-summary-grid">
+        <SummaryMetricCard
+          label="진입 검토"
+          value={formatInteger(queue.summary?.enter_count ?? 0)}
+          note="open 확인 대상"
+        />
+        <SummaryMetricCard
+          label="보류"
+          value={formatInteger(queue.summary?.watch_count ?? 0)}
+          note="가격 또는 조건 대기"
+        />
+        <SummaryMetricCard
+          label="제외"
+          value={formatInteger(queue.summary?.skip_count ?? 0)}
+          note="현금, 한도, 과거 반영"
+        />
+        {(queue.summary?.hold_count ?? 0) > 0 ? (
+          <SummaryMetricCard
+            label="보유 관리"
+            value={formatInteger(queue.summary?.hold_count ?? 0)}
+            note="열린 포지션"
+          />
+        ) : null}
+      </div>
+
+      {hasRows ? (
+        <div className="today-action-card-grid">
+          {items.map((item) => renderTodayActionItem(item))}
+          {alerts.map((alert) => renderTodayActionPositionAlert(alert))}
+        </div>
+      ) : (
+        <p className="today-action-empty">오늘 확인할 진입 후보나 보유 관리 알림이 없습니다.</p>
+      )}
+
+      {queue.notes?.length ? (
+        <p className="section-kicker today-action-note">{queue.notes[0]}</p>
+      ) : null}
+    </StrategySimulatorSection>
+  )
+}
+
+function renderTodayActionItem(item: StrategySimulatorTodayActionItem) {
+  const candidate = item.candidate
+  return (
+    <article key={`${item.queue}-${item.rank}-${item.ticker}`} className={`today-action-card today-action-${item.queue}`}>
+      <div className="today-action-card-header">
+        <div>
+          <span className="period-badge ap-mode-badge">{item.decision_label}</span>
+          <h5 className="today-action-ticker">{item.ticker}</h5>
+        </div>
+        <strong className="today-action-score">{formatScore(item.action_score)}</strong>
+      </div>
+      <p className="today-action-reason">{item.primary_reason}</p>
+      <div className="strategy-entry-candidate-chips">
+        {(item.reason_chips ?? []).slice(0, 5).map((chip) => (
+          <span key={`${item.ticker}-${chip}`} className="strategy-entry-candidate-chip">{chip}</span>
+        ))}
+      </div>
+      <dl className="today-action-detail-grid">
+        <div>
+          <dt>신호일</dt>
+          <dd>{candidate?.signal_date || 'N/A'}</dd>
+        </div>
+        <div>
+          <dt>진입일</dt>
+          <dd>{candidate?.entry_date || '다음 open 대기'}</dd>
+        </div>
+        <div>
+          <dt>진입가</dt>
+          <dd>{formatConfirmedEntryPrice(candidate)}</dd>
+        </div>
+        <div>
+          <dt>뉴스</dt>
+          <dd>{formatNewsEvidenceCompact(candidate)}</dd>
+        </div>
+      </dl>
+    </article>
+  )
+}
+
+function renderTodayActionPositionAlert(alert: StrategySimulatorTodayActionPositionAlert) {
+  return (
+    <article key={`hold-${alert.priority}-${alert.ticker}`} className="today-action-card today-action-hold">
+      <div className="today-action-card-header">
+        <div>
+          <span className="period-badge ap-mode-badge">{alert.decision_label}</span>
+          <h5 className="today-action-ticker">{alert.ticker}</h5>
+        </div>
+        <strong className="today-action-score">{formatScore(alert.alert_score)}</strong>
+      </div>
+      <p className="today-action-reason">{alert.primary_reason}</p>
+      <div className="strategy-entry-candidate-chips">
+        {(alert.reason_chips ?? []).slice(0, 5).map((chip) => (
+          <span key={`${alert.ticker}-${chip}`} className="strategy-entry-candidate-chip">{chip}</span>
+        ))}
+      </div>
+    </article>
+  )
+}
+
+function formatScore(value: number | null | undefined): string {
+  if (typeof value !== 'number' || Number.isNaN(value)) return 'N/A'
+  return `${value.toFixed(value % 1 === 0 ? 0 : 1)}점`
+}
+
 function renderEntryCandidateCards(preset: StrategySimulatorPreset) {
   const candidates = topEntryCandidates(preset.entry_candidates ?? [])
 
@@ -219,6 +363,7 @@ function renderEntryCandidateCards(preset: StrategySimulatorPreset) {
               </div>
               <div className="strategy-entry-candidate-ticker">{candidate.ticker || 'N/A'}</div>
               <div className="strategy-entry-candidate-reason">{candidate.reason || 'N/A'}</div>
+              {renderCandidateNewsEvidence(candidate)}
               <div className="strategy-entry-candidate-metrics">
                 <span>신호일 {candidate.signal_date || 'N/A'}</span>
                 <span>확신도 {formatConviction(candidate.conviction)}</span>
@@ -249,6 +394,7 @@ function renderEntryCandidateTable(preset: StrategySimulatorPreset) {
               <th className="ap-num">순위</th>
               <th>티커</th>
               <th>상태</th>
+              <th>뉴스 근거</th>
               <th>신호일</th>
               <th>진입 기준</th>
               <th className="ap-num">확신도</th>
@@ -267,6 +413,7 @@ function renderEntryCandidateTable(preset: StrategySimulatorPreset) {
                   <td className="ap-num">{formatInteger(candidate.rank)}</td>
                   <td className="ap-ticker">{candidate.ticker || 'N/A'}</td>
                   <td>{candidate.status_label || candidate.status || 'N/A'}</td>
+                  <td>{formatNewsEvidenceCompact(candidate)}</td>
                   <td>{candidate.signal_date || 'N/A'}</td>
                   <td>{formatEntryBasis(candidate)}</td>
                   <td className="ap-num">{formatConviction(candidate.conviction)}</td>
@@ -280,7 +427,7 @@ function renderEntryCandidateTable(preset: StrategySimulatorPreset) {
               ))
             ) : (
               <tr>
-                <td colSpan={12}>후보 없음</td>
+                <td colSpan={13}>후보 없음</td>
               </tr>
             )}
           </tbody>
@@ -288,6 +435,66 @@ function renderEntryCandidateTable(preset: StrategySimulatorPreset) {
       </div>
     </>
   )
+}
+
+function renderCandidateNewsEvidence(candidate: StrategySimulatorEntryCandidate) {
+  const evidence = candidate.news_evidence
+  const label = evidence ? newsStrengthLabel(evidence.strength) : '뉴스 근거 부족'
+  const score = evidence ? formatNewsScore(evidence.score) : 'N/A'
+  const summary = evidence?.summary || '뉴스 근거 데이터 없음'
+  const chips = evidence ? newsReasonChips(evidence.reason_chips) : []
+
+  return (
+    <div className={`strategy-entry-candidate-news strategy-news-${newsStrengthTone(evidence?.strength)}`}>
+      <div className="strategy-entry-candidate-news-head">
+        <span>{label}</span>
+        <strong>{score}</strong>
+      </div>
+      <p>{summary}</p>
+      {chips.length > 0 && (
+        <div className="strategy-entry-candidate-news-chips">
+          {chips.map((chip, index) => (
+            <span key={`${chip}-${index}`}>{newsReasonLabel(chip)}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function formatNewsEvidenceCompact(candidate: StrategySimulatorEntryCandidate): string {
+  const evidence = candidate.news_evidence
+  if (!evidence) return '뉴스 근거 부족 · N/A'
+  return `${newsStrengthLabel(evidence.strength)} · ${formatNewsScore(evidence.score)}`
+}
+
+function newsStrengthLabel(strength: string | null | undefined): string {
+  if (!strength) return NEWS_STRENGTH_LABELS.insufficient
+  return NEWS_STRENGTH_LABELS[strength] ?? strength
+}
+
+function newsStrengthTone(strength: string | null | undefined): string {
+  if (strength === 'strong') return 'strong'
+  if (strength === 'moderate') return 'moderate'
+  if (strength === 'weak') return 'weak'
+  return 'insufficient'
+}
+
+function formatNewsScore(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return 'N/A'
+  return `${Math.round(value)}점`
+}
+
+function newsReasonChips(value: unknown): string[] {
+  if (!Array.isArray(value)) return ['missing_news']
+  const validChips = value
+    .filter((chip): chip is string => typeof chip === 'string' && chip.length > 0)
+  if (validChips.length === 0) return ['missing_news']
+  return validChips.slice(0, 4)
+}
+
+function newsReasonLabel(chip: string): string {
+  return NEWS_REASON_LABELS[chip] ?? chip
 }
 
 function topEntryCandidates(candidates: StrategySimulatorEntryCandidate[]) {
@@ -404,6 +611,51 @@ function EquitySparkline({ points }: { points: StrategySimulatorEquityPoint[] })
         </text>
       </svg>
     </>
+  )
+}
+
+function renderNewsShadow(payload: StrategySimulatorPayload) {
+  const newsShadow = payload.news_shadow
+  const strategies = newsShadow?.strategies ?? []
+
+  if (strategies.length === 0) return null
+
+  return (
+    <StrategySimulatorSection
+      headingId="strategy-simulator-news-shadow"
+      title="뉴스 Shadow 성과"
+      description="뉴스 근거만 따로 보았을 때의 관찰용 성과입니다."
+    >
+      <div className="strategy-news-shadow-grid">
+        {strategies.map((strategy) => (
+          <div key={strategy.id} className="strategy-news-shadow-card">
+            <div className="strategy-news-shadow-head">
+              <h4 className="strategy-news-shadow-title">{strategy.label}</h4>
+              <span className="strategy-news-shadow-note">
+                표본 {formatInteger(strategy.summary.sample_count)}건
+              </span>
+            </div>
+            <div className="strategy-news-shadow-metrics">
+              <span className="strategy-news-shadow-metric">
+                1D 평균 {formatPercent(strategy.summary.avg_return_1d)}
+              </span>
+              <span className="strategy-news-shadow-metric">
+                5D 평균 {formatPercent(strategy.summary.avg_return_5d)}
+              </span>
+              <span className="strategy-news-shadow-metric">
+                20D 평균 {formatPercent(strategy.summary.avg_return_20d)}
+              </span>
+              <span className="strategy-news-shadow-metric">
+                5D 승률 {formatRatio(strategy.summary.win_rate_5d)}
+              </span>
+              <span className="strategy-news-shadow-metric">
+                20D 완료 {formatCompletion(strategy.summary.completed_20d_count, strategy.summary.sample_count)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </StrategySimulatorSection>
   )
 }
 
@@ -662,4 +914,8 @@ function formatAxisCurrency(value: number): string {
 function formatInteger(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return 'N/A'
   return value.toFixed(0)
+}
+
+function formatCompletion(completed: number | null | undefined, sampleCount: number | null | undefined): string {
+  return `${formatInteger(completed)}/${formatInteger(sampleCount)}`
 }

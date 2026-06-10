@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "run_count": 12,
+  "run_count": 16,
   "evaluated_signals": 11,
-  "latest_run_date": "2026-05-29",
+  "latest_run_date": "2026-06-05",
   "summary": {
     "deep_selected_count": 11,
     "economy_only_count": 0,
@@ -33,7 +33,7 @@
     }
   ],
   "latest_run": {
-    "run_date": "2026-05-29",
+    "run_date": "2026-06-05",
     "trigger_range": [
       25,
       75
@@ -42,11 +42,11 @@
     "portfolio_priority": false,
     "deep_pass_count": 5,
     "selected_tickers": [
-      "CAT",
+      "AAPL",
+      "IONQ",
       "AMD",
       "XOM",
-      "IONQ",
-      "AAPL"
+      "CAT"
     ],
     "skipped_due_to_priority": [
       "KO",
@@ -86,20 +86,6 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 63,
-        "action": "watch",
-        "router_priority_score": 56.0,
-        "router_reason_codes": [
-          "uncertainty_boundary",
-          "portfolio_exposure"
-        ],
-        "skipped_due_to_priority": false
-      },
-      {
-        "ticker": "CAT",
-        "selected_for_deep": true,
-        "reason": "in_trigger_range",
-        "in_portfolio": true,
         "conviction": 66,
         "action": "buy",
         "router_priority_score": 68.0,
@@ -111,22 +97,7 @@
         "skipped_due_to_priority": false
       },
       {
-        "ticker": "XOM",
-        "selected_for_deep": true,
-        "reason": "in_trigger_range",
-        "in_portfolio": true,
-        "conviction": 59,
-        "action": "watch",
-        "router_priority_score": 63.0,
-        "router_reason_codes": [
-          "uncertainty_boundary",
-          "portfolio_exposure",
-          "event_proximity"
-        ],
-        "skipped_due_to_priority": false
-      },
-      {
-        "ticker": "AMD",
+        "ticker": "CAT",
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
@@ -141,13 +112,43 @@
         "skipped_due_to_priority": false
       },
       {
+        "ticker": "XOM",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 60,
+        "action": "watch",
+        "router_priority_score": 65.0,
+        "router_reason_codes": [
+          "uncertainty_boundary",
+          "portfolio_exposure",
+          "event_proximity"
+        ],
+        "skipped_due_to_priority": false
+      },
+      {
+        "ticker": "AMD",
+        "selected_for_deep": true,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 63,
+        "action": "watch",
+        "router_priority_score": 66.0,
+        "router_reason_codes": [
+          "uncertainty_boundary",
+          "portfolio_exposure",
+          "volatility"
+        ],
+        "skipped_due_to_priority": false
+      },
+      {
         "ticker": "KO",
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 56,
+        "conviction": 53,
         "action": "watch",
-        "router_priority_score": 27.0,
+        "router_priority_score": 21.0,
         "router_reason_codes": [
           "uncertainty_boundary",
           "event_proximity"
@@ -159,11 +160,10 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 54,
+        "conviction": 50,
         "action": "watch",
-        "router_priority_score": 38.0,
+        "router_priority_score": 30.0,
         "router_reason_codes": [
-          "uncertainty_boundary",
           "portfolio_exposure"
         ],
         "skipped_due_to_priority": true
@@ -173,13 +173,13 @@
         "selected_for_deep": true,
         "reason": "in_trigger_range",
         "in_portfolio": true,
-        "conviction": 70,
-        "action": "buy",
-        "router_priority_score": 60.0,
+        "conviction": 64,
+        "action": "watch",
+        "router_priority_score": 68.0,
         "router_reason_codes": [
           "uncertainty_boundary",
           "portfolio_exposure",
-          "signal_importance"
+          "volatility"
         ],
         "skipped_due_to_priority": false
       },
@@ -188,59 +188,18 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 62,
-        "action": "watch",
-        "router_priority_score": 39.0,
+        "conviction": 69,
+        "action": "buy",
+        "router_priority_score": 47.0,
         "router_reason_codes": [
           "uncertainty_boundary",
-          "event_proximity"
+          "event_proximity",
+          "signal_importance"
         ],
         "skipped_due_to_priority": true
       },
       {
         "ticker": "ORA",
-        "selected_for_deep": false,
-        "reason": "in_trigger_range",
-        "in_portfolio": false,
-        "conviction": 63,
-        "action": "watch",
-        "router_priority_score": 41.0,
-        "router_reason_codes": [
-          "uncertainty_boundary",
-          "event_proximity"
-        ],
-        "skipped_due_to_priority": true
-      },
-      {
-        "ticker": "SPIR",
-        "selected_for_deep": false,
-        "reason": "in_trigger_range",
-        "in_portfolio": false,
-        "conviction": 55,
-        "action": "watch",
-        "router_priority_score": 15.228,
-        "router_reason_codes": [
-          "uncertainty_boundary",
-          "volatility"
-        ],
-        "skipped_due_to_priority": true
-      },
-      {
-        "ticker": "PLUG",
-        "selected_for_deep": false,
-        "reason": "in_trigger_range",
-        "in_portfolio": true,
-        "conviction": 58,
-        "action": "watch",
-        "router_priority_score": 46.0,
-        "router_reason_codes": [
-          "uncertainty_boundary",
-          "portfolio_exposure"
-        ],
-        "skipped_due_to_priority": true
-      },
-      {
-        "ticker": "COHR",
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
@@ -253,15 +212,60 @@
         "skipped_due_to_priority": true
       },
       {
+        "ticker": "SPIR",
+        "selected_for_deep": false,
+        "reason": "in_trigger_range",
+        "in_portfolio": false,
+        "conviction": 54,
+        "action": "watch",
+        "router_priority_score": 18.0,
+        "router_reason_codes": [
+          "uncertainty_boundary",
+          "volatility"
+        ],
+        "skipped_due_to_priority": true
+      },
+      {
+        "ticker": "PLUG",
+        "selected_for_deep": false,
+        "reason": "in_trigger_range",
+        "in_portfolio": true,
+        "conviction": 55,
+        "action": "watch",
+        "router_priority_score": 50.0,
+        "router_reason_codes": [
+          "uncertainty_boundary",
+          "portfolio_exposure",
+          "volatility"
+        ],
+        "skipped_due_to_priority": true
+      },
+      {
+        "ticker": "COHR",
+        "selected_for_deep": false,
+        "reason": "in_trigger_range",
+        "in_portfolio": false,
+        "conviction": 66,
+        "action": "buy",
+        "router_priority_score": 48.0,
+        "router_reason_codes": [
+          "uncertainty_boundary",
+          "volatility",
+          "signal_importance"
+        ],
+        "skipped_due_to_priority": true
+      },
+      {
         "ticker": "ALAB",
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 72,
+        "conviction": 73,
         "action": "buy",
-        "router_priority_score": 26.0,
+        "router_priority_score": 34.0,
         "router_reason_codes": [
           "uncertainty_boundary",
+          "volatility",
           "signal_importance"
         ],
         "skipped_due_to_priority": true
@@ -271,11 +275,12 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 67,
+        "conviction": 68,
         "action": "buy",
-        "router_priority_score": 36.0,
+        "router_priority_score": 42.2,
         "router_reason_codes": [
           "uncertainty_boundary",
+          "volatility",
           "signal_importance"
         ],
         "skipped_due_to_priority": true
@@ -285,9 +290,9 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 59,
+        "conviction": 56,
         "action": "watch",
-        "router_priority_score": 28.0,
+        "router_priority_score": 22.0,
         "router_reason_codes": [
           "uncertainty_boundary",
           "volatility"
@@ -299,11 +304,12 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 60,
+        "conviction": 62,
         "action": "watch",
-        "router_priority_score": 20.0,
+        "router_priority_score": 29.087,
         "router_reason_codes": [
-          "uncertainty_boundary"
+          "uncertainty_boundary",
+          "volatility"
         ],
         "skipped_due_to_priority": true
       },
@@ -327,11 +333,12 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 56,
+        "conviction": 58,
         "action": "watch",
-        "router_priority_score": 12.0,
+        "router_priority_score": 23.697,
         "router_reason_codes": [
-          "uncertainty_boundary"
+          "uncertainty_boundary",
+          "volatility"
         ],
         "skipped_due_to_priority": true
       },
@@ -340,11 +347,12 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 51,
+        "conviction": 53,
         "action": "watch",
-        "router_priority_score": 2.0,
+        "router_priority_score": 15.041,
         "router_reason_codes": [
-          "uncertainty_boundary"
+          "uncertainty_boundary",
+          "volatility"
         ],
         "skipped_due_to_priority": true
       },
@@ -353,11 +361,12 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 61,
+        "conviction": 58,
         "action": "watch",
-        "router_priority_score": 22.0,
+        "router_priority_score": 24.228,
         "router_reason_codes": [
-          "uncertainty_boundary"
+          "uncertainty_boundary",
+          "volatility"
         ],
         "skipped_due_to_priority": true
       },
@@ -368,7 +377,7 @@
         "in_portfolio": false,
         "conviction": 65,
         "action": "buy",
-        "router_priority_score": 45.135,
+        "router_priority_score": 50.0,
         "router_reason_codes": [
           "uncertainty_boundary",
           "volatility",
@@ -381,9 +390,9 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 57,
+        "conviction": 61,
         "action": "watch",
-        "router_priority_score": 14.0,
+        "router_priority_score": 22.0,
         "router_reason_codes": [
           "uncertainty_boundary"
         ],
@@ -394,9 +403,9 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 59,
+        "conviction": 54,
         "action": "watch",
-        "router_priority_score": 33.0,
+        "router_priority_score": 23.0,
         "router_reason_codes": [
           "uncertainty_boundary",
           "event_proximity"
@@ -421,12 +430,11 @@
         "selected_for_deep": false,
         "reason": "in_trigger_range",
         "in_portfolio": false,
-        "conviction": 65,
-        "action": "buy",
-        "router_priority_score": 40.0,
+        "conviction": 55,
+        "action": "watch",
+        "router_priority_score": 10.0,
         "router_reason_codes": [
-          "uncertainty_boundary",
-          "signal_importance"
+          "uncertainty_boundary"
         ],
         "skipped_due_to_priority": true
       }

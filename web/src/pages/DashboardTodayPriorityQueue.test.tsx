@@ -180,6 +180,10 @@ vi.mock('../components/RiskIntelPanel', () => ({
   RiskIntelPanel: () => <div data-testid="risk-intel-panel" />,
 }))
 
+vi.mock('../components/TodayPriorityQueue', () => ({
+  TodayPriorityQueue: () => <div data-testid="today-priority-queue" />,
+}))
+
 vi.mock('../utils/sectorMood', () => ({
   deriveSectorMoodInsights: vi.fn(() => ({
     hasSectorData: false,
@@ -203,21 +207,16 @@ vi.mock('../utils/trader', () => ({
 }))
 
 describe('Dashboard today priority queue', () => {
-  it('renders the priority queue before the existing decision strip', () => {
+  it('does not render standalone priority or risk intelligence panels on the main dashboard', () => {
     render(
       <MemoryRouter>
         <Dashboard />
       </MemoryRouter>,
     )
 
-    const queueHeading = screen.getByRole('heading', { name: '오늘 점검 큐' })
-    const stripHeading = screen.getByRole('heading', { name: '오늘 먼저 볼 판단' })
-
-    expect(queueHeading).toBeInTheDocument()
-    expect(queueHeading.compareDocumentPosition(stripHeading)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
-    expect(screen.getByText('Risk and opportunity review')).toBeInTheDocument()
-    expect(screen.getByText('Evidence refresh needed')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'AMD 상세' })).toHaveAttribute('href', '/ticker/AMD')
+    expect(screen.queryByTestId('today-priority-queue')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('risk-intel-panel')).not.toBeInTheDocument()
+    expect(screen.getByTestId('today-setup-board')).toBeInTheDocument()
   })
 })
 

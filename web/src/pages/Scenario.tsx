@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDashboardData } from '../hooks/useDashboardData'
+import { TablePageSkeleton } from '../components/Skeleton'
+import { ErrorState } from '../components/ErrorState'
 
 type AdjustmentMap = Record<string, number>
 
@@ -18,14 +20,14 @@ export function Scenario() {
 
   const scenario = useMemo(() => buildScenarioSummary(positions, correlationPairs, adjustments), [positions, correlationPairs, adjustments])
 
-  if (loading) return <p className="status">Loading scenario...</p>
-  if (error) return <p className="status error">{error}</p>
+  if (loading) return <TablePageSkeleton title="시나리오 분석" />
+  if (error) return <ErrorState message={error} />
   if (!risk) return <p className="status">포트폴리오 리스크 데이터가 없습니다.</p>
 
   return (
     <div className="portfolio-page">
       <div className="dashboard-header">
-        <h2>시나리오 분석</h2>
+        <h1>시나리오 분석</h1>
       </div>
 
       <div className="portfolio-editor-toolbar">

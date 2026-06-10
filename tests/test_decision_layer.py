@@ -186,11 +186,23 @@ class TestDecideTicker(unittest.TestCase):
             patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}),
             patch("src.decision.decision_layer.evaluate_confidence_meta", return_value=_fake_shadow_meta()),
             patch("src.decision.scorer.ConvictionScorer.calculate", return_value=84),
-            patch("src.decision.decision_layer.calculate_final_conviction", return_value=52),
+            patch("src.decision.decision_layer.calculate_final_conviction", return_value=60),
         ):
             decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
 
         self.assertEqual(decision.action, "watch")
+
+    def test_final_conviction_below_calibrated_avoid_threshold_is_avoid(self) -> None:
+        analysis = _make_analysis()
+        with (
+            patch.dict("os.environ", {"DECISION_CONFIDENCE_SHADOW_MODE": "1"}),
+            patch("src.decision.decision_layer.evaluate_confidence_meta", return_value=_fake_shadow_meta()),
+            patch("src.decision.scorer.ConvictionScorer.calculate", return_value=84),
+            patch("src.decision.decision_layer.calculate_final_conviction", return_value=55),
+        ):
+            decision = _decide_ticker(analysis, None, self.regime, {}, date(2026, 4, 10), self.config)
+
+        self.assertEqual(decision.action, "avoid")
 
     def test_shadow_data_quality_gate_metadata_does_not_change_action_by_itself(self) -> None:
         analysis = _make_analysis()
@@ -488,7 +500,7 @@ class TestLoadWeights(unittest.TestCase):
         self.assertIn("thresholds", config)
         self.assertIn("valid_until", config)
         self.assertEqual(config["thresholds"]["buy"], 65)
-        self.assertEqual(config["thresholds"]["avoid"], 35)
+        self.assertEqual(config["thresholds"]["avoid"], 56)
 
 
 @unittest.skip(

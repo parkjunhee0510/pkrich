@@ -208,6 +208,23 @@ class ApiTests(unittest.TestCase):
             self.assertIn('cost_log', payload)
             self.assertEqual(payload['cost_log']['latest']['run_date'], '2026-04-17')
 
+    def test_options_contracts_endpoint_returns_lookup_payload(self) -> None:
+        with patch(
+            "src.api.main.options_live.build_contract_lookup_payload",
+            return_value={
+                "status": "ok",
+                "ticker": "AAPL",
+                "recency": "delayed_15m",
+                "contracts": [{"contract": "O:AAPL260116C00200000"}],
+                "message": "",
+            },
+        ) as mocked:
+            payload = api_main.options_contracts("aapl", underlying_price=200)
+
+        mocked.assert_called_once_with("aapl", limit=12, underlying_price=200)
+        self.assertEqual(payload["status"], "ok")
+        self.assertEqual(payload["contracts"][0]["contract"], "O:AAPL260116C00200000")
+
 
 if __name__ == '__main__':
     unittest.main()

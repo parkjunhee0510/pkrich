@@ -47,6 +47,7 @@ export function CorrelationHeatmap({ tickers }: Props) {
             <button
               key={w}
               type="button"
+              aria-pressed={window === w}
               className={`preset-chip ${window === w ? 'active' : ''}`}
               onClick={() => setWindow(w)}
             >
@@ -62,7 +63,7 @@ export function CorrelationHeatmap({ tickers }: Props) {
             <tr>
               <th />
               {entries.map((e) => (
-                <th key={e.ticker} className="corr-col-label">
+                <th key={e.ticker} scope="col" className="corr-col-label">
                   <span>{e.ticker}</span>
                 </th>
               ))}
@@ -71,7 +72,7 @@ export function CorrelationHeatmap({ tickers }: Props) {
           <tbody>
             {entries.map((rowEntry, r) => (
               <tr key={rowEntry.ticker}>
-                <th className="corr-row-label">{rowEntry.ticker}</th>
+                <th scope="row" className="corr-row-label">{rowEntry.ticker}</th>
                 {entries.map((colEntry, c) => {
                   const v = matrix[r][c]
                   const isDiag = r === c

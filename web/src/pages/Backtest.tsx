@@ -25,7 +25,7 @@ export function Backtest() {
   const { data: strategySimulator } = useJsonResource<StrategySimulatorPayload>('output/data/strategy_simulator.json')
 
   useEffect(() => {
-    document.title = '백테스트 · 주간 성과'
+    document.title = '백테스트 · Stock Research'
   }, [])
 
   const loading = dashboardLoading || backtestLoading || monthlyLoading || routingLoading
@@ -57,7 +57,7 @@ export function Backtest() {
   return (
     <div className="signals-page">
       <div className="dashboard-header">
-        <h2>백테스트 / 주간 성과</h2>
+        <h1>백테스트 / 주간 성과</h1>
       </div>
 
       <div className="signal-summary-grid">

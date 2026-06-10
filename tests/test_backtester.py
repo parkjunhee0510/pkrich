@@ -18,6 +18,33 @@ PENDING_CSV_BODY = """signal_date,ticker,signal_type,signal_direction,signal_pri
 2026-04-11,MSFT,takeaway,bear,200,earnings,neutral,base,+0.50%,+1.00%,N/A,True,True,False
 """
 
+_HEADER = (
+    "signal_date,ticker,signal_type,signal_direction,signal_price,catalyst_tag,"
+    "news_tone,trade_frame_scenario,return_1d,return_5d,return_20d,"
+    "evaluated_1d,evaluated_5d,evaluated_20d\n"
+)
+
+
+def _row(signal_date: str, ticker: str, direction: str, return_20d: str) -> str:
+    return (
+        f"{signal_date},{ticker},takeaway,{direction},100,earnings,bullish,base,"
+        f"+1.00%,+2.00%,{return_20d},True,True,True\n"
+    )
+
+
+# Two bull signals on the SAME date, each +50%. They are held concurrently, so the
+# portfolio return for that 20-day window is the equal-weight average (+50%), NOT
+# the sequential product (1.5 * 1.5 = +125%).
+CONCURRENT_CSV_BODY = _HEADER + _row("2026-04-01", "AAA", "bull", "+50.00%") + _row(
+    "2026-04-01", "BBB", "bull", "+50.00%"
+)
+
+# Two bull signals in SEPARATE 20-trading-day windows (April vs July), each +50%.
+# Non-overlapping windows compound across windows: 1.5 * 1.5 = +125%.
+SEPARATE_WINDOWS_CSV_BODY = _HEADER + _row("2026-04-01", "AAA", "bull", "+50.00%") + _row(
+    "2026-07-01", "BBB", "bull", "+50.00%"
+)
+
 
 class BacktesterTests(unittest.TestCase):
     def test_build_backtest_summary_returns_bull_bear_and_ticker_rows(self) -> None:
@@ -51,6 +78,44 @@ class BacktesterTests(unittest.TestCase):
         self.assertEqual(summary["first_eval_date"], "2026-05-08")
         self.assertEqual(summary["message"], "Backtest statistics begin after 2026-05-08; pending signals: 2.")
         self.assertEqual(summary["strategy"], "Evaluate bull/bear signals on a 20-trading-day horizon.")
+
+
+    def test_concurrent_signals_average_within_window_instead_of_compounding(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            csv_path = Path(tmp_dir) / "signal_tracker.csv"
+            csv_path.write_text(CONCURRENT_CSV_BODY, encoding="utf-8")
+
+            summary = build_backtest_summary(csv_path)
+
+        # Equal-weight average of the concurrent window, not 1.5 * 1.5 = +125%.
+        self.assertEqual(summary["cumulative_return"], "+50.00%")
+        self.assertEqual(summary["bull"]["cumulative_return"], "+50.00%")
+        self.assertEqual(summary["equity_curve"][-1]["cumulative_return"], "+50.00%")
+        self.assertEqual(summary["equity_curve"][-1]["equity_multiple"], 1.5)
+
+    def test_separate_windows_compound_across_windows(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            csv_path = Path(tmp_dir) / "signal_tracker.csv"
+            csv_path.write_text(SEPARATE_WINDOWS_CSV_BODY, encoding="utf-8")
+
+            summary = build_backtest_summary(csv_path)
+
+        # Two non-overlapping 20-trading-day windows compound: 1.5 * 1.5 = +125%.
+        self.assertEqual(summary["cumulative_return"], "+125.00%")
+        self.assertEqual(summary["equity_curve"][-1]["cumulative_return"], "+125.00%")
+        self.assertEqual(summary["equity_curve"][-1]["equity_multiple"], 2.25)
+
+    def test_equity_curve_endpoint_matches_summary_cumulative_return(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            csv_path = Path(tmp_dir) / "signal_tracker.csv"
+            csv_path.write_text(CSV_BODY, encoding="utf-8")
+
+            summary = build_backtest_summary(csv_path)
+
+        self.assertEqual(
+            summary["equity_curve"][-1]["cumulative_return"],
+            summary["cumulative_return"],
+        )
 
 
 if __name__ == "__main__":

@@ -15,6 +15,17 @@
 * `final_conviction` is the source of truth for `TickerDecision.conviction` and action thresholds; `raw_conviction` remains available for comparison
 * Hidden rollback env `DECISION_CONFIDENCE_FORCE_RAW=1` restores the raw conviction/action path
 
+## Action Thresholds
+
+Current configured action thresholds are:
+
+* `buy`: `final_conviction >= 65`
+* `buy_risk_off`: `final_conviction >= 75` when the market regime is `risk_off`
+* `avoid`: `final_conviction < 56`
+* `watch`: the band between avoid and buy
+
+The avoid threshold follows the 20-day tuning output's empirical lower-conviction boundary so low-conviction bearish or deteriorating setups produce observable `avoid` samples instead of being absorbed into `watch`. The 5-day tuning output currently suggests a nearby value of 57; the 20-day value keeps the adjustment slightly less aggressive while matching the primary longer return window used in decision-quality review.
+
 ## Data Quality Score
 
 The decision layer owns the final `data_quality_score` used by confidence adjustment. The score combines analyzer validation, price freshness, news coverage, source diversity, fallback depth, missing fundamentals, and macro context availability.
@@ -48,7 +59,7 @@ Ticker action-change reasons compare the current decision with the previous trac
 
 Included factor families:
 * macro regime factors
-* macro event factors
+* macro event factors, with sector and industry transfer rules loaded from `config/macro_event_rules.yaml`
 * fundamentals, momentum, valuation, and other registered scoring factors
 
 ## Must Not

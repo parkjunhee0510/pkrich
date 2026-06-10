@@ -79,7 +79,6 @@ function ActionChangeCard({ entry }: { entry: ActionChangeFeedEntry }) {
             {entry.ticker}
           </Link>
           <span className="action-change-name">{entry.name}</span>
-          <span className="action-change-sector">{entry.sector}</span>
         </div>
         <span className={`action-change-primary-badge ${stanceClassName(entry.tone)}`}>
           {entry.primaryLabel}
@@ -87,6 +86,15 @@ function ActionChangeCard({ entry }: { entry: ActionChangeFeedEntry }) {
       </div>
 
       <div className="action-change-meta-row">
+        {entry.qualityDetail ? (
+          <span className={`action-change-quality-badge ${entry.qualityClassName ?? ''}`.trim()}>
+            {entry.qualityDetail}
+          </span>
+        ) : null}
+        {entry.metricLabel ? (
+          <span className="action-change-metric-badge">{entry.metricLabel}</span>
+        ) : null}
+        <span className="action-change-sector action-change-sector-badge">{entry.sector}</span>
         <span>{entry.secondaryLabel}</span>
         {entry.evidenceBadge ? <SearchEvidenceBadge badge={entry.evidenceBadge} /> : null}
         {entry.addedRisks.length > 0 ? (

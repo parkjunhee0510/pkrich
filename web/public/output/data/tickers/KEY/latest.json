@@ -1,42 +1,39 @@
 {
   "schema_version": 1,
-  "date": "2026-05-29",
+  "date": "2026-06-05",
   "ticker": "KEY",
   "payload": {
     "ticker": "KEY",
     "name": "KeyCorp",
-    "date": "2026-05-29",
-    "summary": "현재 주가는 SMA50 부근에서 30일 수익률 -2.47%로 보합권 약세이며, peer_rank에서 dividend_yield pctl 83과 RS pctl 0이 혼재합니다. 다음 촉매는 배당락일 2026-06-02 전후와 별도 실적 일정이 N/A인 점을 감안한 자금 흐름 확인입니다.",
+    "date": "2026-06-05",
+    "summary": "현재 주가는 21.76달러로 30일간 +1.74% 상승했고, SMA50·SMA200을 각각 +2.37%, +8.81% 상회합니다. 다음 촉매는 N/A이며, peer_rank상 RS 83pctl로 주가 상대강도는 양호하지만 추가 이벤트 근거는 없습니다.",
     "key_news": [
-      "KEYCORP /NEW/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
-      "KEYCORP /NEW/, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
-      "KeyCorp 밸류에이션과 지역 은행 심리 변화를 평가",
-      "KeyCorp 주식에 대해 월스트리트 애널리스트들이 강세인지 검토"
+      "8-K 중요 사항 공시 제출",
+      "애널리스트 종목 코멘트 언급",
+      "평가와 지역은행 심리 변화 분석",
+      "주가·뉴스·시세·히스토리 페이지",
+      "주가·시세 페이지"
     ],
     "key_news_source_titles": [
-      "[실적] KEYCORP /NEW/, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
       "[기타 공시] KEYCORP /NEW/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
       "Assessing KeyCorp (KEY) Valuation After Earnings Upgrades And Regional Bank Sentiment Shifts - Yahoo Finance",
-      "Are Wall Street Analysts Bullish on KeyCorp Stock? - Yahoo Finance"
+      "KeyCorp (KEY) Stock Price, News, Quote & History - Yahoo Finance",
+      "Wednesday stock calls from analysts include Nvidia, Roblox, GE Vernova - CNBC",
+      "KEY Stock Price | KeyCorp Stock Quote (U.S.: NYSE) - MarketWatch"
     ],
     "key_news_reference_indices": [
       0,
       1,
       2,
-      3
+      3,
+      4
     ],
     "news_references": [
       {
-        "title": "[실적] KEYCORP /NEW/, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
-        "source": "SEC EDGAR",
-        "published_at": "2026-05-05",
-        "link": "https://www.sec.gov/Archives/edgar/data/91576/000162828026030507/key-20260331.htm"
-      },
-      {
         "title": "[기타 공시] KEYCORP /NEW/, 8-K 중요 사항 공시용 보고서를 SEC에 제출",
         "source": "SEC EDGAR",
-        "published_at": "2026-05-29",
-        "link": "https://www.sec.gov/Archives/edgar/data/91576/000162828026039245/key-20260529.htm"
+        "published_at": "2026-06-03",
+        "link": "https://www.sec.gov/Archives/edgar/data/91576/000162828026040502/key-20260603_d2.htm"
       },
       {
         "title": "Assessing KeyCorp (KEY) Valuation After Earnings Upgrades And Regional Bank Sentiment Shifts - Yahoo Finance",
@@ -45,73 +42,79 @@
         "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOODZ5VWFUaTM5c0g0ci1GSVlwM1AySWtZR2dXbG9QXzI5UkgtRWlPYWhCTGlZZUpjTEhyWEFxWVA2MzRyT0pidDduR3kzN1RqS0xrRmtCZXBXVHR6d01kTmQyLWZNUVhoSlRObG9Zb2FMYl9MeGdCWGhxV01DeFc3eTlUVTZrNU9lZXpEcDd0WQ?oc=5"
       },
       {
-        "title": "Are Wall Street Analysts Bullish on KeyCorp Stock? - Yahoo Finance",
+        "title": "KeyCorp (KEY) Stock Price, News, Quote & History - Yahoo Finance",
         "source": "Yahoo Finance",
-        "published_at": "2026-02-02",
-        "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOUkl4cHJFY3Nyb0hVWWVDZ0FxZ3pzOTNnVUVtdnE3UU16UVJ1cHRvZWJ4UVlIdjlZOGg5cWdJWW5iaFJuRExCMzRvekxNaFNRSlR1YkhaeXU1Zm85WElReFhKa05aQU1yVURNbFp1S0N6eEwxVExhRklyX2l0YmhjYm1fWXpueUNlYXc?oc=5"
+        "published_at": "2026-06-07",
+        "link": "https://news.google.com/rss/articles/CBMiTEFVX3lxTFBKQnBGVkZxaTFUS1pQNkZzX0FpSmtobG9pSEI5ZjNiMDNidy1NTUV1Y1BzYm0xcmFRWHl5dTVZeHpzSkttZmV1SGh3bG0?oc=5"
       },
       {
         "title": "Wednesday stock calls from analysts include Nvidia, Roblox, GE Vernova - CNBC",
         "source": "CNBC",
         "published_at": "2025-12-10",
         "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNY29EZHdGR3pQWlNWZkpkVWhKbXV2Uk5MZFRvMTdQNEhTTjhfMm1rd1J2UDhhQnI4TGZKUUJWN2QwdVN3eFBoVlQ5dHF0VGVheUJ5dlpMS2tza2VWZ3hvTjhJeVZhbDhsZjFaNXNaX2lNbTZaT21wODI2b3Y1V1kwNkl0UXRRYmxjSEczbU42c01XaFZhWHp2dDBkUFRaeTE2Z0NNdDZwQVI?oc=5"
+      },
+      {
+        "title": "KEY Stock Price | KeyCorp Stock Quote (U.S.: NYSE) - MarketWatch",
+        "source": "MarketWatch",
+        "published_at": "2026-06-05",
+        "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1JV2RwV19uREt1eHN3c3RSZ1RZajc4RG16b0FGVjE5YUVMSlhZeU9xTktiaWg5TE1zdjJCQXVuUl9VTTV1RE42THRhQVhiT2tfMHQ5aVo2YU5yb0E?oc=5"
       }
     ],
     "financial_highlights": [
-      "Price: 21.33 USD",
-      "30D: -2.47% | Daily: -0.05%",
-      "SMA50: 21.16 USD",
-      "PER: 13.1x | PE pctl: 33",
-      "Forward EPS: 2.16 | EPS Growth: +33.30% YoY"
+      "PER 13.3x (peer PER 33pctl)",
+      "Forward EPS 2.16 | TTM EPS 1.63",
+      "EPS Growth +33.30% YoY",
+      "RS 83pctl | Dividend Yield 67pctl",
+      "PCR 0.43 (options flow)"
     ],
     "risks_or_watchpoints": [
-      "현재가 21.33 USD가 SMA50 21.16에 매우 근접해 있어, 21.16 이탈 시 단기 추세 훼손 여부 점검",
-      "MACD 0.01/0.02(약세)와 30D -2.47% 하락이 이어질 경우 모멘텀 약화 여부 점검",
-      "Next Earnings: N/A로 표시되어 있어, 촉매 공백이 지속되면 방향성 약화 가능성 점검",
-      "2026-06-18 만기 옵션에서 CALL $5, vol 4, OI 대비 400% 활동이 관찰되어 수급 왜곡 여부 점검"
+      "주가가 50일 이동평균선 21.26 USD 아래로 밀리면 약세 시나리오 확인",
+      "주가가 52W High 23.35를 넘지 못하고 21.78 부근 BB 상단을 재차 돌파 실패하면 상단 저항 주의",
+      "2026-06-15 배당 지급일 전까지 현재가 21.76 USD 주변 등락이 이어지면 이벤트 전 변동성 주의",
+      "2026-06-18 만기 전 옵션 포지션(PCR 0.81x, MaxPain $22)과 현주가 21.76 USD 괴리가 커지면 수급 리스크 주의"
     ],
-    "signal_or_takeaway": "중립 경계 — SMA50 인근 약세와 배당락일 전후 자금 흐름 확인 필요 | 진입 트리거 21.16 지지 확인 | 목표 21.93/25.03달러 | 손절 19.96달러",
+    "signal_or_takeaway": "중립 관찰 — 배당 지급일 전 박스권 흐름과 제한된 추가 재료 | 진입 트리거 21.76 지지 확인 | 목표 22.38/23.35달러 | 손절 21.26달러",
     "data_snapshot": {
-      "Price": "21.33 USD",
-      "Daily Change": "-0.05%",
-      "Market Cap": "23.13B",
-      "Trailing P/E": "13.09",
+      "Price": "21.76 USD",
+      "Daily Change": "+0.42%",
+      "Market Cap": "23.59B",
+      "Trailing P/E": "13.35",
       "EPS": "1.63",
       "52W High": "23.35",
-      "52W Low": "15.47",
-      "50D SMA": "21.16",
-      "200D SMA": "19.96",
-      "Volume": "19.17M",
-      "3M Avg Volume": "13.50M",
-      "Price/Book": "1.33",
-      "Dividend Yield": "3.84%",
+      "52W Low": "15.59",
+      "50D SMA": "21.26",
+      "200D SMA": "20.00",
+      "Volume": "11.99M",
+      "3M Avg Volume": "13.43M",
+      "Price/Book": "1.35",
+      "Dividend Yield": "3.77%",
       "Sector": "Financial Services",
-      "Open": "21.29",
-      "High": "21.46",
-      "Low": "21.17",
-      "Close": "21.33",
-      "RS vs Sector ETF": "-1.82%"
+      "Open": "21.67",
+      "High": "21.93",
+      "Low": "21.56",
+      "Close": "21.76",
+      "RS vs Sector ETF": "-0.33%"
     },
     "fundamentals": {
-      "market_cap": "23.13B",
-      "trailing_pe": "13.09",
+      "market_cap": "23.59B",
+      "trailing_pe": "13.35",
       "eps": "1.63",
       "forward_eps": "2.16",
       "earnings_growth": "+33.30% YoY",
-      "price_to_book": "1.33",
-      "dividend_yield": "3.84%",
-      "volume": "19.17M",
-      "avg_volume_3m": "13.50M",
+      "price_to_book": "1.35",
+      "dividend_yield": "3.77%",
+      "volume": "11.99M",
+      "avg_volume_3m": "13.43M",
       "52w_high": "23.35",
-      "52w_low": "15.47",
+      "52w_low": "15.59",
       "short_float_pct": "0.00%",
       "short_ratio": "0.00일",
       "analyst_target_price": "25.03 USD",
-      "analyst_recommendation": "Buy",
+      "analyst_recommendation": "N/A",
       "analyst_count": "18명",
       "held_by_insiders": "0.29%",
-      "held_by_institutions": "89.02%",
-      "implied_volatility": "31.2%"
+      "held_by_institutions": "88.93%",
+      "implied_volatility": "32.4%"
     },
     "earnings_setup": {
       "forward_eps": "2.16 USD/share",
@@ -140,15 +143,15 @@
       "pattern_note": "최근 3개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "0.40",
-      "atr_percent": "1.89%",
-      "relative_volume": "1.42x",
-      "gap_percent": "-0.23%",
-      "price_vs_sma50": "+0.78%",
-      "price_vs_sma200": "+6.89%",
-      "week52_position": "74%",
+      "atr_14d": "0.41",
+      "atr_percent": "1.90%",
+      "relative_volume": "0.89x",
+      "gap_percent": "+0.00%",
+      "price_vs_sma50": "+2.37%",
+      "price_vs_sma200": "+8.81%",
+      "week52_position": "80%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-1.82%"
+      "rs_vs_sector_etf": "-0.33%"
     },
     "quarterly_financials": [
       {
@@ -194,96 +197,89 @@
     ],
     "upcoming_events": [
       {
-        "type": "ex_dividend",
-        "label": "배당락일",
-        "date": "2026-06-02",
-        "days_until": "1",
-        "timing": ""
-      },
-      {
         "type": "dividend",
         "label": "배당 지급일",
         "date": "2026-06-15",
-        "days_until": "14",
+        "days_until": "7",
         "timing": ""
       }
     ],
     "news_tone": {
       "label": "neutral",
       "confidence": 1,
-      "reasoning": "SEC 제출 공시와 애널리스트·밸류에이션 관련 기사만 있어 긍정과 중립 신호가 섞여 있습니다."
+      "reasoning": "공시와 정보성 기사 위주이며, 제공된 제목만으로는 명확한 호재나 악재를 확인하기 어렵습니다."
     },
     "trade_frame": {
-      "entry_price": "현재가 21.33 또는 눌림 시 20.93 USD",
-      "stop_loss": "SMA50 21.16 USD",
-      "target_1": "21.93 USD (1.5×ATR)",
+      "entry_price": "현재가 21.76 또는 눌림 시 21.35 USD",
+      "stop_loss": "SMA50 21.26 USD",
+      "target_1": "22.38 USD (1.5×ATR)",
       "target_2": "애널리스트 목표 25.03 USD",
-      "risk_reward_ratio": "3.5R",
-      "position_size_note": "$68,986 계좌 1% 리스크 기준 약 1724주 (ATR $0.40 기반)",
+      "risk_reward_ratio": "1.2R",
+      "position_size_note": "$67,323 계좌 1% 리스크 기준 약 1642주 (ATR $0.41 기반)",
       "bull_scenario": "실적 또는 공시 모멘텀이 이어지고 거래량이 붙으면 상단 저항 재시험 가능성이 있습니다.",
-      "base_scenario": "21.33 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
+      "base_scenario": "21.76 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다.",
       "bear_scenario": "실적 기대가 약해지거나 주요 이동평균선을 이탈하면 단기 조정 압력이 커질 수 있습니다.",
-      "invalidation_price": "50일 이동평균선인 21.16 USD 아래로 밀리면 약세 시나리오 확인",
-      "watch_period": "2026-06-02 배당락일 전까지"
+      "invalidation_price": "50일 이동평균선인 21.26 USD 아래로 밀리면 약세 시나리오 확인",
+      "watch_period": "2026-06-15 배당 지급일 전까지"
     },
     "options_summary": {
       "expiry": "2026-06-18",
-      "implied_volatility": "31.2%",
-      "atm_call_iv": "27.6%",
-      "atm_put_iv": "34.8%",
-      "put_call_ratio": "0.76x",
-      "iv_percentile_30d": "14th",
+      "implied_volatility": "32.4%",
+      "atm_call_iv": "33.8%",
+      "atm_put_iv": "31.1%",
+      "put_call_ratio": "0.81x",
+      "iv_percentile_30d": "10th",
       "tone": "neutral",
-      "unusual_activity": "CALL $15, vol 100, OI 대비 95% ; CALL $5, vol 4, OI 대비 400% ; PUT $13, vol 20, OI 대비 43%",
+      "unusual_activity": "CALL $15, vol 100, OI 대비 95% ; CALL $3, vol 2, OI 대비 100% ; CALL $8, vol 2, OI 대비 40%",
       "oi_change": "N/A"
     },
     "signal_history": [
+      {
+        "date": "2026-06-04",
+        "direction": "neutral",
+        "llm_direction": "bull",
+        "catalyst": "기타 공시",
+        "return_5d": "N/A",
+        "note": "21.67 USD 부근 상승분을 소화하며 실적 전까지 추세 지속 여부를 점검하는 구간입니다."
+      },
+      {
+        "date": "2026-06-03",
+        "direction": "neutral",
+        "llm_direction": "bear",
+        "catalyst": "기타 공시",
+        "return_5d": "N/A",
+        "note": "20.88 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
+      {
+        "date": "2026-06-01",
+        "direction": "neutral",
+        "llm_direction": "bull",
+        "catalyst": "실적",
+        "return_5d": "N/A",
+        "note": "20.90 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
+      {
+        "date": "2026-05-29",
+        "direction": "neutral",
+        "llm_direction": "bear",
+        "catalyst": "실적",
+        "return_5d": "N/A",
+        "note": "21.33 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
+      },
       {
         "date": "2026-05-28",
         "direction": "neutral",
         "llm_direction": "bull",
         "catalyst": "실적",
-        "return_5d": "N/A",
+        "return_5d": "+1.55%",
         "note": "21.34 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-05-27",
-        "direction": "bull",
-        "llm_direction": "bull",
-        "catalyst": "실적",
-        "return_5d": "N/A",
-        "note": "21.50 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-05-26",
-        "direction": "neutral",
-        "llm_direction": "neutral",
-        "catalyst": "실적",
-        "return_5d": "N/A",
-        "note": "21.77 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-05-21",
-        "direction": "neutral",
-        "llm_direction": "bull",
-        "catalyst": "실적",
-        "return_5d": "N/A",
-        "note": "21.49 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
-      },
-      {
-        "date": "2026-05-20",
-        "direction": "neutral",
-        "llm_direction": "bull",
-        "catalyst": "실적",
-        "return_5d": "-0.33%",
-        "note": "21.41 USD 부근에서 방향성 확인 전까지 박스권 등락 가능성이 큽니다."
       }
     ],
     "sector_comparison": {
       "summary": "Financial Services 피어 5개 평균 대비 밸류에이션/모멘텀 비교",
       "pe_ratio": {
-        "company": "13.09",
-        "peer_average": "13.97x",
+        "company": "13.35",
+        "peer_average": "13.60x",
         "difference": null
       },
       "rs_vs_spy": {
@@ -292,23 +288,23 @@
         "difference": null
       },
       "price_change_30d": {
-        "company": "-2.47%",
-        "peer_average": "6.15%",
-        "difference": "-8.62"
+        "company": "+1.74%",
+        "peer_average": "-3.44%",
+        "difference": "+5.18"
       }
     },
     "peer_rank": {
       "per_pctl": 33,
-      "rs_pctl": 0,
+      "rs_pctl": 83,
       "revenue_growth_pctl": 33,
-      "dividend_yield_pctl": 83,
-      "summary": "모멘텀 하위 0%"
+      "dividend_yield_pctl": 67,
+      "summary": "모멘텀 상위 17%"
     },
     "valuation_score": {
       "score": "6/10",
       "factors": [
-        "PER 13.1x",
-        "목표가 대비 업사이드 +17.3%"
+        "PER 13.3x",
+        "목표가 대비 업사이드 +15.0%"
       ],
       "assessment": "대체로 적정 가치 범위에 위치합니다."
     },
@@ -333,7 +329,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "2026-Q1 EPS가 0.44로 예상치 0.41을 상회하고 최근 4개 분기 중 3번 어닝 서프라이즈를 기록했지만, 주가는 21.33달러로 SMA50 21.16달러 근처에 머물고 30일 수익률이 -2.47%라 추세 상향이 아직 뚜렷하지 않습니다. Forward EPS 2.16과 +33.30% YoY 성장, PER 13.1x는 밸류에이션과 이익 성장의 조합이 나쁘지 않지만, 배당락일(2026-06-02) 직전의 단기 수급 이슈 외에 성장 가속을 확신할 만한 명확한 신제품/구조적 촉매가 부족해 관망이 적절합니다.",
+          "summary": "EPS는 최근 4개 분기 연속 서프라이즈(0.35→0.41→0.43→0.44)로 개선 흐름이 있고, YoY EPS 성장률도 +33.30%로 양호하지만 8-K와 애널리스트 코멘트 외에 실적 가속을 지속시킬 명확한 신제품/AI 촉매는 확인되지 않습니다. 현재 PER 13.3x는 피어 평균 13.6x와 큰 차이가 없고, 주가는 21.76달러로 목표가 25.03달러 대비 상방은 있으나 배당일(6/15) 전 제한된 수급 요인과 RS 83pctl의 모멘텀만으로는 추격 매수 근거가 약합니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -345,7 +341,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "PER 13.1x와 P/B 1.33배는 은행주로 아주 싸다고 보기 어렵고, 애널리스트 목표가 25.03 USD 대비 업사이드도 현재가 21.33 USD 기준 약 17.3%에 불과해 밸류에이션 매력이 제한적입니다. 또한 30일 수익률 -2.47%로 모멘텀이 약하고, SMA50 21.16 USD와 거의 붙어 있어 21.16 이탈 시 하방이 먼저 열릴 수 있으며 RS pctl 0은 상대강도 부진을 보여줍니다.",
+          "summary": "PER 13.3x와 P/B 1.35배는 절대적으로 싸 보이지만, 애널리스트 목표가 25.03달러 대비 현주가 21.76달러의 업사이드는 약 15%에 불과해 밸류에이션 재평가 여지가 크지 않습니다. 특히 주가가 52주 고점 23.35달러의 -6.8% 수준에 있고 50일선 21.26달러 위에 겨우 2.3%만 올라 있어, 실적 서프라이즈가 이어져도 이미 가격에 상당 부분 반영된 상태로 보입니다. 또한 최근 분기 EPS는 0.44→0.43→0.41→0.35로 개선됐지만, 분기 매출은 1.78B~1.94B 박스권이라 이익 성장의 질이 매출 확장보다 비용/일회성 요인에 더 의존했을 가능성을 경계해야 합니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -357,7 +353,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "하방 시나리오는 21.16(SMA50) 이탈 시이며, 이 경우 단기 추세 훼손과 함께 20.93 수준 재테스트, 더 아래로는 19.96(SMA200)까지 열립니다. 52주 고점 23.35 대비 아직 74% 위치지만 RS vs Sector ETF가 -1.82%라 상대강도는 약하고, 50일선 아래 안착이 나오면 방어 논리가 깨집니다.",
+          "summary": "하방 시나리오는 50일선 21.26 이탈 시 먼저 훼손되며, 이 경우 20.00(SMA200) 재시험과 15.59(52주 저점) 방향의 조정 리스크를 봐야 합니다. 현재 21.76은 SMA50 상단이지만 52주 고점 23.35 대비 여유가 제한적이고 6/15 배당, 6/18 만기 전후로 변동성 확대가 가능해 추세 유지가 핵심입니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -369,7 +365,7 @@
           "action": "watch",
           "confidence": 0.0,
           "strong_objection": false,
-          "summary": "금리 민감 금융주로서 200D SMA 19.96과 현재가 21.33 사이 여유는 있지만, 50D SMA 21.16 바로 아래에 머물고 30일 수익률 -2.47%로 섹터 평균 6.15%를 8.62%p 하회해 상대강도가 약합니다. RS vs Sector ETF -1.82%와 거래량 1.42x는 이벤트성 수급은 있으나, 금리 인하 기대가 강해지는 레짐에서는 순이자마진 기대 약화로 방어적 재평가가 먼저 나올 수 있어 보수적으로 봅니다.",
+          "summary": "현재 주가는 21.76달러로 50D SMA 21.26과 200D SMA 20.00을 각각 +2.37%, +8.81% 상회해 금리 하락·리스크온 환경에서는 방어적 강세를 유지할 수 있습니다. 다만 RS vs Sector ETF가 -0.33%로 섹터 대비 우위가 뚜렷하지 않고, 금융주는 보통 장단기 금리차와 달러 강세에 민감하므로 52W High 23.35 대비 80% 구간에서 추가 멀티플 확장은 거시 완화가 확인될 때만 유효합니다.",
           "valid": true,
           "invalid_reason": ""
         },
@@ -379,20 +375,19 @@
           "profile": "economy",
           "stance": "watch",
           "action": "watch",
-          "confidence": 0.64,
+          "confidence": 0.78,
           "strong_objection": false,
-          "summary": "주가 21.33 USD가 SMA50 21.16 USD에 거의 붙어 있고 30일 수익률이 -2.47%로 섹터 평균 6.15%를 8.62%p 하회해, 현재는 방향성 확인 전 추격 매수보다 대기 관점이 맞습니다. PER 13.1x와 P/B 1.33배, 배당수익률 3.84%, Forward EPS 2.16 및 EPS 성장 +33.30% YoY는 밸류에이션과 이익 측면의 버팀목이지만, RS vs Sector ETF -1.82%와 21.16 이탈 시 약세 전환 가능성이 더 즉각적인 리스크입니다. 다만 애널리스트 18명 평균 목표가 25.03 USD로 현가 대비 약 +17.3% 여지가 있어 완전한 회피보다는 배당락(2026-06-02) 전후 자금흐름과 21.16 USD 지지 확인이 필요한 관찰이 적절합니다.",
+          "summary": "현재 주가는 21.76달러로 50일선 21.26달러와 200일선 20.00달러 위에 있고, PER 13.3배와 P/B 1.35배는 동종 대비 과열은 아니지만 업사이드가 25.03달러 목표가 대비 약 15%로 제한적입니다. 반면 6/15 배당일과 6/18 옵션 만기 전후로 21.26달러 이탈 시 조정이 빠질 수 있고, PCR 0.43은 단기 포지셔닝이 한쪽으로 치우쳤을 가능성을 시사해 신규 비중 확대는 보류가 맞습니다. 반대 근거로는 EPS +33.30% YoY와 RS 83pctl이 있어 추세 훼손이 없으면 상단 재시험 여지는 남아 있습니다.",
           "valid": true,
           "invalid_reason": ""
         }
       }
     },
     "period_changes": {
-      "7d": "-1.07%",
-      "30d": "-1.57%"
+      "7d": "+3.03%",
+      "30d": "-1.14%"
     },
     "sec_filing_tags": [
-      "실적",
       "기타 공시"
     ],
     "sec_filings": [
@@ -403,60 +398,49 @@
         "item_number": "",
         "catalyst_type": "medium",
         "importance_score": 120,
-        "published_at": "2026-05-29",
-        "link": "https://www.sec.gov/Archives/edgar/data/91576/000162828026039245/key-20260529.htm",
-        "source": "SEC EDGAR"
-      },
-      {
-        "tag": "실적",
-        "title": "KEYCORP /NEW/, 10-Q 분기 실적 관련 보고서를 SEC에 제출",
-        "form_type": "10-Q",
-        "item_number": "",
-        "catalyst_type": "hard",
-        "importance_score": 200,
-        "published_at": "2026-05-05",
-        "link": "https://www.sec.gov/Archives/edgar/data/91576/000162828026030507/key-20260331.htm",
+        "published_at": "2026-06-03",
+        "link": "https://www.sec.gov/Archives/edgar/data/91576/000162828026040502/key-20260603_d2.htm",
         "source": "SEC EDGAR"
       }
     ],
     "decision": {
       "action": "watch",
-      "conviction": 60,
-      "reason": "섹터 대비 -1.8% / SMA50·SMA200 위 / 상대 거래량 1.42배 / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다.",
-      "valid_until": "2026-06-05",
+      "conviction": 54,
+      "reason": "섹터 대비 -0.3% / SMA50·SMA200 위 / 리스크온 환경의 중립 업종 / 대체로 적정 가치 범위에 위치합니다.",
+      "valid_until": "2026-06-12",
       "factors": {
-        "catalyst_recency": 8.0,
+        "catalyst_recency": -5.0,
         "earnings_pattern": 8.0,
         "fundamentals": 10.0,
         "macro_event": 0.0,
         "macro_regime": 3.0,
-        "momentum": 15.0,
+        "momentum": 13.0,
         "news_tone": 0.0,
-        "peer_rank": 0.0,
-        "policy_tailwind": 1.0,
+        "peer_rank": 5.0,
+        "policy_tailwind": 0.0,
         "portfolio_risk": 0.0,
         "regime_adjustment": 10.0,
         "signal_track_record": 0.0,
         "valuation": 12.0
       },
       "factor_reasoning": {
-        "catalyst_recency": "하드 촉매 2026-05-05",
+        "catalyst_recency": "가까운 촉매가 없어 감점",
         "earnings_pattern": "연속 상회 3분기 / 서프라이즈 추세 안정 / 평균 서프라이즈 +0.1%",
-        "fundamentals": "선행 EPS 성장 +32.5% / 기관 보유 89.0%",
+        "fundamentals": "선행 EPS 성장 +32.5% / 기관 보유 88.9%",
         "macro_event": "현재 거시 충격의 직접 업종 영향은 제한적",
         "macro_regime": "risk_on 레짐에서 financial services 섹터 편향 +3",
-        "momentum": "섹터 대비 -1.8% / SMA50·SMA200 위 / 상대 거래량 1.42배",
+        "momentum": "섹터 대비 -0.3% / SMA50·SMA200 위",
         "news_tone": "뉴스 톤이 중립",
-        "peer_rank": "peer percentile 기준 특이 우위는 제한적입니다",
-        "policy_tailwind": "정책 임팩트 +0.08 — 핀테크와 디지털자산을 규제체계에 통합하려는 행정명령은 금융혁신 관련 규제 명확성을 높일 수 있다. KEY는 금융기관으로서 핀테크 협업·서비스 확대 측면에서 간접 수혜 가능성이 있다.",
+        "peer_rank": "peer 대비 밸류에이션과 모멘텀이 모두 우호적입니다",
+        "policy_tailwind": "정책 임팩트 +0.00 — 재무부의 분기 국채 발행 계획은 장기금리와 자금조달 여건에 영향을 줄 수 있다. KEY는 은행으로 채권수익률 변동의 간접 영향을 받지만 방향성은 제한적이다.",
         "portfolio_risk": "risk_on 레짐: 포트폴리오 집중 패널티 비활성",
         "regime_adjustment": "리스크온 환경의 중립 업종",
-        "signal_track_record": "최근 시그널 승률 38% (3/8)",
+        "signal_track_record": "최근 시그널 승률 42% (5/12)",
         "valuation": "대체로 적정 가치 범위에 위치합니다."
       },
       "ensemble_agreement": "single",
       "final_consensus": "single",
-      "raw_conviction": 64,
+      "raw_conviction": 58,
       "confidence_meta": {
         "data_quality": 0.9705,
         "evidence_coverage": 1.0,

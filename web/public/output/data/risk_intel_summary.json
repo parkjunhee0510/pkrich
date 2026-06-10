@@ -1,14 +1,51 @@
 {
   "schema_version": "1.0.0",
-  "as_of": "2026-05-29",
+  "as_of": "2026-06-05",
   "status": "partial",
   "cards": [
     {
-      "id": "alert:9c3a1662b193:AMD:2026-05-29",
+      "id": "alert:a65de716833d:AMD:2026-06-05",
+      "alert_level": "alert",
+      "alert_level_label_ko": "경보",
+      "title_ko": "경보: AMD - 수출통제",
+      "summary_ko": "첨단 컴퓨팅 수출 규제 집행 유지로 중국향 AI GPU/CPU 판매 제약이 지속된다. AMD는 export_control_china 노출과 중국 매출 비중 15%로 직접 영향이다.",
+      "affected_sectors": [
+        "sector:ai-infra"
+      ],
+      "affected_tickers": [
+        {
+          "exposure_label_ko": "보유",
+          "exposure_type": "holding",
+          "is_holding": true,
+          "ticker": "AMD"
+        }
+      ],
+      "evidence_counts": {
+        "explicit": 1,
+        "inferred": 1,
+        "market": 0,
+        "social": 0
+      },
+      "top_evidence_refs": [
+        "record:policy:a65de716833d"
+      ],
+      "rationale_ko": "첨단 컴퓨팅 수출 규제 집행 유지로 중국향 AI GPU/CPU 판매 제약이 지속된다. AMD는 export_control_china 노출과 중국 매출 비중 15%로 직접 영향이다.",
+      "detail_node_id": "issue:export-control:a65de716833d",
+      "score": 0.7661,
+      "raw_score": 0.7661,
+      "score_kind": "final",
+      "cap_value": null,
+      "caps_applied": [],
+      "guardrails_applied": [
+        "alert_requires_evidence_refs"
+      ]
+    },
+    {
+      "id": "alert:9c3a1662b193:AMD:2026-06-05",
       "alert_level": "alert",
       "alert_level_label_ko": "경보",
       "title_ko": "경보: AMD - 관세",
-      "summary_ko": "반도체 대상 대중국 301 조사는 고성능 칩 업체에 직접적인 통상 리스크다. AMD는 export_control_china 노출과 중국 매출 비중 15%로 직접 타격 가능성이 있다.",
+      "summary_ko": "대중 반도체 통상조치 가능성은 중국향 반도체 매출과 공급망에 부담이다. AMD는 export_control_china 노출과 중국 매출 15%로 직접 노출이다.",
       "affected_sectors": [
         "sector:ai-infra"
       ],
@@ -29,10 +66,10 @@
       "top_evidence_refs": [
         "record:policy:9c3a1662b193"
       ],
-      "rationale_ko": "반도체 대상 대중국 301 조사는 고성능 칩 업체에 직접적인 통상 리스크다. AMD는 export_control_china 노출과 중국 매출 비중 15%로 직접 타격 가능성이 있다.",
+      "rationale_ko": "대중 반도체 통상조치 가능성은 중국향 반도체 매출과 공급망에 부담이다. AMD는 export_control_china 노출과 중국 매출 15%로 직접 노출이다.",
       "detail_node_id": "issue:tariff:9c3a1662b193",
-      "score": 0.7619,
-      "raw_score": 0.7619,
+      "score": 0.7591,
+      "raw_score": 0.7591,
       "score_kind": "final",
       "cap_value": null,
       "caps_applied": [],
@@ -41,20 +78,20 @@
       ]
     },
     {
-      "id": "alert:a590dab5e4b1:XOM:2026-05-29",
+      "id": "alert:c3071162d346:CAT:2026-06-05",
       "alert_level": "alert",
       "alert_level_label_ko": "경보",
-      "title_ko": "경보: XOM - 에너지 정책",
-      "summary_ko": "SPR 교환 확대는 단기 원유 공급 증가 기대를 높여 유가에 부담이 될 수 있다. XOM은 통합 에너지 기업으로 원유 가격 하락의 직접 노출이 있다.",
+      "title_ko": "경보: CAT - 관세",
+      "summary_ko": "철강·알루미늄·구리 관세 강화는 중장비 제조 원가를 높일 수 있다. CAT는 건설·광산 장비 제조사이며 tariff_steel 노출이 명시돼 있어 직접 부담이다.",
       "affected_sectors": [
-        "sector:energy"
+        "sector:industrial-infra"
       ],
       "affected_tickers": [
         {
           "exposure_label_ko": "보유",
           "exposure_type": "holding",
           "is_holding": true,
-          "ticker": "XOM"
+          "ticker": "CAT"
         }
       ],
       "evidence_counts": {
@@ -64,12 +101,12 @@
         "social": 0
       },
       "top_evidence_refs": [
-        "record:policy:a590dab5e4b1"
+        "record:policy:c3071162d346"
       ],
-      "rationale_ko": "SPR 교환 확대는 단기 원유 공급 증가 기대를 높여 유가에 부담이 될 수 있다. XOM은 통합 에너지 기업으로 원유 가격 하락의 직접 노출이 있다.",
-      "detail_node_id": "issue:energy-policy:a590dab5e4b1",
-      "score": 0.7514,
-      "raw_score": 0.7514,
+      "rationale_ko": "철강·알루미늄·구리 관세 강화는 중장비 제조 원가를 높일 수 있다. CAT는 건설·광산 장비 제조사이며 tariff_steel 노출이 명시돼 있어 직접 부담이다.",
+      "detail_node_id": "issue:tariff:c3071162d346",
+      "score": 0.7549,
+      "raw_score": 0.7549,
       "score_kind": "final",
       "cap_value": null,
       "caps_applied": [],
@@ -78,20 +115,20 @@
       ]
     },
     {
-      "id": "alert:a590dab5e4b1:OXY:2026-05-29",
+      "id": "alert:ca4285e7379a:AMD:2026-06-05",
       "alert_level": "alert",
       "alert_level_label_ko": "경보",
-      "title_ko": "경보: OXY - 에너지 정책",
-      "summary_ko": "전략비축유 교환 집행 지속은 공급 완화 신호로 유가에 하방 압력을 줄 수 있다. OXY는 'oil_price'와 'spr_release' 노출이 명시된 미국 E&P 기업으로 직접 부정적 영향 가능성이 높다.",
+      "title_ko": "경보: AMD - 수출통제",
+      "summary_ko": "현행 EAR 유지 자체가 중국향 고성능 반도체 수출 제약 지속을 의미한다. AMD는 export_control_china 노출과 중국 매출 15%로 직접 부담이다.",
       "affected_sectors": [
-        "sector:energy"
+        "sector:ai-infra"
       ],
       "affected_tickers": [
         {
-          "exposure_label_ko": "관심",
-          "exposure_type": "watchlist",
-          "is_holding": false,
-          "ticker": "OXY"
+          "exposure_label_ko": "보유",
+          "exposure_type": "holding",
+          "is_holding": true,
+          "ticker": "AMD"
         }
       ],
       "evidence_counts": {
@@ -101,12 +138,12 @@
         "social": 0
       },
       "top_evidence_refs": [
-        "record:policy:a590dab5e4b1"
+        "record:policy:ca4285e7379a"
       ],
-      "rationale_ko": "전략비축유 교환 집행 지속은 공급 완화 신호로 유가에 하방 압력을 줄 수 있다. OXY는 'oil_price'와 'spr_release' 노출이 명시된 미국 E&P 기업으로 직접 부정적 영향 가능성이 높다.",
-      "detail_node_id": "issue:energy-policy:a590dab5e4b1",
-      "score": 0.707,
-      "raw_score": 0.707,
+      "rationale_ko": "현행 EAR 유지 자체가 중국향 고성능 반도체 수출 제약 지속을 의미한다. AMD는 export_control_china 노출과 중국 매출 15%로 직접 부담이다.",
+      "detail_node_id": "issue:export-control:ca4285e7379a",
+      "score": 0.7521,
+      "raw_score": 0.7521,
       "score_kind": "final",
       "cap_value": null,
       "caps_applied": [],
@@ -115,11 +152,11 @@
       ]
     },
     {
-      "id": "alert:9c3a1662b193:ALAB:2026-05-29",
+      "id": "alert:a65de716833d:ALAB:2026-06-05",
       "alert_level": "alert",
       "alert_level_label_ko": "경보",
-      "title_ko": "경보: ALAB - 관세",
-      "summary_ko": "AI 인프라용 연결 반도체도 반도체 통상규제 강화의 영향을 받는다. ALAB는 export_control_china 노출과 중국 매출 비중 20%로 직접 부담이다.",
+      "title_ko": "경보: ALAB - 수출통제",
+      "summary_ko": "AI 인프라용 연결 반도체도 첨단컴퓨팅 생태계 규제 강화의 영향을 받는다. ALAB는 export_control_china 노출과 중국 매출 20%로 직접 부담이다.",
       "affected_sectors": [
         "sector:technology"
       ],
@@ -138,49 +175,12 @@
         "social": 0
       },
       "top_evidence_refs": [
-        "record:policy:9c3a1662b193"
+        "record:policy:a65de716833d"
       ],
-      "rationale_ko": "AI 인프라용 연결 반도체도 반도체 통상규제 강화의 영향을 받는다. ALAB는 export_control_china 노출과 중국 매출 비중 20%로 직접 부담이다.",
-      "detail_node_id": "issue:tariff:9c3a1662b193",
-      "score": 0.7063,
-      "raw_score": 0.7063,
-      "score_kind": "final",
-      "cap_value": null,
-      "caps_applied": [],
-      "guardrails_applied": [
-        "alert_requires_evidence_refs"
-      ]
-    },
-    {
-      "id": "alert:e074cddadf8e:KO:2026-05-29",
-      "alert_level": "alert",
-      "alert_level_label_ko": "경보",
-      "title_ko": "경보: KO - 식품·의료 규제",
-      "summary_ko": "FDA가 식품 화학물질 사후평가 프로그램을 확정하고 BHT·ADA 재평가를 개시했다. KO는 식음료 대기업으로 원재료·포장·첨가물 규제 변화에 직접 노출될 수 있다.",
-      "affected_sectors": [
-        "sector:staples"
-      ],
-      "affected_tickers": [
-        {
-          "exposure_label_ko": "관심",
-          "exposure_type": "watchlist",
-          "is_holding": false,
-          "ticker": "KO"
-        }
-      ],
-      "evidence_counts": {
-        "explicit": 1,
-        "inferred": 1,
-        "market": 0,
-        "social": 0
-      },
-      "top_evidence_refs": [
-        "record:policy:e074cddadf8e"
-      ],
-      "rationale_ko": "FDA가 식품 화학물질 사후평가 프로그램을 확정하고 BHT·ADA 재평가를 개시했다. KO는 식음료 대기업으로 원재료·포장·첨가물 규제 변화에 직접 노출될 수 있다.",
-      "detail_node_id": "issue:fda:e074cddadf8e",
-      "score": 0.7042,
-      "raw_score": 0.7042,
+      "rationale_ko": "AI 인프라용 연결 반도체도 첨단컴퓨팅 생태계 규제 강화의 영향을 받는다. ALAB는 export_control_china 노출과 중국 매출 20%로 직접 부담이다.",
+      "detail_node_id": "issue:export-control:a65de716833d",
+      "score": 0.7084,
+      "raw_score": 0.7084,
       "score_kind": "final",
       "cap_value": null,
       "caps_applied": [],
@@ -191,7 +191,7 @@
   ],
   "counts": {
     "cards": 5,
-    "alert_paths": 91
+    "alert_paths": 180
   },
   "source_tier_status": {
     "tier2": "skipped_not_enabled",
@@ -201,12 +201,12 @@
     "ko": "표시할 리스크 경로가 없습니다."
   },
   "generation": {
-    "run_id": "run:2026-05-29-risk-intel",
-    "as_of": "2026-05-29",
+    "run_id": "run:2026-06-05-risk-intel",
+    "as_of": "2026-06-05",
     "scoring_config_version": "risk-intel-scoring-v1",
     "confidence_config_version": "risk-intel-confidence-v1",
     "source_config_version": "risk-intel-source-v1",
-    "generated_at": "2026-05-29T00:00:00+00:00"
+    "generated_at": "2026-06-05T00:00:00+00:00"
   },
-  "derived_from_graph_run_id": "run:2026-05-29-risk-intel"
+  "derived_from_graph_run_id": "run:2026-06-05-risk-intel"
 }

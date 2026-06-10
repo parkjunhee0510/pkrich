@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import math
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Iterable
 
 from src.output.schema import SCHEMA_VERSION
+from src.utils.news_evidence import build_news_evidence
 
 
 INITIAL_CAPITAL = 100000.0
@@ -14,6 +17,9 @@ SLIPPAGE_PCT = 0.0005
 TRADE_COST_PCT = FEE_PCT + SLIPPAGE_PCT
 MODE = "observational_long_only"
 BASIS = "final_action"
+NEWS_SHADOW_ID = "strong_news_llm_bull"
+NEWS_SHADOW_LABEL = "강한 뉴스 + LLM 강세"
+NEWS_SHADOW_HORIZONS = (1, 5, 20)
 
 PRESET_CONFIGS = {
     "conservative": {
@@ -86,6 +92,74 @@ CANDIDATE_STATUS_PRIORITY = {
     "missing_entry_price": 5,
     "simulated_entry_closed": 6,
 }
+QUEUE_PRESET_KEY = "balanced"
+QUEUE_LABELS = {
+    "enter": "진입 검토",
+    "watch": "보류",
+    "skip": "제외",
+    "hold": "보유 관리",
+}
+QUEUE_STATUS_MAP = {
+    "entry_ready": "enter",
+    "pending_next_open": "watch",
+    "missing_entry_price": "watch",
+    "already_held": "watch",
+    "insufficient_cash": "skip",
+    "max_positions_reached": "skip",
+    "simulated_entry_closed": "skip",
+}
+QUEUE_PRIORITY = {
+    "enter": 0,
+    "watch": 1,
+    "hold": 2,
+    "skip": 3,
+}
+QUEUE_STATUS_POINTS = {
+    "entry_ready": 25.0,
+    "pending_next_open": 16.0,
+    "missing_entry_price": 10.0,
+    "already_held": 8.0,
+    "insufficient_cash": 4.0,
+    "max_positions_reached": 3.0,
+    "simulated_entry_closed": 0.0,
+}
+QUEUE_NEWS_STRENGTH_POINTS = {
+    "strong": 12.0,
+    "moderate": 8.0,
+    "weak": 3.0,
+    "insufficient": 0.0,
+}
+QUEUE_LLM_POINTS = {
+    "aligned": 10.0,
+    "neutral": 5.0,
+    "missing": 3.0,
+    "conflict": 0.0,
+}
+QUEUE_REASON_LABELS = {
+    "pending_next_open": "다음 open 대기",
+    "missing_entry_price": "진입가 확인 필요",
+    "already_held": "이미 보유",
+    "insufficient_cash": "현금 부족",
+    "max_positions_reached": "포지션 한도",
+    "simulated_entry_closed": "과거 반영 완료",
+    "weak_news_evidence": "뉴스 근거 약함",
+    "llm_conflict": "LLM 충돌",
+    "risk_reward_missing": "손익 기준 대기",
+    "entry_ready": "진입 조건 충족",
+    "strong_news": "뉴스 강함",
+    "moderate_news": "뉴스 보통",
+    "bullish_news": "긍정 뉴스",
+    "llm_aligned": "LLM 일치",
+    "cash_available": "현금 가능",
+    "risk_reward_defined": "손익 기준 확인",
+}
+PLACEHOLDER_CATALYST_TAGS = {
+    "일반 이슈",
+    "general issue",
+    "no catalyst",
+    "no hard catalyst",
+    "no sec filing or hard catalyst detected",
+}
 
 
 @dataclass(frozen=True)
@@ -96,6 +170,7 @@ class Signal:
     conviction: float | None
     signal_direction: str | None
     llm_direction: str | None
+    news_evidence: dict[str, Any]
     ordinal: int
 
 
@@ -132,10 +207,11 @@ def build_strategy_simulator(signal_rows: Iterable[Any], price_rows: Iterable[An
         key: _simulate_preset(config, signals, prices_by_ticker, all_dates)
         for key, config in PRESET_CONFIGS.items()
     }
-    return _payload("ok", _iso(all_dates[-1]), inputs, presets)
+    news_shadow = _build_news_shadow(signals, prices_by_ticker)
+    return _payload("ok", _iso(all_dates[-1]), inputs, presets, news_shadow)
 
 
-def _payload(status: str, as_of: str, inputs: dict, presets: dict) -> dict:
+def _payload(status: str, as_of: str, inputs: dict, presets: dict, news_shadow: dict | None = None) -> dict:
     return {
         "schema_version": SCHEMA_VERSION,
         "status": status,
@@ -153,6 +229,8 @@ def _payload(status: str, as_of: str, inputs: dict, presets: dict) -> dict:
             "slippage_rate": SLIPPAGE_PCT,
         },
         "presets": presets,
+        "news_shadow": news_shadow or _empty_news_shadow(),
+        "today_action_queue": _build_today_action_queue(status, as_of, presets),
         "notes": _notes_for_status(status),
     }
 
@@ -571,6 +649,7 @@ def _candidate_payload(
         "llm_alignment": _llm_alignment(signal.signal_direction, signal.llm_direction),
         "signal_direction": signal.signal_direction,
         "llm_direction": signal.llm_direction,
+        "news_evidence": signal.news_evidence,
         "reason": CANDIDATE_STATUS_REASONS[status],
     }
 
@@ -587,6 +666,429 @@ def _entry_candidate_priority(row: dict) -> tuple:
         -signal_date.toordinal(),
         row.get("ticker") or "",
     )
+
+
+def _empty_news_shadow() -> dict:
+    return {
+        "status": "insufficient_data",
+        "strategies": [
+            {
+                "id": NEWS_SHADOW_ID,
+                "label": NEWS_SHADOW_LABEL,
+                "criteria": [
+                    "news_evidence.strength == strong",
+                    "llm_direction == bull",
+                    "positive news tone or recent hard catalyst",
+                ],
+                "summary": _news_shadow_summary([]),
+                "events": [],
+            }
+        ],
+    }
+
+
+def _build_news_shadow(signals: list[Signal], prices_by_ticker: dict[str, list[Price]]) -> dict:
+    events = []
+    for signal in signals:
+        if not _is_news_shadow_candidate(signal):
+            continue
+        prices = prices_by_ticker.get(signal.ticker, [])
+        entry_price = _next_price_after(prices, signal.signal_date)
+        if entry_price is None or entry_price.open is None:
+            continue
+        events.append(_news_shadow_event(signal, prices, entry_price))
+    return {
+        "status": "ok",
+        "strategies": [
+            {
+                "id": NEWS_SHADOW_ID,
+                "label": NEWS_SHADOW_LABEL,
+                "criteria": [
+                    "news_evidence.strength == strong",
+                    "llm_direction == bull",
+                    "positive news tone or recent hard catalyst",
+                ],
+                "summary": _news_shadow_summary(events),
+                "events": events[:20],
+            }
+        ],
+    }
+
+
+def _is_news_shadow_candidate(signal: Signal) -> bool:
+    evidence = signal.news_evidence
+    score = _float_value(evidence.get("score"))
+    if score is None or not math.isfinite(score):
+        return False
+    if evidence.get("strength") != "strong":
+        return False
+    if evidence.get("llm_direction") != "bull":
+        return False
+    return evidence.get("tone") == "bullish" or (
+        bool(evidence.get("has_recent_catalyst")) and bool(evidence.get("has_hard_catalyst"))
+    )
+
+
+def _news_shadow_event(signal: Signal, prices: list[Price], entry_price: Price) -> dict:
+    returns = {}
+    entry_index = None
+    for index, price in enumerate(prices):
+        if price is entry_price:
+            entry_index = index
+            break
+    if entry_index is None:
+        entry_index = 0
+
+    for horizon in NEWS_SHADOW_HORIZONS:
+        target_index = entry_index + horizon
+        key = f"return_{horizon}d"
+        if target_index < len(prices) and prices[target_index].close is not None and entry_price.open:
+            returns[key] = _to_percentage_points(prices[target_index].close / entry_price.open - 1.0)
+        else:
+            returns[key] = None
+    return {
+        "signal_date": _iso(signal.signal_date),
+        "ticker": signal.ticker,
+        "entry_date": _iso(entry_price.date),
+        "entry_price": entry_price.open,
+        "news_score": signal.news_evidence.get("score"),
+        "news_strength": signal.news_evidence.get("strength"),
+        "news_tone": signal.news_evidence.get("tone"),
+        "llm_direction": signal.news_evidence.get("llm_direction"),
+        **returns,
+    }
+
+
+def _news_shadow_summary(events: list[dict]) -> dict:
+    summary: dict[str, float | int | None] = {"sample_count": len(events)}
+    for horizon in NEWS_SHADOW_HORIZONS:
+        values = [
+            event.get(f"return_{horizon}d")
+            for event in events
+            if event.get(f"return_{horizon}d") is not None
+        ]
+        completed_key = f"completed_{horizon}d_count"
+        average_key = f"avg_return_{horizon}d"
+        win_rate_key = f"win_rate_{horizon}d"
+        summary[completed_key] = len(values)
+        summary[average_key] = _round_number(sum(values) / len(values)) if values else None
+        summary[win_rate_key] = _round_number(sum(1 for value in values if value > 0) / len(values)) if values else None
+    return summary
+
+
+def _empty_today_action_queue(status: str, as_of: str) -> dict:
+    return {
+        "status": status,
+        "as_of": as_of,
+        "basis": BASIS,
+        "preset_key": QUEUE_PRESET_KEY,
+        "preset_label": PRESET_CONFIGS[QUEUE_PRESET_KEY]["label"],
+        "summary": {
+            "enter_count": 0,
+            "watch_count": 0,
+            "skip_count": 0,
+            "hold_count": 0,
+            "top_action": "none",
+        },
+        "items": [],
+        "position_alerts": [],
+        "notes": _today_action_queue_notes(status),
+    }
+
+
+def _build_today_action_queue(status: str, as_of: str, presets: dict) -> dict:
+    if status != "ok":
+        return _empty_today_action_queue(status, as_of)
+
+    preset = presets.get(QUEUE_PRESET_KEY)
+    if not isinstance(preset, dict):
+        return _empty_today_action_queue("insufficient_data", as_of)
+
+    candidates = preset.get("entry_candidates") or []
+    positions = preset.get("open_positions") or []
+    items = [
+        _today_action_queue_item(candidate)
+        for candidate in candidates
+        if isinstance(candidate, dict)
+    ]
+    items.sort(key=_today_action_queue_sort_key)
+
+    sorted_positions = sorted(
+        [position for position in positions if isinstance(position, dict)],
+        key=_position_alert_sort_key,
+    )
+    position_alerts = [
+        _today_action_position_alert(position, index + 1)
+        for index, position in enumerate(sorted_positions)
+    ]
+
+    enter_count = sum(1 for item in items if item["queue"] == "enter")
+    watch_count = sum(1 for item in items if item["queue"] == "watch")
+    skip_count = sum(1 for item in items if item["queue"] == "skip")
+    hold_count = len(position_alerts)
+    summary = {
+        "enter_count": enter_count,
+        "watch_count": watch_count,
+        "skip_count": skip_count,
+        "hold_count": hold_count,
+        "top_action": _top_today_action(enter_count, watch_count, hold_count, skip_count),
+    }
+    return {
+        "status": "ok",
+        "as_of": as_of,
+        "basis": BASIS,
+        "preset_key": QUEUE_PRESET_KEY,
+        "preset_label": preset.get("label") or PRESET_CONFIGS[QUEUE_PRESET_KEY]["label"],
+        "summary": summary,
+        "items": items,
+        "position_alerts": position_alerts,
+        "notes": _today_action_queue_notes("ok"),
+    }
+
+
+def _today_action_queue_notes(status: str) -> list[str]:
+    if status == "insufficient_data":
+        return ["전략 시뮬레이터 입력이 부족해 오늘 행동 큐를 만들 수 없습니다."]
+    return [
+        "오늘 행동 큐는 balanced 프리셋 후보를 보기 쉽게 재정렬한 관찰용 화면입니다.",
+        "공식 추천, 후보 순서, 포트폴리오 상태, 매매 실행 로직은 변경하지 않습니다.",
+    ]
+
+
+def _today_action_queue_item(candidate: dict) -> dict:
+    queue = _queue_for_candidate_status(str(candidate.get("status") or ""))
+    blocking_reasons, positive_reasons = _candidate_reason_codes(candidate, queue)
+    rank = candidate.get("rank") if isinstance(candidate.get("rank"), int) else 0
+    return {
+        "queue": queue,
+        "decision_label": QUEUE_LABELS[queue],
+        "rank": rank,
+        "ticker": str(candidate.get("ticker") or ""),
+        "action_score": _action_score(candidate),
+        "status": str(candidate.get("status") or ""),
+        "status_label": str(candidate.get("status_label") or ""),
+        "primary_reason": _candidate_primary_reason(candidate, queue),
+        "reason_chips": _candidate_reason_chips(candidate, blocking_reasons, positive_reasons),
+        "blocking_reasons": blocking_reasons,
+        "positive_reasons": positive_reasons,
+        "candidate_ref": {
+            "preset": QUEUE_PRESET_KEY,
+            "candidate_rank": rank,
+        },
+        "candidate": candidate,
+    }
+
+
+def _queue_for_candidate_status(status: str) -> str:
+    return QUEUE_STATUS_MAP.get(status, "watch")
+
+
+def _action_score(candidate: Mapping[str, Any]) -> float:
+    evidence = candidate.get("news_evidence")
+    if not isinstance(evidence, Mapping):
+        evidence = {}
+
+    conviction = _clamped_numeric(candidate.get("conviction"), 0.0, 100.0)
+    news_score = _clamped_numeric(evidence.get("score"), 0.0, 100.0)
+    status = str(candidate.get("status") or "")
+    strength = str(evidence.get("strength") or "insufficient")
+    tone = str(evidence.get("tone") or "neutral")
+    llm_alignment = str(candidate.get("llm_alignment") or "missing")
+
+    score = (
+        conviction * 0.40
+        + QUEUE_STATUS_POINTS.get(status, 0.0)
+        + QUEUE_NEWS_STRENGTH_POINTS.get(strength, 0.0)
+        + news_score * 0.05
+        + (3.0 if tone == "bullish" else 0.0)
+        + QUEUE_LLM_POINTS.get(llm_alignment, 0.0)
+        + _risk_reward_points(candidate)
+    )
+    return _round_number(max(0.0, min(100.0, score)))
+
+
+def _risk_reward_points(candidate: Mapping[str, Any]) -> float:
+    return (
+        5.0
+        if all(
+            _number_or_none(candidate.get(field)) is not None
+            for field in ("entry_price", "stop_price", "take_profit_price")
+        )
+        else 0.0
+    )
+
+
+def _candidate_reason_codes(candidate: Mapping[str, Any], queue: str) -> tuple[list[str], list[str]]:
+    evidence = candidate.get("news_evidence")
+    if not isinstance(evidence, Mapping):
+        evidence = {}
+
+    status = str(candidate.get("status") or "")
+    strength = str(evidence.get("strength") or "insufficient")
+    tone = str(evidence.get("tone") or "neutral")
+    llm_alignment = str(candidate.get("llm_alignment") or "missing")
+
+    blocking: list[str] = []
+    positive: list[str] = []
+    if status in {
+        "pending_next_open",
+        "missing_entry_price",
+        "already_held",
+        "insufficient_cash",
+        "max_positions_reached",
+        "simulated_entry_closed",
+    }:
+        blocking.append(status)
+    if strength in {"weak", "insufficient"}:
+        blocking.append("weak_news_evidence")
+    if llm_alignment == "conflict":
+        blocking.append("llm_conflict")
+    if _risk_reward_points(candidate) == 0.0:
+        blocking.append("risk_reward_missing")
+
+    if queue == "enter":
+        positive.append("entry_ready")
+    if strength == "strong":
+        positive.append("strong_news")
+    elif strength == "moderate":
+        positive.append("moderate_news")
+    if tone == "bullish":
+        positive.append("bullish_news")
+    if llm_alignment == "aligned":
+        positive.append("llm_aligned")
+    if status != "insufficient_cash":
+        positive.append("cash_available")
+    if _risk_reward_points(candidate) > 0.0:
+        positive.append("risk_reward_defined")
+    return blocking, positive
+
+
+def _candidate_reason_chips(candidate: Mapping[str, Any], blocking: list[str], positive: list[str]) -> list[str]:
+    chips: list[str] = []
+    status_label = candidate.get("status_label")
+    if isinstance(status_label, str) and status_label:
+        chips.append(status_label)
+    for code in positive:
+        label = QUEUE_REASON_LABELS.get(code)
+        if label:
+            chips.append(label)
+    conviction = _number_or_none(candidate.get("conviction"))
+    if conviction is not None:
+        chips.append(f"확신도 {_round_number(conviction)}")
+    for code in blocking:
+        label = QUEUE_REASON_LABELS.get(code)
+        if label:
+            chips.append(label)
+
+    unique: list[str] = []
+    for chip in chips:
+        if chip not in unique:
+            unique.append(chip)
+    return unique[:5]
+
+
+def _candidate_primary_reason(candidate: Mapping[str, Any], queue: str) -> str:
+    status = str(candidate.get("status") or "")
+    if queue == "enter":
+        return "다음 거래일 open 기준 진입 조건을 확인할 수 있는 후보입니다."
+    if status == "pending_next_open":
+        return "다음 거래일 open 가격이 생성되면 진입 조건을 다시 확인합니다."
+    if status == "missing_entry_price":
+        return "진입 기준 가격이 없어 실제 진입 여부를 보류합니다."
+    if status == "already_held":
+        return "이미 보유 중인 티커라 신규 진입 대신 보유 상태를 확인합니다."
+    if status == "insufficient_cash":
+        return "목표 비중 진입에 필요한 현금이 부족해 제외합니다."
+    if status == "max_positions_reached":
+        return "프리셋의 최대 보유 종목 수에 도달해 제외합니다."
+    if status == "simulated_entry_closed":
+        return "해당 신호의 다음 open 진입은 과거 시뮬레이션에 이미 반영됐습니다."
+    return "현재 후보 상태를 확인해야 합니다."
+
+
+def _today_action_queue_sort_key(item: Mapping[str, Any]) -> tuple[float, float, int, str]:
+    rank = item.get("rank")
+    if not isinstance(rank, int):
+        rank = 10_000
+    return (
+        float(QUEUE_PRIORITY.get(str(item.get("queue") or "watch"), 99)),
+        -float(item.get("action_score") or 0.0),
+        rank,
+        str(item.get("ticker") or ""),
+    )
+
+
+def _today_action_position_alert(position: dict, priority: int) -> dict:
+    ticker = str(position.get("ticker") or "")
+    return {
+        "queue": "hold",
+        "decision_label": QUEUE_LABELS["hold"],
+        "ticker": ticker,
+        "priority": priority,
+        "alert_score": _position_alert_score(position),
+        "primary_reason": "보유 중인 포지션의 미실현 손익과 보유 기간을 확인합니다.",
+        "reason_chips": _position_reason_chips(position),
+        "position_ref": {
+            "preset": QUEUE_PRESET_KEY,
+            "ticker": ticker,
+        },
+        "position": position,
+    }
+
+
+def _position_alert_score(position: Mapping[str, Any]) -> float:
+    return_pct = abs(_number_or_none(position.get("return_pct")) or 0.0)
+    holding_days = _number_or_none(position.get("holding_days")) or 0.0
+    llm_bonus = 5.0 if position.get("llm_alignment") == "conflict" else 0.0
+    score = 50.0 + min(return_pct * 2.0, 35.0) + min(holding_days * 0.5, 10.0) + llm_bonus
+    return _round_number(max(0.0, min(100.0, score)))
+
+
+def _position_reason_chips(position: Mapping[str, Any]) -> list[str]:
+    chips = ["보유 중"]
+    return_pct = _number_or_none(position.get("return_pct"))
+    if return_pct is not None:
+        chips.append(f"수익률 {return_pct:+.2f}%")
+    holding_days = _number_or_none(position.get("holding_days"))
+    if holding_days is not None:
+        chips.append(f"보유 {int(holding_days)}일")
+    llm_alignment = position.get("llm_alignment")
+    if isinstance(llm_alignment, str) and llm_alignment:
+        chips.append(f"LLM {llm_alignment}")
+    return chips[:5]
+
+
+def _position_alert_sort_key(position: Mapping[str, Any]) -> tuple[float, float, str]:
+    return_pct = abs(_number_or_none(position.get("return_pct")) or 0.0)
+    holding_days = _number_or_none(position.get("holding_days")) or 0.0
+    return (-return_pct, -holding_days, str(position.get("ticker") or ""))
+
+
+def _top_today_action(enter_count: int, watch_count: int, hold_count: int, skip_count: int) -> str:
+    if enter_count:
+        return "enter"
+    if watch_count:
+        return "watch"
+    if hold_count:
+        return "hold"
+    if skip_count:
+        return "skip"
+    return "none"
+
+
+def _clamped_numeric(value: object, minimum: float, maximum: float) -> float:
+    numeric = _number_or_none(value)
+    if numeric is None:
+        return 0.0
+    return max(minimum, min(maximum, numeric))
+
+
+def _number_or_none(value: object) -> float | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)) and math.isfinite(float(value)):
+        return float(value)
+    return None
 
 
 def _summary(
@@ -741,18 +1243,82 @@ def _normalize_signals(rows: Iterable[Any]) -> list[Signal]:
         action = _string_value(_get(row, BASIS) or _get(row, "action")).lower()
         if not ticker or signal_date is None or action not in VALID_ACTIONS:
             continue
+        signal_direction = _direction_value(_get(row, "signal_direction"))
+        llm_direction = _direction_value(_get(row, "llm_direction"))
         signals.append(
             Signal(
                 ticker=ticker.upper(),
                 signal_date=signal_date,
                 action=action,
                 conviction=_float_value(_get(row, "conviction")),
-                signal_direction=_direction_value(_get(row, "signal_direction")),
-                llm_direction=_direction_value(_get(row, "llm_direction")),
+                signal_direction=signal_direction,
+                llm_direction=llm_direction,
+                news_evidence=_signal_news_evidence(row, signal_direction, llm_direction),
                 ordinal=ordinal,
             )
         )
     return sorted(signals, key=lambda signal: (signal.signal_date, signal.ordinal, signal.ticker))
+
+
+def _signal_news_evidence(
+    row: Any,
+    signal_direction: str | None,
+    llm_direction: str | None,
+) -> dict[str, Any]:
+    evidence_row = _news_evidence_row(row)
+    evidence = build_news_evidence(
+        evidence_row,
+        signal_direction=signal_direction,
+        llm_direction=llm_direction,
+    )
+    if not _has_actual_news_support(evidence):
+        return build_news_evidence({})
+    return evidence
+
+
+def _news_evidence_row(row: Any) -> Mapping[str, Any]:
+    if isinstance(row, Mapping):
+        return row
+    keys = (
+        "news_tone",
+        "catalyst_tag",
+        "catalyst_recency_score",
+        "catalyst_recency",
+        "factors_json",
+        "news_references",
+        "key_news_source_titles",
+        "confidence_meta_json",
+        "search_evidence_score",
+        "signal_direction",
+        "llm_direction",
+    )
+    return {key: _get(row, key) for key in keys}
+
+
+def _has_actual_news_support(evidence: Mapping[str, Any]) -> bool:
+    reason_chips = set(evidence.get("reason_chips") or [])
+    catalyst_tag = _string_value(evidence.get("catalyst_tag"))
+    is_placeholder_catalyst = _is_placeholder_catalyst_tag(catalyst_tag)
+    has_non_placeholder_hard_catalyst = not is_placeholder_catalyst and (
+        bool(evidence.get("has_hard_catalyst")) or "hard_catalyst" in reason_chips
+    )
+    return any(
+        [
+            evidence.get("tone") != "neutral",
+            (_float_value(evidence.get("catalyst_recency_score")) or 0.0) > 0,
+            (_float_value(evidence.get("source_count")) or 0.0) > 0,
+            bool(evidence.get("has_recent_catalyst")),
+            has_non_placeholder_hard_catalyst,
+            "search_evidence" in reason_chips,
+            "positive_news" in reason_chips,
+            "negative_news" in reason_chips,
+        ]
+    )
+
+
+def _is_placeholder_catalyst_tag(value: Any) -> bool:
+    normalized = " ".join(_string_value(value).casefold().split())
+    return normalized in PLACEHOLDER_CATALYST_TAGS
 
 
 def _normalize_prices(rows: Iterable[Any]) -> dict[str, list[Price]]:

@@ -21,16 +21,16 @@
         "regimes": {
           "risk_on": {
             "status": "ok",
-            "sample_size": 316,
+            "sample_size": 416,
             "best": {
               "multipliers": {
                 "momentum": 1.3,
                 "valuation": 0.7,
                 "signal_track_record": 0.7,
                 "catalyst_recency": 1.3,
-                "news_tone": 1.3
+                "news_tone": 0.7
               },
-              "spearman": 0.1438
+              "spearman": 0.138
             },
             "candidates": [
               {
@@ -39,29 +39,19 @@
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
                   "catalyst_recency": 1.3,
-                  "news_tone": 1.3
+                  "news_tone": 0.7
                 },
-                "spearman": 0.1438
-              },
-              {
-                "multipliers": {
-                  "momentum": 1.3,
-                  "valuation": 1.0,
-                  "signal_track_record": 0.7,
-                  "catalyst_recency": 1.3,
-                  "news_tone": 1.3
-                },
-                "spearman": 0.1414
+                "spearman": 0.138
               },
               {
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 1.0,
+                  "catalyst_recency": 1.3,
                   "news_tone": 1.3
                 },
-                "spearman": 0.1405
+                "spearman": 0.1365
               },
               {
                 "multipliers": {
@@ -71,17 +61,27 @@
                   "catalyst_recency": 1.3,
                   "news_tone": 1.0
                 },
-                "spearman": 0.139
+                "spearman": 0.1365
               },
               {
                 "multipliers": {
                   "momentum": 1.3,
-                  "valuation": 1.3,
+                  "valuation": 1.0,
                   "signal_track_record": 0.7,
                   "catalyst_recency": 1.3,
-                  "news_tone": 1.3
+                  "news_tone": 0.7
                 },
-                "spearman": 0.1379
+                "spearman": 0.1362
+              },
+              {
+                "multipliers": {
+                  "momentum": 1.0,
+                  "valuation": 0.7,
+                  "signal_track_record": 0.7,
+                  "catalyst_recency": 1.3,
+                  "news_tone": 1.0
+                },
+                "spearman": 0.1361
               }
             ]
           },
@@ -118,12 +118,12 @@
       "thresholds": {
         "status": "ok",
         "horizon": 5,
-        "sample_size": 316,
+        "sample_size": 416,
         "sample_size_risk_off": 0,
         "suggested": {
-          "buy": 64,
-          "buy_risk_off": 74,
-          "avoid": 56
+          "buy": 65,
+          "buy_risk_off": 75,
+          "avoid": 57
         }
       },
       "walk_forward": {
@@ -133,26 +133,13 @@
         "regimes": {
           "risk_on": {
             "status": "ok",
-            "sample_size": 316,
+            "sample_size": 416,
             "folds": [
               {
-                "train_size": 105,
-                "test_size": 42,
-                "train_spearman": 0.2788,
-                "oos_spearman": 0.0759,
-                "multipliers": {
-                  "momentum": 1.0,
-                  "valuation": 0.7,
-                  "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
-                  "news_tone": 1.3
-                }
-              },
-              {
-                "train_size": 147,
-                "test_size": 42,
-                "train_spearman": 0.2453,
-                "oos_spearman": -0.0849,
+                "train_size": 138,
+                "test_size": 55,
+                "train_spearman": 0.284,
+                "oos_spearman": -0.0546,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
@@ -162,10 +149,10 @@
                 }
               },
               {
-                "train_size": 189,
-                "test_size": 42,
-                "train_spearman": 0.2045,
-                "oos_spearman": 0.0938,
+                "train_size": 193,
+                "test_size": 55,
+                "train_spearman": 0.2128,
+                "oos_spearman": -0.1035,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
@@ -175,10 +162,10 @@
                 }
               },
               {
-                "train_size": 231,
-                "test_size": 42,
-                "train_spearman": 0.188,
-                "oos_spearman": -0.066,
+                "train_size": 248,
+                "test_size": 55,
+                "train_spearman": 0.1513,
+                "oos_spearman": 0.071,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
@@ -188,10 +175,23 @@
                 }
               },
               {
-                "train_size": 273,
-                "test_size": 42,
-                "train_spearman": 0.148,
-                "oos_spearman": 0.1154,
+                "train_size": 303,
+                "test_size": 55,
+                "train_spearman": 0.1465,
+                "oos_spearman": 0.2208,
+                "multipliers": {
+                  "momentum": 1.3,
+                  "valuation": 0.7,
+                  "signal_track_record": 0.7,
+                  "catalyst_recency": 1.3,
+                  "news_tone": 1.3
+                }
+              },
+              {
+                "train_size": 358,
+                "test_size": 55,
+                "train_spearman": 0.1554,
+                "oos_spearman": 0.1118,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
@@ -201,16 +201,16 @@
                 }
               }
             ],
-            "oos_spearman_mean": 0.0268,
-            "oos_spearman_std": 0.0847,
-            "in_sample_spearman": 0.1438,
-            "overfit_gap": 0.117,
+            "oos_spearman_mean": 0.0491,
+            "oos_spearman_std": 0.1166,
+            "in_sample_spearman": 0.138,
+            "overfit_gap": 0.0889,
             "selected_multipliers": {
               "momentum": 1.3,
               "valuation": 0.7,
               "signal_track_record": 0.7,
               "catalyst_recency": 1.3,
-              "news_tone": 1.3
+              "news_tone": 0.7
             }
           },
           "risk_off": {
@@ -264,85 +264,85 @@
         "regimes": {
           "risk_on": {
             "status": "ok",
-            "sample_size": 316,
+            "sample_size": 416,
             "folds": [
               {
                 "status": "ok",
-                "train_size": 148,
-                "purged": 126,
-                "test_size": 42,
-                "test_start": "2026-04-27",
-                "test_end": "2026-05-01",
-                "train_spearman": 0.0703,
-                "oos_spearman": 0.0594,
-                "multipliers": {
-                  "momentum": 0.7,
-                  "valuation": 0.7,
-                  "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
-                  "news_tone": 1.3
-                }
-              },
-              {
-                "status": "ok",
-                "train_size": 170,
-                "purged": 104,
-                "test_size": 42,
+                "train_size": 270,
+                "purged": 91,
+                "test_size": 55,
                 "test_start": "2026-05-01",
                 "test_end": "2026-05-06",
-                "train_spearman": 0.0934,
-                "oos_spearman": -0.1103,
+                "train_spearman": 0.087,
+                "oos_spearman": -0.0022,
                 "multipliers": {
                   "momentum": 0.7,
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
+                  "catalyst_recency": 1.3,
                   "news_tone": 1.3
                 }
               },
               {
                 "status": "ok",
-                "train_size": 145,
-                "purged": 129,
-                "test_size": 42,
+                "train_size": 199,
+                "purged": 162,
+                "test_size": 55,
                 "test_start": "2026-05-06",
-                "test_end": "2026-05-14",
-                "train_spearman": 0.2753,
-                "oos_spearman": 0.0597,
+                "test_end": "2026-05-18",
+                "train_spearman": 0.1784,
+                "oos_spearman": -0.0645,
                 "multipliers": {
-                  "momentum": 1.0,
+                  "momentum": 0.7,
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
-                  "news_tone": 1.3
+                  "catalyst_recency": 1.3,
+                  "news_tone": 0.7
                 }
               },
               {
                 "status": "ok",
-                "train_size": 155,
-                "purged": 119,
-                "test_size": 42,
-                "test_start": "2026-05-14",
-                "test_end": "2026-05-20",
-                "train_spearman": 0.2286,
-                "oos_spearman": -0.036,
+                "train_size": 276,
+                "purged": 85,
+                "test_size": 55,
+                "test_start": "2026-05-18",
+                "test_end": "2026-05-21",
+                "train_spearman": 0.1982,
+                "oos_spearman": 0.071,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 1.0,
-                  "news_tone": 1.3
+                  "catalyst_recency": 1.3,
+                  "news_tone": 0.7
                 }
               },
               {
                 "status": "ok",
                 "train_size": 201,
-                "purged": 73,
-                "test_size": 42,
-                "test_start": "2026-05-20",
-                "test_end": "2026-05-21",
+                "purged": 160,
+                "test_size": 55,
+                "test_start": "2026-05-21",
+                "test_end": "2026-05-27",
                 "train_spearman": 0.2425,
-                "oos_spearman": 0.095,
+                "oos_spearman": 0.217,
+                "multipliers": {
+                  "momentum": 1.3,
+                  "valuation": 0.7,
+                  "signal_track_record": 0.7,
+                  "catalyst_recency": 1.3,
+                  "news_tone": 0.7
+                }
+              },
+              {
+                "status": "ok",
+                "train_size": 247,
+                "purged": 114,
+                "test_size": 55,
+                "test_start": "2026-05-27",
+                "test_end": "2026-05-29",
+                "train_spearman": 0.1517,
+                "oos_spearman": 0.1598,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
@@ -352,17 +352,17 @@
                 }
               }
             ],
-            "oos_spearman_mean": 0.0136,
-            "oos_spearman_std": 0.0757,
-            "in_sample_spearman_leaky": 0.1438,
-            "overfit_gap": 0.1302,
-            "avg_purged_per_fold": 110.2,
+            "oos_spearman_mean": 0.0762,
+            "oos_spearman_std": 0.1027,
+            "in_sample_spearman_leaky": 0.138,
+            "overfit_gap": 0.0618,
+            "avg_purged_per_fold": 122.4,
             "selected_multipliers": {
               "momentum": 1.3,
               "valuation": 0.7,
               "signal_track_record": 0.7,
               "catalyst_recency": 1.3,
-              "news_tone": 1.3
+              "news_tone": 0.7
             }
           },
           "risk_off": {
@@ -424,16 +424,16 @@
         "regimes": {
           "risk_on": {
             "status": "ok",
-            "sample_size": 132,
+            "sample_size": 201,
             "best": {
               "multipliers": {
                 "momentum": 1.3,
                 "valuation": 0.7,
                 "signal_track_record": 0.7,
-                "catalyst_recency": 0.7,
-                "news_tone": 1.3
+                "catalyst_recency": 1.3,
+                "news_tone": 0.7
               },
-              "spearman": 0.2057
+              "spearman": 0.1926
             },
             "candidates": [
               {
@@ -441,50 +441,50 @@
                   "momentum": 1.3,
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
-                  "news_tone": 1.3
+                  "catalyst_recency": 1.3,
+                  "news_tone": 0.7
                 },
-                "spearman": 0.2057
+                "spearman": 0.1926
               },
               {
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
+                  "catalyst_recency": 1.3,
+                  "news_tone": 1.3
+                },
+                "spearman": 0.1925
+              },
+              {
+                "multipliers": {
+                  "momentum": 1.3,
+                  "valuation": 0.7,
+                  "signal_track_record": 0.7,
+                  "catalyst_recency": 1.3,
                   "news_tone": 1.0
                 },
-                "spearman": 0.1985
-              },
-              {
-                "multipliers": {
-                  "momentum": 1.3,
-                  "valuation": 0.7,
-                  "signal_track_record": 0.7,
-                  "catalyst_recency": 1.0,
-                  "news_tone": 1.3
-                },
-                "spearman": 0.1944
+                "spearman": 0.1918
               },
               {
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 1.0,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
-                  "news_tone": 1.3
+                  "catalyst_recency": 1.3,
+                  "news_tone": 0.7
                 },
-                "spearman": 0.194
+                "spearman": 0.1852
               },
               {
                 "multipliers": {
                   "momentum": 1.3,
-                  "valuation": 0.7,
+                  "valuation": 1.0,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
-                  "news_tone": 0.7
+                  "catalyst_recency": 1.3,
+                  "news_tone": 1.0
                 },
-                "spearman": 0.1921
+                "spearman": 0.1831
               }
             ]
           },
@@ -521,12 +521,12 @@
       "thresholds": {
         "status": "ok",
         "horizon": 20,
-        "sample_size": 132,
+        "sample_size": 201,
         "sample_size_risk_off": 0,
         "suggested": {
           "buy": 65,
           "buy_risk_off": 75,
-          "avoid": 57
+          "avoid": 56
         }
       },
       "walk_forward": {
@@ -536,13 +536,13 @@
         "regimes": {
           "risk_on": {
             "status": "ok",
-            "sample_size": 132,
+            "sample_size": 201,
             "folds": [
               {
-                "train_size": 44,
-                "test_size": 17,
-                "train_spearman": 0.3583,
-                "oos_spearman": 0.1838,
+                "train_size": 67,
+                "test_size": 26,
+                "train_spearman": 0.2489,
+                "oos_spearman": 0.1799,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
@@ -552,10 +552,10 @@
                 }
               },
               {
-                "train_size": 61,
-                "test_size": 17,
-                "train_spearman": 0.3001,
-                "oos_spearman": 0.0,
+                "train_size": 93,
+                "test_size": 26,
+                "train_spearman": 0.2546,
+                "oos_spearman": 0.028,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
@@ -565,10 +565,10 @@
                 }
               },
               {
-                "train_size": 78,
-                "test_size": 17,
-                "train_spearman": 0.2123,
-                "oos_spearman": 0.1152,
+                "train_size": 119,
+                "test_size": 26,
+                "train_spearman": 0.235,
+                "oos_spearman": -0.0417,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
@@ -578,42 +578,42 @@
                 }
               },
               {
-                "train_size": 95,
-                "test_size": 17,
-                "train_spearman": 0.2317,
-                "oos_spearman": 0.2819,
+                "train_size": 145,
+                "test_size": 26,
+                "train_spearman": 0.1808,
+                "oos_spearman": 0.3423,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
+                  "catalyst_recency": 1.3,
                   "news_tone": 1.3
                 }
               },
               {
-                "train_size": 112,
-                "test_size": 17,
-                "train_spearman": 0.251,
-                "oos_spearman": -0.174,
+                "train_size": 171,
+                "test_size": 26,
+                "train_spearman": 0.2007,
+                "oos_spearman": -0.0465,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
                   "signal_track_record": 0.7,
-                  "catalyst_recency": 0.7,
+                  "catalyst_recency": 1.3,
                   "news_tone": 1.3
                 }
               }
             ],
-            "oos_spearman_mean": 0.0814,
-            "oos_spearman_std": 0.1573,
-            "in_sample_spearman": 0.2057,
-            "overfit_gap": 0.1243,
+            "oos_spearman_mean": 0.0924,
+            "oos_spearman_std": 0.1494,
+            "in_sample_spearman": 0.1926,
+            "overfit_gap": 0.1002,
             "selected_multipliers": {
               "momentum": 1.3,
               "valuation": 0.7,
               "signal_track_record": 0.7,
-              "catalyst_recency": 0.7,
-              "news_tone": 1.3
+              "catalyst_recency": 1.3,
+              "news_tone": 0.7
             }
           },
           "risk_off": {
@@ -666,63 +666,80 @@
         "purge_horizon_days": 20,
         "regimes": {
           "risk_on": {
-            "status": "insufficient_data",
-            "sample_size": 132,
+            "status": "ok",
+            "sample_size": 201,
             "folds": [
               {
                 "status": "ok",
-                "train_size": 33,
-                "purged": 82,
-                "test_size": 17,
-                "test_start": "2026-04-20",
-                "test_end": "2026-04-21",
-                "train_spearman": 0.0159,
-                "oos_spearman": 0.1838,
+                "train_size": 69,
+                "purged": 106,
+                "test_size": 26,
+                "test_start": "2026-04-22",
+                "test_end": "2026-04-24",
+                "train_spearman": 0.2165,
+                "oos_spearman": 0.2052,
                 "multipliers": {
                   "momentum": 1.3,
                   "valuation": 0.7,
-                  "signal_track_record": 1.3,
-                  "catalyst_recency": 0.7,
-                  "news_tone": 1.3
+                  "signal_track_record": 0.7,
+                  "catalyst_recency": 1.3,
+                  "news_tone": 0.7
+                }
+              },
+              {
+                "status": "ok",
+                "train_size": 46,
+                "purged": 129,
+                "test_size": 26,
+                "test_start": "2026-04-24",
+                "test_end": "2026-04-28",
+                "train_spearman": 0.1821,
+                "oos_spearman": 0.039,
+                "multipliers": {
+                  "momentum": 1.3,
+                  "valuation": 0.7,
+                  "signal_track_record": 0.7,
+                  "catalyst_recency": 1.3,
+                  "news_tone": 0.7
                 }
               },
               {
                 "status": "skipped_small_train",
-                "train_size": 11,
-                "purged": 104,
-                "test_size": 17,
-                "test_start": "2026-04-21",
-                "test_end": "2026-04-23"
-              },
-              {
-                "status": "skipped_small_train",
                 "train_size": 0,
-                "purged": 115,
-                "test_size": 17,
-                "test_start": "2026-04-23",
-                "test_end": "2026-04-24"
-              },
-              {
-                "status": "skipped_small_train",
-                "train_size": 0,
-                "purged": 115,
-                "test_size": 17,
-                "test_start": "2026-04-24",
-                "test_end": "2026-04-28"
-              },
-              {
-                "status": "skipped_small_train",
-                "train_size": 0,
-                "purged": 115,
-                "test_size": 17,
+                "purged": 175,
+                "test_size": 26,
                 "test_start": "2026-04-28",
-                "test_end": "2026-04-29"
+                "test_end": "2026-05-01"
+              },
+              {
+                "status": "skipped_small_train",
+                "train_size": 0,
+                "purged": 175,
+                "test_size": 26,
+                "test_start": "2026-05-01",
+                "test_end": "2026-05-05"
+              },
+              {
+                "status": "skipped_small_train",
+                "train_size": 0,
+                "purged": 175,
+                "test_size": 26,
+                "test_start": "2026-05-05",
+                "test_end": "2026-05-06"
               }
             ],
-            "oos_spearman_mean": null,
-            "oos_spearman_std": null,
-            "selected_multipliers": null,
-            "avg_purged_per_fold": 106.2
+            "oos_spearman_mean": 0.1221,
+            "oos_spearman_std": 0.0831,
+            "in_sample_spearman_leaky": 0.1926,
+            "overfit_gap": 0.0705,
+            "avg_purged_per_fold": 152.0,
+            "selected_multipliers": {
+              "momentum": 1.3,
+              "valuation": 0.7,
+              "signal_track_record": 0.7,
+              "catalyst_recency": 1.3,
+              "news_tone": 0.7
+            }
           },
           "risk_off": {
             "status": "insufficient_data",

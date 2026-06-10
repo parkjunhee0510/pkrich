@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   useSectorsData,
@@ -15,6 +16,11 @@ import { ErrorState } from '../components/ErrorState'
 export function SectorDetail() {
   const { sectorId } = useParams<{ sectorId: string }>()
   const { data, loading, error } = useSectorsData()
+
+  useEffect(() => {
+    const name = data?.sectors.find((s) => s.id === sectorId)?.name
+    document.title = name ? `${name} · Stock Research` : '섹터 · Stock Research'
+  }, [data, sectorId])
 
   if (loading) return <DashboardSkeleton />
   if (error) return <ErrorState message={error} />

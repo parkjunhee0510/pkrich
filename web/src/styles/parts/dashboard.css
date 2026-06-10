@@ -17,7 +17,7 @@
   box-shadow: var(--shadow-hard);
 }
 .dashboard-header-main { display: flex; flex-direction: column; gap: 0.45rem; }
-.dashboard-header h2 { font-size: 1.8rem; line-height: 1.05; }
+.dashboard-header :is(h1, h2) { font-size: 1.8rem; line-height: 1.05; }
 .dashboard-header-meta { display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center; }
 .dashboard-stat-chip {
   display: inline-flex;
@@ -1354,6 +1354,34 @@
   font-size: var(--action-change-text-xs);
   line-height: 1.25;
   overflow-wrap: anywhere;
+}
+
+.action-change-meta-row .action-change-quality-badge.today-decision-quality-high {
+  border-color: var(--color-positive-outline-border);
+  background: var(--color-positive-soft-bg);
+  color: var(--color-positive-outline-fg);
+  font-weight: 700;
+}
+
+.action-change-meta-row .action-change-quality-badge.today-decision-quality-watch,
+.action-change-meta-row .action-change-metric-badge {
+  border-color: var(--color-caution-outline-border);
+  background: var(--color-caution-soft-bg);
+  color: var(--color-caution-outline-fg);
+  font-weight: 700;
+}
+
+.action-change-meta-row .action-change-quality-badge.today-decision-quality-low {
+  border-color: var(--color-negative-outline-border);
+  background: var(--color-negative-soft-bg);
+  color: var(--color-negative-outline-fg);
+  font-weight: 700;
+}
+
+.action-change-meta-row .action-change-sector-badge {
+  border-color: var(--border);
+  background: var(--bone-dim);
+  color: var(--ink-soft);
 }
 
 .action-change-meta-row .action-change-risk-badge {

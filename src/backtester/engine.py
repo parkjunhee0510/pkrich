@@ -29,10 +29,11 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
 
     bull_rows = [row for row in evaluated if str(row.get("signal_direction", "")) == "bull"]
     bear_rows = [row for row in evaluated if str(row.get("signal_direction", "")) == "bear"]
-    bull_summary = _summarize_direction(bull_rows, direction="bull")
-    bear_summary = _summarize_direction(bear_rows, direction="bear")
     combined_rows = bull_rows + bear_rows
-    combined_summary = _summarize_direction(combined_rows, direction="mixed")
+    anchor = _earliest_signal_date(combined_rows)
+    bull_summary = _summarize_direction(bull_rows, direction="bull", anchor=anchor)
+    bear_summary = _summarize_direction(bear_rows, direction="bear", anchor=anchor)
+    combined_summary = _summarize_direction(combined_rows, direction="mixed", anchor=anchor)
 
     if combined_summary["signals"] == 0:
         first_eval_date = _estimate_first_eval_date(pending_rows)
@@ -56,7 +57,7 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
         "worst_return": combined_summary["worst_return"],
         "bull": bull_summary,
         "bear": bear_summary,
-        "equity_curve": _build_equity_curve(combined_rows),
+        "equity_curve": _build_equity_curve(combined_rows, anchor=anchor),
         "ticker_rows": _build_ticker_rows(combined_rows),
         "signal_meta": {
             "meta_analysis": signal_stats.get("meta_analysis", {}),
@@ -67,11 +68,13 @@ def build_backtest_summary(csv_path: Path) -> dict[str, Any]:
     }
 
 
-def _summarize_direction(rows: list[dict[str, Any]], *, direction: str) -> dict[str, Any]:
+def _summarize_direction(
+    rows: list[dict[str, Any]], *, direction: str, anchor: date | None = None
+) -> dict[str, Any]:
     normalized_returns: list[float] = []
     raw_returns: list[float] = []
     wins = 0
-    cumulative = 1.0
+    window_returns: dict[int, list[float]] = {}
     for row in rows:
         raw_return = _parse_return(row.get("return_20d", "N/A"))
         signal_direction = str(row.get("signal_direction", "")).strip()
@@ -84,7 +87,10 @@ def _summarize_direction(rows: list[dict[str, Any]], *, direction: str) -> dict[
         normalized_returns.append(interpreted)
         if interpreted > 0:
             wins += 1
-        cumulative *= 1 + (interpreted / 100.0)
+        window = _window_index(anchor, row.get("signal_date", ""))
+        window_returns.setdefault(window, []).append(interpreted)
+
+    cumulative = _compound_window_returns(window_returns)
 
     if not normalized_returns:
         return {
@@ -111,27 +117,83 @@ def _summarize_direction(rows: list[dict[str, Any]], *, direction: str) -> dict[
     }
 
 
-def _build_equity_curve(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _build_equity_curve(rows: list[dict[str, Any]], *, anchor: date | None = None) -> list[dict[str, Any]]:
+    # Signals are held concurrently over their 20-trading-day horizon, so capital is
+    # split equally across every signal opened in the same window. Within a window the
+    # equity multiple tracks the running equal-weight average; only non-overlapping
+    # windows compound against each other. This avoids treating overlapping positions
+    # as sequential full-capital bets (which compounds into absurd cumulative returns).
     points: list[dict[str, Any]] = []
-    cumulative = 1.0
+    completed_multiple = 1.0
+    current_window: int | None = None
+    current_returns: list[float] = []
     for row in sorted(rows, key=lambda entry: (str(entry.get("signal_date", "")), str(entry.get("ticker", "")))):
         raw_return = _parse_return(row.get("return_20d", "N/A"))
         direction = str(row.get("signal_direction", "")).strip()
         interpreted = _normalize_signal_return(direction, raw_return) if raw_return is not None else None
         if interpreted is None:
             continue
-        cumulative *= 1 + (interpreted / 100.0)
+        window = _window_index(anchor, row.get("signal_date", ""))
+        if current_window is None:
+            current_window = window
+        elif window != current_window:
+            window_avg = sum(current_returns) / len(current_returns)
+            completed_multiple *= 1 + (window_avg / 100.0)
+            current_window = window
+            current_returns = []
+        current_returns.append(interpreted)
+        running_avg = sum(current_returns) / len(current_returns)
+        equity_multiple = completed_multiple * (1 + running_avg / 100.0)
         points.append(
             {
                 "date": str(row.get("signal_date", "")),
                 "ticker": str(row.get("ticker", "")),
                 "signal_direction": direction,
                 "strategy_return": f"{interpreted:+.2f}%",
-                "equity_multiple": round(cumulative, 4),
-                "cumulative_return": f"{(cumulative - 1) * 100:+.2f}%",
+                "equity_multiple": round(equity_multiple, 4),
+                "cumulative_return": f"{(equity_multiple - 1) * 100:+.2f}%",
             }
         )
     return points
+
+
+def _compound_window_returns(window_returns: dict[int, list[float]]) -> float:
+    cumulative = 1.0
+    for window in sorted(window_returns):
+        returns = window_returns[window]
+        if not returns:
+            continue
+        window_avg = sum(returns) / len(returns)
+        cumulative *= 1 + (window_avg / 100.0)
+    return cumulative
+
+
+def _window_index(anchor: date | None, raw_value: Any) -> int:
+    signal_date = _parse_date(raw_value)
+    if anchor is None or signal_date is None:
+        return 0
+    return _business_days_between(anchor, signal_date) // 20
+
+
+def _business_days_between(start: date, end: date) -> int:
+    if end <= start:
+        return 0
+    count = 0
+    current = start
+    while current < end:
+        current += timedelta(days=1)
+        if current.weekday() < 5:
+            count += 1
+    return count
+
+
+def _earliest_signal_date(rows: list[dict[str, Any]]) -> date | None:
+    signal_dates = [
+        signal_date
+        for row in rows
+        if (signal_date := _parse_date(row.get("signal_date", ""))) is not None
+    ]
+    return min(signal_dates) if signal_dates else None
 
 
 def _build_ticker_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:

@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import json
 import unittest
+from unittest.mock import patch
 
 from src.output.schema import SCHEMA_VERSION
-from src.utils.strategy_simulator import build_strategy_simulator
+from src.utils.strategy_simulator import (
+    _action_score,
+    _queue_for_candidate_status,
+    build_strategy_simulator,
+)
 
 
 def signal(
@@ -13,8 +19,9 @@ def signal(
     conviction: float | None = None,
     signal_direction: str | None = "bull",
     llm_direction: str | None = "bull",
+    **overrides: object,
 ) -> dict:
-    return {
+    row = {
         "ticker": ticker,
         "signal_date": signal_date,
         "final_action": final_action,
@@ -22,6 +29,8 @@ def signal(
         "signal_direction": signal_direction,
         "llm_direction": llm_direction,
     }
+    row.update(overrides)
+    return row
 
 
 def price(
@@ -175,6 +184,7 @@ class StrategySimulatorTests(unittest.TestCase):
                 "llm_alignment",
                 "signal_direction",
                 "llm_direction",
+                "news_evidence",
                 "reason",
             },
         )
@@ -189,6 +199,385 @@ class StrategySimulatorTests(unittest.TestCase):
         self.assertIsNone(candidates[0]["take_profit_price"])
         self.assertEqual(candidates[0]["llm_alignment"], "aligned")
         self.assertEqual(candidates[1]["llm_alignment"], "conflict")
+
+    def test_entry_candidates_include_strong_news_evidence(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    "AAA",
+                    "2026-01-03",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="bullish",
+                    catalyst_tag="earnings",
+                    factors_json=json.dumps({"catalyst_recency": 20}),
+                    news_references=json.dumps([{"title": "A"}, {"title": "B"}]),
+                    confidence_meta_json=json.dumps({"search_evidence_score": 0.8}),
+                )
+            ],
+            [price("AAA", "2026-01-03", 50, 51, 49, 50)],
+        )
+
+        candidate = payload["presets"]["balanced"]["entry_candidates"][0]
+        evidence = candidate["news_evidence"]
+
+        self.assertEqual(evidence["strength"], "strong")
+        self.assertEqual(evidence["tone"], "bullish")
+        self.assertEqual(evidence["llm_alignment"], "aligned")
+        self.assertEqual(evidence["source_count"], 2)
+        self.assertTrue(evidence["has_hard_catalyst"])
+        self.assertEqual(evidence["catalyst_recency_score"], 20.0)
+        self.assertEqual(evidence["score"], 100.0)
+        self.assertIn("positive_news", evidence["reason_chips"])
+        self.assertIn("recent_catalyst", evidence["reason_chips"])
+        self.assertIn("search_evidence", evidence["reason_chips"])
+        self.assertIn("hard_catalyst", evidence["reason_chips"])
+
+    def test_news_shadow_tracks_strong_news_llm_bull_forward_returns(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    "AAA",
+                    "2026-01-01",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="bullish",
+                    catalyst_tag="earnings",
+                    factors_json=json.dumps({"catalyst_recency": 20}),
+                    news_references=json.dumps([{"title": "A"}, {"title": "B"}]),
+                ),
+                signal(
+                    "BBB",
+                    "2026-01-01",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bear",
+                    news_tone="bearish",
+                ),
+            ],
+            [
+                price("AAA", "2026-01-02", 100, 101, 99, 100),
+                price("AAA", "2026-01-03", 101, 102, 100, 105),
+                price("AAA", "2026-01-04", 105, 107, 104, 110),
+                price("AAA", "2026-01-05", 110, 111, 109, 112),
+                price("AAA", "2026-01-06", 112, 113, 111, 115),
+                price("AAA", "2026-01-07", 115, 116, 114, 120),
+                price("BBB", "2026-01-02", 100, 101, 99, 100),
+                price("BBB", "2026-01-03", 100, 101, 99, 90),
+            ],
+        )
+
+        strategy = payload["news_shadow"]["strategies"][0]
+
+        self.assertEqual(strategy["id"], "strong_news_llm_bull")
+        self.assertEqual(strategy["summary"]["sample_count"], 1)
+        self.assertEqual(strategy["summary"]["completed_1d_count"], 1)
+        self.assertEqual(strategy["summary"]["completed_5d_count"], 1)
+        self.assertEqual(strategy["summary"]["completed_20d_count"], 0)
+        self.assertAlmostEqual(strategy["summary"]["avg_return_1d"], 5.0)
+        self.assertAlmostEqual(strategy["summary"]["avg_return_5d"], 20.0)
+        self.assertEqual(strategy["summary"]["win_rate_1d"], 1.0)
+        self.assertEqual(strategy["events"][0]["ticker"], "AAA")
+        self.assertEqual(strategy["events"][0]["entry_date"], "2026-01-02")
+
+    def test_news_shadow_empty_when_no_strong_news_signals_exist(self) -> None:
+        payload = build_strategy_simulator(
+            [signal("AAA", "2026-01-01", "buy", conviction=90, news_tone="neutral")],
+            [price("AAA", "2026-01-02", 100, 101, 99, 100)],
+        )
+
+        strategy = payload["news_shadow"]["strategies"][0]
+
+        self.assertEqual(strategy["summary"]["sample_count"], 0)
+        self.assertEqual(strategy["summary"]["completed_1d_count"], 0)
+        self.assertIsNone(strategy["summary"]["avg_return_1d"])
+        self.assertEqual(strategy["events"], [])
+
+    def test_news_shadow_excludes_stale_hard_catalyst_without_bullish_tone(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    "AAA",
+                    "2026-01-01",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="neutral",
+                    catalyst_tag="earnings",
+                    news_references=json.dumps([{"title": "A"}, {"title": "B"}]),
+                )
+            ],
+            [
+                price("AAA", "2026-01-02", 100, 101, 99, 100),
+                price("AAA", "2026-01-03", 101, 102, 100, 105),
+            ],
+        )
+
+        strategy = payload["news_shadow"]["strategies"][0]
+
+        self.assertEqual(strategy["summary"]["sample_count"], 0)
+        self.assertEqual(strategy["events"], [])
+
+    def test_news_shadow_includes_recent_hard_catalyst_with_neutral_tone(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    "AAA",
+                    "2026-01-01",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="neutral",
+                    catalyst_tag="earnings",
+                    factors_json=json.dumps({"catalyst_recency": 20}),
+                    news_references=json.dumps([{"title": "A"}, {"title": "B"}]),
+                )
+            ],
+            [
+                price("AAA", "2026-01-02", 100, 101, 99, 100),
+                price("AAA", "2026-01-03", 101, 102, 100, 105),
+            ],
+        )
+
+        strategy = payload["news_shadow"]["strategies"][0]
+
+        self.assertEqual(strategy["summary"]["sample_count"], 1)
+        self.assertEqual(strategy["events"][0]["ticker"], "AAA")
+
+    def test_news_shadow_excludes_moderate_recent_hard_catalyst_signal(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    "MOD",
+                    "2026-01-01",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="bearish",
+                    catalyst_tag="earnings",
+                    factors_json=json.dumps({"catalyst_recency": 20}),
+                ),
+                signal(
+                    "STR",
+                    "2026-01-01",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="bullish",
+                ),
+            ],
+            [
+                price("MOD", "2026-01-02", 100, 101, 99, 100),
+                price("MOD", "2026-01-03", 100, 101, 99, 101),
+                price("STR", "2026-01-02", 100, 101, 99, 100),
+                price("STR", "2026-01-03", 100, 101, 99, 101),
+            ],
+        )
+
+        strategy = payload["news_shadow"]["strategies"][0]
+
+        self.assertEqual(strategy["summary"]["sample_count"], 1)
+        self.assertEqual([event["ticker"] for event in strategy["events"]], ["STR"])
+
+    def test_news_shadow_event_cap_does_not_limit_summary(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    f"T{i:02d}",
+                    "2026-01-01",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="bullish",
+                )
+                for i in range(25)
+            ],
+            [
+                row
+                for i in range(25)
+                for row in [
+                    price(f"T{i:02d}", "2026-01-02", 100, 101, 99, 100),
+                    price(f"T{i:02d}", "2026-01-03", 101, 102, 100, 101),
+                ]
+            ],
+        )
+
+        strategy = payload["news_shadow"]["strategies"][0]
+
+        self.assertEqual(len(strategy["events"]), 20)
+        self.assertEqual(strategy["summary"]["sample_count"], 25)
+        self.assertEqual(strategy["summary"]["completed_1d_count"], 25)
+        self.assertAlmostEqual(strategy["summary"]["avg_return_1d"], 1.0)
+
+    def test_news_shadow_malformed_score_does_not_qualify(self) -> None:
+        malformed_evidence = {
+            "score": "strong",
+            "strength": "strong",
+            "tone": "bullish",
+            "llm_direction": "bull",
+            "llm_alignment": "aligned",
+            "catalyst_tag": "",
+            "catalyst_recency_score": 0.0,
+            "source_count": 1,
+            "has_recent_catalyst": False,
+            "has_hard_catalyst": False,
+            "reason_chips": ["positive_news"],
+            "summary": "malformed score fixture",
+        }
+
+        with patch("src.utils.strategy_simulator.build_news_evidence", return_value=malformed_evidence):
+            payload = build_strategy_simulator(
+                [
+                    signal(
+                        "AAA",
+                        "2026-01-01",
+                        "buy",
+                        conviction=90,
+                        signal_direction="bull",
+                        llm_direction="bull",
+                        news_tone="bullish",
+                    )
+                ],
+                [
+                    price("AAA", "2026-01-02", 100, 101, 99, 100),
+                    price("AAA", "2026-01-03", 101, 102, 100, 105),
+                ],
+            )
+
+        strategy = payload["news_shadow"]["strategies"][0]
+
+        self.assertEqual(strategy["summary"]["sample_count"], 0)
+        self.assertEqual(strategy["events"], [])
+
+    def test_entry_candidates_include_insufficient_news_fallback(self) -> None:
+        payload = build_strategy_simulator(
+            [signal("AAA", "2026-01-03", "buy", conviction=90)],
+            [price("AAA", "2026-01-03", 50, 51, 49, 50)],
+        )
+
+        evidence = payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"]
+
+        self.assertEqual(evidence["strength"], "insufficient")
+        self.assertEqual(evidence["tone"], "neutral")
+        self.assertEqual(evidence["source_count"], 0)
+        self.assertIn("missing_news", evidence["reason_chips"])
+
+    def test_entry_candidates_treat_empty_production_news_metadata_as_insufficient(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    "AAA",
+                    "2026-01-03",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="",
+                    catalyst_tag="",
+                    factors_json=json.dumps({}),
+                    news_references=json.dumps([]),
+                    key_news_source_titles=json.dumps([]),
+                    confidence_meta_json=json.dumps({}),
+                )
+            ],
+            [price("AAA", "2026-01-03", 50, 51, 49, 50)],
+        )
+
+        evidence = payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"]
+
+        self.assertEqual(evidence["strength"], "insufficient")
+        self.assertEqual(evidence["tone"], "neutral")
+        self.assertEqual(evidence["score"], 25.0)
+        self.assertEqual(evidence["source_count"], 0)
+        self.assertFalse(evidence["has_recent_catalyst"])
+        self.assertFalse(evidence["has_hard_catalyst"])
+        self.assertIn("missing_news", evidence["reason_chips"])
+        self.assertNotIn("source_coverage", evidence["reason_chips"])
+        self.assertNotIn("recent_catalyst", evidence["reason_chips"])
+        self.assertNotIn("search_evidence", evidence["reason_chips"])
+        self.assertNotIn("hard_catalyst", evidence["reason_chips"])
+
+    def test_entry_candidates_treat_generic_korean_catalyst_tag_as_insufficient(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    "AAA",
+                    "2026-01-03",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="",
+                    catalyst_tag="일반 이슈",
+                    factors_json=json.dumps({}),
+                    news_references=json.dumps([]),
+                    key_news_source_titles=json.dumps([]),
+                    confidence_meta_json=json.dumps({}),
+                )
+            ],
+            [price("AAA", "2026-01-03", 50, 51, 49, 50)],
+        )
+
+        evidence = payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"]
+
+        self.assertEqual(evidence["strength"], "insufficient")
+        self.assertEqual(evidence["tone"], "neutral")
+        self.assertEqual(evidence["score"], 25.0)
+        self.assertEqual(evidence["source_count"], 0)
+        self.assertFalse(evidence["has_recent_catalyst"])
+        self.assertFalse(evidence["has_hard_catalyst"])
+        self.assertIn("missing_news", evidence["reason_chips"])
+        self.assertNotIn("llm_bull_aligned", evidence["reason_chips"])
+        self.assertNotIn("source_coverage", evidence["reason_chips"])
+        self.assertNotIn("recent_catalyst", evidence["reason_chips"])
+        self.assertNotIn("search_evidence", evidence["reason_chips"])
+        self.assertNotIn("hard_catalyst", evidence["reason_chips"])
+
+    def test_entry_candidates_treat_negative_sec_placeholder_as_insufficient(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal(
+                    "AAA",
+                    "2026-01-03",
+                    "buy",
+                    conviction=90,
+                    signal_direction="bull",
+                    llm_direction="bull",
+                    news_tone="",
+                    catalyst_tag="No SEC filing or hard catalyst detected",
+                    factors_json=json.dumps({}),
+                    news_references=json.dumps([]),
+                    key_news_source_titles=json.dumps([]),
+                    confidence_meta_json=json.dumps({}),
+                )
+            ],
+            [price("AAA", "2026-01-03", 50, 51, 49, 50)],
+        )
+
+        evidence = payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"]
+
+        self.assertEqual(evidence["strength"], "insufficient")
+        self.assertEqual(evidence["tone"], "neutral")
+        self.assertEqual(evidence["score"], 25.0)
+        self.assertEqual(evidence["source_count"], 0)
+        self.assertFalse(evidence["has_recent_catalyst"])
+        self.assertFalse(evidence["has_hard_catalyst"])
+        self.assertIn("missing_news", evidence["reason_chips"])
+        self.assertNotIn("llm_bull_aligned", evidence["reason_chips"])
+        self.assertNotIn("source_coverage", evidence["reason_chips"])
+        self.assertNotIn("recent_catalyst", evidence["reason_chips"])
+        self.assertNotIn("search_evidence", evidence["reason_chips"])
+        self.assertNotIn("hard_catalyst", evidence["reason_chips"])
 
     def test_entry_candidates_mark_already_held_with_risk_levels(self) -> None:
         payload = build_strategy_simulator(
@@ -540,6 +929,133 @@ class StrategySimulatorTests(unittest.TestCase):
             balanced["llm_direction_diagnostics"]["aligned"]["avg_trade_return_pct"],
             13.7615,
         )
+
+    def test_insufficient_data_includes_empty_today_action_queue(self) -> None:
+        payload = build_strategy_simulator([], [])
+
+        queue = payload["today_action_queue"]
+        self.assertEqual(queue["status"], "insufficient_data")
+        self.assertEqual(queue["as_of"], "")
+        self.assertEqual(queue["basis"], "final_action")
+        self.assertEqual(queue["preset_key"], "balanced")
+        self.assertEqual(queue["summary"]["enter_count"], 0)
+        self.assertEqual(queue["summary"]["watch_count"], 0)
+        self.assertEqual(queue["summary"]["skip_count"], 0)
+        self.assertEqual(queue["summary"]["hold_count"], 0)
+        self.assertEqual(queue["summary"]["top_action"], "none")
+        self.assertEqual(queue["items"], [])
+        self.assertEqual(queue["position_alerts"], [])
+        self.assertIsInstance(queue["notes"], list)
+
+    def test_today_action_queue_uses_balanced_candidates_without_changing_order(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal("AAA", "2026-01-02", "buy", conviction=65),
+                signal(
+                    "BBB",
+                    "2026-01-02",
+                    "buy",
+                    conviction=90,
+                    catalyst_tag="earnings beat",
+                    catalyst_recency_score=1.0,
+                    source_count=4,
+                    news_tone="bullish",
+                ),
+                signal("CCC", "2026-01-02", "buy", conviction=78, llm_direction="bear"),
+            ],
+            [
+                price("AAA", "2026-01-02", 100, 101, 99, 100),
+                price("BBB", "2026-01-02", 120, 122, 118, 121),
+                price("CCC", "2026-01-02", 80, 81, 79, 80),
+            ],
+        )
+
+        balanced = payload["presets"]["balanced"]
+        candidate_tickers = [candidate["ticker"] for candidate in balanced["entry_candidates"]]
+        self.assertEqual(candidate_tickers, ["BBB", "CCC", "AAA"])
+
+        queue = payload["today_action_queue"]
+        self.assertEqual(queue["status"], "ok")
+        self.assertEqual(queue["as_of"], "2026-01-02")
+        self.assertEqual(queue["basis"], "final_action")
+        self.assertEqual(queue["preset_key"], "balanced")
+        self.assertEqual(queue["preset_label"], balanced["label"])
+        self.assertEqual(queue["summary"]["watch_count"], 3)
+        self.assertEqual(queue["summary"]["enter_count"], 0)
+        self.assertEqual(queue["summary"]["skip_count"], 0)
+        self.assertEqual(queue["summary"]["hold_count"], 0)
+        self.assertEqual(queue["summary"]["top_action"], "watch")
+        self.assertEqual([item["queue"] for item in queue["items"]], ["watch", "watch", "watch"])
+        self.assertEqual(queue["items"][0]["ticker"], "BBB")
+        self.assertEqual(queue["items"][0]["decision_label"], "보류")
+        self.assertEqual(queue["items"][0]["candidate_ref"], {"preset": "balanced", "candidate_rank": 1})
+        self.assertEqual(queue["items"][0]["candidate"], balanced["entry_candidates"][0])
+        self.assertLessEqual(queue["items"][0]["action_score"], 100.0)
+        self.assertGreater(queue["items"][0]["action_score"], queue["items"][2]["action_score"])
+        self.assertEqual([candidate["ticker"] for candidate in balanced["entry_candidates"]], candidate_tickers)
+
+    def test_today_action_queue_status_bucket_mapping_and_action_score(self) -> None:
+        self.assertEqual(_queue_for_candidate_status("entry_ready"), "enter")
+        for status in ("pending_next_open", "missing_entry_price", "already_held"):
+            self.assertEqual(_queue_for_candidate_status(status), "watch")
+        for status in ("insufficient_cash", "max_positions_reached", "simulated_entry_closed"):
+            self.assertEqual(_queue_for_candidate_status(status), "skip")
+
+        strong_aligned = {
+            "ticker": "AAA",
+            "status": "entry_ready",
+            "conviction": 80.0,
+            "entry_price": 100.0,
+            "stop_price": 92.0,
+            "take_profit_price": 118.0,
+            "llm_alignment": "aligned",
+            "news_evidence": {"score": 100.0, "strength": "strong", "tone": "bullish"},
+        }
+        weak_conflict = {
+            **strong_aligned,
+            "ticker": "BBB",
+            "llm_alignment": "conflict",
+            "news_evidence": {"score": 0.0, "strength": "weak", "tone": "neutral"},
+        }
+        extreme_values = {
+            **strong_aligned,
+            "conviction": 1000.0,
+            "news_evidence": {"score": 1000.0, "strength": "strong", "tone": "bullish"},
+        }
+        negative_values = {
+            **strong_aligned,
+            "conviction": -1000.0,
+            "news_evidence": {"score": -1000.0, "strength": "insufficient", "tone": "neutral"},
+        }
+
+        self.assertGreater(_action_score(strong_aligned), _action_score(weak_conflict))
+        self.assertLessEqual(_action_score(extreme_values), 100.0)
+        self.assertGreaterEqual(_action_score(negative_values), 0.0)
+
+    def test_today_action_queue_includes_balanced_position_alerts(self) -> None:
+        payload = build_strategy_simulator(
+            [
+                signal("AMD", "2026-01-01", "buy", conviction=82),
+            ],
+            [
+                price("AMD", "2026-01-01", 100, 101, 99, 100),
+                price("AMD", "2026-01-02", 100, 103, 99, 102),
+                price("AMD", "2026-01-03", 102, 109, 101, 108),
+            ],
+        )
+
+        queue = payload["today_action_queue"]
+        self.assertEqual(queue["summary"]["hold_count"], 1)
+        self.assertEqual(queue["summary"]["top_action"], "watch")
+        alert = queue["position_alerts"][0]
+        self.assertEqual(alert["queue"], "hold")
+        self.assertEqual(alert["decision_label"], "보유 관리")
+        self.assertEqual(alert["ticker"], "AMD")
+        self.assertEqual(alert["position_ref"], {"preset": "balanced", "ticker": "AMD"})
+        self.assertEqual(alert["position"], payload["presets"]["balanced"]["open_positions"][0])
+        self.assertGreaterEqual(alert["alert_score"], 0.0)
+        self.assertLessEqual(alert["alert_score"], 100.0)
+        self.assertIsInstance(alert["reason_chips"], list)
 
 
 if __name__ == "__main__":

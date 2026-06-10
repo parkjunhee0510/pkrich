@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
 
 from src.utils.macro_event_match import match_macro_events_for_context, score_macro_event_match
@@ -93,6 +95,38 @@ class MacroEventMatchTests(unittest.TestCase):
         )
         self.assertEqual(score["matched_dimension"], "industry")
         self.assertLessEqual(score["score"], -3)
+
+    def test_custom_rules_file_can_add_new_event_type(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            rules_path = Path(temp_dir) / "macro_event_rules.yaml"
+            rules_path.write_text(
+                """
+sector_impacts:
+  taiwan_blockade:
+    technology: -4
+industry_rules:
+  taiwan_blockade:
+    - tokens: ["semiconductor equipment", "lithography"]
+      score: -7
+      reason: "대만 봉쇄 리스크는 반도체 장비 공급망에 직접 부담입니다."
+""".strip(),
+                encoding="utf-8",
+            )
+
+            score = score_macro_event_match(
+                {
+                    "event_type": "taiwan_blockade",
+                    "severity": "high",
+                    "summary_ko": "대만 해협 긴장이 고조되고 있습니다.",
+                },
+                sector="Technology",
+                industry="Semiconductor Equipment",
+                rules_path=rules_path,
+            )
+
+        self.assertEqual(score["matched_dimension"], "industry")
+        self.assertEqual(score["score"], -7)
+        self.assertEqual(score["match_reason"], "대만 봉쇄 리스크는 반도체 장비 공급망에 직접 부담입니다.")
 
 
 if __name__ == "__main__":

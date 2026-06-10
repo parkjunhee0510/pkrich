@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "as_of": "2026-05-29",
+  "as_of": "2026-06-05",
   "summary": {
-    "sample_count": 440,
+    "sample_count": 540,
     "decision_count": 25,
     "completed_return_windows": [
       "1d",
@@ -18,122 +18,122 @@
   "signal_performance": {
     "buy": {
       "1d": {
-        "sample_count": 128,
-        "completed_count": 119,
-        "avg_return": 1.9544,
-        "median_return": 0.89,
-        "win_rate": 0.5714,
-        "loss_rate": 0.4286,
-        "directional_win_rate": 0.5714,
-        "missing_count": 9,
+        "sample_count": 164,
+        "completed_count": 156,
+        "avg_return": 0.991,
+        "median_return": 0.29,
+        "win_rate": 0.5128,
+        "loss_rate": 0.4872,
+        "directional_win_rate": 0.5128,
+        "missing_count": 8,
         "return_distribution": {
-          "positive": 68,
-          "negative": 51,
+          "positive": 80,
+          "negative": 76,
           "flat": 0
         },
         "triple_barrier_outcomes": {
-          "hit": 58,
-          "pending": 9,
-          "stop": 52
+          "hit": 73,
+          "pending": 11,
+          "stop": 72
         }
       },
       "5d": {
-        "sample_count": 128,
-        "completed_count": 95,
-        "avg_return": 6.1661,
-        "median_return": 3.54,
-        "win_rate": 0.6737,
-        "loss_rate": 0.3263,
-        "directional_win_rate": 0.6737,
-        "missing_count": 33,
+        "sample_count": 164,
+        "completed_count": 128,
+        "avg_return": 4.6038,
+        "median_return": 3.18,
+        "win_rate": 0.6562,
+        "loss_rate": 0.3438,
+        "directional_win_rate": 0.6562,
+        "missing_count": 36,
         "return_distribution": {
-          "positive": 64,
-          "negative": 30,
+          "positive": 84,
+          "negative": 43,
           "flat": 1
         },
         "triple_barrier_outcomes": {
-          "hit": 50,
-          "stop": 45
+          "hit": 63,
+          "stop": 65
         }
       },
       "20d": {
-        "sample_count": 128,
-        "completed_count": 45,
-        "avg_return": 17.7329,
-        "median_return": 9.62,
-        "win_rate": 0.8889,
-        "loss_rate": 0.1111,
-        "directional_win_rate": 0.8889,
-        "missing_count": 83,
+        "sample_count": 164,
+        "completed_count": 62,
+        "avg_return": 19.5371,
+        "median_return": 11.2,
+        "win_rate": 0.9194,
+        "loss_rate": 0.0806,
+        "directional_win_rate": 0.9194,
+        "missing_count": 102,
         "return_distribution": {
-          "positive": 40,
+          "positive": 57,
           "negative": 5,
           "flat": 0
         },
         "triple_barrier_outcomes": {
-          "hit": 24,
-          "stop": 21
+          "hit": 32,
+          "stop": 30
         }
       }
     },
     "watch": {
       "1d": {
-        "sample_count": 288,
-        "completed_count": 272,
-        "avg_return": 1.6209,
-        "median_return": 0.315,
+        "sample_count": 352,
+        "completed_count": 335,
+        "avg_return": 1.1851,
+        "median_return": -0.04,
         "win_rate": null,
         "loss_rate": null,
         "directional_win_rate": null,
-        "missing_count": 16,
+        "missing_count": 17,
         "return_distribution": {
-          "positive": 142,
-          "negative": 129,
+          "positive": 166,
+          "negative": 168,
           "flat": 1
         },
         "triple_barrier_outcomes": {
           "hit": 113,
-          "pending": 41,
-          "stop": 118
+          "pending": 23,
+          "stop": 199
         }
       },
       "5d": {
-        "sample_count": 288,
-        "completed_count": 221,
-        "avg_return": 6.3674,
-        "median_return": 2.27,
+        "sample_count": 352,
+        "completed_count": 288,
+        "avg_return": 4.5381,
+        "median_return": 1.94,
         "win_rate": null,
         "loss_rate": null,
         "directional_win_rate": null,
-        "missing_count": 67,
+        "missing_count": 64,
         "return_distribution": {
-          "positive": 151,
-          "negative": 70,
+          "positive": 186,
+          "negative": 102,
           "flat": 0
         },
         "triple_barrier_outcomes": {
           "hit": 113,
-          "pending": 10,
-          "stop": 98
+          "pending": 2,
+          "stop": 173
         }
       },
       "20d": {
-        "sample_count": 288,
-        "completed_count": 87,
-        "avg_return": 15.7002,
-        "median_return": 9.58,
+        "sample_count": 352,
+        "completed_count": 139,
+        "avg_return": 19.3741,
+        "median_return": 9.99,
         "win_rate": null,
         "loss_rate": null,
         "directional_win_rate": null,
-        "missing_count": 201,
+        "missing_count": 213,
         "return_distribution": {
-          "positive": 70,
-          "negative": 17,
+          "positive": 111,
+          "negative": 28,
           "flat": 0
         },
         "triple_barrier_outcomes": {
-          "hit": 51,
-          "stop": 36
+          "hit": 86,
+          "stop": 53
         }
       }
     },
@@ -267,36 +267,36 @@
         "avoid_win_rate": null
       },
       "35_50": {
-        "sample_count": 26,
+        "sample_count": 27,
         "action_counts": {
-          "watch": 26
+          "watch": 27
         },
-        "avg_return_1d": 0.1515,
-        "avg_return_5d": 8.0932,
-        "avg_return_20d": 29.546,
+        "avg_return_1d": 0.1626,
+        "avg_return_5d": 7.0292,
+        "avg_return_20d": 24.9315,
         "buy_win_rate": null,
         "avoid_win_rate": null
       },
       "50_65": {
-        "sample_count": 262,
+        "sample_count": 325,
         "action_counts": {
-          "watch": 262
+          "watch": 325
         },
-        "avg_return_1d": 1.7762,
-        "avg_return_5d": 6.1766,
-        "avg_return_20d": 14.856,
+        "avg_return_1d": 1.2748,
+        "avg_return_5d": 4.2909,
+        "avg_return_20d": 18.8007,
         "buy_win_rate": null,
         "avoid_win_rate": null
       },
       "65_80": {
-        "sample_count": 128,
+        "sample_count": 164,
         "action_counts": {
-          "buy": 128
+          "buy": 164
         },
-        "avg_return_1d": 1.9544,
-        "avg_return_5d": 6.1661,
-        "avg_return_20d": 17.7329,
-        "buy_win_rate": 0.6737,
+        "avg_return_1d": 0.991,
+        "avg_return_5d": 4.6038,
+        "avg_return_20d": 19.5371,
+        "buy_win_rate": 0.6562,
         "avoid_win_rate": null
       },
       "80_100": {
@@ -314,122 +314,122 @@
     "risk_on": {
       "buy": {
         "1d": {
-          "sample_count": 128,
-          "completed_count": 119,
-          "avg_return": 1.9544,
-          "median_return": 0.89,
-          "win_rate": 0.5714,
-          "loss_rate": 0.4286,
-          "directional_win_rate": 0.5714,
-          "missing_count": 9,
+          "sample_count": 164,
+          "completed_count": 156,
+          "avg_return": 0.991,
+          "median_return": 0.29,
+          "win_rate": 0.5128,
+          "loss_rate": 0.4872,
+          "directional_win_rate": 0.5128,
+          "missing_count": 8,
           "return_distribution": {
-            "positive": 68,
-            "negative": 51,
+            "positive": 80,
+            "negative": 76,
             "flat": 0
           },
           "triple_barrier_outcomes": {
-            "hit": 58,
-            "pending": 9,
-            "stop": 52
+            "hit": 73,
+            "pending": 11,
+            "stop": 72
           }
         },
         "5d": {
-          "sample_count": 128,
-          "completed_count": 95,
-          "avg_return": 6.1661,
-          "median_return": 3.54,
-          "win_rate": 0.6737,
-          "loss_rate": 0.3263,
-          "directional_win_rate": 0.6737,
-          "missing_count": 33,
+          "sample_count": 164,
+          "completed_count": 128,
+          "avg_return": 4.6038,
+          "median_return": 3.18,
+          "win_rate": 0.6562,
+          "loss_rate": 0.3438,
+          "directional_win_rate": 0.6562,
+          "missing_count": 36,
           "return_distribution": {
-            "positive": 64,
-            "negative": 30,
+            "positive": 84,
+            "negative": 43,
             "flat": 1
           },
           "triple_barrier_outcomes": {
-            "hit": 50,
-            "stop": 45
+            "hit": 63,
+            "stop": 65
           }
         },
         "20d": {
-          "sample_count": 128,
-          "completed_count": 45,
-          "avg_return": 17.7329,
-          "median_return": 9.62,
-          "win_rate": 0.8889,
-          "loss_rate": 0.1111,
-          "directional_win_rate": 0.8889,
-          "missing_count": 83,
+          "sample_count": 164,
+          "completed_count": 62,
+          "avg_return": 19.5371,
+          "median_return": 11.2,
+          "win_rate": 0.9194,
+          "loss_rate": 0.0806,
+          "directional_win_rate": 0.9194,
+          "missing_count": 102,
           "return_distribution": {
-            "positive": 40,
+            "positive": 57,
             "negative": 5,
             "flat": 0
           },
           "triple_barrier_outcomes": {
-            "hit": 24,
-            "stop": 21
+            "hit": 32,
+            "stop": 30
           }
         }
       },
       "watch": {
         "1d": {
-          "sample_count": 288,
-          "completed_count": 272,
-          "avg_return": 1.6209,
-          "median_return": 0.315,
+          "sample_count": 352,
+          "completed_count": 335,
+          "avg_return": 1.1851,
+          "median_return": -0.04,
           "win_rate": null,
           "loss_rate": null,
           "directional_win_rate": null,
-          "missing_count": 16,
+          "missing_count": 17,
           "return_distribution": {
-            "positive": 142,
-            "negative": 129,
+            "positive": 166,
+            "negative": 168,
             "flat": 1
           },
           "triple_barrier_outcomes": {
             "hit": 113,
-            "pending": 41,
-            "stop": 118
+            "pending": 23,
+            "stop": 199
           }
         },
         "5d": {
-          "sample_count": 288,
-          "completed_count": 221,
-          "avg_return": 6.3674,
-          "median_return": 2.27,
+          "sample_count": 352,
+          "completed_count": 288,
+          "avg_return": 4.5381,
+          "median_return": 1.94,
           "win_rate": null,
           "loss_rate": null,
           "directional_win_rate": null,
-          "missing_count": 67,
+          "missing_count": 64,
           "return_distribution": {
-            "positive": 151,
-            "negative": 70,
+            "positive": 186,
+            "negative": 102,
             "flat": 0
           },
           "triple_barrier_outcomes": {
             "hit": 113,
-            "pending": 10,
-            "stop": 98
+            "pending": 2,
+            "stop": 173
           }
         },
         "20d": {
-          "sample_count": 288,
-          "completed_count": 87,
-          "avg_return": 15.7002,
-          "median_return": 9.58,
+          "sample_count": 352,
+          "completed_count": 139,
+          "avg_return": 19.3741,
+          "median_return": 9.99,
           "win_rate": null,
           "loss_rate": null,
           "directional_win_rate": null,
-          "missing_count": 201,
+          "missing_count": 213,
           "return_distribution": {
-            "positive": 70,
-            "negative": 17,
+            "positive": 111,
+            "negative": 28,
             "flat": 0
           },
           "triple_barrier_outcomes": {
-            "hit": 51,
-            "stop": 36
+            "hit": 86,
+            "stop": 53
           }
         }
       }
@@ -501,165 +501,165 @@
     "missing_factor_sample_count": 24,
     "factors": {
       "catalyst_recency": {
-        "sample_count": 416,
-        "avg_score": 9.9567,
-        "positive_score_count": 392,
-        "negative_score_count": 24,
-        "avg_forward_return_5d": 6.3069,
-        "avg_forward_return_20d": 16.3932,
+        "sample_count": 516,
+        "avg_score": 9.3779,
+        "positive_score_count": 485,
+        "negative_score_count": 31,
+        "avg_forward_return_5d": 4.5583,
+        "avg_forward_return_20d": 19.4244,
         "best_action_context": {
-          "action": "watch",
-          "sample_count": 221,
-          "avg_return_5d": 6.3674
+          "action": "buy",
+          "sample_count": 128,
+          "avg_return_5d": 4.6038
         },
         "worst_action_context": {
-          "action": "buy",
-          "sample_count": 95,
-          "avg_return_5d": 6.1661
+          "action": "watch",
+          "sample_count": 288,
+          "avg_return_5d": 4.5381
         }
       },
       "earnings_pattern": {
-        "sample_count": 200,
-        "avg_score": 5.1,
-        "positive_score_count": 180,
-        "negative_score_count": 20,
-        "avg_forward_return_5d": 9.6111,
-        "avg_forward_return_20d": 15.4827,
+        "sample_count": 256,
+        "avg_score": 5.2188,
+        "positive_score_count": 232,
+        "negative_score_count": 24,
+        "avg_forward_return_5d": 5.9031,
+        "avg_forward_return_20d": 23.8856,
         "best_action_context": {
           "action": "watch",
-          "sample_count": 82,
-          "avg_return_5d": 12.9985
+          "sample_count": 111,
+          "avg_return_5d": 7.9154
         },
         "worst_action_context": {
           "action": "buy",
-          "sample_count": 63,
-          "avg_return_5d": 5.2021
+          "sample_count": 89,
+          "avg_return_5d": 3.3933
         }
       },
       "fundamentals": {
-        "sample_count": 416,
-        "avg_score": 7.6635,
-        "positive_score_count": 416,
+        "sample_count": 516,
+        "avg_score": 7.7171,
+        "positive_score_count": 516,
         "negative_score_count": 0,
-        "avg_forward_return_5d": 6.3069,
-        "avg_forward_return_20d": 16.3932,
+        "avg_forward_return_5d": 4.5583,
+        "avg_forward_return_20d": 19.4244,
         "best_action_context": {
-          "action": "watch",
-          "sample_count": 221,
-          "avg_return_5d": 6.3674
+          "action": "buy",
+          "sample_count": 128,
+          "avg_return_5d": 4.6038
         },
         "worst_action_context": {
-          "action": "buy",
-          "sample_count": 95,
-          "avg_return_5d": 6.1661
+          "action": "watch",
+          "sample_count": 288,
+          "avg_return_5d": 4.5381
         }
       },
       "macro_event": {
-        "sample_count": 307,
-        "avg_score": -2.4821,
-        "positive_score_count": 103,
-        "negative_score_count": 204,
-        "avg_forward_return_5d": 5.4551,
-        "avg_forward_return_20d": 16.5905,
+        "sample_count": 387,
+        "avg_score": -2.5168,
+        "positive_score_count": 131,
+        "negative_score_count": 256,
+        "avg_forward_return_5d": 4.3954,
+        "avg_forward_return_20d": 18.7824,
         "best_action_context": {
           "action": "watch",
-          "sample_count": 147,
-          "avg_return_5d": 5.8983
+          "sample_count": 197,
+          "avg_return_5d": 4.4705
         },
         "worst_action_context": {
           "action": "buy",
-          "sample_count": 84,
-          "avg_return_5d": 4.6795
+          "sample_count": 110,
+          "avg_return_5d": 4.2608
         }
       },
       "macro_regime": {
-        "sample_count": 349,
-        "avg_score": 3.0344,
-        "positive_score_count": 299,
-        "negative_score_count": 50,
-        "avg_forward_return_5d": 6.9626,
-        "avg_forward_return_20d": 17.2088,
+        "sample_count": 445,
+        "avg_score": 3.0629,
+        "positive_score_count": 383,
+        "negative_score_count": 62,
+        "avg_forward_return_5d": 4.6458,
+        "avg_forward_return_20d": 20.6029,
         "best_action_context": {
-          "action": "watch",
-          "sample_count": 172,
-          "avg_return_5d": 7.1584
+          "action": "buy",
+          "sample_count": 114,
+          "avg_return_5d": 4.6825
         },
         "worst_action_context": {
-          "action": "buy",
-          "sample_count": 81,
-          "avg_return_5d": 6.5469
+          "action": "watch",
+          "sample_count": 235,
+          "avg_return_5d": 4.628
         }
       },
       "momentum": {
-        "sample_count": 416,
-        "avg_score": 13.3822,
-        "positive_score_count": 416,
+        "sample_count": 516,
+        "avg_score": 13.4147,
+        "positive_score_count": 516,
         "negative_score_count": 0,
-        "avg_forward_return_5d": 6.3069,
-        "avg_forward_return_20d": 16.3932,
+        "avg_forward_return_5d": 4.5583,
+        "avg_forward_return_20d": 19.4244,
         "best_action_context": {
-          "action": "watch",
-          "sample_count": 221,
-          "avg_return_5d": 6.3674
+          "action": "buy",
+          "sample_count": 128,
+          "avg_return_5d": 4.6038
         },
         "worst_action_context": {
-          "action": "buy",
-          "sample_count": 95,
-          "avg_return_5d": 6.1661
+          "action": "watch",
+          "sample_count": 288,
+          "avg_return_5d": 4.5381
         }
       },
       "news_tone": {
-        "sample_count": 176,
-        "avg_score": 3.8523,
-        "positive_score_count": 151,
-        "negative_score_count": 25,
-        "avg_forward_return_5d": 8.8308,
-        "avg_forward_return_20d": 15.7742,
+        "sample_count": 232,
+        "avg_score": 3.9569,
+        "positive_score_count": 202,
+        "negative_score_count": 30,
+        "avg_forward_return_5d": 6.1204,
+        "avg_forward_return_20d": 21.0528,
         "best_action_context": {
           "action": "watch",
-          "sample_count": 79,
-          "avg_return_5d": 9.1766
+          "sample_count": 111,
+          "avg_return_5d": 6.4838
         },
         "worst_action_context": {
           "action": "buy",
-          "sample_count": 44,
-          "avg_return_5d": 8.21
+          "sample_count": 65,
+          "avg_return_5d": 5.4998
         }
       },
       "peer_rank": {
-        "sample_count": 69,
-        "avg_score": 6.3043,
-        "positive_score_count": 67,
+        "sample_count": 107,
+        "avg_score": 6.3458,
+        "positive_score_count": 105,
         "negative_score_count": 2,
-        "avg_forward_return_5d": 5.4947,
-        "avg_forward_return_20d": 28.1481,
+        "avg_forward_return_5d": 4.2446,
+        "avg_forward_return_20d": 27.2538,
         "best_action_context": {
           "action": "buy",
-          "sample_count": 35,
-          "avg_return_5d": 6.1131
+          "sample_count": 51,
+          "avg_return_5d": 4.6294
         },
         "worst_action_context": {
           "action": "watch",
-          "sample_count": 14,
-          "avg_return_5d": 3.9486
+          "sample_count": 18,
+          "avg_return_5d": 3.1544
         }
       },
       "policy_tailwind": {
-        "sample_count": 202,
-        "avg_score": 1.7574,
-        "positive_score_count": 127,
-        "negative_score_count": 75,
-        "avg_forward_return_5d": 6.6927,
-        "avg_forward_return_20d": 25.3744,
+        "sample_count": 279,
+        "avg_score": 1.7097,
+        "positive_score_count": 179,
+        "negative_score_count": 100,
+        "avg_forward_return_5d": 5.3466,
+        "avg_forward_return_20d": 25.3725,
         "best_action_context": {
           "action": "watch",
-          "sample_count": 84,
-          "avg_return_5d": 7.7254
+          "sample_count": 124,
+          "avg_return_5d": 6.1666
         },
         "worst_action_context": {
           "action": "buy",
-          "sample_count": 53,
-          "avg_return_5d": 5.056
+          "sample_count": 78,
+          "avg_return_5d": 4.0431
         }
       },
       "portfolio_risk": {
@@ -668,7 +668,7 @@
         "positive_score_count": 0,
         "negative_score_count": 68,
         "avg_forward_return_5d": 7.4603,
-        "avg_forward_return_20d": 32.438,
+        "avg_forward_return_20d": 32.186,
         "best_action_context": {
           "action": "watch",
           "sample_count": 39,
@@ -681,57 +681,57 @@
         }
       },
       "regime_adjustment": {
-        "sample_count": 416,
-        "avg_score": 10.8774,
-        "positive_score_count": 416,
+        "sample_count": 516,
+        "avg_score": 10.8624,
+        "positive_score_count": 516,
         "negative_score_count": 0,
-        "avg_forward_return_5d": 6.3069,
-        "avg_forward_return_20d": 16.3932,
+        "avg_forward_return_5d": 4.5583,
+        "avg_forward_return_20d": 19.4244,
         "best_action_context": {
-          "action": "watch",
-          "sample_count": 221,
-          "avg_return_5d": 6.3674
+          "action": "buy",
+          "sample_count": 128,
+          "avg_return_5d": 4.6038
         },
         "worst_action_context": {
-          "action": "buy",
-          "sample_count": 95,
-          "avg_return_5d": 6.1661
+          "action": "watch",
+          "sample_count": 288,
+          "avg_return_5d": 4.5381
         }
       },
       "signal_track_record": {
-        "sample_count": 299,
-        "avg_score": 9.0635,
-        "positive_score_count": 253,
-        "negative_score_count": 46,
-        "avg_forward_return_5d": 5.3932,
-        "avg_forward_return_20d": 16.9482,
+        "sample_count": 380,
+        "avg_score": 9.5658,
+        "positive_score_count": 332,
+        "negative_score_count": 48,
+        "avg_forward_return_5d": 3.7596,
+        "avg_forward_return_20d": 16.1672,
         "best_action_context": {
           "action": "buy",
-          "sample_count": 87,
-          "avg_return_5d": 6.2029
+          "sample_count": 117,
+          "avg_return_5d": 4.6968
         },
         "worst_action_context": {
           "action": "watch",
-          "sample_count": 132,
-          "avg_return_5d": 4.8595
+          "sample_count": 182,
+          "avg_return_5d": 3.1571
         }
       },
       "valuation": {
-        "sample_count": 416,
-        "avg_score": 10.2548,
-        "positive_score_count": 416,
+        "sample_count": 516,
+        "avg_score": 10.2558,
+        "positive_score_count": 516,
         "negative_score_count": 0,
-        "avg_forward_return_5d": 6.3069,
-        "avg_forward_return_20d": 16.3932,
+        "avg_forward_return_5d": 4.5583,
+        "avg_forward_return_20d": 19.4244,
         "best_action_context": {
-          "action": "watch",
-          "sample_count": 221,
-          "avg_return_5d": 6.3674
+          "action": "buy",
+          "sample_count": 128,
+          "avg_return_5d": 4.6038
         },
         "worst_action_context": {
-          "action": "buy",
-          "sample_count": 95,
-          "avg_return_5d": 6.1661
+          "action": "watch",
+          "sample_count": 288,
+          "avg_return_5d": 4.5381
         }
       }
     }
@@ -741,14 +741,16 @@
       "ticker": "AAPL",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 62.0,
-      "current_conviction": 62,
+      "previous_conviction": 60.0,
+      "current_conviction": 63,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged"
+        "action_unchanged",
+        "conviction_increased",
+        "top_factor_changed"
       ],
-      "summary": "AAPL stayed watch; main changes: action_unchanged.",
+      "summary": "AAPL stayed watch; main changes: action_unchanged, conviction_increased, top_factor_changed.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -777,8 +779,8 @@
         },
         {
           "factor": "momentum",
-          "previous": 13.0,
-          "current": 11.0
+          "previous": 9.0,
+          "current": 17.0
         },
         {
           "factor": "news_tone",
@@ -792,8 +794,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": -3.0,
-          "current": -1.0
+          "previous": -4.0,
+          "current": -2.0
         },
         {
           "factor": "portfolio_risk",
@@ -821,15 +823,14 @@
       "ticker": "ALAB",
       "previous_action": "buy",
       "current_action": "buy",
-      "previous_conviction": 72.0,
-      "current_conviction": 71,
+      "previous_conviction": 70.0,
+      "current_conviction": 70,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged",
-        "conviction_decreased"
+        "action_unchanged"
       ],
-      "summary": "ALAB stayed buy; main changes: action_unchanged, conviction_decreased.",
+      "summary": "ALAB stayed buy; main changes: action_unchanged.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -859,7 +860,7 @@
         {
           "factor": "momentum",
           "previous": 17.0,
-          "current": 17.0
+          "current": 19.0
         },
         {
           "factor": "news_tone",
@@ -873,8 +874,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": -1.0
+          "previous": -4.0,
+          "current": -7.0
         },
         {
           "factor": "portfolio_risk",
@@ -901,16 +902,18 @@
     {
       "ticker": "AMD",
       "previous_action": "buy",
-      "current_action": "buy",
+      "current_action": "watch",
       "previous_conviction": 68.0,
-      "current_conviction": 66,
+      "current_conviction": 62,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged",
-        "conviction_decreased"
+        "action_downgraded",
+        "conviction_decreased",
+        "conviction_fell_below_buy_threshold",
+        "top_factor_changed"
       ],
-      "summary": "AMD stayed buy; main changes: action_unchanged, conviction_decreased.",
+      "summary": "AMD changed buy -> watch; main changes: action_downgraded, conviction_decreased, conviction_fell_below_buy_threshold, top_factor_changed.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -940,7 +943,7 @@
         {
           "factor": "momentum",
           "previous": 17.0,
-          "current": 17.0
+          "current": 13.0
         },
         {
           "factor": "news_tone",
@@ -954,8 +957,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": -2.0,
-          "current": -1.0
+          "previous": -4.0,
+          "current": -8.0
         },
         {
           "factor": "portfolio_risk",
@@ -984,7 +987,7 @@
       "previous_action": "watch",
       "current_action": "watch",
       "previous_conviction": 60.0,
-      "current_conviction": 63,
+      "current_conviction": 62,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
@@ -1025,7 +1028,7 @@
         },
         {
           "factor": "news_tone",
-          "previous": 5.0,
+          "previous": 0.0,
           "current": 5.0
         },
         {
@@ -1035,8 +1038,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 1.0,
-          "current": 2.0
+          "previous": 4.0,
+          "current": 6.0
         },
         {
           "factor": "portfolio_risk",
@@ -1050,8 +1053,8 @@
         },
         {
           "factor": "signal_track_record",
-          "previous": 5.0,
-          "current": 10.0
+          "previous": 10.0,
+          "current": 5.0
         },
         {
           "factor": "valuation",
@@ -1064,7 +1067,7 @@
       "ticker": "AVAV",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 47.0,
+      "previous_conviction": 53.0,
       "current_conviction": 54,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
@@ -1076,7 +1079,7 @@
       "contributors": [
         {
           "factor": "catalyst_recency",
-          "previous": -5.0,
+          "previous": 5.0,
           "current": 5.0
         },
         {
@@ -1101,8 +1104,8 @@
         },
         {
           "factor": "momentum",
-          "previous": 16.0,
-          "current": 16.0
+          "previous": 14.0,
+          "current": 14.0
         },
         {
           "factor": "news_tone",
@@ -1116,8 +1119,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 4.0,
+          "current": 4.0
         },
         {
           "factor": "portfolio_risk",
@@ -1131,7 +1134,7 @@
         },
         {
           "factor": "signal_track_record",
-          "previous": 0.0,
+          "previous": 5.0,
           "current": 5.0
         },
         {
@@ -1145,14 +1148,15 @@
       "ticker": "CAT",
       "previous_action": "buy",
       "current_action": "buy",
-      "previous_conviction": 65.0,
-      "current_conviction": 65,
+      "previous_conviction": 66.0,
+      "current_conviction": 68,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged"
+        "action_unchanged",
+        "conviction_increased"
       ],
-      "summary": "CAT stayed buy; main changes: action_unchanged.",
+      "summary": "CAT stayed buy; main changes: action_unchanged, conviction_increased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -1181,8 +1185,8 @@
         },
         {
           "factor": "momentum",
-          "previous": 17.0,
-          "current": 15.0
+          "previous": 13.0,
+          "current": 13.0
         },
         {
           "factor": "news_tone",
@@ -1191,13 +1195,13 @@
         },
         {
           "factor": "peer_rank",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 8.0,
+          "current": 8.0
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": 5.0
+          "previous": -3.0,
+          "current": 3.0
         },
         {
           "factor": "portfolio_risk",
@@ -1224,18 +1228,16 @@
     {
       "ticker": "COHR",
       "previous_action": "buy",
-      "current_action": "watch",
-      "previous_conviction": 66.0,
-      "current_conviction": 59,
+      "current_action": "buy",
+      "previous_conviction": 67.0,
+      "current_conviction": 65,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_downgraded",
-        "conviction_decreased",
-        "conviction_fell_below_buy_threshold",
-        "top_factor_changed"
+        "action_unchanged",
+        "conviction_decreased"
       ],
-      "summary": "COHR changed buy -> watch; main changes: action_downgraded, conviction_decreased, conviction_fell_below_buy_threshold, top_factor_changed.",
+      "summary": "COHR stayed buy; main changes: action_unchanged, conviction_decreased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -1265,7 +1267,7 @@
         {
           "factor": "momentum",
           "previous": 17.0,
-          "current": 9.0
+          "current": 17.0
         },
         {
           "factor": "news_tone",
@@ -1274,13 +1276,13 @@
         },
         {
           "factor": "peer_rank",
-          "previous": 0.0,
+          "previous": 5.0,
           "current": 0.0
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": -3.0,
+          "current": -3.0
         },
         {
           "factor": "portfolio_risk",
@@ -1295,7 +1297,7 @@
         {
           "factor": "signal_track_record",
           "previous": 15.0,
-          "current": 10.0
+          "current": 15.0
         },
         {
           "factor": "valuation",
@@ -1306,17 +1308,17 @@
     },
     {
       "ticker": "DD",
-      "previous_action": "buy",
-      "current_action": "buy",
-      "previous_conviction": 66.0,
-      "current_conviction": 65,
+      "previous_action": "watch",
+      "current_action": "watch",
+      "previous_conviction": 59.0,
+      "current_conviction": 50,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
         "action_unchanged",
         "conviction_decreased"
       ],
-      "summary": "DD stayed buy; main changes: action_unchanged, conviction_decreased.",
+      "summary": "DD stayed watch; main changes: action_unchanged, conviction_decreased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -1345,22 +1347,22 @@
         },
         {
           "factor": "momentum",
-          "previous": 17.0,
-          "current": 17.0
+          "previous": 11.0,
+          "current": 6.0
         },
         {
           "factor": "news_tone",
           "previous": 5.0,
-          "current": 5.0
+          "current": 0.0
         },
         {
           "factor": "peer_rank",
-          "previous": 8.0,
-          "current": 5.0
+          "previous": 0.0,
+          "current": 0.0
         },
         {
           "factor": "policy_tailwind",
-          "previous": -2.0,
+          "previous": 0.0,
           "current": 0.0
         },
         {
@@ -1376,7 +1378,7 @@
         {
           "factor": "signal_track_record",
           "previous": 0.0,
-          "current": 0.0
+          "current": -10.0
         },
         {
           "factor": "valuation",
@@ -1389,14 +1391,16 @@
       "ticker": "FLNC",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 58.0,
-      "current_conviction": 58,
+      "previous_conviction": 62.0,
+      "current_conviction": 57,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged"
+        "action_unchanged",
+        "conviction_decreased",
+        "top_factor_changed"
       ],
-      "summary": "FLNC stayed watch; main changes: action_unchanged.",
+      "summary": "FLNC stayed watch; main changes: action_unchanged, conviction_decreased, top_factor_changed.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -1426,11 +1430,11 @@
         {
           "factor": "momentum",
           "previous": 17.0,
-          "current": 19.0
+          "current": 13.0
         },
         {
           "factor": "news_tone",
-          "previous": -3.0,
+          "previous": 5.0,
           "current": 0.0
         },
         {
@@ -1441,7 +1445,7 @@
         {
           "factor": "policy_tailwind",
           "previous": 7.0,
-          "current": 4.0
+          "current": 3.0
         },
         {
           "factor": "portfolio_risk",
@@ -1456,12 +1460,12 @@
         {
           "factor": "signal_track_record",
           "previous": 15.0,
-          "current": 10.0
+          "current": 15.0
         },
         {
           "factor": "valuation",
           "previous": 8.0,
-          "current": 10.0
+          "current": 8.0
         }
       ]
     },
@@ -1469,15 +1473,14 @@
       "ticker": "HUM",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 57.0,
-      "current_conviction": 56,
+      "previous_conviction": 61.0,
+      "current_conviction": 61,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged",
-        "conviction_decreased"
+        "action_unchanged"
       ],
-      "summary": "HUM stayed watch; main changes: action_unchanged, conviction_decreased.",
+      "summary": "HUM stayed watch; main changes: action_unchanged.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -1516,12 +1519,12 @@
         },
         {
           "factor": "peer_rank",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 8.0,
+          "current": 8.0
         },
         {
           "factor": "policy_tailwind",
-          "previous": -2.0,
+          "previous": -1.0,
           "current": -1.0
         },
         {
@@ -1550,8 +1553,8 @@
       "ticker": "IONQ",
       "previous_action": "buy",
       "current_action": "buy",
-      "previous_conviction": 70.0,
-      "current_conviction": 70,
+      "previous_conviction": 67.0,
+      "current_conviction": 67,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
@@ -1596,8 +1599,8 @@
         },
         {
           "factor": "peer_rank",
-          "previous": 8.0,
-          "current": 8.0
+          "previous": 0.0,
+          "current": 0.0
         },
         {
           "factor": "policy_tailwind",
@@ -1622,7 +1625,7 @@
         {
           "factor": "valuation",
           "previous": 10.0,
-          "current": 10.0
+          "current": 12.0
         }
       ]
     },
@@ -1630,20 +1633,21 @@
       "ticker": "KEY",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 58.0,
-      "current_conviction": 60,
+      "previous_conviction": 53.0,
+      "current_conviction": 54,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
         "action_unchanged",
-        "conviction_increased"
+        "conviction_increased",
+        "top_factor_changed"
       ],
-      "summary": "KEY stayed watch; main changes: action_unchanged, conviction_increased.",
+      "summary": "KEY stayed watch; main changes: action_unchanged, conviction_increased, top_factor_changed.",
       "contributors": [
         {
           "factor": "catalyst_recency",
-          "previous": 8.0,
-          "current": 8.0
+          "previous": -5.0,
+          "current": -5.0
         },
         {
           "factor": "earnings_pattern",
@@ -1667,8 +1671,8 @@
         },
         {
           "factor": "momentum",
-          "previous": 13.0,
-          "current": 15.0
+          "previous": 11.0,
+          "current": 13.0
         },
         {
           "factor": "news_tone",
@@ -1677,13 +1681,13 @@
         },
         {
           "factor": "peer_rank",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 5.0,
+          "current": 5.0
         },
         {
           "factor": "policy_tailwind",
           "previous": 0.0,
-          "current": 1.0
+          "current": 0.0
         },
         {
           "factor": "portfolio_risk",
@@ -1711,8 +1715,8 @@
       "ticker": "KO",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 54.0,
-      "current_conviction": 55,
+      "previous_conviction": 51.0,
+      "current_conviction": 53,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
@@ -1733,7 +1737,7 @@
         },
         {
           "factor": "fundamentals",
-          "previous": 8.0,
+          "previous": 7.0,
           "current": 7.0
         },
         {
@@ -1748,8 +1752,8 @@
         },
         {
           "factor": "momentum",
-          "previous": 13.0,
-          "current": 17.0
+          "previous": 10.0,
+          "current": 15.0
         },
         {
           "factor": "news_tone",
@@ -1764,7 +1768,7 @@
         {
           "factor": "policy_tailwind",
           "previous": 0.0,
-          "current": -1.0
+          "current": 0.0
         },
         {
           "factor": "portfolio_risk",
@@ -1778,8 +1782,8 @@
         },
         {
           "factor": "signal_track_record",
-          "previous": 5.0,
-          "current": 5.0
+          "previous": 0.0,
+          "current": 0.0
         },
         {
           "factor": "valuation",
@@ -1792,16 +1796,15 @@
       "ticker": "KTOS",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 57.0,
-      "current_conviction": 60,
+      "previous_conviction": 60.0,
+      "current_conviction": 59,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
         "action_unchanged",
-        "conviction_increased",
-        "top_factor_changed"
+        "conviction_decreased"
       ],
-      "summary": "KTOS stayed watch; main changes: action_unchanged, conviction_increased, top_factor_changed.",
+      "summary": "KTOS stayed watch; main changes: action_unchanged, conviction_decreased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -1830,8 +1833,8 @@
         },
         {
           "factor": "momentum",
-          "previous": 13.0,
-          "current": 11.0
+          "previous": 9.0,
+          "current": 7.0
         },
         {
           "factor": "news_tone",
@@ -1845,8 +1848,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 5.0,
+          "current": 4.0
         },
         {
           "factor": "portfolio_risk",
@@ -1860,7 +1863,7 @@
         },
         {
           "factor": "signal_track_record",
-          "previous": -10.0,
+          "previous": 0.0,
           "current": 0.0
         },
         {
@@ -1874,15 +1877,15 @@
       "ticker": "MOD",
       "previous_action": "buy",
       "current_action": "buy",
-      "previous_conviction": 69.0,
-      "current_conviction": 66,
+      "previous_conviction": 68.0,
+      "current_conviction": 68,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
         "action_unchanged",
-        "conviction_decreased"
+        "top_factor_changed"
       ],
-      "summary": "MOD stayed buy; main changes: action_unchanged, conviction_decreased.",
+      "summary": "MOD stayed buy; main changes: action_unchanged, top_factor_changed.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -1911,8 +1914,8 @@
         },
         {
           "factor": "momentum",
-          "previous": 19.0,
-          "current": 15.0
+          "previous": 17.0,
+          "current": 13.0
         },
         {
           "factor": "news_tone",
@@ -1921,13 +1924,13 @@
         },
         {
           "factor": "peer_rank",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 5.0,
+          "current": 5.0
         },
         {
           "factor": "policy_tailwind",
-          "previous": 2.0,
-          "current": 1.0
+          "previous": 3.0,
+          "current": 0.0
         },
         {
           "factor": "portfolio_risk",
@@ -1955,14 +1958,15 @@
       "ticker": "NXT",
       "previous_action": "buy",
       "current_action": "buy",
-      "previous_conviction": 67.0,
+      "previous_conviction": 68.0,
       "current_conviction": 67,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged"
+        "action_unchanged",
+        "conviction_decreased"
       ],
-      "summary": "NXT stayed buy; main changes: action_unchanged.",
+      "summary": "NXT stayed buy; main changes: action_unchanged, conviction_decreased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -1992,7 +1996,7 @@
         {
           "factor": "momentum",
           "previous": 17.0,
-          "current": 19.0
+          "current": 15.0
         },
         {
           "factor": "news_tone",
@@ -2001,13 +2005,13 @@
         },
         {
           "factor": "peer_rank",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 5.0,
+          "current": 5.0
         },
         {
           "factor": "policy_tailwind",
-          "previous": 3.0,
-          "current": 2.0
+          "previous": 1.0,
+          "current": -1.0
         },
         {
           "factor": "portfolio_risk",
@@ -2033,18 +2037,18 @@
     },
     {
       "ticker": "ORA",
-      "previous_action": "watch",
-      "current_action": "buy",
-      "previous_conviction": 62.0,
-      "current_conviction": 65,
+      "previous_action": "buy",
+      "current_action": "watch",
+      "previous_conviction": 65.0,
+      "current_conviction": 62,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_upgraded",
-        "conviction_increased",
-        "conviction_crossed_buy_threshold"
+        "action_downgraded",
+        "conviction_decreased",
+        "conviction_fell_below_buy_threshold"
       ],
-      "summary": "ORA changed watch -> buy; main changes: action_upgraded, conviction_increased, conviction_crossed_buy_threshold.",
+      "summary": "ORA changed buy -> watch; main changes: action_downgraded, conviction_decreased, conviction_fell_below_buy_threshold.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -2083,13 +2087,13 @@
         },
         {
           "factor": "peer_rank",
-          "previous": 0.0,
+          "previous": 8.0,
           "current": 0.0
         },
         {
           "factor": "policy_tailwind",
-          "previous": 2.0,
-          "current": 8.0
+          "previous": 4.0,
+          "current": 2.0
         },
         {
           "factor": "portfolio_risk",
@@ -2115,10 +2119,10 @@
     },
     {
       "ticker": "OXY",
-      "previous_action": "watch",
-      "current_action": "watch",
-      "previous_conviction": 61.0,
-      "current_conviction": 63,
+      "previous_action": "buy",
+      "current_action": "buy",
+      "previous_conviction": 69.0,
+      "current_conviction": 73,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
@@ -2126,7 +2130,7 @@
         "conviction_increased",
         "top_factor_changed"
       ],
-      "summary": "OXY stayed watch; main changes: action_unchanged, conviction_increased, top_factor_changed.",
+      "summary": "OXY stayed buy; main changes: action_unchanged, conviction_increased, top_factor_changed.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -2155,23 +2159,23 @@
         },
         {
           "factor": "momentum",
-          "previous": 8.0,
-          "current": 10.0
+          "previous": 12.0,
+          "current": 12.0
         },
         {
           "factor": "news_tone",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 5.0,
+          "current": 5.0
         },
         {
           "factor": "peer_rank",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 8.0,
+          "current": 8.0
         },
         {
           "factor": "policy_tailwind",
           "previous": 2.0,
-          "current": 4.0
+          "current": 8.0
         },
         {
           "factor": "portfolio_risk",
@@ -2186,7 +2190,7 @@
         {
           "factor": "signal_track_record",
           "previous": 10.0,
-          "current": 10.0
+          "current": 15.0
         },
         {
           "factor": "valuation",
@@ -2199,15 +2203,15 @@
       "ticker": "PLUG",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 58.0,
-      "current_conviction": 59,
+      "previous_conviction": 57.0,
+      "current_conviction": 55,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
         "action_unchanged",
-        "conviction_increased"
+        "conviction_decreased"
       ],
-      "summary": "PLUG stayed watch; main changes: action_unchanged, conviction_increased.",
+      "summary": "PLUG stayed watch; main changes: action_unchanged, conviction_decreased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -2237,7 +2241,7 @@
         {
           "factor": "momentum",
           "previous": 17.0,
-          "current": 17.0
+          "current": 15.0
         },
         {
           "factor": "news_tone",
@@ -2252,7 +2256,7 @@
         {
           "factor": "policy_tailwind",
           "previous": 3.0,
-          "current": 4.0
+          "current": 0.0
         },
         {
           "factor": "portfolio_risk",
@@ -2266,30 +2270,29 @@
         },
         {
           "factor": "signal_track_record",
-          "previous": 10.0,
-          "current": 10.0
+          "previous": 5.0,
+          "current": 5.0
         },
         {
           "factor": "valuation",
-          "previous": 8.0,
+          "previous": 10.0,
           "current": 10.0
         }
       ]
     },
     {
       "ticker": "RDW",
-      "previous_action": "watch",
+      "previous_action": "buy",
       "current_action": "buy",
-      "previous_conviction": 63.0,
+      "previous_conviction": 66.0,
       "current_conviction": 65,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_upgraded",
-        "conviction_increased",
-        "conviction_crossed_buy_threshold"
+        "action_unchanged",
+        "conviction_decreased"
       ],
-      "summary": "RDW changed watch -> buy; main changes: action_upgraded, conviction_increased, conviction_crossed_buy_threshold.",
+      "summary": "RDW stayed buy; main changes: action_unchanged, conviction_decreased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -2323,7 +2326,7 @@
         },
         {
           "factor": "news_tone",
-          "previous": 0.0,
+          "previous": 5.0,
           "current": 5.0
         },
         {
@@ -2333,8 +2336,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 6.0,
+          "current": 4.0
         },
         {
           "factor": "portfolio_risk",
@@ -2349,7 +2352,7 @@
         {
           "factor": "signal_track_record",
           "previous": 15.0,
-          "current": 15.0
+          "current": 10.0
         },
         {
           "factor": "valuation",
@@ -2362,14 +2365,15 @@
       "ticker": "RKLB",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 60.0,
-      "current_conviction": 60,
+      "previous_conviction": 59.0,
+      "current_conviction": 57,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged"
+        "action_unchanged",
+        "conviction_decreased"
       ],
-      "summary": "RKLB stayed watch; main changes: action_unchanged.",
+      "summary": "RKLB stayed watch; main changes: action_unchanged, conviction_decreased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -2399,7 +2403,7 @@
         {
           "factor": "momentum",
           "previous": 17.0,
-          "current": 19.0
+          "current": 15.0
         },
         {
           "factor": "news_tone",
@@ -2413,8 +2417,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 5.0,
+          "current": 5.0
         },
         {
           "factor": "portfolio_risk",
@@ -2428,13 +2432,13 @@
         },
         {
           "factor": "signal_track_record",
-          "previous": 15.0,
-          "current": 15.0
+          "previous": 10.0,
+          "current": 5.0
         },
         {
           "factor": "valuation",
           "previous": 8.0,
-          "current": 8.0
+          "current": 10.0
         }
       ]
     },
@@ -2443,14 +2447,14 @@
       "previous_action": "watch",
       "current_action": "watch",
       "previous_conviction": 55.0,
-      "current_conviction": 58,
+      "current_conviction": 55,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
         "action_unchanged",
-        "conviction_increased"
+        "top_factor_changed"
       ],
-      "summary": "SPIR stayed watch; main changes: action_unchanged, conviction_increased.",
+      "summary": "SPIR stayed watch; main changes: action_unchanged, top_factor_changed.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -2479,13 +2483,13 @@
         },
         {
           "factor": "momentum",
-          "previous": 17.0,
-          "current": 17.0
+          "previous": 11.0,
+          "current": 6.0
         },
         {
           "factor": "news_tone",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 5.0,
+          "current": 5.0
         },
         {
           "factor": "peer_rank",
@@ -2494,8 +2498,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": 4.0,
+          "current": 5.0
         },
         {
           "factor": "portfolio_risk",
@@ -2510,12 +2514,12 @@
         {
           "factor": "signal_track_record",
           "previous": 5.0,
-          "current": 10.0
+          "current": 5.0
         },
         {
           "factor": "valuation",
-          "previous": 8.0,
-          "current": 8.0
+          "previous": 10.0,
+          "current": 12.0
         }
       ]
     },
@@ -2523,15 +2527,14 @@
       "ticker": "T",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 53.0,
-      "current_conviction": 54,
+      "previous_conviction": 50.0,
+      "current_conviction": 50,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
-        "action_unchanged",
-        "conviction_increased"
+        "action_unchanged"
       ],
-      "summary": "T stayed watch; main changes: action_unchanged, conviction_increased.",
+      "summary": "T stayed watch; main changes: action_unchanged.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -2561,12 +2564,12 @@
         {
           "factor": "momentum",
           "previous": 5.0,
-          "current": 7.0
+          "current": 5.0
         },
         {
           "factor": "news_tone",
-          "previous": 5.0,
-          "current": 5.0
+          "previous": 0.0,
+          "current": 0.0
         },
         {
           "factor": "peer_rank",
@@ -2575,8 +2578,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": -1.0
+          "previous": 1.0,
+          "current": 1.0
         },
         {
           "factor": "portfolio_risk",
@@ -2604,15 +2607,15 @@
       "ticker": "XOM",
       "previous_action": "watch",
       "current_action": "watch",
-      "previous_conviction": 61.0,
-      "current_conviction": 59,
+      "previous_conviction": 59.0,
+      "current_conviction": 61,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
         "action_unchanged",
-        "conviction_decreased"
+        "conviction_increased"
       ],
-      "summary": "XOM stayed watch; main changes: action_unchanged, conviction_decreased.",
+      "summary": "XOM stayed watch; main changes: action_unchanged, conviction_increased.",
       "contributors": [
         {
           "factor": "catalyst_recency",
@@ -2656,8 +2659,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 4.0,
-          "current": 5.0
+          "previous": 2.0,
+          "current": 8.0
         },
         {
           "factor": "portfolio_risk",
@@ -2672,12 +2675,12 @@
         {
           "factor": "signal_track_record",
           "previous": 5.0,
-          "current": 0.0
+          "current": 5.0
         },
         {
           "factor": "valuation",
-          "previous": 16.0,
-          "current": 16.0
+          "previous": 12.0,
+          "current": 12.0
         }
       ]
     },
@@ -2686,7 +2689,7 @@
       "previous_action": "watch",
       "current_action": "watch",
       "previous_conviction": 50.0,
-      "current_conviction": 51,
+      "current_conviction": 53,
       "previous_regime": "risk_on",
       "current_regime": "risk_on",
       "reason_codes": [
@@ -2737,8 +2740,8 @@
         },
         {
           "factor": "policy_tailwind",
-          "previous": 0.0,
-          "current": 0.0
+          "previous": -3.0,
+          "current": -2.0
         },
         {
           "factor": "portfolio_risk",
@@ -2753,7 +2756,7 @@
         {
           "factor": "signal_track_record",
           "previous": 0.0,
-          "current": 0.0
+          "current": 5.0
         },
         {
           "factor": "valuation",
@@ -2772,8 +2775,8 @@
       "20d"
     ],
     "summary": {
-      "sample_count": 416,
-      "completed_20d_count": 132,
+      "sample_count": 516,
+      "completed_20d_count": 201,
       "best_action": "buy",
       "worst_action": "watch",
       "notes": [
@@ -2784,72 +2787,72 @@
     "by_action": {
       "buy": {
         "1d": {
-          "sample_count": 128,
-          "completed_count": 119,
-          "avg_return": 1.9544,
-          "median_return": 0.89,
-          "win_rate": 0.5714,
-          "loss_rate": 0.4286,
+          "sample_count": 164,
+          "completed_count": 156,
+          "avg_return": 0.991,
+          "median_return": 0.29,
+          "win_rate": 0.5128,
+          "loss_rate": 0.4872,
           "best_return": 43.58,
-          "worst_return": -15.41,
-          "missing_count": 9
+          "worst_return": -15.83,
+          "missing_count": 8
         },
         "5d": {
-          "sample_count": 128,
-          "completed_count": 95,
-          "avg_return": 6.1661,
-          "median_return": 3.54,
-          "win_rate": 0.6737,
-          "loss_rate": 0.3263,
+          "sample_count": 164,
+          "completed_count": 128,
+          "avg_return": 4.6038,
+          "median_return": 3.18,
+          "win_rate": 0.6562,
+          "loss_rate": 0.3438,
           "best_return": 75.36,
-          "worst_return": -15.22,
-          "missing_count": 33
+          "worst_return": -24.91,
+          "missing_count": 36
         },
         "20d": {
-          "sample_count": 128,
-          "completed_count": 45,
-          "avg_return": 17.7329,
-          "median_return": 9.62,
-          "win_rate": 0.8889,
-          "loss_rate": 0.1111,
-          "best_return": 57.33,
+          "sample_count": 164,
+          "completed_count": 62,
+          "avg_return": 19.5371,
+          "median_return": 11.2,
+          "win_rate": 0.9194,
+          "loss_rate": 0.0806,
+          "best_return": 68.55,
           "worst_return": -7.85,
-          "missing_count": 83
+          "missing_count": 102
         }
       },
       "watch": {
         "1d": {
-          "sample_count": 288,
-          "completed_count": 272,
-          "avg_return": 1.6209,
-          "median_return": 0.315,
+          "sample_count": 352,
+          "completed_count": 335,
+          "avg_return": 1.1851,
+          "median_return": -0.04,
           "win_rate": null,
           "loss_rate": null,
           "best_return": 56.93,
-          "worst_return": -11.61,
-          "missing_count": 16
+          "worst_return": -15.62,
+          "missing_count": 17
         },
         "5d": {
-          "sample_count": 288,
-          "completed_count": 221,
-          "avg_return": 6.3674,
-          "median_return": 2.27,
+          "sample_count": 352,
+          "completed_count": 288,
+          "avg_return": 4.5381,
+          "median_return": 1.94,
           "win_rate": null,
           "loss_rate": null,
           "best_return": 98.2,
-          "worst_return": -21.56,
-          "missing_count": 67
+          "worst_return": -25.27,
+          "missing_count": 64
         },
         "20d": {
-          "sample_count": 288,
-          "completed_count": 87,
-          "avg_return": 15.7002,
-          "median_return": 9.58,
+          "sample_count": 352,
+          "completed_count": 139,
+          "avg_return": 19.3741,
+          "median_return": 9.99,
           "win_rate": null,
           "loss_rate": null,
-          "best_return": 91.16,
+          "best_return": 122.72,
           "worst_return": -19.36,
-          "missing_count": 201
+          "missing_count": 213
         }
       },
       "avoid": {
@@ -2890,33 +2893,33 @@
     },
     "conviction_buckets": {
       "65_80": {
-        "sample_count": 128,
+        "sample_count": 164,
         "action_counts": {
-          "buy": 128
+          "buy": 164
         },
         "by_action": {
           "buy": {
             "5d": {
-              "sample_count": 128,
-              "completed_count": 95,
-              "avg_return": 6.1661,
-              "median_return": 3.54,
-              "win_rate": 0.6737,
-              "loss_rate": 0.3263,
+              "sample_count": 164,
+              "completed_count": 128,
+              "avg_return": 4.6038,
+              "median_return": 3.18,
+              "win_rate": 0.6562,
+              "loss_rate": 0.3438,
               "best_return": 75.36,
-              "worst_return": -15.22,
-              "missing_count": 33
+              "worst_return": -24.91,
+              "missing_count": 36
             },
             "20d": {
-              "sample_count": 128,
-              "completed_count": 45,
-              "avg_return": 17.7329,
-              "median_return": 9.62,
-              "win_rate": 0.8889,
-              "loss_rate": 0.1111,
-              "best_return": 57.33,
+              "sample_count": 164,
+              "completed_count": 62,
+              "avg_return": 19.5371,
+              "median_return": 11.2,
+              "win_rate": 0.9194,
+              "loss_rate": 0.0806,
+              "best_return": 68.55,
               "worst_return": -7.85,
-              "missing_count": 83
+              "missing_count": 102
             }
           },
           "watch": {
@@ -3051,380 +3054,380 @@
     "ticker_leaderboard": [
       {
         "ticker": "AMD",
-        "signals": 24,
-        "buy_signals": 18,
-        "watch_signals": 6,
+        "signals": 28,
+        "buy_signals": 21,
+        "watch_signals": 7,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 14.3945,
-        "avg_return_20d": 57.8933,
-        "win_rate_5d": 0.9286,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 12.35,
+        "avg_return_20d": 54.2053,
+        "win_rate_5d": 0.8889,
         "win_rate_20d": 1.0
       },
       {
         "ticker": "IONQ",
-        "signals": 24,
-        "buy_signals": 12,
+        "signals": 28,
+        "buy_signals": 16,
         "watch_signals": 12,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 12.095,
-        "avg_return_20d": 38.4158,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 9.4113,
+        "avg_return_20d": 38.5333,
         "win_rate_5d": 0.5,
         "win_rate_20d": 1.0
       },
       {
-        "ticker": "PLUG",
-        "signals": 24,
-        "buy_signals": 14,
-        "watch_signals": 10,
-        "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 5.5845,
-        "avg_return_20d": 20.2733,
-        "win_rate_5d": 0.5714,
-        "win_rate_20d": 1.0
-      },
-      {
         "ticker": "ORA",
-        "signals": 24,
-        "buy_signals": 2,
-        "watch_signals": 22,
+        "signals": 28,
+        "buy_signals": 5,
+        "watch_signals": 23,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 2.921,
-        "avg_return_20d": 18.7483,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 3.0042,
+        "avg_return_20d": 19.6773,
         "win_rate_5d": 1.0,
         "win_rate_20d": null
       },
       {
-        "ticker": "SPIR",
-        "signals": 24,
-        "buy_signals": 0,
-        "watch_signals": 24,
+        "ticker": "PLUG",
+        "signals": 28,
+        "buy_signals": 14,
+        "watch_signals": 14,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 1.505,
-        "avg_return_20d": 15.4825,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 2.7421,
+        "avg_return_20d": 19.3247,
+        "win_rate_5d": 0.5714,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "SPIR",
+        "signals": 28,
+        "buy_signals": 0,
+        "watch_signals": 28,
+        "avoid_signals": 0,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": -2.3633,
+        "avg_return_20d": 14.9373,
         "win_rate_5d": null,
         "win_rate_20d": null
       },
       {
         "ticker": "AAPL",
-        "signals": 24,
+        "signals": 28,
         "buy_signals": 4,
-        "watch_signals": 20,
+        "watch_signals": 24,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 2.898,
-        "avg_return_20d": 12.7725,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 2.3533,
+        "avg_return_20d": 12.0027,
         "win_rate_5d": 0.75,
         "win_rate_20d": 1.0
       },
       {
         "ticker": "CAT",
-        "signals": 24,
-        "buy_signals": 18,
+        "signals": 28,
+        "buy_signals": 22,
         "watch_signals": 6,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 3.263,
-        "avg_return_20d": 10.7242,
-        "win_rate_5d": 0.8,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 3.2575,
+        "avg_return_20d": 8.654,
+        "win_rate_5d": 0.8333,
         "win_rate_20d": 1.0
       },
       {
         "ticker": "KO",
-        "signals": 24,
+        "signals": 28,
         "buy_signals": 0,
-        "watch_signals": 24,
+        "watch_signals": 28,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 0.773,
-        "avg_return_20d": 6.0517,
-        "win_rate_5d": null,
-        "win_rate_20d": null
-      },
-      {
-        "ticker": "XOM",
-        "signals": 24,
-        "buy_signals": 0,
-        "watch_signals": 24,
-        "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": -0.4795,
-        "avg_return_20d": 2.3133,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 0.2492,
+        "avg_return_20d": 4.668,
         "win_rate_5d": null,
         "win_rate_20d": null
       },
       {
         "ticker": "OXY",
-        "signals": 24,
-        "buy_signals": 15,
+        "signals": 28,
+        "buy_signals": 19,
         "watch_signals": 9,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": 0.169,
-        "avg_return_20d": 1.7275,
-        "win_rate_5d": 0.5714,
-        "win_rate_20d": 0.6667
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 0.6204,
+        "avg_return_20d": 1.8693,
+        "win_rate_5d": 0.6,
+        "win_rate_20d": 0.7778
+      },
+      {
+        "ticker": "XOM",
+        "signals": 28,
+        "buy_signals": 0,
+        "watch_signals": 28,
+        "avoid_signals": 0,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": 0.0846,
+        "avg_return_20d": 1.752,
+        "win_rate_5d": null,
+        "win_rate_20d": null
       },
       {
         "ticker": "T",
-        "signals": 24,
+        "signals": 28,
         "buy_signals": 3,
-        "watch_signals": 21,
+        "watch_signals": 25,
         "avoid_signals": 0,
-        "completed_5d_count": 20,
-        "completed_20d_count": 12,
-        "avg_return_5d": -0.5415,
-        "avg_return_20d": -4.0775,
+        "completed_5d_count": 24,
+        "completed_20d_count": 15,
+        "avg_return_5d": -1.6183,
+        "avg_return_20d": -4.9973,
         "win_rate_5d": 0.0,
         "win_rate_20d": 0.0
       },
       {
         "ticker": "RDW",
-        "signals": 12,
-        "buy_signals": 5,
-        "watch_signals": 7,
+        "signals": 16,
+        "buy_signals": 8,
+        "watch_signals": 8,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 40.9337,
-        "avg_return_20d": null,
-        "win_rate_5d": 1.0,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 20.6133,
+        "avg_return_20d": 119.3267,
+        "win_rate_5d": 0.4,
         "win_rate_20d": null
       },
       {
         "ticker": "FLNC",
-        "signals": 12,
+        "signals": 16,
         "buy_signals": 0,
-        "watch_signals": 12,
+        "watch_signals": 16,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 27.6475,
-        "avg_return_20d": null,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 25.2708,
+        "avg_return_20d": 106.2533,
         "win_rate_5d": null,
-        "win_rate_20d": null
-      },
-      {
-        "ticker": "RKLB",
-        "signals": 12,
-        "buy_signals": 1,
-        "watch_signals": 11,
-        "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 22.7913,
-        "avg_return_20d": null,
-        "win_rate_5d": 1.0,
         "win_rate_20d": null
       },
       {
         "ticker": "ALAB",
-        "signals": 12,
-        "buy_signals": 8,
+        "signals": 16,
+        "buy_signals": 12,
         "watch_signals": 4,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 19.4425,
-        "avg_return_20d": null,
-        "win_rate_5d": 0.5,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 14.6975,
+        "avg_return_20d": 64.62,
+        "win_rate_5d": 0.625,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "RKLB",
+        "signals": 16,
+        "buy_signals": 1,
+        "watch_signals": 15,
+        "avoid_signals": 0,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 8.0442,
+        "avg_return_20d": 47.5433,
+        "win_rate_5d": 1.0,
         "win_rate_20d": null
       },
       {
         "ticker": "HUM",
-        "signals": 12,
+        "signals": 16,
         "buy_signals": 0,
-        "watch_signals": 12,
+        "watch_signals": 16,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 8.4662,
-        "avg_return_20d": null,
-        "win_rate_5d": null,
-        "win_rate_20d": null
-      },
-      {
-        "ticker": "AVAV",
-        "signals": 12,
-        "buy_signals": 0,
-        "watch_signals": 12,
-        "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 6.69,
-        "avg_return_20d": null,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 9.2642,
+        "avg_return_20d": 39.7567,
         "win_rate_5d": null,
         "win_rate_20d": null
       },
       {
         "ticker": "NXT",
-        "signals": 12,
-        "buy_signals": 11,
+        "signals": 16,
+        "buy_signals": 15,
         "watch_signals": 1,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 5.1062,
-        "avg_return_20d": null,
-        "win_rate_5d": 0.7143,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 4.505,
+        "avg_return_20d": 19.6333,
+        "win_rate_5d": 0.7273,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "COHR",
+        "signals": 16,
+        "buy_signals": 6,
+        "watch_signals": 10,
+        "avoid_signals": 0,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 5.0992,
+        "avg_return_20d": 18.9633,
+        "win_rate_5d": 0.6667,
+        "win_rate_20d": 1.0
+      },
+      {
+        "ticker": "AVAV",
+        "signals": 16,
+        "buy_signals": 0,
+        "watch_signals": 16,
+        "avoid_signals": 0,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 4.1033,
+        "avg_return_20d": 14.1433,
+        "win_rate_5d": null,
         "win_rate_20d": null
       },
       {
         "ticker": "ATKR",
-        "signals": 12,
+        "signals": 16,
         "buy_signals": 0,
-        "watch_signals": 12,
+        "watch_signals": 16,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 3.8162,
-        "avg_return_20d": null,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 2.8575,
+        "avg_return_20d": 10.8667,
         "win_rate_5d": null,
         "win_rate_20d": null
       },
       {
         "ticker": "MOD",
-        "signals": 12,
-        "buy_signals": 10,
+        "signals": 16,
+        "buy_signals": 14,
         "watch_signals": 2,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 3.22,
-        "avg_return_20d": null,
-        "win_rate_5d": 0.6667,
-        "win_rate_20d": null
-      },
-      {
-        "ticker": "COHR",
-        "signals": 12,
-        "buy_signals": 3,
-        "watch_signals": 9,
-        "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 3.215,
-        "avg_return_20d": null,
-        "win_rate_5d": 0.5,
-        "win_rate_20d": null
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 3.845,
+        "avg_return_20d": 9.7233,
+        "win_rate_5d": 0.7,
+        "win_rate_20d": 1.0
       },
       {
         "ticker": "KTOS",
-        "signals": 12,
+        "signals": 16,
         "buy_signals": 0,
-        "watch_signals": 12,
+        "watch_signals": 16,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
-        "completed_20d_count": 0,
-        "avg_return_5d": 1.8763,
-        "avg_return_20d": null,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": 0.6958,
+        "avg_return_20d": 1.3,
         "win_rate_5d": null,
         "win_rate_20d": null
       },
       {
         "ticker": "KEY",
-        "signals": 12,
+        "signals": 16,
         "buy_signals": 1,
-        "watch_signals": 11,
+        "watch_signals": 15,
         "avoid_signals": 0,
-        "completed_5d_count": 8,
+        "completed_5d_count": 12,
+        "completed_20d_count": 3,
+        "avg_return_5d": -0.6417,
+        "avg_return_20d": -3.83,
+        "win_rate_5d": 0.0,
+        "win_rate_20d": null
+      },
+      {
+        "ticker": "XYL",
+        "signals": 8,
+        "buy_signals": 0,
+        "watch_signals": 8,
+        "avoid_signals": 0,
+        "completed_5d_count": 4,
         "completed_20d_count": 0,
-        "avg_return_5d": -0.5375,
+        "avg_return_5d": -0.1125,
         "avg_return_20d": null,
         "win_rate_5d": null,
         "win_rate_20d": null
       },
       {
         "ticker": "DD",
-        "signals": 4,
+        "signals": 8,
         "buy_signals": 3,
-        "watch_signals": 1,
+        "watch_signals": 5,
         "avoid_signals": 0,
-        "completed_5d_count": 0,
+        "completed_5d_count": 4,
         "completed_20d_count": 0,
-        "avg_return_5d": null,
+        "avg_return_5d": -1.4325,
         "avg_return_20d": null,
-        "win_rate_5d": null,
-        "win_rate_20d": null
-      },
-      {
-        "ticker": "XYL",
-        "signals": 4,
-        "buy_signals": 0,
-        "watch_signals": 4,
-        "avoid_signals": 0,
-        "completed_5d_count": 0,
-        "completed_20d_count": 0,
-        "avg_return_5d": null,
-        "avg_return_20d": null,
-        "win_rate_5d": null,
+        "win_rate_5d": 0.0,
         "win_rate_20d": null
       }
     ],
     "notable_examples": {
       "best": [
         {
-          "signal_date": "2026-04-13",
-          "ticker": "IONQ",
+          "signal_date": "2026-05-01",
+          "ticker": "FLNC",
           "action": "watch",
-          "conviction": 52.0,
-          "return_5d": 62.37,
-          "return_20d": 91.16,
+          "conviction": 49.0,
+          "return_5d": 98.2,
+          "return_20d": 122.72,
           "catalyst_tag": "기타 공시",
           "regime": "risk_on"
         },
         {
-          "signal_date": "2026-04-13",
-          "ticker": "AMD",
+          "signal_date": "2026-05-06",
+          "ticker": "RDW",
           "action": "watch",
-          "conviction": 61.0,
-          "return_5d": 11.39,
-          "return_20d": 85.87,
+          "conviction": 58.0,
+          "return_5d": 45.12,
+          "return_20d": 122.3,
           "catalyst_tag": "기타 공시",
           "regime": "risk_on"
         },
         {
-          "signal_date": "2026-04-14",
-          "ticker": "AMD",
+          "signal_date": "2026-05-01",
+          "ticker": "RDW",
           "action": "watch",
-          "conviction": 60.0,
-          "return_5d": 11.53,
-          "return_20d": 75.75,
+          "conviction": 53.0,
+          "return_5d": 18.52,
+          "return_20d": 121.41,
+          "catalyst_tag": "실적",
+          "regime": "risk_on"
+        },
+        {
+          "signal_date": "2026-05-05",
+          "ticker": "RDW",
+          "action": "watch",
+          "conviction": 53.0,
+          "return_5d": 33.03,
+          "return_20d": 114.27,
           "catalyst_tag": "기타 공시",
           "regime": "risk_on"
         },
         {
-          "signal_date": "2026-04-15",
-          "ticker": "AMD",
+          "signal_date": "2026-05-06",
+          "ticker": "FLNC",
           "action": "watch",
-          "conviction": 59.0,
-          "return_5d": 17.57,
-          "return_20d": 74.22,
-          "catalyst_tag": "기타 공시",
-          "regime": "risk_on"
-        },
-        {
-          "signal_date": "2026-04-29",
-          "ticker": "IONQ",
-          "action": "watch",
-          "conviction": 61.0,
-          "return_5d": 24.84,
-          "return_20d": 66.56,
-          "catalyst_tag": "기타 공시",
+          "conviction": 53.0,
+          "return_5d": 54.42,
+          "return_20d": 100.22,
+          "catalyst_tag": "실적",
           "regime": "risk_on"
         }
       ],
@@ -3460,22 +3463,22 @@
           "regime": "risk_on"
         },
         {
-          "signal_date": "2026-04-17",
+          "signal_date": "2026-05-06",
           "ticker": "T",
-          "action": "buy",
-          "conviction": 67.0,
-          "return_5d": -1.17,
-          "return_20d": -7.85,
+          "action": "watch",
+          "conviction": 47.0,
+          "return_5d": -3.6,
+          "return_20d": -10.95,
           "catalyst_tag": "실적",
           "regime": "risk_on"
         },
         {
-          "signal_date": "2026-04-20",
+          "signal_date": "2026-05-05",
           "ticker": "T",
-          "action": "buy",
-          "conviction": 66.0,
-          "return_5d": -2.52,
-          "return_20d": -6.68,
+          "action": "watch",
+          "conviction": 53.0,
+          "return_5d": -2.59,
+          "return_20d": -9.07,
           "catalyst_tag": "실적",
           "regime": "risk_on"
         }

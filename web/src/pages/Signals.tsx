@@ -222,7 +222,7 @@ export function Signals() {
   if (!signalStats || recentSignals.length === 0) {
     return (
       <div className="signals-page">
-        <h2>시그널 검증 통계</h2>
+        <h1>시그널 검증 통계</h1>
         <EmptyState
           title="시그널 데이터가 아직 축적되지 않았습니다."
           description="파이프라인이 수일간 실행되면 검증 통계가 자동으로 채워집니다."
@@ -247,7 +247,7 @@ export function Signals() {
   return (
     <div className="signals-page">
       <div className="dashboard-header">
-        <h2>시그널 검증 통계</h2>
+        <h1>시그널 검증 통계</h1>
         <div className="signal-overall-badge">
           전체 5일 승률: <strong>{overallWinRate}%</strong> ({wins5d}/{totalEval})
         </div>

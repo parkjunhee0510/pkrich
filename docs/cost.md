@@ -50,6 +50,8 @@ Search evidence now defaults to `openai` mode in `config/search_evidence.yaml` s
 
 * Prefer free APIs
 * Use fallback chains instead of paid redundancy
+* Toss Invest Open API may improve structured market-data coverage without adding LLM calls, but it is not a direct OpenAI Web Search replacement because the current Toss API document does not expose news/search endpoints
+* FMP fundamentals are compacted into an LLM-facing scalar snapshot before prompt construction; raw provider payloads stay available in collected data, while noisy profile or statement attachments are excluded from prompt token estimates
 
 ## Compute Strategy
 

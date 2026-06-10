@@ -18,6 +18,7 @@ import { TraderDecisionBoard } from '../components/TraderDecisionBoard'
 import { CommitteeDetailPanel } from '../components/CommitteeDetailPanel'
 import { SearchEvidencePanel } from '../components/SearchEvidenceBadge'
 import { TickerResearchBrief } from '../components/TickerResearchBrief'
+import { OptionsLivePanel } from '../components/OptionsLivePanel'
 import { InlineLoadingState, TickerDetailSkeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/ErrorState'
 import { EmptyState } from '../components/ui/EmptyState'
@@ -171,6 +172,8 @@ export function TickerDetail() {
   // Fall back to the slim index.json entry only when the shard is missing.
   const slimAnalysis = latestDay?.tickers.find((t) => t.ticker === ticker)
   const analysis = shardAnalysis ?? slimAnalysis
+  const previousTicker = previousDay?.tickers.find((t) => t.ticker === analysis?.ticker) ?? null
+  const previousDecision = previousTicker?.decision ?? null
   const fallbackSignalHistory = (data?.signal_stats?.recent_signals ?? []).filter((row) => row.ticker === ticker).slice(0, 10)
   const pct = parseNumericChange(analysis?.data_snapshot['Daily Change'] ?? '0')
   const visibleTimeline = useMemo(() => {
@@ -293,7 +296,7 @@ export function TickerDetail() {
 
       <div className="ticker-header">
         <div>
-          <h2>{analysis.ticker} · {analysis.name}</h2>
+          <h1>{analysis.ticker} · {analysis.name}</h1>
           <span className="ticker-date">{analysis.date}</span>
           <div className="ticker-meta-row">
             <span className={`tone-badge tone-${analysis.news_tone?.label ?? 'neutral'}`}>
@@ -353,13 +356,15 @@ export function TickerDetail() {
         </div>
       </div>
 
-      {analysis.decision && (
-        <DecisionCard decision={analysis.decision} analysisConsensus={analysis.analysis_consensus} />
-      )}
-
-      <TickerResearchBrief ticker={analysis.ticker} item={researchBriefItem} />
-
-      <SearchEvidencePanel ticker={analysis} />
+      <section className="ticker-research-desk" aria-label="종목 리서치 데스크">
+        <div className="ticker-research-desk-grid">
+          {analysis.decision && (
+            <DecisionCard decision={analysis.decision} analysisConsensus={analysis.analysis_consensus} />
+          )}
+          <TickerResearchBrief ticker={analysis.ticker} item={researchBriefItem} />
+        </div>
+        <SearchEvidencePanel ticker={analysis} />
+      </section>
 
       {actionPlan && (
         <TraderDecisionBoard
@@ -368,6 +373,10 @@ export function TickerDetail() {
           dashboardSizing={dashboardSizing}
           targetPrice={analysis.fundamentals?.analyst_target_price}
           tradeFrame={tradeFrame}
+          decision={analysis.decision}
+          previousDecision={previousDecision}
+          upcomingEvents={upcomingEvents}
+          currentPrice={analysis.data_snapshot['Price']}
         />
       )}
 
@@ -505,6 +514,7 @@ export function TickerDetail() {
                 <PriceChart rows={priceRows} />
               </Suspense>
             )}
+            <OptionsLivePanel ticker={analysis.ticker} underlyingPrice={parseFirstNumber(analysis.data_snapshot['Price'])} />
           </section>
         )}
 

@@ -154,7 +154,7 @@ export function PriceHistory() {
     <div className="price-history-page">
       <div className="dashboard-header">
         <div>
-          <h2>가격 흐름</h2>
+          <h1>가격 흐름</h1>
           <p className="section-kicker">종목별 과거 가격 흐름과 최신 상태를 한 화면에서 확인합니다.</p>
         </div>
         <div className="price-history-toolbar-meta">

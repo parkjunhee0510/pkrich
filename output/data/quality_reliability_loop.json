@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-06-01",
+  "as_of": "2026-06-08",
   "status": "partial",
   "summary": {
     "decision_quality_status": "ok",
@@ -10,17 +10,17 @@
   },
   "decision_quality": {
     "status": "ok",
-    "sample_count": 440,
+    "sample_count": 540,
     "completed_return_window_count": 3,
     "evaluated_signal_window_count": 9,
     "populated_conviction_bucket_count": 3,
     "factor_count": 13,
     "action_change_coverage_ratio": 1.0,
     "loop_readiness_status": "ready_for_quality_review",
-    "hallucination_ratio": 0.0318,
-    "validation_failure_rate": 0.0318,
-    "fact_warning_count": 2,
-    "consistency_warning_count": 2
+    "hallucination_ratio": 0.0101,
+    "validation_failure_rate": 0.0269,
+    "fact_warning_count": 4,
+    "consistency_warning_count": 1
   },
   "artifact_reliability": {
     "status": "ok",
@@ -48,7 +48,7 @@
     },
     "priority_refresh_reasons": {
       "high_volatility": 2,
-      "important_action": 3,
+      "important_action": 2,
       "no_evidence": 5,
       "portfolio_holding": 5,
       "router_selected": 5
@@ -63,18 +63,18 @@
   "cost_and_runtime": {
     "status": "reported",
     "cost_policy": "report_only",
-    "total_cost_usd": 0.4204665,
-    "estimated_monthly_cost_usd": 9.2503,
-    "llm_calls": 175,
-    "llm_calls_per_ticker": 7.0,
-    "budget_guard_would_block_count": 5,
+    "total_cost_usd": 0.4760829,
+    "estimated_monthly_cost_usd": 10.4738,
+    "llm_calls": 189,
+    "llm_calls_per_ticker": 7.56,
+    "budget_guard_would_block_count": 10,
     "budget_guard_blocked_count": 0,
     "budget_guard_status": "report_ready",
     "budget_guard_mode": "shadow"
   },
   "trend_inputs": {
-    "run_count": 29,
-    "latest_run_date": "2026-06-01"
+    "run_count": 30,
+    "latest_run_date": "2026-06-08"
   },
   "warnings": []
 }

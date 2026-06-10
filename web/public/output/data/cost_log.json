@@ -2,6 +2,312 @@
   "schema_version": 1,
   "runs": [
     {
+      "run_date": "2026-06-08",
+      "success": true,
+      "total_cost_usd": 0.4760829,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.1595759,
+          "tokens": 119865,
+          "input_tokens": 111165,
+          "cached_input_tokens": 1792,
+          "uncached_input_tokens": 109373,
+          "cache_hit_ratio": 0.0161,
+          "calls": 31,
+          "models": {
+            "gpt-5.4-mini": 31
+          }
+        },
+        "economy": {
+          "cost_usd": 0.20249575,
+          "tokens": 557045,
+          "input_tokens": 520911,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 520911,
+          "cache_hit_ratio": 0.0,
+          "calls": 146,
+          "models": {
+            "gpt-5.4-mini": 146
+          }
+        },
+        "standard": {
+          "cost_usd": 0.11401125,
+          "tokens": 72022,
+          "input_tokens": 69281,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 69281,
+          "cache_hit_ratio": 0.0,
+          "calls": 12,
+          "models": {
+            "gpt-5.4-mini": 12
+          }
+        }
+      },
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 25,
+        "selected_count": 5,
+        "skipped_due_to_cap_count": 20,
+        "conflicted_count": 1
+      },
+      "budget_guard": {
+        "mode": "shadow",
+        "decision_counts": {
+          "allow": 1,
+          "would_block": 10
+        },
+        "guarded_paths": {
+          "committee_deep": "would_block",
+          "ensemble_deep": "would_block",
+          "ensemble_tie_break": "would_block",
+          "search_evidence": "allow"
+        },
+        "profile_counts": {
+          "deep": 10,
+          "standard": 1
+        },
+        "would_block_count": 10,
+        "blocked_count": 0,
+        "total_estimated_incremental_cost_usd": 0.59605
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.1595759,
+        "selected_ticker_count": 5,
+        "cost_per_selected_ticker_usd": 0.031915,
+        "share_of_total_cost": 0.3352,
+        "worth_it_hint": "conflict_review_value"
+      }
+    },
+    {
+      "run_date": "2026-06-05",
+      "success": true,
+      "total_cost_usd": 0.47749645,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.1597992,
+          "tokens": 120126,
+          "input_tokens": 111744,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 111744,
+          "cache_hit_ratio": 0.0,
+          "calls": 31,
+          "models": {
+            "gpt-5.4-mini": 31
+          }
+        },
+        "economy": {
+          "cost_usd": 0.20774975,
+          "tokens": 575184,
+          "input_tokens": 538639,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 538639,
+          "cache_hit_ratio": 0.0,
+          "calls": 158,
+          "models": {
+            "gpt-5.4-mini": 158
+          }
+        },
+        "standard": {
+          "cost_usd": 0.1099475,
+          "tokens": 69296,
+          "input_tokens": 66630,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 66630,
+          "cache_hit_ratio": 0.0,
+          "calls": 12,
+          "models": {
+            "gpt-5.4-mini": 12
+          }
+        }
+      },
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 25,
+        "selected_count": 5,
+        "skipped_due_to_cap_count": 20,
+        "conflicted_count": 0
+      },
+      "budget_guard": {
+        "mode": "shadow",
+        "decision_counts": {
+          "allow": 1,
+          "would_block": 10
+        },
+        "guarded_paths": {
+          "committee_deep": "would_block",
+          "ensemble_deep": "would_block",
+          "search_evidence": "allow"
+        },
+        "profile_counts": {
+          "deep": 10,
+          "standard": 1
+        },
+        "would_block_count": 10,
+        "blocked_count": 0,
+        "total_estimated_incremental_cost_usd": 0.61805
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.1597992,
+        "selected_ticker_count": 5,
+        "cost_per_selected_ticker_usd": 0.03196,
+        "share_of_total_cost": 0.3347,
+        "worth_it_hint": "efficient"
+      }
+    },
+    {
+      "run_date": "2026-06-04",
+      "success": true,
+      "total_cost_usd": 0.4795776,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.1785641,
+          "tokens": 134314,
+          "input_tokens": 124975,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 124975,
+          "cache_hit_ratio": 0.0,
+          "calls": 37,
+          "models": {
+            "gpt-5.4-mini": 37
+          }
+        },
+        "economy": {
+          "cost_usd": 0.195526,
+          "tokens": 543320,
+          "input_tokens": 509208,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 509208,
+          "cache_hit_ratio": 0.0,
+          "calls": 147,
+          "models": {
+            "gpt-5.4-mini": 147
+          }
+        },
+        "standard": {
+          "cost_usd": 0.1054875,
+          "tokens": 66407,
+          "input_tokens": 63838,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 63838,
+          "cache_hit_ratio": 0.0,
+          "calls": 11,
+          "models": {
+            "gpt-5.4-mini": 11
+          }
+        }
+      },
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 25,
+        "selected_count": 5,
+        "skipped_due_to_cap_count": 20,
+        "conflicted_count": 0
+      },
+      "budget_guard": {
+        "mode": "shadow",
+        "decision_counts": {
+          "allow": 1,
+          "would_block": 11
+        },
+        "guarded_paths": {
+          "committee_deep": "would_block",
+          "ensemble_deep": "would_block",
+          "search_evidence": "allow"
+        },
+        "profile_counts": {
+          "deep": 11,
+          "standard": 1
+        },
+        "would_block_count": 11,
+        "blocked_count": 0,
+        "total_estimated_incremental_cost_usd": 0.66425
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.1785641,
+        "selected_ticker_count": 5,
+        "cost_per_selected_ticker_usd": 0.035713,
+        "share_of_total_cost": 0.3723,
+        "worth_it_hint": "efficient"
+      }
+    },
+    {
+      "run_date": "2026-06-02",
+      "success": true,
+      "total_cost_usd": 0.40624085,
+      "profiles": {
+        "deep": {
+          "cost_usd": 0.0976536,
+          "tokens": 71154,
+          "input_tokens": 65280,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 65280,
+          "cache_hit_ratio": 0.0,
+          "calls": 16,
+          "models": {
+            "gpt-5.4-mini": 16
+          }
+        },
+        "economy": {
+          "cost_usd": 0.20853975,
+          "tokens": 577910,
+          "input_tokens": 541303,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 541303,
+          "cache_hit_ratio": 0.0,
+          "calls": 156,
+          "models": {
+            "gpt-5.4-mini": 156
+          }
+        },
+        "standard": {
+          "cost_usd": 0.1000475,
+          "tokens": 62755,
+          "input_tokens": 60286,
+          "cached_input_tokens": 0,
+          "uncached_input_tokens": 60286,
+          "cache_hit_ratio": 0.0,
+          "calls": 9,
+          "models": {
+            "gpt-5.4-mini": 9
+          }
+        }
+      },
+      "routing": {
+        "ensemble_enabled": true,
+        "eligible_count": 25,
+        "selected_count": 5,
+        "skipped_due_to_cap_count": 20,
+        "conflicted_count": 1
+      },
+      "budget_guard": {
+        "mode": "shadow",
+        "decision_counts": {
+          "allow": 2,
+          "would_block": 4
+        },
+        "guarded_paths": {
+          "committee_deep": "would_block",
+          "ensemble_deep": "would_block",
+          "ensemble_tie_break": "allow",
+          "search_evidence": "allow"
+        },
+        "profile_counts": {
+          "deep": 5,
+          "standard": 1
+        },
+        "would_block_count": 4,
+        "blocked_count": 0,
+        "total_estimated_incremental_cost_usd": 0.36505
+      },
+      "deep_pass_value": {
+        "deep_cost_usd": 0.0976536,
+        "selected_ticker_count": 5,
+        "cost_per_selected_ticker_usd": 0.019531,
+        "share_of_total_cost": 0.2404,
+        "worth_it_hint": "conflict_review_value"
+      }
+    },
+    {
       "run_date": "2026-06-01",
       "success": true,
       "total_cost_usd": 0.4204665,
@@ -1691,118 +1997,31 @@
         "share_of_total_cost": 0.0,
         "worth_it_hint": "deep_pass_unused"
       }
-    },
-    {
-      "run_date": "2026-04-10",
-      "success": true,
-      "total_cost_usd": 0.0,
-      "profiles": {},
-      "routing": {
-        "ensemble_enabled": false,
-        "eligible_count": 0,
-        "selected_count": 0,
-        "skipped_due_to_cap_count": 0,
-        "conflicted_count": 0
-      },
-      "budget_guard": {
-        "mode": "off",
-        "decision_counts": {},
-        "guarded_paths": {},
-        "profile_counts": {},
-        "would_block_count": 0,
-        "blocked_count": 0,
-        "total_estimated_incremental_cost_usd": 0.0
-      },
-      "deep_pass_value": {
-        "deep_cost_usd": 0.0,
-        "selected_ticker_count": 0,
-        "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
-        "worth_it_hint": "deep_pass_unused"
-      }
-    },
-    {
-      "run_date": "2026-04-09",
-      "success": true,
-      "total_cost_usd": 0.0,
-      "profiles": {},
-      "routing": {
-        "ensemble_enabled": false,
-        "eligible_count": 0,
-        "selected_count": 0,
-        "skipped_due_to_cap_count": 0,
-        "conflicted_count": 0
-      },
-      "budget_guard": {
-        "mode": "off",
-        "decision_counts": {},
-        "guarded_paths": {},
-        "profile_counts": {},
-        "would_block_count": 0,
-        "blocked_count": 0,
-        "total_estimated_incremental_cost_usd": 0.0
-      },
-      "deep_pass_value": {
-        "deep_cost_usd": 0.0,
-        "selected_ticker_count": 0,
-        "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
-        "worth_it_hint": "deep_pass_unused"
-      }
-    },
-    {
-      "run_date": "2026-04-08",
-      "success": true,
-      "total_cost_usd": 0.0,
-      "profiles": {},
-      "routing": {
-        "ensemble_enabled": false,
-        "eligible_count": 0,
-        "selected_count": 0,
-        "skipped_due_to_cap_count": 0,
-        "conflicted_count": 0
-      },
-      "budget_guard": {
-        "mode": "off",
-        "decision_counts": {},
-        "guarded_paths": {},
-        "profile_counts": {},
-        "would_block_count": 0,
-        "blocked_count": 0,
-        "total_estimated_incremental_cost_usd": 0.0
-      },
-      "deep_pass_value": {
-        "deep_cost_usd": 0.0,
-        "selected_ticker_count": 0,
-        "cost_per_selected_ticker_usd": 0.0,
-        "share_of_total_cost": 0.0,
-        "worth_it_hint": "deep_pass_unused"
-      }
     }
   ],
   "latest": {
-    "run_date": "2026-06-01",
+    "run_date": "2026-06-08",
     "success": true,
-    "total_cost_usd": 0.4204665,
+    "total_cost_usd": 0.4760829,
     "profiles": {
       "deep": {
-        "cost_usd": 0.102751,
-        "tokens": 74360,
-        "input_tokens": 68010,
-        "cached_input_tokens": 0,
-        "uncached_input_tokens": 68010,
-        "cache_hit_ratio": 0.0,
-        "calls": 17,
+        "cost_usd": 0.1595759,
+        "tokens": 119865,
+        "input_tokens": 111165,
+        "cached_input_tokens": 1792,
+        "uncached_input_tokens": 109373,
+        "cache_hit_ratio": 0.0161,
+        "calls": 31,
         "models": {
-          "gpt-5.4-mini": 17
+          "gpt-5.4-mini": 31
         }
       },
       "economy": {
-        "cost_usd": 0.20075425,
-        "tokens": 553194,
-        "input_tokens": 517505,
+        "cost_usd": 0.20249575,
+        "tokens": 557045,
+        "input_tokens": 520911,
         "cached_input_tokens": 0,
-        "uncached_input_tokens": 517505,
+        "uncached_input_tokens": 520911,
         "cache_hit_ratio": 0.0,
         "calls": 146,
         "models": {
@@ -1810,11 +2029,11 @@
         }
       },
       "standard": {
-        "cost_usd": 0.11696125,
-        "tokens": 73570,
-        "input_tokens": 70713,
+        "cost_usd": 0.11401125,
+        "tokens": 72022,
+        "input_tokens": 69281,
         "cached_input_tokens": 0,
-        "uncached_input_tokens": 70713,
+        "uncached_input_tokens": 69281,
         "cache_hit_ratio": 0.0,
         "calls": 12,
         "models": {
@@ -1833,7 +2052,7 @@
       "mode": "shadow",
       "decision_counts": {
         "allow": 1,
-        "would_block": 5
+        "would_block": 10
       },
       "guarded_paths": {
         "committee_deep": "would_block",
@@ -1842,18 +2061,18 @@
         "search_evidence": "allow"
       },
       "profile_counts": {
-        "deep": 5,
+        "deep": 10,
         "standard": 1
       },
-      "would_block_count": 5,
+      "would_block_count": 10,
       "blocked_count": 0,
-      "total_estimated_incremental_cost_usd": 0.36505
+      "total_estimated_incremental_cost_usd": 0.59605
     },
     "deep_pass_value": {
-      "deep_cost_usd": 0.102751,
+      "deep_cost_usd": 0.1595759,
       "selected_ticker_count": 5,
-      "cost_per_selected_ticker_usd": 0.02055,
-      "share_of_total_cost": 0.2444,
+      "cost_per_selected_ticker_usd": 0.031915,
+      "share_of_total_cost": 0.3352,
       "worth_it_hint": "conflict_review_value"
     }
   }

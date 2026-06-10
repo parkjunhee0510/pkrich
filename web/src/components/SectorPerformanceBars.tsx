@@ -43,6 +43,7 @@ export function SectorPerformanceBars({ sectors }: { sectors: SectorsSector[] })
             <button
               key={w}
               type="button"
+              aria-pressed={window === w}
               className={`preset-chip ${window === w ? 'active' : ''}`}
               onClick={() => setWindow(w)}
             >
@@ -87,7 +88,7 @@ function SectorBar({ value, maxAbs }: { value: number; maxAbs: number }) {
   const widthPct = Math.min(100, (Math.abs(value) / maxAbs) * 100)
   const positive = value >= 0
   return (
-    <div className="sector-perf-bar">
+    <div className="sector-perf-bar" aria-hidden="true">
       <div className="sector-perf-bar-track">
         <div className="sector-perf-bar-center" />
         <div

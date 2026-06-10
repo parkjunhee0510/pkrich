@@ -16,7 +16,7 @@
 
 * `macro_sensitivity.py`: portfolio and ticker macro sensitivity computations
 * `ticker_macro_beta.py`: ticker-level macro beta estimation
-* `macro_event_match.py`: macro event matching helpers used by macro v2 factors
+* `macro_event_match.py`: macro event matching helpers used by macro v2 factors; sector and industry scoring rules are loaded from `config/macro_event_rules.yaml`
 * `model_config.py`: module-specific model profiles and batch sizes
 * `budget_guard.py`: shared BudgetGuard config parsing, optional LLM path cost estimates, and shadow/enforce decisions
 

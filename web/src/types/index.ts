@@ -817,6 +817,21 @@ export interface StrategySimulatorDiagnosticsBucket {
   win_rate: number | null
 }
 
+export interface StrategySimulatorNewsEvidence {
+  score: number
+  strength: 'strong' | 'moderate' | 'weak' | 'insufficient' | string
+  tone: 'bullish' | 'bearish' | 'neutral' | string
+  llm_direction: 'bull' | 'bear' | 'neutral' | 'unknown' | string
+  llm_alignment: string
+  catalyst_tag: string | null
+  catalyst_recency_score: number | null
+  source_count: number
+  has_recent_catalyst: boolean
+  has_hard_catalyst: boolean
+  reason_chips: string[]
+  summary: string
+}
+
 export interface StrategySimulatorEntryCandidate {
   rank: number
   ticker: string
@@ -835,6 +850,7 @@ export interface StrategySimulatorEntryCandidate {
   llm_alignment: string
   signal_direction: string | null
   llm_direction: string | null
+  news_evidence?: StrategySimulatorNewsEvidence
   reason: string
 }
 
@@ -855,6 +871,107 @@ export interface StrategySimulatorPreset {
   llm_direction_diagnostics: Record<string, StrategySimulatorDiagnosticsBucket>
 }
 
+export interface StrategySimulatorNewsShadowSummary {
+  sample_count: number
+  completed_1d_count: number
+  avg_return_1d: number | null
+  win_rate_1d: number | null
+  completed_5d_count: number
+  avg_return_5d: number | null
+  win_rate_5d: number | null
+  completed_20d_count: number
+  avg_return_20d: number | null
+  win_rate_20d: number | null
+}
+
+export interface StrategySimulatorNewsShadowEvent {
+  signal_date: string
+  ticker: string
+  entry_date: string
+  entry_price: number | null
+  news_score: number | null
+  news_strength: string
+  news_tone: string
+  llm_direction: string
+  return_1d: number | null
+  return_5d: number | null
+  return_20d: number | null
+}
+
+export interface StrategySimulatorNewsShadowStrategy {
+  id: string
+  label: string
+  criteria: string[]
+  summary: StrategySimulatorNewsShadowSummary
+  events: StrategySimulatorNewsShadowEvent[]
+}
+
+export interface StrategySimulatorNewsShadowPayload {
+  status: string
+  strategies: StrategySimulatorNewsShadowStrategy[]
+}
+
+export type StrategySimulatorTodayActionQueueValue = 'enter' | 'watch' | 'skip' | 'hold'
+export type StrategySimulatorTodayTopAction = StrategySimulatorTodayActionQueueValue | 'none'
+
+export interface StrategySimulatorTodayActionQueueSummary {
+  enter_count: number
+  watch_count: number
+  skip_count: number
+  hold_count: number
+  top_action: StrategySimulatorTodayTopAction
+}
+
+export interface StrategySimulatorTodayActionCandidateRef {
+  preset: string
+  candidate_rank: number
+}
+
+export interface StrategySimulatorTodayActionPositionRef {
+  preset: string
+  ticker: string
+}
+
+export interface StrategySimulatorTodayActionItem {
+  queue: StrategySimulatorTodayActionQueueValue
+  decision_label: string
+  rank: number
+  ticker: string
+  action_score: number
+  status: string
+  status_label: string
+  primary_reason: string
+  reason_chips: string[]
+  blocking_reasons: string[]
+  positive_reasons: string[]
+  candidate_ref: StrategySimulatorTodayActionCandidateRef
+  candidate: StrategySimulatorEntryCandidate
+}
+
+export interface StrategySimulatorTodayActionPositionAlert {
+  queue: 'hold'
+  decision_label: string
+  ticker: string
+  priority: number
+  alert_score: number
+  primary_reason: string
+  reason_chips: string[]
+  position_ref: StrategySimulatorTodayActionPositionRef
+  position: StrategySimulatorRow
+}
+
+export interface StrategySimulatorTodayActionQueuePayload {
+  status: string
+  as_of: string
+  basis: string
+  preset_key: string
+  preset_label: string
+  summary: StrategySimulatorTodayActionQueueSummary
+  items: StrategySimulatorTodayActionItem[]
+  position_alerts: StrategySimulatorTodayActionPositionAlert[]
+  notes: string[]
+}
+
 export interface StrategySimulatorPayload {
   schema_version?: number
   status: string
@@ -865,6 +982,8 @@ export interface StrategySimulatorPayload {
   assumptions: Record<string, number | string | boolean>
   presets: Record<string, StrategySimulatorPreset>
   notes: string[]
+  news_shadow?: StrategySimulatorNewsShadowPayload
+  today_action_queue?: StrategySimulatorTodayActionQueuePayload
 }
 
 export interface PerformanceJsonHealth {

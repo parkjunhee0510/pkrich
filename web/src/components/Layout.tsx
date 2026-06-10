@@ -255,6 +255,7 @@ export function Layout({ children }: { children: ReactNode }) {
           key={item.to}
           to={item.to}
           role="menuitem"
+          aria-current={isRouteActive(location.pathname, item.to) ? 'page' : undefined}
           className={`nav-more-item${isRouteActive(location.pathname, item.to) ? ' nav-active' : ''}`}
           onClick={() => {
             setIsMoreOpen(false)
@@ -290,6 +291,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <Link
               key={item.to}
               to={item.to}
+              aria-current={isRouteActive(location.pathname, item.to) ? 'page' : undefined}
               className={`nav-link${isRouteActive(location.pathname, item.to) ? ' nav-active' : ''}`}
               onClick={() => setIsNavOpen(false)}
             >

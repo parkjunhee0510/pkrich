@@ -46,6 +46,11 @@ providers:
     rate: 5         # Polygon free tier: 5 calls/min
     burst: 5
 
+  toss_invest:
+    priority: 2     # read-only market-data enrichment; skips when credentials are absent
+    rate: 60
+    burst: 20
+
   alphavantage:
     priority: 3
     rate: 5         # Alpha Vantage free: 5/min, 500/day

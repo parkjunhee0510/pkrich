@@ -35,7 +35,7 @@ _DEFAULT_FACTORS = {
     "portfolio_risk": {"min": -10, "max": 0},
     "policy_tailwind": {"min": -8, "max": 8},
 }
-_DEFAULT_THRESHOLDS = {"buy": 65, "buy_risk_off": 75, "avoid": 35}
+_DEFAULT_THRESHOLDS = {"buy": 65, "buy_risk_off": 75, "avoid": 56}
 _DEFAULT_VALID_UNTIL = {"earnings_window_days": 30, "default_days": 7}
 _DEFAULT_REGIME_MULTIPLIERS = {
     "risk_on": {},

@@ -29,6 +29,7 @@ from src.collector.providers.fmp_provider import FMPProvider
 from src.collector.providers.polygon_provider import PolygonProvider
 from src.collector.providers.sector_etf_provider import SectorEtfProvider
 from src.collector.providers.stooq_provider import StooqProvider
+from src.collector.providers.toss_invest_provider import TossInvestProvider
 from src.collector.providers.yfinance_provider import YFinanceProvider
 from src.types import CollectedTickerData, NewsItem, WatchlistItem
 from src.utils.pipeline_logging import record_pipeline_event
@@ -103,6 +104,7 @@ def build_full_orchestrator(
             FMPProvider(),
             FinnhubProvider(),
             PolygonProvider(),
+            TossInvestProvider(),
             AlphaVantageProvider(),
             StooqProvider(),
         ],

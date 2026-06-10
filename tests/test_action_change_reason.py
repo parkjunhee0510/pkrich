@@ -45,6 +45,37 @@ class ActionChangeReasonTests(unittest.TestCase):
         self.assertIn("macro_regime_changed", result[0]["reason_codes"])
         self.assertIn("data_quality_improved", result[0]["reason_codes"])
 
+    def test_detects_calibrated_avoid_threshold_crossing(self) -> None:
+        rows = [
+            {
+                "signal_date": "2026-04-30",
+                "ticker": "AVAV",
+                "action": "watch",
+                "conviction": "58",
+                "regime": "risk_on",
+                "confidence_meta_json": "{}",
+                "factors_json": "{}",
+            }
+        ]
+        decisions = [
+            TickerDecision(
+                ticker="AVAV",
+                action="avoid",
+                conviction=55,
+                factors={},
+            )
+        ]
+
+        result = build_action_change_reasons(
+            decisions,
+            rows,
+            run_date=date(2026, 5, 1),
+            market_regime=MarketRegime(regime="risk_on"),
+        )
+
+        self.assertIn("action_downgraded", result[0]["reason_codes"])
+        self.assertIn("conviction_crossed_avoid_threshold", result[0]["reason_codes"])
+
     def test_new_ticker_is_reported_without_previous_snapshot(self) -> None:
         result = build_action_change_reasons(
             [TickerDecision(ticker="MSFT", action="watch", conviction=50)],

@@ -17,6 +17,7 @@ from src.collector.providers.fmp_provider import FMPProvider
 from src.collector.providers.polygon_provider import PolygonProvider
 from src.collector.providers.sector_etf_provider import SectorEtfProvider
 from src.collector.providers.stooq_provider import StooqProvider
+from src.collector.providers.toss_invest_provider import TossInvestProvider
 from src.collector.providers.yfinance_provider import YFinanceProvider
 
 __all__ = [
@@ -26,5 +27,6 @@ __all__ = [
     "PolygonProvider",
     "SectorEtfProvider",
     "StooqProvider",
+    "TossInvestProvider",
     "YFinanceProvider",
 ]

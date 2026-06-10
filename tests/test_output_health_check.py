@@ -456,6 +456,66 @@ def _valid_performance_trends_payload() -> dict:
     }
 
 
+def _valid_strategy_news_shadow_payload(status: str = "ok") -> dict:
+    summary = {
+        "sample_count": 1,
+        "completed_1d_count": 1,
+        "avg_return_1d": 2.0,
+        "win_rate_1d": 1.0,
+        "completed_5d_count": 1,
+        "avg_return_5d": 5.0,
+        "win_rate_5d": 1.0,
+        "completed_20d_count": 0,
+        "avg_return_20d": None,
+        "win_rate_20d": None,
+    }
+    events = [
+        {
+            "signal_date": "2026-04-01",
+            "ticker": "AAPL",
+            "entry_date": "2026-04-02",
+            "entry_price": 101.0,
+            "news_score": 82.0,
+            "news_strength": "strong",
+            "news_tone": "bullish",
+            "llm_direction": "bull",
+            "return_1d": 2.0,
+            "return_5d": 5.0,
+            "return_20d": None,
+        }
+    ]
+    if status != "ok":
+        summary = {
+            "sample_count": 0,
+            "completed_1d_count": 0,
+            "avg_return_1d": None,
+            "win_rate_1d": None,
+            "completed_5d_count": 0,
+            "avg_return_5d": None,
+            "win_rate_5d": None,
+            "completed_20d_count": 0,
+            "avg_return_20d": None,
+            "win_rate_20d": None,
+        }
+        events = []
+    return {
+        "status": status,
+        "strategies": [
+            {
+                "id": "strong_news_llm_bull",
+                "label": "강한 뉴스 + LLM 강세",
+                "criteria": [
+                    "news_evidence.strength == strong",
+                    "llm_direction == bull",
+                    "positive news tone or recent hard catalyst",
+                ],
+                "summary": summary,
+                "events": events,
+            }
+        ],
+    }
+
+
 def _valid_strategy_simulator_payload(status: str = "ok") -> dict:
     payload = {
         "schema_version": 1,
@@ -479,6 +539,24 @@ def _valid_strategy_simulator_payload(status: str = "ok") -> dict:
         },
         "presets": {},
         "notes": ["Strategy simulator is observational."],
+        "news_shadow": _valid_strategy_news_shadow_payload(status),
+        "today_action_queue": {
+            "status": status,
+            "as_of": "2026-05-07" if status == "ok" else "",
+            "basis": "final_action",
+            "preset_key": "balanced",
+            "preset_label": "Balanced",
+            "summary": {
+                "enter_count": 0,
+                "watch_count": 1 if status == "ok" else 0,
+                "skip_count": 0,
+                "hold_count": 1 if status == "ok" else 0,
+                "top_action": "watch" if status == "ok" else "none",
+            },
+            "items": [],
+            "position_alerts": [],
+            "notes": ["Strategy simulator today action queue is observational."],
+        },
     }
     if status == "insufficient_data":
         payload["notes"] = ["No usable signal or price rows are available for strategy simulation."]
@@ -591,6 +669,20 @@ def _valid_strategy_simulator_payload(status: str = "ok") -> dict:
                 "signal_direction": "bull",
                 "llm_direction": "bear",
                 "reason": "현재 보유 중",
+                "news_evidence": {
+                    "score": 82.0,
+                    "strength": "strong",
+                    "tone": "bullish",
+                    "llm_direction": "bull",
+                    "llm_alignment": "aligned",
+                    "catalyst_tag": "earnings",
+                    "catalyst_recency_score": 20.0,
+                    "source_count": 2,
+                    "has_recent_catalyst": True,
+                    "has_hard_catalyst": True,
+                    "reason_chips": ["positive_news", "llm_bull_aligned", "recent_catalyst"],
+                    "summary": "Positive news supports this candidate.",
+                },
             }
         ],
         "skipped_entries": {
@@ -641,6 +733,36 @@ def _valid_strategy_simulator_payload(status: str = "ok") -> dict:
     }
     payload["presets"]["conservative"]["label"] = "Conservative"
     payload["presets"]["aggressive"]["label"] = "Aggressive"
+    payload["today_action_queue"]["items"] = [
+        {
+            "queue": "watch",
+            "decision_label": "보류",
+            "rank": 1,
+            "ticker": "MSFT",
+            "action_score": 76.0,
+            "status": "already_held",
+            "status_label": "이미 보유",
+            "primary_reason": "이미 보유 중인 티커라 신규 진입 대신 보유 상태를 확인합니다.",
+            "reason_chips": ["이미 보유", "뉴스 강함", "LLM 충돌"],
+            "blocking_reasons": ["already_held", "llm_conflict"],
+            "positive_reasons": ["strong_news", "bullish_news"],
+            "candidate_ref": {"preset": "balanced", "candidate_rank": 1},
+            "candidate": preset["entry_candidates"][0],
+        }
+    ]
+    payload["today_action_queue"]["position_alerts"] = [
+        {
+            "queue": "hold",
+            "decision_label": "보유 관리",
+            "ticker": "MSFT",
+            "priority": 1,
+            "alert_score": 64.0,
+            "primary_reason": "보유 중인 포지션의 미실현 손익과 보유 기간을 확인합니다.",
+            "reason_chips": ["보유 중", "수익률 +0.85%", "보유 4일"],
+            "position_ref": {"preset": "balanced", "ticker": "MSFT"},
+            "position": preset["open_positions"][0],
+        }
+    ]
     return payload
 
 
@@ -2312,6 +2434,21 @@ class OutputHealthCheckTests(unittest.TestCase):
 
         self.assertTrue(result.ok, result.format_summary())
 
+    def test_accepts_strategy_simulator_news_evidence_neutral_llm_alignment(self) -> None:
+        payload = _valid_strategy_simulator_payload()
+        payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"]["llm_alignment"] = "neutral"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_json(root / "output" / "data" / "strategy_simulator.json", payload)
+            _write_json(root / "web" / "public" / "output" / "data" / "strategy_simulator.json", payload)
+
+            result = check_output_health(root)
+
+        self.assertFalse(
+            any(issue.code == "invalid_strategy_simulator" for issue in result.issues),
+            result.format_summary(),
+        )
+
     def test_accepts_strategy_simulator_insufficient_data_with_empty_presets(self) -> None:
         payload = _valid_strategy_simulator_payload(status="insufficient_data")
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -2330,10 +2467,16 @@ class OutputHealthCheckTests(unittest.TestCase):
             ("mode", lambda payload: payload.update({"mode": "long_only_observational_simulator"})),
             ("basis", lambda payload: payload.update({"basis": "signal_tracker_plus_price_history"})),
             ("notes", lambda payload: payload.update({"notes": [None]})),
+            ("news_shadow missing", lambda payload: payload.pop("news_shadow"), "news_shadow"),
             ("presets", lambda payload: payload.update({"status": "insufficient_data", "presets": {"balanced": {}}})),
             ("presets", lambda payload: payload["presets"].pop("aggressive")),
         )
-        for field, mutate in cases:
+        for case in cases:
+            if len(case) == 2:
+                field, mutate = case
+                expected_detail = field
+            else:
+                field, mutate, expected_detail = case
             with self.subTest(field=field):
                 payload = _valid_strategy_simulator_payload()
                 mutate(payload)
@@ -2347,7 +2490,172 @@ class OutputHealthCheckTests(unittest.TestCase):
                 self.assertFalse(result.ok)
                 self.assertTrue(
                     any(
-                        issue.code == "invalid_strategy_simulator" and field in issue.detail
+                        issue.code == "invalid_strategy_simulator" and expected_detail in issue.detail
+                        for issue in result.issues
+                    ),
+                    result.format_summary(),
+                )
+
+    def test_detects_invalid_strategy_simulator_today_action_queue_shape(self) -> None:
+        cases = (
+            (
+                "missing required root fields",
+                lambda payload: payload.pop("today_action_queue"),
+            ),
+            (
+                "today_action_queue status must be ok or insufficient_data",
+                lambda payload: payload["today_action_queue"].update({"status": "bad"}),
+            ),
+            (
+                "summary missing required fields",
+                lambda payload: payload["today_action_queue"]["summary"].pop("enter_count"),
+            ),
+            (
+                "queue must be enter/watch/skip/hold for today_action_queue item 0",
+                lambda payload: payload["today_action_queue"]["items"][0].update({"queue": "trade_now"}),
+            ),
+            (
+                "action_score must be a number from 0 to 100 for today_action_queue item 0",
+                lambda payload: payload["today_action_queue"]["items"][0].update({"action_score": 101.0}),
+            ),
+            (
+                "reason_chips must be a list of strings for today_action_queue item 0",
+                lambda payload: payload["today_action_queue"]["items"][0].update({"reason_chips": "뉴스 강함"}),
+            ),
+            (
+                "candidate missing minimum fields for today_action_queue item 0",
+                lambda payload: payload["today_action_queue"]["items"][0]["candidate"].pop("ticker"),
+            ),
+            (
+                "alert_score must be a number from 0 to 100 for today_action_queue position_alerts item 0",
+                lambda payload: payload["today_action_queue"]["position_alerts"][0].update({"alert_score": -1.0}),
+            ),
+            (
+                "position missing minimum fields for today_action_queue position_alerts item 0",
+                lambda payload: payload["today_action_queue"]["position_alerts"][0]["position"].pop("ticker"),
+            ),
+        )
+        for expected_detail, mutate in cases:
+            with self.subTest(expected_detail=expected_detail):
+                payload = _valid_strategy_simulator_payload()
+                mutate(payload)
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    root = Path(temp_dir)
+                    _write_json(root / "output" / "data" / "strategy_simulator.json", payload)
+                    _write_json(root / "web" / "public" / "output" / "data" / "strategy_simulator.json", payload)
+
+                    result = check_output_health(root)
+
+                self.assertFalse(result.ok)
+                self.assertTrue(
+                    any(
+                        issue.code == "invalid_strategy_simulator" and expected_detail in issue.detail
+                        for issue in result.issues
+                    ),
+                    result.format_summary(),
+                )
+
+    def test_detects_invalid_strategy_simulator_news_shadow_shape(self) -> None:
+        cases = (
+            ("status", lambda payload: payload["news_shadow"].pop("status")),
+            ("status", lambda payload: payload["news_shadow"].update({"status": "partial"})),
+            ("strategies", lambda payload: payload["news_shadow"].pop("strategies")),
+            ("strategies", lambda payload: payload["news_shadow"].update({"strategies": {}})),
+            (
+                "canonical strategy missing",
+                lambda payload: payload["news_shadow"].update({"strategies": []}),
+                "strong_news_llm_bull",
+            ),
+            (
+                "canonical strategy typo",
+                lambda payload: payload["news_shadow"]["strategies"][0].update(
+                    {"id": "strong_news_llm_bull_typo"}
+                ),
+                "strong_news_llm_bull",
+            ),
+            ("label", lambda payload: payload["news_shadow"]["strategies"][0].pop("label")),
+            ("criteria", lambda payload: payload["news_shadow"]["strategies"][0].update({"criteria": ["ok", 123]})),
+            (
+                "sample_count",
+                lambda payload: payload["news_shadow"]["strategies"][0]["summary"].update({"sample_count": -1}),
+            ),
+            (
+                "completed_5d_count",
+                lambda payload: payload["news_shadow"]["strategies"][0]["summary"].update(
+                    {"completed_5d_count": "1"}
+                ),
+            ),
+            (
+                "avg_return_5d",
+                lambda payload: payload["news_shadow"]["strategies"][0]["summary"].pop("avg_return_5d"),
+            ),
+            (
+                "win_rate_1d",
+                lambda payload: payload["news_shadow"]["strategies"][0]["summary"].update({"win_rate_1d": 1.2}),
+            ),
+            (
+                "return_5d",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].pop("return_5d"),
+            ),
+            (
+                "ticker",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].update({"ticker": ""}),
+            ),
+            (
+                "news_strength",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].update(
+                    {"news_strength": "great"}
+                ),
+            ),
+            (
+                "news_strength",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].update(
+                    {"news_strength": "moderate"}
+                ),
+            ),
+            (
+                "news_tone",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].update({"news_tone": "hype"}),
+            ),
+            (
+                "llm_direction",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].update(
+                    {"llm_direction": "sideways"}
+                ),
+            ),
+            (
+                "news_score",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].update({"news_score": 999}),
+            ),
+            (
+                "news_score",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].update({"news_score": -1}),
+            ),
+            (
+                "return_20d",
+                lambda payload: payload["news_shadow"]["strategies"][0]["events"][0].update({"return_20d": "5.0"}),
+            ),
+        )
+        for case in cases:
+            if len(case) == 2:
+                field, mutate = case
+                expected_detail = field
+            else:
+                field, mutate, expected_detail = case
+            with self.subTest(field=field):
+                payload = _valid_strategy_simulator_payload()
+                mutate(payload)
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    root = Path(temp_dir)
+                    _write_json(root / "output" / "data" / "strategy_simulator.json", payload)
+                    _write_json(root / "web" / "public" / "output" / "data" / "strategy_simulator.json", payload)
+
+                    result = check_output_health(root)
+
+                self.assertFalse(result.ok)
+                self.assertTrue(
+                    any(
+                        issue.code == "invalid_strategy_simulator" and expected_detail in issue.detail
                         for issue in result.issues
                     ),
                     result.format_summary(),
@@ -2417,6 +2725,39 @@ class OutputHealthCheckTests(unittest.TestCase):
                 ),
             ),
             (
+                "candidate news_evidence missing",
+                lambda payload: payload["presets"]["balanced"]["entry_candidates"][0].pop("news_evidence"),
+                "news_evidence",
+            ),
+            (
+                "candidate news score out of range",
+                lambda payload: payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"].update(
+                    {"score": 101.0}
+                ),
+                "score",
+            ),
+            (
+                "candidate news strength invalid",
+                lambda payload: payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"].update(
+                    {"strength": "great"}
+                ),
+                "strength",
+            ),
+            (
+                "candidate news llm_alignment invalid",
+                lambda payload: payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"].update(
+                    {"llm_alignment": "weird"}
+                ),
+                "llm_alignment",
+            ),
+            (
+                "candidate news reason chips invalid",
+                lambda payload: payload["presets"]["balanced"]["entry_candidates"][0]["news_evidence"].update(
+                    {"reason_chips": ["positive_news", 123]}
+                ),
+                "reason_chips",
+            ),
+            (
                 "trade_count",
                 lambda payload: payload["presets"]["balanced"]["llm_direction_diagnostics"]["aligned"].update(
                     {"trade_count": -1}
@@ -2429,7 +2770,12 @@ class OutputHealthCheckTests(unittest.TestCase):
                 ),
             ),
         )
-        for field, mutate in cases:
+        for case in cases:
+            if len(case) == 2:
+                field, mutate = case
+                expected_detail = field
+            else:
+                field, mutate, expected_detail = case
             with self.subTest(field=field):
                 payload = _valid_strategy_simulator_payload()
                 mutate(payload)
@@ -2443,7 +2789,7 @@ class OutputHealthCheckTests(unittest.TestCase):
                 self.assertFalse(result.ok)
                 self.assertTrue(
                     any(
-                        issue.code == "invalid_strategy_simulator" and field in issue.detail
+                        issue.code == "invalid_strategy_simulator" and expected_detail in issue.detail
                         for issue in result.issues
                     ),
                     result.format_summary(),

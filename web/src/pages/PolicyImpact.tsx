@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { TickerImpact } from '../types'
 import { usePolicyData } from '../hooks/usePolicyData'
@@ -61,6 +61,10 @@ export function PolicyImpact() {
   const { data, loading, error } = usePolicyData()
   const [activeCategory, setActiveCategory] = useState<string>('all')
 
+  useEffect(() => {
+    document.title = '정책·규제 영향도 · Stock Research'
+  }, [])
+
   const categoriesPresent = useMemo(() => {
     if (!data) return [] as string[]
     return Array.from(new Set(data.events.map((e) => e.category))).sort()
@@ -87,7 +91,7 @@ export function PolicyImpact() {
           <header className="page-header">
             <div className="page-header__eyebrow">RESEARCH · POLICY IMPACT</div>
             <div className="page-header__row">
-              <h2 className="page-header__headline">정책·규제 영향도</h2>
+              <h1 className="page-header__headline">정책·규제 영향도</h1>
             </div>
             <p className="page-header__meta">
               아직 분석 데이터가 준비되지 않았습니다. 다음 파이프라인 실행에서 생성됩니다.
@@ -110,7 +114,7 @@ export function PolicyImpact() {
       <header className="page-header">
         <div className="page-header__eyebrow">RESEARCH · POLICY IMPACT</div>
         <div className="page-header__row">
-          <h2 className="page-header__headline">정책·규제 영향도</h2>
+          <h1 className="page-header__headline">정책·규제 영향도</h1>
           <div className="page-header__actions">
             <span className="chip tone-info--soft">{data.events.length}건 이벤트</span>
             <span className="chip tone-accent--soft">{totalTickers}종목 점수</span>

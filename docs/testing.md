@@ -65,11 +65,13 @@ Pipeline must run end-to-end.
 * `tests/test_macro_v2.py` - macro v2 pipeline (surprise, events, narrative)
 * `tests/test_macro_event_match.py` - macro event matching helpers
 * `tests/test_model_config.py` - module-specific model profiles and batch sizes
+* `tests/test_analyzer_payload_compaction.py` - FMP-style fundamental metric compaction before LLM prompt payload construction
 * `tests/test_decision_factors.py` - factor scoring including macro regime/event factors
 * `tests/test_decision_registry.py` - factor registry resolution
 * `tests/test_search_quality_gate.py` - search evidence score plus shadow/enforced search quality gate behavior
 * `tests/test_search_evidence_config.py` - cache-first search evidence config parsing and limits
 * `tests/test_openai_web_search_provider.py` - mocked OpenAI Responses API web search provider adapter and normalization
+* `tests/test_toss_invest_client.py` and `tests/test_toss_invest_provider.py` - Toss Invest read-only collector auth, request, and normalization coverage
 * `tests/test_output.py` - output serialization, including news reference provenance fields
 * `tests/test_output_schema.py` - generated JSON shape stability and web-public operational copies
 * `tests/test_pipeline_quality_wiring.py` - pipeline wiring for quality outputs and API status run-date behavior
@@ -85,4 +87,4 @@ On Windows/OneDrive worktrees, Vitest may fail to spawn default fork workers. Us
 * `web/src/utils/searchEvidenceBadge.test.ts` - search evidence badge tone, label, and missing-metadata mapping
 * `web/src/components/SearchEvidenceBadge.test.tsx` - reusable dashboard badge and ticker detail panel rendering
 * `web/src/utils/actionChangeFeed.test.ts` and `web/src/utils/todayDecisionStrip.test.ts` - dashboard feed entries preserve official decisions while surfacing evidence metadata
-* `web/src/components/ActionChangeFeed.test.tsx` and `web/src/components/TodayDecisionStrip.test.tsx` - dashboard cards render compact evidence badges without requiring a backend call
+* `web/src/components/ActionChangeFeed.test.tsx` and `web/src/components/TodayDecisionStrip.test.tsx` - decision cards render compact quality/evidence badges without requiring a backend call

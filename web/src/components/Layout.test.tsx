@@ -106,6 +106,35 @@ describe('Layout navigation', () => {
     })
   })
 
+  it('marks the active primary nav link with aria-current="page"', () => {
+    render(
+      <MemoryRouter initialEntries={['/prices']}>
+        <Layout>
+          <div>content</div>
+        </Layout>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('link', { name: '시세' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('link', { name: '워치리스트' })).not.toHaveAttribute('aria-current')
+  })
+
+  it('marks the active More menu item with aria-current="page"', async () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={['/backtest']}>
+        <Layout>
+          <div>content</div>
+        </Layout>
+      </MemoryRouter>,
+    )
+
+    fireEvent.click(container.querySelector<HTMLButtonElement>('.nav-more-trigger')!)
+    const menu = await screen.findByRole('menu')
+
+    expect(within(menu).getByRole('menuitem', { name: '백테스트' })).toHaveAttribute('aria-current', 'page')
+    expect(within(menu).getByRole('menuitem', { name: '캘린더' })).not.toHaveAttribute('aria-current')
+  })
+
   it('supports keyboard navigation inside the More menu', async () => {
     const { container } = render(
       <MemoryRouter>

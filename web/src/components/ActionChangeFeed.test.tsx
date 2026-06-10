@@ -21,6 +21,9 @@ function makeEntry(overrides: Partial<ActionChangeFeedEntry> = {}): ActionChange
     addedRisks: ['Valuation risk'],
     primaryLabel: 'WATCH -> BUY',
     secondaryLabel: 'Conviction 52 -> 72 (+20p)',
+    qualityDetail: 'quality 0.42',
+    qualityClassName: 'today-decision-quality-low',
+    metricLabel: '+20p',
     summary: 'AI connectivity momentum improved.',
     evidenceBadge: {
       label: 'Evidence weak',
@@ -74,6 +77,8 @@ describe('ActionChangeFeed', () => {
     expect(screen.getByText('WATCH -> BUY')).toHaveClass('action-change-stance-positive')
     expect(screen.getByText('WATCH -> BUY').className).not.toContain('tone-')
     expect(screen.getByText('Conviction 52 -> 72 (+20p)')).toBeInTheDocument()
+    expect(screen.getByText('quality 0.42')).toHaveClass('today-decision-quality-low')
+    expect(screen.getByText('+20p')).toBeInTheDocument()
     expect(screen.getByText('Evidence weak')).toHaveClass('search-evidence-weak')
     expect(screen.getByText('새 리스크 1개')).toBeInTheDocument()
     expect(screen.getByText('AI connectivity momentum improved.')).toBeInTheDocument()

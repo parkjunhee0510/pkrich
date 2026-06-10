@@ -3,7 +3,7 @@
 This module is the seam between pipeline.py and the plugin architecture.
 The tests here verify three contracts:
 
-  1. `build_full_orchestrator` wires all 6 data providers in priority order
+  1. `build_full_orchestrator` wires all data providers in priority order
      and forwards benchmark_change_30d to YFinance so RS-vs-SPY works.
   2. `collect_market_data_via_orchestrator` returns only the legacy
      dict[ticker, CollectedTickerData] shape, unwrapping the tuple, and
@@ -51,7 +51,7 @@ def _ctd(ticker: str = "AAPL") -> CollectedTickerData:
 
 
 class BuildFullOrchestratorTests(unittest.TestCase):
-    def test_registers_seven_providers(self) -> None:
+    def test_registers_eight_providers(self) -> None:
         orch = build_full_orchestrator()
         names = {p.name for p in orch._registry.all()}
         self.assertEqual(
@@ -62,6 +62,7 @@ class BuildFullOrchestratorTests(unittest.TestCase):
                 "fmp",
                 "finnhub",
                 "polygon",
+                "toss_invest",
                 "alpha_vantage",
                 "stooq",
             },

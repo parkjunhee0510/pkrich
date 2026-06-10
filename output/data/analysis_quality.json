@@ -2,6 +2,58 @@
   "schema_version": 1,
   "runs": [
     {
+      "run_date": "2026-06-08",
+      "success": true,
+      "daily_api_cost_usd": 0.4760829,
+      "batch_count": 0,
+      "validated_ticker_count": 297,
+      "validation_failure_count": 8,
+      "schema_violation_count": 0,
+      "fact_warning_count": 4,
+      "consistency_warning_count": 1,
+      "hallucination_warning_count": 3,
+      "hallucination_ratio": 0.0101
+    },
+    {
+      "run_date": "2026-06-05",
+      "success": true,
+      "daily_api_cost_usd": 0.47749645,
+      "batch_count": 0,
+      "validated_ticker_count": 309,
+      "validation_failure_count": 14,
+      "schema_violation_count": 0,
+      "fact_warning_count": 2,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 31,
+      "hallucination_ratio": 0.1003
+    },
+    {
+      "run_date": "2026-06-04",
+      "success": true,
+      "daily_api_cost_usd": 0.4795776,
+      "batch_count": 0,
+      "validated_ticker_count": 303,
+      "validation_failure_count": 11,
+      "schema_violation_count": 0,
+      "fact_warning_count": 8,
+      "consistency_warning_count": 1,
+      "hallucination_warning_count": 8,
+      "hallucination_ratio": 0.0264
+    },
+    {
+      "run_date": "2026-06-02",
+      "success": true,
+      "daily_api_cost_usd": 0.40624085,
+      "batch_count": 0,
+      "validated_ticker_count": 290,
+      "validation_failure_count": 9,
+      "schema_violation_count": 0,
+      "fact_warning_count": 1,
+      "consistency_warning_count": 0,
+      "hallucination_warning_count": 13,
+      "hallucination_ratio": 0.0448
+    },
+    {
       "run_date": "2026-06-01",
       "success": true,
       "daily_api_cost_usd": 0.4204665,
@@ -338,58 +390,19 @@
       "consistency_warning_count": 0,
       "hallucination_warning_count": 0,
       "hallucination_ratio": 0.0
-    },
-    {
-      "run_date": "2026-04-10",
-      "success": true,
-      "daily_api_cost_usd": 0.0,
-      "batch_count": 0,
-      "validated_ticker_count": 0,
-      "validation_failure_count": 0,
-      "schema_violation_count": 0,
-      "fact_warning_count": 0,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "hallucination_ratio": 0.0
-    },
-    {
-      "run_date": "2026-04-09",
-      "success": true,
-      "daily_api_cost_usd": 0.0,
-      "batch_count": 0,
-      "validated_ticker_count": 0,
-      "validation_failure_count": 0,
-      "schema_violation_count": 0,
-      "fact_warning_count": 0,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "hallucination_ratio": 0.0
-    },
-    {
-      "run_date": "2026-04-08",
-      "success": true,
-      "daily_api_cost_usd": 0.0,
-      "batch_count": 0,
-      "validated_ticker_count": 0,
-      "validation_failure_count": 0,
-      "schema_violation_count": 0,
-      "fact_warning_count": 0,
-      "consistency_warning_count": 0,
-      "hallucination_warning_count": 0,
-      "hallucination_ratio": 0.0
     }
   ],
   "latest": {
-    "run_date": "2026-06-01",
+    "run_date": "2026-06-08",
     "success": true,
-    "daily_api_cost_usd": 0.4204665,
+    "daily_api_cost_usd": 0.4760829,
     "batch_count": 0,
-    "validated_ticker_count": 283,
-    "validation_failure_count": 9,
+    "validated_ticker_count": 297,
+    "validation_failure_count": 8,
     "schema_violation_count": 0,
-    "fact_warning_count": 2,
-    "consistency_warning_count": 2,
-    "hallucination_warning_count": 9,
-    "hallucination_ratio": 0.0318
+    "fact_warning_count": 4,
+    "consistency_warning_count": 1,
+    "hallucination_warning_count": 3,
+    "hallucination_ratio": 0.0101
   }
 }

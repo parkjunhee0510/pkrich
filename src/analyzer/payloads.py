@@ -4,6 +4,7 @@ from datetime import date
 from typing import Any
 
 from src.analyzer import research_note
+from src.analyzer.fmp_compaction import compact_fundamental_metrics_for_llm
 from src.types import CollectedTickerData, NewsItem, TickerAnalysis, WatchlistItem
 
 
@@ -19,6 +20,7 @@ def build_raw_payloads(
     payloads: dict[str, dict[str, Any]] = {}
     for item in watchlist:
         market = collected[item.ticker]
+        fundamental_metrics = compact_fundamental_metrics_for_llm(market.fundamental_metrics)
         payloads[item.ticker] = {
             'ticker': item.ticker,
             'name': item.name,
@@ -68,9 +70,9 @@ def build_raw_payloads(
             'fmp_earnings_surprises': market.fmp_earnings_surprises[:4],
             'options_flow': market.options_flow,
             'recommendation_trends': market.recommendation_trends[:3],
-            'fundamental_metrics': market.fundamental_metrics,
+            'fundamental_metrics': fundamental_metrics,
             'technical_indicators': market.technical_indicators,
-            'industry': str(market.fundamental_metrics.get("industry", "")),
+            'industry': str(fundamental_metrics.get("industry", "")),
             'quarterly_financials': market.quarterly_financials[:4],
             'signal_history': (signal_history_map or {}).get(item.ticker, [])[:5],
             'sector_peer_context': {},

@@ -488,8 +488,18 @@ def _write_price_history_exports(
     rows: list[dict[str, str]] | None,
 ) -> None:
     effective_rows = rows if rows is not None else _load_price_history_rows(csv_path)
-    json_path.write_text(json.dumps(effective_rows, ensure_ascii=False, indent=2), encoding="utf-8")
+    retry_io(
+        lambda: write_json_file(json_path, effective_rows),
+        what=f"write {json_path}",
+    )
+    retry_io(
+        lambda: _write_price_history_csv(csv_path, effective_rows),
+        what=f"write {csv_path}",
+    )
 
+
+def _write_price_history_csv(csv_path: Path, rows: list[dict[str, str]]) -> None:
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
     with csv_path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=[
             "date",
@@ -508,7 +518,7 @@ def _write_price_history_exports(
             "volume",
         ])
         writer.writeheader()
-        writer.writerows(effective_rows)
+        writer.writerows(rows)
 
 
 def _load_price_history_rows(csv_path: Path) -> list[dict[str, str]]:

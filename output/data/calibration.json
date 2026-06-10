@@ -5,7 +5,7 @@
       "horizon": 1,
       "decile_buckets": {
         "status": "ok",
-        "total_evaluated": 391,
+        "total_evaluated": 491,
         "horizon": 1,
         "metric": "absolute",
         "deciles": [
@@ -13,99 +13,99 @@
             "decile": 1,
             "conviction_min": 35.0,
             "conviction_max": 50.0,
-            "n": 39,
-            "mean_return": 0.533,
-            "hit_rate": 0.744,
-            "ir": 0.098
+            "n": 49,
+            "mean_return": 0.731,
+            "hit_rate": 0.796,
+            "ir": 0.14
           },
           {
             "decile": 2,
-            "conviction_min": 50.0,
-            "conviction_max": 53.0,
-            "n": 39,
-            "mean_return": 3.646,
-            "hit_rate": 0.718,
-            "ir": 0.345
+            "conviction_min": 51.0,
+            "conviction_max": 54.0,
+            "n": 49,
+            "mean_return": 2.128,
+            "hit_rate": 0.653,
+            "ir": 0.218
           },
           {
             "decile": 3,
-            "conviction_min": 53.0,
+            "conviction_min": 54.0,
             "conviction_max": 57.0,
-            "n": 39,
-            "mean_return": 0.626,
-            "hit_rate": 0.769,
-            "ir": 0.13
+            "n": 49,
+            "mean_return": 0.65,
+            "hit_rate": 0.735,
+            "ir": 0.114
           },
           {
             "decile": 4,
-            "conviction_min": 57.0,
-            "conviction_max": 59.0,
-            "n": 39,
-            "mean_return": 1.341,
-            "hit_rate": 0.769,
-            "ir": 0.235
+            "conviction_min": 58.0,
+            "conviction_max": 60.0,
+            "n": 49,
+            "mean_return": 1.483,
+            "hit_rate": 0.694,
+            "ir": 0.174
           },
           {
             "decile": 5,
-            "conviction_min": 59.0,
+            "conviction_min": 60.0,
             "conviction_max": 61.0,
-            "n": 39,
-            "mean_return": 2.157,
-            "hit_rate": 0.769,
-            "ir": 0.324
+            "n": 49,
+            "mean_return": 1.29,
+            "hit_rate": 0.714,
+            "ir": 0.19
           },
           {
             "decile": 6,
             "conviction_min": 61.0,
             "conviction_max": 63.0,
-            "n": 39,
-            "mean_return": 0.263,
-            "hit_rate": 0.692,
-            "ir": 0.055
+            "n": 49,
+            "mean_return": -0.177,
+            "hit_rate": 0.673,
+            "ir": -0.034
           },
           {
             "decile": 7,
             "conviction_min": 63.0,
             "conviction_max": 65.0,
-            "n": 39,
-            "mean_return": 2.822,
-            "hit_rate": 0.744,
-            "ir": 0.357
+            "n": 49,
+            "mean_return": 2.649,
+            "hit_rate": 0.735,
+            "ir": 0.35
           },
           {
             "decile": 8,
             "conviction_min": 65.0,
             "conviction_max": 67.0,
-            "n": 39,
-            "mean_return": 2.984,
-            "hit_rate": 0.641,
-            "ir": 0.377
+            "n": 49,
+            "mean_return": 1.589,
+            "hit_rate": 0.51,
+            "ir": 0.196
           },
           {
             "decile": 9,
             "conviction_min": 67.0,
             "conviction_max": 69.0,
-            "n": 39,
-            "mean_return": 1.778,
-            "hit_rate": 0.564,
-            "ir": 0.251
+            "n": 49,
+            "mean_return": 0.192,
+            "hit_rate": 0.531,
+            "ir": 0.026
           },
           {
             "decile": 10,
             "conviction_min": 69.0,
             "conviction_max": 76.0,
-            "n": 40,
-            "mean_return": 1.09,
-            "hit_rate": 0.5,
-            "ir": 0.189
+            "n": 50,
+            "mean_return": 0.708,
+            "hit_rate": 0.46,
+            "ir": 0.118
           }
         ]
       },
       "reliability": {
         "status": "ok",
-        "total_evaluated": 391,
+        "total_evaluated": 491,
         "horizon": 1,
-        "brier_score": 0.236,
+        "brier_score": 0.2455,
         "bins": [
           {
             "bin": 4,
@@ -120,32 +120,32 @@
             "predicted_min": 0.4,
             "predicted_max": 0.5,
             "predicted": 0.465,
-            "realized": 0.85,
-            "n": 20
+            "realized": 0.857,
+            "n": 21
           },
           {
             "bin": 6,
             "predicted_min": 0.5,
             "predicted_max": 0.6,
-            "predicted": 0.557,
-            "realized": 0.745,
-            "n": 165
+            "predicted": 0.558,
+            "realized": 0.706,
+            "n": 211
           },
           {
             "bin": 7,
             "predicted_min": 0.6,
             "predicted_max": 0.7,
-            "predicted": 0.651,
-            "realized": 0.641,
-            "n": 181
+            "predicted": 0.652,
+            "realized": 0.592,
+            "n": 233
           },
           {
             "bin": 8,
             "predicted_min": 0.7,
             "predicted_max": 0.8,
             "predicted": 0.722,
-            "realized": 0.526,
-            "n": 19
+            "realized": 0.5,
+            "n": 20
           }
         ]
       },
@@ -186,92 +186,112 @@
           },
           {
             "date": "2026-04-22",
-            "brier": 0.2148,
+            "brier": 0.2138,
             "n": 77
           },
           {
             "date": "2026-04-23",
-            "brier": 0.2254,
+            "brier": 0.2245,
             "n": 88
           },
           {
             "date": "2026-04-24",
-            "brier": 0.231,
+            "brier": 0.2302,
             "n": 99
           },
           {
             "date": "2026-04-27",
-            "brier": 0.2362,
+            "brier": 0.2344,
             "n": 110
           },
           {
             "date": "2026-04-28",
-            "brier": 0.2321,
+            "brier": 0.2305,
             "n": 121
           },
           {
             "date": "2026-04-29",
-            "brier": 0.2348,
+            "brier": 0.2333,
             "n": 132
           },
           {
             "date": "2026-05-01",
-            "brier": 0.228,
+            "brier": 0.2267,
             "n": 155
           },
           {
             "date": "2026-05-05",
-            "brier": 0.23,
+            "brier": 0.2289,
             "n": 178
           },
           {
             "date": "2026-05-06",
-            "brier": 0.2348,
+            "brier": 0.2338,
             "n": 201
           },
           {
             "date": "2026-05-12",
-            "brier": 0.2331,
+            "brier": 0.2322,
             "n": 224
           },
           {
             "date": "2026-05-14",
-            "brier": 0.2395,
+            "brier": 0.2387,
             "n": 236
           },
           {
             "date": "2026-05-18",
-            "brier": 0.244,
+            "brier": 0.2432,
             "n": 226
           },
           {
             "date": "2026-05-20",
-            "brier": 0.2476,
+            "brier": 0.2468,
             "n": 249
           },
           {
             "date": "2026-05-21",
-            "brier": 0.2417,
+            "brier": 0.241,
             "n": 261
           },
           {
             "date": "2026-05-26",
-            "brier": 0.2419,
+            "brier": 0.2414,
             "n": 242
           },
           {
             "date": "2026-05-27",
-            "brier": 0.238,
+            "brier": 0.2375,
             "n": 267
           },
           {
             "date": "2026-05-28",
             "brier": 0.236,
             "n": 281
+          },
+          {
+            "date": "2026-05-29",
+            "brier": 0.2419,
+            "n": 295
+          },
+          {
+            "date": "2026-06-01",
+            "brier": 0.2439,
+            "n": 286
+          },
+          {
+            "date": "2026-06-03",
+            "brier": 0.2466,
+            "n": 311
+          },
+          {
+            "date": "2026-06-04",
+            "brier": 0.2542,
+            "n": 336
           }
         ],
-        "trend_slope": 0.00111,
-        "latest_brier": 0.236,
+        "trend_slope": 0.001141,
+        "latest_brier": 0.2542,
         "drift_alert": false
       }
     },
@@ -279,7 +299,7 @@
       "horizon": 5,
       "decile_buckets": {
         "status": "ok",
-        "total_evaluated": 316,
+        "total_evaluated": 416,
         "horizon": 5,
         "metric": "absolute",
         "deciles": [
@@ -287,139 +307,139 @@
             "decile": 1,
             "conviction_min": 35.0,
             "conviction_max": 50.0,
-            "n": 31,
-            "mean_return": 8.365,
-            "hit_rate": 0.452,
-            "ir": 0.374
+            "n": 41,
+            "mean_return": 6.538,
+            "hit_rate": 0.537,
+            "ir": 0.332
           },
           {
             "decile": 2,
             "conviction_min": 50.0,
-            "conviction_max": 53.0,
-            "n": 32,
-            "mean_return": 7.76,
-            "hit_rate": 0.5,
-            "ir": 0.536
+            "conviction_max": 54.0,
+            "n": 42,
+            "mean_return": 8.011,
+            "hit_rate": 0.548,
+            "ir": 0.502
           },
           {
             "decile": 3,
-            "conviction_min": 53.0,
-            "conviction_max": 56.0,
-            "n": 31,
-            "mean_return": 3.609,
-            "hit_rate": 0.581,
-            "ir": 0.281
+            "conviction_min": 54.0,
+            "conviction_max": 57.0,
+            "n": 41,
+            "mean_return": -1.507,
+            "hit_rate": 0.561,
+            "ir": -0.193
           },
           {
             "decile": 4,
-            "conviction_min": 56.0,
+            "conviction_min": 57.0,
             "conviction_max": 59.0,
-            "n": 32,
-            "mean_return": 4.153,
-            "hit_rate": 0.438,
-            "ir": 0.405
+            "n": 42,
+            "mean_return": 3.253,
+            "hit_rate": 0.333,
+            "ir": 0.251
           },
           {
             "decile": 5,
             "conviction_min": 59.0,
             "conviction_max": 61.0,
-            "n": 32,
-            "mean_return": 4.864,
-            "hit_rate": 0.375,
-            "ir": 0.4
+            "n": 42,
+            "mean_return": 1.968,
+            "hit_rate": 0.405,
+            "ir": 0.154
           },
           {
             "decile": 6,
             "conviction_min": 61.0,
             "conviction_max": 63.0,
-            "n": 31,
-            "mean_return": 4.89,
-            "hit_rate": 0.29,
-            "ir": 0.366
+            "n": 41,
+            "mean_return": 4.867,
+            "hit_rate": 0.463,
+            "ir": 0.414
           },
           {
             "decile": 7,
             "conviction_min": 63.0,
-            "conviction_max": 64.0,
-            "n": 32,
-            "mean_return": 10.862,
-            "hit_rate": 0.375,
-            "ir": 0.715
+            "conviction_max": 65.0,
+            "n": 42,
+            "mean_return": 8.822,
+            "hit_rate": 0.452,
+            "ir": 0.614
           },
           {
             "decile": 8,
             "conviction_min": 65.0,
             "conviction_max": 66.0,
-            "n": 31,
-            "mean_return": 8.426,
-            "hit_rate": 0.742,
-            "ir": 0.471
+            "n": 41,
+            "mean_return": 4.52,
+            "hit_rate": 0.61,
+            "ir": 0.258
           },
           {
             "decile": 9,
-            "conviction_min": 67.0,
+            "conviction_min": 66.0,
             "conviction_max": 69.0,
-            "n": 32,
-            "mean_return": 5.918,
-            "hit_rate": 0.625,
-            "ir": 0.613
+            "n": 42,
+            "mean_return": 5.521,
+            "hit_rate": 0.667,
+            "ir": 0.591
           },
           {
             "decile": 10,
             "conviction_min": 69.0,
             "conviction_max": 76.0,
-            "n": 32,
-            "mean_return": 4.224,
-            "hit_rate": 0.656,
-            "ir": 0.391
+            "n": 42,
+            "mean_return": 3.499,
+            "hit_rate": 0.667,
+            "ir": 0.329
           }
         ]
       },
       "reliability": {
         "status": "ok",
-        "total_evaluated": 316,
+        "total_evaluated": 416,
         "horizon": 5,
-        "brier_score": 0.2577,
+        "brier_score": 0.2538,
         "bins": [
           {
             "bin": 4,
             "predicted_min": 0.3,
             "predicted_max": 0.4,
-            "predicted": 0.374,
-            "realized": 0.2,
-            "n": 5
+            "predicted": 0.372,
+            "realized": 0.167,
+            "n": 6
           },
           {
             "bin": 5,
             "predicted_min": 0.4,
             "predicted_max": 0.5,
-            "predicted": 0.466,
-            "realized": 0.529,
-            "n": 17
+            "predicted": 0.465,
+            "realized": 0.55,
+            "n": 20
           },
           {
             "bin": 6,
             "predicted_min": 0.5,
             "predicted_max": 0.6,
-            "predicted": 0.555,
-            "realized": 0.474,
-            "n": 133
+            "predicted": 0.558,
+            "realized": 0.483,
+            "n": 178
           },
           {
             "bin": 7,
             "predicted_min": 0.6,
             "predicted_max": 0.7,
             "predicted": 0.651,
-            "realized": 0.507,
-            "n": 144
+            "realized": 0.547,
+            "n": 192
           },
           {
             "bin": 8,
             "predicted_min": 0.7,
             "predicted_max": 0.8,
-            "predicted": 0.723,
-            "realized": 0.765,
-            "n": 17
+            "predicted": 0.722,
+            "realized": 0.75,
+            "n": 20
           }
         ]
       },
@@ -437,107 +457,127 @@
         "series": [
           {
             "date": "2026-04-13",
-            "brier": 0.2914,
+            "brier": 0.2842,
             "n": 11
           },
           {
             "date": "2026-04-14",
-            "brier": 0.2673,
+            "brier": 0.2636,
             "n": 22
           },
           {
             "date": "2026-04-15",
-            "brier": 0.2658,
+            "brier": 0.2579,
             "n": 33
           },
           {
             "date": "2026-04-17",
-            "brier": 0.2575,
+            "brier": 0.2515,
             "n": 44
           },
           {
             "date": "2026-04-20",
-            "brier": 0.2648,
+            "brier": 0.2601,
             "n": 55
           },
           {
             "date": "2026-04-21",
-            "brier": 0.2614,
+            "brier": 0.2574,
             "n": 66
           },
           {
             "date": "2026-04-22",
-            "brier": 0.2558,
+            "brier": 0.2525,
             "n": 77
           },
           {
             "date": "2026-04-23",
-            "brier": 0.2513,
+            "brier": 0.2484,
             "n": 88
           },
           {
             "date": "2026-04-24",
-            "brier": 0.251,
+            "brier": 0.2484,
             "n": 99
           },
           {
             "date": "2026-04-27",
-            "brier": 0.2479,
+            "brier": 0.2455,
             "n": 110
           },
           {
             "date": "2026-04-28",
-            "brier": 0.2437,
+            "brier": 0.2415,
             "n": 121
           },
           {
             "date": "2026-04-29",
-            "brier": 0.2472,
+            "brier": 0.2453,
             "n": 132
           },
           {
             "date": "2026-05-01",
-            "brier": 0.2484,
+            "brier": 0.2467,
             "n": 155
           },
           {
             "date": "2026-05-05",
-            "brier": 0.2508,
+            "brier": 0.249,
             "n": 178
           },
           {
             "date": "2026-05-06",
-            "brier": 0.2516,
+            "brier": 0.25,
             "n": 201
           },
           {
             "date": "2026-05-12",
-            "brier": 0.2544,
+            "brier": 0.2529,
             "n": 224
           },
           {
             "date": "2026-05-14",
-            "brier": 0.2557,
+            "brier": 0.2539,
             "n": 236
           },
           {
             "date": "2026-05-18",
-            "brier": 0.262,
+            "brier": 0.2609,
             "n": 226
           },
           {
             "date": "2026-05-20",
-            "brier": 0.2612,
+            "brier": 0.2601,
             "n": 249
           },
           {
             "date": "2026-05-21",
-            "brier": 0.2562,
+            "brier": 0.2551,
             "n": 261
+          },
+          {
+            "date": "2026-05-26",
+            "brier": 0.2555,
+            "n": 242
+          },
+          {
+            "date": "2026-05-27",
+            "brier": 0.2539,
+            "n": 267
+          },
+          {
+            "date": "2026-05-28",
+            "brier": 0.2533,
+            "n": 281
+          },
+          {
+            "date": "2026-05-29",
+            "brier": 0.2589,
+            "n": 295
           }
         ],
-        "trend_slope": -0.000843,
-        "latest_brier": 0.2562,
+        "trend_slope": -0.000272,
+        "latest_brier": 0.2589,
         "drift_alert": false
       }
     },
@@ -545,131 +585,139 @@
       "horizon": 20,
       "decile_buckets": {
         "status": "ok",
-        "total_evaluated": 132,
+        "total_evaluated": 201,
         "horizon": 20,
         "metric": "absolute",
         "deciles": [
           {
             "decile": 1,
-            "conviction_min": 45.0,
-            "conviction_max": 51.0,
-            "n": 13,
-            "mean_return": 19.982,
-            "hit_rate": 0.0,
-            "ir": 0.893
+            "conviction_min": 39.0,
+            "conviction_max": 50.0,
+            "n": 20,
+            "mean_return": 25.108,
+            "hit_rate": 0.05,
+            "ir": 0.717
           },
           {
             "decile": 2,
-            "conviction_min": 52.0,
-            "conviction_max": 54.0,
-            "n": 13,
-            "mean_return": 11.995,
-            "hit_rate": 0.231,
-            "ir": 0.479
+            "conviction_min": 50.0,
+            "conviction_max": 53.0,
+            "n": 20,
+            "mean_return": 26.656,
+            "hit_rate": 0.2,
+            "ir": 0.693
           },
           {
             "decile": 3,
-            "conviction_min": 54.0,
+            "conviction_min": 53.0,
             "conviction_max": 56.0,
-            "n": 13,
-            "mean_return": 4.617,
-            "hit_rate": 0.077,
-            "ir": 0.476
+            "n": 20,
+            "mean_return": 7.528,
+            "hit_rate": 0.2,
+            "ir": 0.322
           },
           {
             "decile": 4,
-            "conviction_min": 57.0,
+            "conviction_min": 56.0,
             "conviction_max": 59.0,
-            "n": 13,
-            "mean_return": 18.612,
-            "hit_rate": 0.154,
-            "ir": 0.832
+            "n": 20,
+            "mean_return": 16.207,
+            "hit_rate": 0.3,
+            "ir": 0.568
           },
           {
             "decile": 5,
             "conviction_min": 59.0,
             "conviction_max": 60.0,
-            "n": 14,
-            "mean_return": 13.196,
-            "hit_rate": 0.214,
-            "ir": 0.536
+            "n": 20,
+            "mean_return": 14.613,
+            "hit_rate": 0.2,
+            "ir": 0.577
           },
           {
             "decile": 6,
             "conviction_min": 60.0,
-            "conviction_max": 62.0,
-            "n": 13,
-            "mean_return": 22.196,
-            "hit_rate": 0.231,
-            "ir": 0.859
+            "conviction_max": 63.0,
+            "n": 20,
+            "mean_return": 21.953,
+            "hit_rate": 0.15,
+            "ir": 0.944
           },
           {
             "decile": 7,
-            "conviction_min": 62.0,
+            "conviction_min": 63.0,
             "conviction_max": 65.0,
-            "n": 13,
-            "mean_return": 19.483,
-            "hit_rate": 0.462,
-            "ir": 0.991
+            "n": 20,
+            "mean_return": 22.978,
+            "hit_rate": 0.25,
+            "ir": 1.108
           },
           {
             "decile": 8,
             "conviction_min": 65.0,
             "conviction_max": 67.0,
-            "n": 13,
-            "mean_return": 16.478,
-            "hit_rate": 0.769,
-            "ir": 0.771
+            "n": 20,
+            "mean_return": 16.214,
+            "hit_rate": 0.85,
+            "ir": 0.837
           },
           {
             "decile": 9,
-            "conviction_min": 68.0,
-            "conviction_max": 70.0,
-            "n": 13,
-            "mean_return": 24.226,
-            "hit_rate": 0.923,
-            "ir": 1.235
+            "conviction_min": 67.0,
+            "conviction_max": 69.0,
+            "n": 20,
+            "mean_return": 26.494,
+            "hit_rate": 0.95,
+            "ir": 1.435
           },
           {
             "decile": 10,
-            "conviction_min": 70.0,
+            "conviction_min": 69.0,
             "conviction_max": 75.0,
-            "n": 14,
-            "mean_return": 13.605,
-            "hit_rate": 0.929,
-            "ir": 0.796
+            "n": 21,
+            "mean_return": 16.631,
+            "hit_rate": 0.952,
+            "ir": 0.795
           }
         ]
       },
       "reliability": {
         "status": "ok",
-        "total_evaluated": 132,
+        "total_evaluated": 201,
         "horizon": 20,
-        "brier_score": 0.2454,
+        "brier_score": 0.2436,
         "bins": [
+          {
+            "bin": 4,
+            "predicted_min": 0.3,
+            "predicted_max": 0.4,
+            "predicted": 0.39,
+            "realized": 0.0,
+            "n": 1
+          },
           {
             "bin": 5,
             "predicted_min": 0.4,
             "predicted_max": 0.5,
-            "predicted": 0.48,
-            "realized": 0.0,
-            "n": 5
+            "predicted": 0.468,
+            "realized": 0.083,
+            "n": 12
           },
           {
             "bin": 6,
             "predicted_min": 0.5,
             "predicted_max": 0.6,
-            "predicted": 0.557,
-            "realized": 0.161,
-            "n": 62
+            "predicted": 0.555,
+            "realized": 0.211,
+            "n": 90
           },
           {
             "bin": 7,
             "predicted_min": 0.6,
             "predicted_max": 0.7,
             "predicted": 0.653,
-            "realized": 0.596,
-            "n": 52
+            "realized": 0.6,
+            "n": 85
           },
           {
             "bin": 8,
@@ -688,67 +736,82 @@
         "series": [
           {
             "date": "2026-04-13",
-            "brier": 0.3169,
+            "brier": 0.3096,
             "n": 11
           },
           {
             "date": "2026-04-14",
-            "brier": 0.3018,
+            "brier": 0.2982,
             "n": 22
           },
           {
             "date": "2026-04-15",
-            "brier": 0.2949,
+            "brier": 0.2925,
             "n": 33
           },
           {
             "date": "2026-04-17",
-            "brier": 0.2752,
+            "brier": 0.2734,
             "n": 44
           },
           {
             "date": "2026-04-20",
-            "brier": 0.2663,
+            "brier": 0.2648,
             "n": 55
           },
           {
             "date": "2026-04-21",
-            "brier": 0.2556,
+            "brier": 0.2544,
             "n": 66
           },
           {
             "date": "2026-04-22",
-            "brier": 0.2522,
+            "brier": 0.2512,
             "n": 77
           },
           {
             "date": "2026-04-23",
-            "brier": 0.2459,
+            "brier": 0.245,
             "n": 88
           },
           {
             "date": "2026-04-24",
-            "brier": 0.2433,
+            "brier": 0.2425,
             "n": 99
           },
           {
             "date": "2026-04-27",
-            "brier": 0.2411,
+            "brier": 0.2393,
             "n": 110
           },
           {
             "date": "2026-04-28",
-            "brier": 0.243,
+            "brier": 0.2414,
             "n": 121
           },
           {
             "date": "2026-04-29",
-            "brier": 0.2454,
+            "brier": 0.2439,
             "n": 132
+          },
+          {
+            "date": "2026-05-01",
+            "brier": 0.2465,
+            "n": 155
+          },
+          {
+            "date": "2026-05-05",
+            "brier": 0.2452,
+            "n": 178
+          },
+          {
+            "date": "2026-05-06",
+            "brier": 0.2436,
+            "n": 201
           }
         ],
-        "trend_slope": -0.006701,
-        "latest_brier": 0.2454,
+        "trend_slope": -0.004418,
+        "latest_brier": 0.2436,
         "drift_alert": false
       }
     }

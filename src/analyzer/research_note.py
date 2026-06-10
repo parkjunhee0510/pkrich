@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
+from src.analyzer.fmp_compaction import compact_fundamental_metrics_for_llm
 from src.types import CollectedTickerData, NewsItem, PortfolioSummary, TickerAnalysis, WatchlistItem
 from src.utils.cost_tracker import calculate_response_cost
 from src.utils.env import load_dotenv
@@ -540,6 +541,7 @@ def _build_payload(
     payload: list[dict[str, Any]] = []
     for item in batch:
         market = collected[item.ticker]
+        fundamental_metrics = compact_fundamental_metrics_for_llm(market.fundamental_metrics)
         payload.append(
             {
                 'ticker': item.ticker,
@@ -590,7 +592,7 @@ def _build_payload(
                 'fmp_earnings_surprises': market.fmp_earnings_surprises[:4],
                 'options_flow': market.options_flow,
                 'recommendation_trends': market.recommendation_trends[:3],
-                'fundamental_metrics': market.fundamental_metrics,
+                'fundamental_metrics': fundamental_metrics,
                 'technical_indicators': market.technical_indicators,
                 'quarterly_financials': market.quarterly_financials[:4],
                 'signal_history': (signal_history_map or {}).get(item.ticker, [])[:5],

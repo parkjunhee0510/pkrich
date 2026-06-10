@@ -444,7 +444,7 @@ export function Admin() {
   return (
     <div className="signals-page admin-page">
       <div className="dashboard-header">
-        <h2>Admin · 비용 / 품질</h2>
+        <h1>Admin · 비용 / 품질</h1>
       </div>
 
       <div className="signal-summary-grid">
@@ -1012,7 +1012,7 @@ function FactorAuditSection({ payload }: { payload: FactorAuditPayload | null })
                       </td>
                       <td>
                         {row.weak ? (
-                          <span className="status" style={{ background: '#d98a7b' }}>
+                          <span className="status" style={{ background: 'var(--color-negative)' }}>
                             weak
                           </span>
                         ) : (
@@ -1053,7 +1053,7 @@ function FactorAuditSection({ payload }: { payload: FactorAuditPayload | null })
                       <td>{pair.n}</td>
                       <td>
                         {pair.collinear ? (
-                          <span className="status" style={{ background: '#d98a7b' }}>
+                          <span className="status" style={{ background: 'var(--color-negative)' }}>
                             collinear
                           </span>
                         ) : (
@@ -1096,7 +1096,7 @@ function FactorAuditSection({ payload }: { payload: FactorAuditPayload | null })
                         [{s.current.min}, {s.current.max}]
                       </td>
                       <td>
-                        <span className="status" style={{ background: '#d98a7b' }}>
+                        <span className="status" style={{ background: 'var(--color-negative)' }}>
                           [{s.suggested.min}, {s.suggested.max}]
                         </span>
                       </td>
@@ -1192,7 +1192,7 @@ function ValidationWarningsSection({
         {categories.map((cat) => {
           const meta = VALIDATION_CATEGORY_META[cat] ?? {
             label: cat,
-            color: '#888',
+            color: 'var(--color-fg-muted)',
             note: '',
           }
           return (
@@ -1238,7 +1238,7 @@ function ValidationWarningsSection({
                         <div
                           key={`${day.date}-${cat}`}
                           className="admin-cost-bar-segment"
-                          style={{ height: `${pct}%`, background: meta?.color ?? '#888' }}
+                          style={{ height: `${pct}%`, background: meta?.color ?? 'var(--color-fg-muted)' }}
                         />
                       )
                     })}
@@ -1352,7 +1352,7 @@ function TuningReportSection({ payload }: { payload: TuningReportPayload | null 
                       {wf.overfit_gap !== null && wf.overfit_gap !== undefined ? (
                         <span
                           className="status"
-                          style={{ background: wf.overfit_gap > 0.2 ? '#d98a7b' : undefined }}
+                          style={{ background: wf.overfit_gap > 0.2 ? 'var(--color-negative)' : undefined }}
                         >
                           {wf.overfit_gap >= 0 ? '+' : ''}
                           {wf.overfit_gap.toFixed(3)}
@@ -1467,7 +1467,7 @@ function PurgedWalkForwardBlock({
                     {gap !== null && gap !== undefined ? (
                       <span
                         className="status"
-                        style={{ background: gap > 0.2 ? '#d98a7b' : undefined }}
+                        style={{ background: gap > 0.2 ? 'var(--color-negative)' : undefined }}
                       >
                         {gap >= 0 ? '+' : ''}
                         {gap.toFixed(3)}

@@ -84,7 +84,7 @@ function buildSvgPoints(points: EquityPoint[]): {
     PADDING.top + ((maxValue - value) / range) * plotHeight
 
   const svgPoints = points.map((point, index) => ({
-    ...point,
+    ...point, 
     x: PADDING.left + index * xStep,
     y: yFor(point.value),
   }))

@@ -20,6 +20,7 @@
 * Finnhub
 * Polygon
 * SEC EDGAR
+* Toss Invest Open API
 
 ## Fallback Strategy
 
@@ -73,6 +74,20 @@ The normalized `by_ticker` summary includes `evidence_status`, `provider_status`
 `performance_baseline.json` derives a read-only Search evidence provider readiness track from this normalized payload. It records provider call/error/cache-error/skipped counts, cap review status, priority candidate ratio, provider issue status, operational issue count, and stale-cache reuse status. These fields are review telemetry only; they do not switch `mode`, raise `max_search_tickers_per_run`, or make provider calls.
 
 Analyzer, decision, output, and web code must consume normalized search evidence only; they must not call web search directly.
+
+## Toss Invest Open API
+
+Toss Invest is an optional read-only collector provider for market data, candles, stock metadata, stock warnings, exchange rate, and market calendar data. It is credential-gated by `TOSS_INVEST_CLIENT_ID` and `TOSS_INVEST_CLIENT_SECRET`, and it is skipped when credentials are absent.
+
+The integration must not call Toss account, holdings, order, buying-power, sellable-quantity, or commission endpoints. Toss does not currently provide a news/search endpoint in the OpenAPI document, so it does not directly replace `search_evidence` provider calls in this phase.
+
+## Options Starter Live Data
+
+The ticker-detail options live panel is a local dashboard companion, not a batch collector stage. It may use the Polygon/Massive Options Starter plan for delayed options second aggregates and reference contract lookup when `POLYGON_API_KEY` or `MASSIVE_API_KEY` is configured on the local API server.
+
+The browser must never receive provider credentials. The frontend calls the local API for a bounded contract list and opens a local WebSocket relay for one explicit option contract at a time. The relay must reject wildcards and non-option symbols, subscribe only to the second-aggregate channel, and expose the data as `recency: delayed_15m` so it cannot be mistaken for exchange real-time equities data.
+
+This live path must not call account, holdings, order, quote-trade wildcard, analyzer, decision, or LLM paths. Streamed aggregates are transient browser/server-session data only and must not be written to `output/data`, portfolio state, or the datastore.
 
 ## Rules
 

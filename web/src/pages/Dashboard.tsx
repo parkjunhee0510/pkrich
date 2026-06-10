@@ -7,9 +7,7 @@ import { MacroContextBar } from '../components/MacroContextBar'
 import { MacroNarrativePanel } from '../components/MacroNarrativePanel'
 import { MarketOverview } from '../components/MarketOverview'
 import { MarketMoodSectorBriefing } from '../components/MarketMoodSectorBriefing'
-import { RiskIntelPanel } from '../components/RiskIntelPanel'
 import { DashboardSkeleton } from '../components/Skeleton'
-import { TodayPriorityQueue } from '../components/TodayPriorityQueue'
 import {
   CatalystFeed,
   EarningsBoard,
@@ -17,11 +15,9 @@ import {
   TodaySetupBoard,
 } from '../components/TraderDashboardPanels'
 import { WatchlistTable } from '../components/WatchlistTable'
-import { TodayDecisionStrip } from '../components/TodayDecisionStrip'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { EmptyState } from '../components/ui/EmptyState'
 import { useQualityReliabilityLoopData } from '../hooks/useQualityReliabilityLoopData'
-import { useRiskIntelData } from '../hooks/useRiskIntelData'
 import { useSearchEvidenceData } from '../hooks/useSearchEvidenceData'
 import type { DailyEntry, TickerAnalysisData, WeeklyReportSection } from '../types'
 import { buildActionChangeFeed, findPreviousValidDay } from '../utils/actionChangeFeed'
@@ -73,7 +69,6 @@ const EMPTY_DAY: DailyEntry = { date: '', market_overview: [], tickers: [] }
 
 export function Dashboard() {
   const { data, loading, refreshing, error, refresh } = useDashboardData({ pollIntervalMs: 60000 })
-  const { summary: riskIntelSummary, graph: riskIntelGraph } = useRiskIntelData()
   const { searchEvidence } = useSearchEvidenceData()
   const { qualityLoop } = useQualityReliabilityLoopData()
   const searchInputRef = useRef<HTMLInputElement | null>(null)
@@ -120,11 +115,10 @@ export function Dashboard() {
         day,
         previousDay,
         searchEvidence,
-        riskIntelSummary,
         qualityLoop,
         limit: 8,
       }),
-    [day, previousDay, searchEvidence, riskIntelSummary, qualityLoop],
+    [day, previousDay, searchEvidence, qualityLoop],
   )
   const normalizedQuery = searchQuery.trim().toLowerCase()
 
@@ -182,7 +176,6 @@ export function Dashboard() {
         actionChangeFeed,
         todayDecisionStrip,
         todayPriorityQueue,
-        riskIntelSummary,
         searchEvidence,
         qualityLoop,
         dataError: error,
@@ -195,7 +188,6 @@ export function Dashboard() {
       actionChangeFeed,
       todayDecisionStrip,
       todayPriorityQueue,
-      riskIntelSummary,
       searchEvidence,
       qualityLoop,
       error,
@@ -263,7 +255,7 @@ export function Dashboard() {
     <div className="dashboard" data-density={density}>
       <div className="dashboard-header">
         <div className="dashboard-header-main">
-          <h2>부자 되고 싶어요 · {day.date}</h2>
+          <h1>부자 되고 싶어요 · {day.date}</h1>
           <div className="dashboard-header-meta">
             <span className="dashboard-stat-chip">전체 {day.tickers.length}개</span>
             <span className="dashboard-stat-chip">표시 {sortedWatchlistTickers.length}개</span>
@@ -450,15 +442,7 @@ export function Dashboard() {
 
       <DashboardNewsDesk viewModel={newsDeskViewModel} refreshing={refreshing} />
 
-      <TodayPriorityQueue queue={todayPriorityQueue} />
-
-      <TodayDecisionStrip strip={todayDecisionStrip} />
-
       <ActionChangeFeed feed={actionChangeFeed} />
-
-      {riskIntelSummary && riskIntelSummary.cards.length > 0 ? (
-        <RiskIntelPanel summary={riskIntelSummary} graph={riskIntelGraph} compact />
-      ) : null}
 
       <TodaySetupBoard cards={topSetupCards} />
 
