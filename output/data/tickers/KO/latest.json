@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-06-05",
+  "date": "2026-06-10",
   "ticker": "KO",
   "payload": {
     "ticker": "KO",
@@ -75,46 +75,46 @@
     ],
     "signal_or_takeaway": "매수 유지 — 방어주 내 안정적 위치와 완만한 상승 추세 | 진입 트리거 79.48 지지 확인 | 목표 81.76/82.66달러 | 손절 77.91달러",
     "data_snapshot": {
-      "Price": "79.48 USD",
-      "Daily Change": "+3.46%",
-      "Market Cap": "341.96B",
-      "Trailing P/E": "24.99",
+      "Price": "83.61 USD",
+      "Daily Change": "+2.80%",
+      "Market Cap": "359.75B",
+      "Trailing P/E": "26.29",
       "EPS": "3.18",
-      "52W High": "82.66",
+      "52W High": "83.85",
       "52W Low": "65.35",
-      "50D SMA": "77.91",
-      "200D SMA": "73.09",
-      "Volume": "17.24M",
-      "3M Avg Volume": "14.91M",
-      "Price/Book": "10.17",
-      "Dividend Yield": "2.67%",
-      "Sector": "Consumer Defensive",
-      "Open": "77.51",
-      "High": "80.74",
-      "Low": "77.48",
-      "Close": "79.48",
+      "50D SMA": "78.13",
+      "200D SMA": "73.22",
+      "Volume": "11003905",
+      "3M Avg Volume": "14.88M",
+      "Price/Book": "10.70",
+      "Dividend Yield": "2.61%",
+      "Sector": "Consumer Staples",
+      "Open": "82.68",
+      "High": "83.85",
+      "Low": "82.13",
+      "Close": "83.61",
       "RS vs Sector ETF": "+2.23%"
     },
     "fundamentals": {
-      "market_cap": "341.96B",
-      "trailing_pe": "24.99",
+      "market_cap": "359.75B",
+      "trailing_pe": "26.29",
       "eps": "3.18",
       "forward_eps": "3.48",
       "earnings_growth": "+18.20% YoY",
-      "price_to_book": "10.17",
-      "dividend_yield": "2.67%",
-      "volume": "17.24M",
-      "avg_volume_3m": "14.91M",
-      "52w_high": "82.66",
+      "price_to_book": "10.70",
+      "dividend_yield": "2.61%",
+      "volume": "11003905",
+      "avg_volume_3m": "14.88M",
+      "52w_high": "83.85",
       "52w_low": "65.35",
-      "short_float_pct": "1.13%",
-      "short_ratio": "3.37일",
+      "short_float_pct": "1.09%",
+      "short_ratio": "3.12일",
       "analyst_target_price": "86.06 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "23명",
       "held_by_insiders": "9.90%",
-      "held_by_institutions": "68.23%",
-      "implied_volatility": "26.7%"
+      "held_by_institutions": "68.25%",
+      "implied_volatility": "23.4%"
     },
     "earnings_setup": {
       "forward_eps": "3.48 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "1.52",
-      "atr_percent": "1.91%",
-      "relative_volume": "1.16x",
-      "gap_percent": "+0.90%",
-      "price_vs_sma50": "+2.02%",
-      "price_vs_sma200": "+8.74%",
-      "week52_position": "82%",
+      "atr_14d": "1.69",
+      "atr_percent": "2.02%",
+      "relative_volume": "0.74x",
+      "gap_percent": "+1.65%",
+      "price_vs_sma50": "+7.02%",
+      "price_vs_sma200": "+14.20%",
+      "week52_position": "99%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+2.23%"
+      "rs_vs_sector_etf": "+3.97%"
     },
     "quarterly_financials": [
       {
@@ -231,11 +231,11 @@
     },
     "options_summary": {
       "expiry": "2026-06-12",
-      "implied_volatility": "26.7%",
-      "atm_call_iv": "27.9%",
-      "atm_put_iv": "25.4%",
-      "put_call_ratio": "0.24x",
-      "iv_percentile_30d": "10th",
+      "implied_volatility": "23.4%",
+      "atm_call_iv": "22.9%",
+      "atm_put_iv": "23.8%",
+      "put_call_ratio": "0.37x",
+      "iv_percentile_30d": "2th",
       "tone": "neutral",
       "unusual_activity": "PUT $100, vol 56, OI 대비 127% ; PUT $120, vol 2, OI 대비 200% ; PUT $95, vol 4, OI 대비 100%",
       "oi_change": "N/A"
@@ -390,8 +390,8 @@
       }
     },
     "period_changes": {
-      "7d": "+0.59%",
-      "30d": "+0.32%"
+      "7d": "+6.16%",
+      "30d": "+6.29%"
     },
     "sec_filing_tags": [
       "실적",
@@ -498,5 +498,6 @@
         }
       }
     }
-  }
+  },
+  "intraday_refreshed_at": "2026-06-10T16:55:47"
 }
