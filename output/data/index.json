@@ -116,29 +116,28 @@
         "expires_at": "2026-06-23"
       },
       {
-        "event_type": "sanctions_escalation",
-        "severity": "medium",
+        "event_type": "opec_supply_shock",
+        "severity": "high",
         "region": "global",
         "transmission_channels": [
-          "supply_chain",
-          "rates",
+          "oil",
+          "inflation",
           "risk_sentiment"
         ],
         "affected_sectors": [
-          "Technology",
+          "Energy",
+          "Consumer Cyclical",
           "Industrials",
-          "Materials",
-          "Financial"
+          "Utilities"
         ],
         "affected_industries": [
-          "Semiconductors",
-          "Electronics",
-          "Defense",
-          "Shipping"
+          "Airlines",
+          "Trucking",
+          "Oil & Gas"
         ],
-        "direction": "risk_off",
-        "summary_ko": "제재·수출통제 강화는 공급망과 투자심리를 동시에 압박할 수 있습니다.",
-        "expires_at": "2026-07-02"
+        "direction": "mixed",
+        "summary_ko": "OPEC 공급 충격은 에너지 가격과 기대 인플레이션을 다시 자극할 수 있습니다.",
+        "expires_at": "2026-06-28"
       }
     ],
     "us10y": {
@@ -173,45 +172,45 @@
     },
     "dxy": {
       "label": "Dollar Index",
-      "level": "100.82",
-      "price": "100.82",
-      "change": "-0.02%"
+      "level": "100.73",
+      "price": "100.73",
+      "change": "-0.12%"
     },
     "copper": {
       "label": "Copper",
-      "level": "6.33",
-      "price": "6.33",
-      "change": "-0.64%"
+      "level": "6.34",
+      "price": "6.34",
+      "change": "-0.59%"
     },
     "oil_wti": {
       "label": "WTI Crude",
-      "level": "76.71",
-      "price": "76.71",
-      "change": "+0.14%"
+      "level": "76.54",
+      "price": "76.54",
+      "change": "-0.08%"
     },
     "gold": {
       "label": "Gold",
-      "level": "4,163.20",
-      "price": "4,163.20",
-      "change": "-1.44%"
+      "level": "4,172.90",
+      "price": "4,172.90",
+      "change": "-1.21%"
     },
     "usdjpy": {
       "label": "USD/JPY",
-      "level": "161.27",
-      "price": "161.27",
-      "change": "+0.42%"
+      "level": "161.26",
+      "price": "161.26",
+      "change": "+0.41%"
     },
     "usdcny": {
       "label": "USD/CNY",
       "level": "6.77",
       "price": "6.77",
-      "change": "+0.16%"
+      "change": "+0.17%"
     },
     "btc": {
       "label": "Bitcoin",
-      "level": "63,256.49",
-      "price": "63,256.49",
-      "change": "+0.57%"
+      "level": "63,059.14",
+      "price": "63,059.14",
+      "change": "+0.26%"
     },
     "hyg": {
       "label": "HY Credit ETF",
@@ -26304,5 +26303,5 @@
     "output_signal_stats_includes_current_run": true,
     "signal_returns_updated_before_decision": true
   },
-  "intraday_refreshed_at": "2026-06-19T16:29:39"
+  "intraday_refreshed_at": "2026-06-19T18:29:34"
 }
