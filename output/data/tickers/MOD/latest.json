@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-06-24",
+  "date": "2026-06-25",
   "ticker": "MOD",
   "payload": {
     "ticker": "MOD",
@@ -75,46 +75,46 @@
     ],
     "signal_or_takeaway": "매수 관찰 — 애널리스트 목표와 실적 기대가 긍정적임 | 진입 트리거 276.51 상향 유지 | 목표 315.24/340.86달러 | 손절 253.05달러",
     "data_snapshot": {
-      "Price": "278.85 USD",
-      "Daily Change": "+0.50%",
-      "Market Cap": "N/A",
-      "Trailing P/E": "N/A",
-      "EPS": "N/A",
-      "52W High": "N/A",
-      "52W Low": "N/A",
-      "50D SMA": "N/A",
-      "200D SMA": "N/A",
-      "Volume": "N/A",
-      "3M Avg Volume": "N/A",
-      "Price/Book": "N/A",
+      "Price": "285.46 USD",
+      "Daily Change": "+3.17%",
+      "Market Cap": "15.08B",
+      "Trailing P/E": "125.76",
+      "EPS": "2.27",
+      "52W High": "323.25",
+      "52W Low": "86.48",
+      "50D SMA": "268.67",
+      "200D SMA": "193.94",
+      "Volume": "402247",
+      "3M Avg Volume": "1.15M",
+      "Price/Book": "12.62",
       "Dividend Yield": "N/A",
       "Sector": "Industrials",
-      "Open": "N/A",
-      "High": "N/A",
-      "Low": "N/A",
-      "Close": "N/A",
+      "Open": "286.51",
+      "High": "292.89",
+      "Low": "277.40",
+      "Close": "285.46",
       "RS vs Sector ETF": "+0.72%"
     },
     "fundamentals": {
-      "market_cap": "N/A",
-      "trailing_pe": "N/A",
-      "eps": "N/A",
-      "forward_eps": "N/A",
-      "earnings_growth": "N/A",
-      "price_to_book": "N/A",
+      "market_cap": "15.08B",
+      "trailing_pe": "125.76",
+      "eps": "2.27",
+      "forward_eps": "11.36",
+      "earnings_growth": "+47.40% YoY",
+      "price_to_book": "12.62",
       "dividend_yield": "N/A",
-      "volume": "N/A",
-      "avg_volume_3m": "N/A",
-      "52w_high": "N/A",
-      "52w_low": "N/A",
-      "short_float_pct": "N/A",
-      "short_ratio": "N/A",
-      "analyst_target_price": "N/A",
-      "analyst_recommendation": "N/A",
-      "analyst_count": "N/A",
-      "held_by_insiders": "N/A",
-      "held_by_institutions": "N/A",
-      "implied_volatility": "N/A"
+      "volume": "402247",
+      "avg_volume_3m": "1.15M",
+      "52w_high": "323.25",
+      "52w_low": "86.48",
+      "short_float_pct": "6.35%",
+      "short_ratio": "2.24일",
+      "analyst_target_price": "340.86 USD",
+      "analyst_recommendation": "Strong Buy",
+      "analyst_count": "7명",
+      "held_by_insiders": "2.12%",
+      "held_by_institutions": "108.52%",
+      "implied_volatility": "80.6%"
     },
     "earnings_setup": {
       "forward_eps": "11.35 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 2개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "N/A",
-      "atr_percent": "N/A",
-      "relative_volume": "N/A",
-      "gap_percent": "N/A",
-      "price_vs_sma50": "N/A",
-      "price_vs_sma200": "N/A",
-      "week52_position": "N/A",
+      "atr_14d": "18.88",
+      "atr_percent": "6.61%",
+      "relative_volume": "0.35x",
+      "gap_percent": "+3.55%",
+      "price_vs_sma50": "+6.25%",
+      "price_vs_sma200": "+47.19%",
+      "week52_position": "84%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+1.01%"
+      "rs_vs_sector_etf": "-9.72%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-07-17",
-      "implied_volatility": "82.4%",
-      "atm_call_iv": "84.4%",
-      "atm_put_iv": "80.5%",
-      "put_call_ratio": "1.19x",
-      "iv_percentile_30d": "28th",
+      "implied_volatility": "80.6%",
+      "atm_call_iv": "76.8%",
+      "atm_put_iv": "84.4%",
+      "put_call_ratio": "1.17x",
+      "iv_percentile_30d": "25th",
       "tone": "neutral",
       "unusual_activity": "PUT $220, vol 33, OI 대비 100% ; PUT $190, vol 20, OI 대비 61% ; PUT $105, vol 31, OI 대비 3100%",
       "oi_change": "N/A"
@@ -383,8 +383,8 @@
       }
     },
     "period_changes": {
-      "7d": "-1.77%",
-      "30d": "+7.04%"
+      "7d": "-4.01%",
+      "30d": "-3.52%"
     },
     "sec_filing_tags": [
       "실적",
@@ -492,5 +492,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-06-24T20:30:21"
+  "intraday_refreshed_at": "2026-06-25T16:18:31"
 }
