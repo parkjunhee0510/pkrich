@@ -116,30 +116,6 @@
     ],
     "macro_events": [
       {
-        "event_type": "opec_supply_shock",
-        "severity": "high",
-        "region": "global",
-        "transmission_channels": [
-          "oil",
-          "inflation",
-          "risk_sentiment"
-        ],
-        "affected_sectors": [
-          "Energy",
-          "Consumer Cyclical",
-          "Industrials",
-          "Utilities"
-        ],
-        "affected_industries": [
-          "Airlines",
-          "Trucking",
-          "Oil & Gas"
-        ],
-        "direction": "mixed",
-        "summary_ko": "OPEC 공급 충격은 에너지 가격과 기대 인플레이션을 다시 자극할 수 있습니다.",
-        "expires_at": "2026-07-12"
-      },
-      {
         "event_type": "middle_east_escalation",
         "severity": "high",
         "region": "middle_east",
@@ -189,6 +165,30 @@
         "direction": "mixed",
         "summary_ko": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
         "expires_at": "2026-07-09"
+      },
+      {
+        "event_type": "opec_supply_shock",
+        "severity": "high",
+        "region": "global",
+        "transmission_channels": [
+          "oil",
+          "inflation",
+          "risk_sentiment"
+        ],
+        "affected_sectors": [
+          "Energy",
+          "Consumer Cyclical",
+          "Industrials",
+          "Utilities"
+        ],
+        "affected_industries": [
+          "Airlines",
+          "Trucking",
+          "Oil & Gas"
+        ],
+        "direction": "mixed",
+        "summary_ko": "OPEC 공급 충격은 에너지 가격과 기대 인플레이션을 다시 자극할 수 있습니다.",
+        "expires_at": "2026-07-12"
       }
     ],
     "us10y": {
@@ -229,39 +229,39 @@
     },
     "copper": {
       "label": "Copper",
-      "level": "6.21",
-      "price": "6.21",
-      "change": "+1.49%"
+      "level": "6.22",
+      "price": "6.22",
+      "change": "+1.79%"
     },
     "oil_wti": {
       "label": "WTI Crude",
-      "level": "68.77",
-      "price": "68.77",
-      "change": "+0.12%"
+      "level": "68.78",
+      "price": "68.78",
+      "change": "+0.13%"
     },
     "gold": {
       "label": "Gold",
-      "level": "4,179.70",
-      "price": "4,179.70",
-      "change": "+1.63%"
+      "level": "4,187.30",
+      "price": "4,187.30",
+      "change": "+1.81%"
     },
     "usdjpy": {
       "label": "USD/JPY",
-      "level": "161.30",
-      "price": "161.30",
-      "change": "-0.76%"
+      "level": "161.32",
+      "price": "161.32",
+      "change": "-0.75%"
     },
     "usdcny": {
       "label": "USD/CNY",
       "level": "6.77",
       "price": "6.77",
-      "change": "-0.37%"
+      "change": "-0.38%"
     },
     "btc": {
       "label": "Bitcoin",
-      "level": "61,768.00",
-      "price": "61,768.00",
-      "change": "+0.46%"
+      "level": "62,140.02",
+      "price": "62,140.02",
+      "change": "+1.06%"
     },
     "hyg": {
       "label": "HY Credit ETF",
@@ -26354,5 +26354,5 @@
     "output_signal_stats_includes_current_run": true,
     "signal_returns_updated_before_decision": true
   },
-  "intraday_refreshed_at": "2026-07-03T15:50:18"
+  "intraday_refreshed_at": "2026-07-03T17:16:55"
 }
