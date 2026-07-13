@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-07-10",
+  "date": "2026-07-13",
   "ticker": "ALAB",
   "payload": {
     "ticker": "ALAB",
@@ -75,46 +75,46 @@
     ],
     "signal_or_takeaway": "매수 우선 — 현재가 317.06달러와 2026-08-04 실적 발표, RSI 상위 83%와 강한 모멘텀 | 진입 트리거 317.06 상향 돌파 | 목표 362.28/372.37달러 | 손절 203.88달러",
     "data_snapshot": {
-      "Price": "412.97 USD",
-      "Daily Change": "-1.07%",
-      "Market Cap": "70.79B",
-      "Trailing P/E": "282.86",
-      "EPS": "1.46",
+      "Price": "355.21 USD",
+      "Daily Change": "-13.99%",
+      "Market Cap": "60.89B",
+      "Trailing P/E": "238.40",
+      "EPS": "1.49",
       "52W High": "499.48",
       "52W Low": "88.19",
-      "50D SMA": "320.57",
-      "200D SMA": "198.89",
-      "Volume": "2122472",
-      "3M Avg Volume": "6.26M",
-      "Price/Book": "47.35",
+      "50D SMA": "325.17",
+      "200D SMA": "199.76",
+      "Volume": "2339239",
+      "3M Avg Volume": "6.14M",
+      "Price/Book": "40.73",
       "Dividend Yield": "N/A",
       "Sector": "Technology",
-      "Open": "409.38",
-      "High": "421.42",
-      "Low": "402.01",
-      "Close": "412.97",
+      "Open": "400.68",
+      "High": "403.51",
+      "Low": "354.02",
+      "Close": "355.21",
       "RS vs Sector ETF": "+55.98%"
     },
     "fundamentals": {
-      "market_cap": "70.79B",
-      "trailing_pe": "282.86",
-      "eps": "1.46",
+      "market_cap": "60.89B",
+      "trailing_pe": "238.40",
+      "eps": "1.49",
       "forward_eps": "4.31",
       "earnings_growth": "+1.44% YoY",
-      "price_to_book": "47.35",
+      "price_to_book": "40.73",
       "dividend_yield": "N/A",
-      "volume": "2122472",
-      "avg_volume_3m": "6.26M",
+      "volume": "2339239",
+      "avg_volume_3m": "6.14M",
       "52w_high": "499.48",
       "52w_low": "88.19",
-      "short_float_pct": "8.84%",
-      "short_ratio": "1.83일",
+      "short_float_pct": "9.74%",
+      "short_ratio": "1.96일",
       "analyst_target_price": "272.47 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "22명",
       "held_by_insiders": "10.73%",
-      "held_by_institutions": "75.15%",
-      "implied_volatility": "40.0%"
+      "held_by_institutions": "75.20%",
+      "implied_volatility": "127.9%"
     },
     "earnings_setup": {
       "forward_eps": "4.21 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 4개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.2%"
     },
     "price_action": {
-      "atr_14d": "45.15",
-      "atr_percent": "10.93%",
-      "relative_volume": "0.34x",
-      "gap_percent": "-1.93%",
-      "price_vs_sma50": "+28.82%",
-      "price_vs_sma200": "+107.64%",
-      "week52_position": "79%",
+      "atr_14d": "47.33",
+      "atr_percent": "13.33%",
+      "relative_volume": "0.38x",
+      "gap_percent": "-2.97%",
+      "price_vs_sma50": "+9.24%",
+      "price_vs_sma200": "+77.82%",
+      "week52_position": "65%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+19.51%"
+      "rs_vs_sector_etf": "-1.96%"
     },
     "quarterly_financials": [
       {
@@ -223,12 +223,12 @@
       "watch_period": "2026-08-04 실적 발표 전까지"
     },
     "options_summary": {
-      "expiry": "2026-07-10",
-      "implied_volatility": "40.0%",
-      "atm_call_iv": "30.4%",
-      "atm_put_iv": "49.7%",
-      "put_call_ratio": "0.81x",
-      "iv_percentile_30d": "3th",
+      "expiry": "2026-07-17",
+      "implied_volatility": "127.9%",
+      "atm_call_iv": "180.6%",
+      "atm_put_iv": "75.2%",
+      "put_call_ratio": "0.80x",
+      "iv_percentile_30d": "36th",
       "tone": "neutral",
       "unusual_activity": "PUT $350, vol 101, OI 대비 97% ; PUT $370, vol 5, OI 대비 100% ; PUT $330, vol 6, OI 대비 300%",
       "oi_change": "N/A"
@@ -383,8 +383,8 @@
       }
     },
     "period_changes": {
-      "7d": "+1.61%",
-      "30d": "+24.82%"
+      "7d": "-17.92%",
+      "30d": "-3.25%"
     },
     "sec_filing_tags": [
       "실적",
@@ -492,5 +492,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-07-10T20:17:02"
+  "intraday_refreshed_at": "2026-07-13T16:23:31"
 }
