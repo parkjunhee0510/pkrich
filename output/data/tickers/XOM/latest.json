@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-07-24",
+  "date": "2026-07-27",
   "ticker": "XOM",
   "payload": {
     "ticker": "XOM",
@@ -75,46 +75,46 @@
     ],
     "signal_or_takeaway": "매도 경계 — 50일선 하회와 약한 기술적 흐름 | 진입 트리거 149.92 이탈 확인 | 목표 132.58/101.73달러 | 손절 154.31달러",
     "data_snapshot": {
-      "Price": "156.94 USD",
-      "Daily Change": "+0.03%",
-      "Market Cap": "650.51B",
-      "Trailing P/E": "26.38",
-      "EPS": "5.95",
+      "Price": "154.93 USD",
+      "Daily Change": "-1.25%",
+      "Market Cap": "642.16B",
+      "Trailing P/E": "26.13",
+      "EPS": "5.93",
       "52W High": "176.41",
       "52W Low": "105.53",
-      "50D SMA": "146.44",
-      "200D SMA": "137.88",
-      "Volume": "9816735",
-      "3M Avg Volume": "16.92M",
-      "Price/Book": "2.56",
+      "50D SMA": "146.56",
+      "200D SMA": "138.09",
+      "Volume": "4252611",
+      "3M Avg Volume": "16.89M",
+      "Price/Book": "2.52",
       "Dividend Yield": "2.63%",
       "Sector": "Energy",
-      "Open": "156.99",
-      "High": "158.71",
-      "Low": "155.68",
-      "Close": "156.94",
+      "Open": "153.07",
+      "High": "155.41",
+      "Low": "152.50",
+      "Close": "154.93",
       "RS vs Sector ETF": "+0.86%"
     },
     "fundamentals": {
-      "market_cap": "650.51B",
-      "trailing_pe": "26.38",
-      "eps": "5.95",
-      "forward_eps": "10.73",
+      "market_cap": "642.16B",
+      "trailing_pe": "26.13",
+      "eps": "5.93",
+      "forward_eps": "10.57",
       "earnings_growth": "-43.40% YoY",
-      "price_to_book": "2.56",
+      "price_to_book": "2.52",
       "dividend_yield": "2.63%",
-      "volume": "9816735",
-      "avg_volume_3m": "16.92M",
+      "volume": "4252611",
+      "avg_volume_3m": "16.89M",
       "52w_high": "176.41",
       "52w_low": "105.53",
-      "short_float_pct": "1.02%",
-      "short_ratio": "2.08일",
-      "analyst_target_price": "166.73 USD",
+      "short_float_pct": "1.15%",
+      "short_ratio": "2.39일",
+      "analyst_target_price": "167.05 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "22명",
       "held_by_insiders": "0.08%",
-      "held_by_institutions": "68.41%",
-      "implied_volatility": "8.5%"
+      "held_by_institutions": "68.36%",
+      "implied_volatility": "42.2%"
     },
     "earnings_setup": {
       "forward_eps": "10.64 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "3.55",
-      "atr_percent": "2.26%",
-      "relative_volume": "0.58x",
-      "gap_percent": "+0.06%",
-      "price_vs_sma50": "+7.17%",
-      "price_vs_sma200": "+13.83%",
-      "week52_position": "73%",
+      "atr_14d": "3.65",
+      "atr_percent": "2.36%",
+      "relative_volume": "0.25x",
+      "gap_percent": "-2.47%",
+      "price_vs_sma50": "+5.71%",
+      "price_vs_sma200": "+12.19%",
+      "week52_position": "70%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+3.35%"
+      "rs_vs_sector_etf": "+4.18%"
     },
     "quarterly_financials": [
       {
@@ -230,12 +230,12 @@
       "watch_period": "2026-06-10 배당 지급일 전까지"
     },
     "options_summary": {
-      "expiry": "2026-07-24",
-      "implied_volatility": "8.5%",
-      "atm_call_iv": "4.5%",
-      "atm_put_iv": "12.5%",
-      "put_call_ratio": "0.38x",
-      "iv_percentile_30d": "1th",
+      "expiry": "2026-07-31",
+      "implied_volatility": "42.2%",
+      "atm_call_iv": "42.0%",
+      "atm_put_iv": "42.3%",
+      "put_call_ratio": "0.29x",
+      "iv_percentile_30d": "4th",
       "tone": "bearish",
       "unusual_activity": "PUT $230, vol 2, OI 대비 40% ; PUT $220, vol 2, OI 대비 200% ; PUT $65, vol 55, OI 대비 38%",
       "oi_change": "N/A"
@@ -406,8 +406,8 @@
       }
     },
     "period_changes": {
-      "7d": "+6.50%",
-      "30d": "+14.64%"
+      "7d": "+4.43%",
+      "30d": "+13.47%"
     },
     "sec_filing_tags": [
       "실적",
@@ -515,5 +515,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-07-24T20:56:56"
+  "intraday_refreshed_at": "2026-07-27T16:10:31"
 }
