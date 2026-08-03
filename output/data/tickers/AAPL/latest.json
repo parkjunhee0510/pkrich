@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-07-31",
+  "date": "2026-08-03",
   "ticker": "AAPL",
   "payload": {
     "ticker": "AAPL",
@@ -72,46 +72,46 @@
     ],
     "signal_or_takeaway": "매수 관찰 — 긍정적 뉴스 톤과 52주 고점 인근 유지 | 진입 트리거 307.34 상향 유지 | 목표 310.51/315.93달러 | 손절 278.95달러",
     "data_snapshot": {
-      "Price": "308.91 USD",
-      "Daily Change": "-7.35%",
-      "Market Cap": "4.54T",
-      "Trailing P/E": "35.34",
-      "EPS": "8.74",
+      "Price": "304.22 USD",
+      "Daily Change": "-1.52%",
+      "Market Cap": "4.47T",
+      "Trailing P/E": "34.93",
+      "EPS": "8.71",
       "52W High": "344.57",
-      "52W Low": "201.50",
-      "50D SMA": "309.30",
-      "200D SMA": "277.65",
-      "Volume": "127398021",
-      "3M Avg Volume": "55.60M",
-      "Price/Book": "42.55",
-      "Dividend Yield": "0.32%",
+      "52W Low": "201.68",
+      "50D SMA": "309.50",
+      "200D SMA": "277.96",
+      "Volume": "30759674",
+      "3M Avg Volume": "56.47M",
+      "Price/Book": "41.33",
+      "Dividend Yield": "0.35%",
       "Sector": "Technology",
-      "Open": "304.81",
-      "High": "310.69",
-      "Low": "300.00",
-      "Close": "308.91",
+      "Open": "309.67",
+      "High": "311.80",
+      "Low": "302.56",
+      "Close": "304.22",
       "RS vs Sector ETF": "+2.16%"
     },
     "fundamentals": {
-      "market_cap": "4.54T",
-      "trailing_pe": "35.34",
-      "eps": "8.74",
-      "forward_eps": "9.57",
+      "market_cap": "4.47T",
+      "trailing_pe": "34.93",
+      "eps": "8.71",
+      "forward_eps": "9.51",
       "earnings_growth": "+28.70% YoY",
-      "price_to_book": "42.55",
-      "dividend_yield": "0.32%",
-      "volume": "127398021",
-      "avg_volume_3m": "55.60M",
+      "price_to_book": "41.33",
+      "dividend_yield": "0.35%",
+      "volume": "30759674",
+      "avg_volume_3m": "56.47M",
       "52w_high": "344.57",
-      "52w_low": "201.50",
+      "52w_low": "201.68",
       "short_float_pct": "1.00%",
       "short_ratio": "2.28일",
-      "analyst_target_price": "321.66 USD",
+      "analyst_target_price": "323.28 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "41명",
       "held_by_insiders": "1.64%",
       "held_by_institutions": "65.73%",
-      "implied_volatility": "11.1%"
+      "implied_volatility": "19.8%"
     },
     "earnings_setup": {
       "forward_eps": "9.61 USD/share",
@@ -140,15 +140,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "9.90",
-      "atr_percent": "3.21%",
-      "relative_volume": "2.29x",
-      "gap_percent": "-8.58%",
-      "price_vs_sma50": "-0.13%",
-      "price_vs_sma200": "+11.26%",
-      "week52_position": "75%",
+      "atr_14d": "10.18",
+      "atr_percent": "3.35%",
+      "relative_volume": "0.54x",
+      "gap_percent": "+0.25%",
+      "price_vs_sma50": "-1.71%",
+      "price_vs_sma200": "+9.45%",
+      "week52_position": "72%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+10.47%"
+      "rs_vs_sector_etf": "+0.41%"
     },
     "quarterly_financials": [
       {
@@ -220,12 +220,12 @@
       "watch_period": "2026-07-30 실적 발표 전까지"
     },
     "options_summary": {
-      "expiry": "2026-07-31",
-      "implied_volatility": "11.1%",
-      "atm_call_iv": "8.4%",
-      "atm_put_iv": "13.8%",
-      "put_call_ratio": "1.00x",
-      "iv_percentile_30d": "2th",
+      "expiry": "2026-08-03",
+      "implied_volatility": "19.8%",
+      "atm_call_iv": "16.3%",
+      "atm_put_iv": "23.3%",
+      "put_call_ratio": "0.75x",
+      "iv_percentile_30d": "15th",
       "tone": "neutral",
       "unusual_activity": "PUT $430, vol 6, OI 대비 67% ; PUT $450, vol 1, OI 대비 100%",
       "oi_change": "N/A"
@@ -396,8 +396,8 @@
       }
     },
     "period_changes": {
-      "7d": "-7.24%",
-      "30d": "+4.94%"
+      "7d": "-9.70%",
+      "30d": "-1.43%"
     },
     "sec_filing_tags": [
       "실적",
@@ -505,5 +505,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-07-31T20:56:40"
+  "intraday_refreshed_at": "2026-08-03T16:16:18"
 }
