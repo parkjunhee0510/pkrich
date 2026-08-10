@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-08-07",
+  "date": "2026-08-10",
   "ticker": "AAPL",
   "payload": {
     "ticker": "AAPL",
@@ -72,46 +72,46 @@
     ],
     "signal_or_takeaway": "매수 관찰 — 긍정적 뉴스 톤과 52주 고점 인근 유지 | 진입 트리거 307.34 상향 유지 | 목표 310.51/315.93달러 | 손절 278.95달러",
     "data_snapshot": {
-      "Price": "313.33 USD",
-      "Daily Change": "+0.29%",
-      "Market Cap": "4.57T",
-      "Trailing P/E": "35.93",
-      "EPS": "8.72",
+      "Price": "306.40 USD",
+      "Daily Change": "-2.21%",
+      "Market Cap": "4.47T",
+      "Trailing P/E": "35.18",
+      "EPS": "8.71",
       "52W High": "344.57",
-      "52W Low": "219.25",
-      "50D SMA": "309.52",
-      "200D SMA": "278.24",
-      "Volume": "32845464",
-      "3M Avg Volume": "57.24M",
-      "Price/Book": "42.57",
-      "Dividend Yield": "0.35%",
+      "52W Low": "223.78",
+      "50D SMA": "309.79",
+      "200D SMA": "279.41",
+      "Volume": "15717861",
+      "3M Avg Volume": "56.81M",
+      "Price/Book": "41.63",
+      "Dividend Yield": "0.34%",
       "Sector": "Technology",
-      "Open": "311.45",
-      "High": "314.81",
-      "Low": "310.74",
-      "Close": "313.33",
+      "Open": "306.83",
+      "High": "307.49",
+      "Low": "304.63",
+      "Close": "306.40",
       "RS vs Sector ETF": "+2.16%"
     },
     "fundamentals": {
-      "market_cap": "4.57T",
-      "trailing_pe": "35.93",
-      "eps": "8.72",
+      "market_cap": "4.47T",
+      "trailing_pe": "35.18",
+      "eps": "8.71",
       "forward_eps": "9.51",
       "earnings_growth": "+28.70% YoY",
-      "price_to_book": "42.57",
-      "dividend_yield": "0.35%",
-      "volume": "32845464",
-      "avg_volume_3m": "57.24M",
+      "price_to_book": "41.63",
+      "dividend_yield": "0.34%",
+      "volume": "15717861",
+      "avg_volume_3m": "56.81M",
       "52w_high": "344.57",
-      "52w_low": "219.25",
+      "52w_low": "223.78",
       "short_float_pct": "1.00%",
       "short_ratio": "2.28일",
       "analyst_target_price": "322.82 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "41명",
       "held_by_insiders": "1.65%",
-      "held_by_institutions": "65.94%",
-      "implied_volatility": "5.1%"
+      "held_by_institutions": "66.29%",
+      "implied_volatility": "14.8%"
     },
     "earnings_setup": {
       "forward_eps": "9.61 USD/share",
@@ -140,15 +140,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "9.35",
-      "atr_percent": "2.98%",
-      "relative_volume": "0.57x",
-      "gap_percent": "-0.31%",
-      "price_vs_sma50": "+1.23%",
-      "price_vs_sma200": "+12.61%",
-      "week52_position": "75%",
+      "atr_14d": "9.45",
+      "atr_percent": "3.08%",
+      "relative_volume": "0.28x",
+      "gap_percent": "-1.99%",
+      "price_vs_sma50": "-1.09%",
+      "price_vs_sma200": "+9.66%",
+      "week52_position": "68%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-3.64%"
+      "rs_vs_sector_etf": "-3.97%"
     },
     "quarterly_financials": [
       {
@@ -220,12 +220,12 @@
       "watch_period": "2026-07-30 실적 발표 전까지"
     },
     "options_summary": {
-      "expiry": "2026-08-07",
-      "implied_volatility": "5.1%",
-      "atm_call_iv": "7.3%",
-      "atm_put_iv": "3.0%",
-      "put_call_ratio": "0.53x",
-      "iv_percentile_30d": "1th",
+      "expiry": "2026-08-10",
+      "implied_volatility": "14.8%",
+      "atm_call_iv": "18.7%",
+      "atm_put_iv": "11.0%",
+      "put_call_ratio": "0.63x",
+      "iv_percentile_30d": "7th",
       "tone": "neutral",
       "unusual_activity": "PUT $430, vol 6, OI 대비 67% ; PUT $450, vol 1, OI 대비 100%",
       "oi_change": "N/A"
@@ -396,8 +396,8 @@
       }
     },
     "period_changes": {
-      "7d": "+1.43%",
-      "30d": "-0.02%"
+      "7d": "+0.98%",
+      "30d": "-2.83%"
     },
     "sec_filing_tags": [
       "실적",
@@ -505,5 +505,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-08-07T20:32:49"
+  "intraday_refreshed_at": "2026-08-10T14:52:16"
 }
