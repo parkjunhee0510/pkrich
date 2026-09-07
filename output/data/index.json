@@ -159,6 +159,31 @@
         "expires_at": "2026-09-09"
       },
       {
+        "event_type": "hormuz_disruption",
+        "severity": "high",
+        "region": "middle_east",
+        "transmission_channels": [
+          "oil",
+          "shipping",
+          "risk_sentiment"
+        ],
+        "affected_sectors": [
+          "Energy",
+          "Industrials",
+          "Consumer Cyclical",
+          "Technology"
+        ],
+        "affected_industries": [
+          "Airlines",
+          "Shipping",
+          "Oil & Gas",
+          "Defense"
+        ],
+        "direction": "mixed",
+        "summary_ko": "호르무즈 해협 차질로 유가와 해상 물류 변동성이 동시에 커질 수 있습니다.",
+        "expires_at": "2026-09-11"
+      },
+      {
         "event_type": "opec_supply_shock",
         "severity": "high",
         "region": "global",
@@ -181,31 +206,6 @@
         "direction": "mixed",
         "summary_ko": "OPEC 공급 충격은 에너지 가격과 기대 인플레이션을 다시 자극할 수 있습니다.",
         "expires_at": "2026-09-14"
-      },
-      {
-        "event_type": "shipping_disruption",
-        "severity": "medium",
-        "region": "global",
-        "transmission_channels": [
-          "shipping",
-          "supply_chain",
-          "risk_sentiment"
-        ],
-        "affected_sectors": [
-          "Industrials",
-          "Consumer Cyclical",
-          "Technology",
-          "Materials"
-        ],
-        "affected_industries": [
-          "Shipping",
-          "Logistics",
-          "Semiconductors",
-          "Consumer Electronics"
-        ],
-        "direction": "risk_off",
-        "summary_ko": "글로벌 해운 차질은 운송비와 재고 리스크를 높여 공급망 민감 업종에 부담입니다.",
-        "expires_at": "2026-09-11"
       }
     ],
     "us10y": {
@@ -240,9 +240,9 @@
     },
     "dxy": {
       "label": "Dollar Index",
-      "level": "98.91",
-      "price": "98.91",
-      "change": "-0.25%"
+      "level": "99.18",
+      "price": "99.18",
+      "change": "+0.02%"
     },
     "copper": {
       "label": "Copper",
@@ -270,15 +270,15 @@
     },
     "usdcny": {
       "label": "USD/CNY",
-      "level": "6.71",
-      "price": "6.71",
-      "change": "-0.13%"
+      "level": "6.70",
+      "price": "6.70",
+      "change": "-0.28%"
     },
     "btc": {
       "label": "Bitcoin",
-      "level": "79,120.60",
-      "price": "79,120.60",
-      "change": "-1.53%"
+      "level": "79,155.47",
+      "price": "79,155.47",
+      "change": "-1.49%"
     },
     "hyg": {
       "label": "HY Credit ETF",
@@ -17962,7 +17962,7 @@
         "Volume": "16192900",
         "3M Avg Volume": "15.58M",
         "Price/Book": "2.53",
-        "Dividend Yield": "2.58%",
+        "Dividend Yield": "2.54%",
         "Sector": "Energy",
         "Open": "161.02",
         "High": "161.48",
@@ -17998,7 +17998,7 @@
         "forward_eps": "10.78",
         "earnings_growth": "+1.13% YoY",
         "price_to_book": "2.53",
-        "dividend_yield": "2.58%",
+        "dividend_yield": "2.54%",
         "volume": "16192900",
         "avg_volume_3m": "15.58M",
         "52w_high": "176.41",
@@ -23493,7 +23493,7 @@
       "data_snapshot": {
         "Price": "47.82 USD",
         "Daily Change": "-0.58%",
-        "Market Cap": "8.97B",
+        "Market Cap": "8.98B",
         "Trailing P/E": "281.29",
         "EPS": "0.17",
         "52W High": "134.00",
@@ -23533,7 +23533,7 @@
         4
       ],
       "fundamentals": {
-        "market_cap": "8.97B",
+        "market_cap": "8.98B",
         "trailing_pe": "281.29",
         "eps": "0.17",
         "forward_eps": "1.12",
@@ -26371,5 +26371,5 @@
     "output_signal_stats_includes_current_run": true,
     "signal_returns_updated_before_decision": true
   },
-  "intraday_refreshed_at": "2026-09-07T18:31:53"
+  "intraday_refreshed_at": "2026-09-07T21:52:17"
 }
