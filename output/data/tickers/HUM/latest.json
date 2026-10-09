@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-10-07",
+  "date": "2026-10-09",
   "ticker": "HUM",
   "payload": {
     "ticker": "HUM",
@@ -75,46 +75,46 @@
     ],
     "signal_or_takeaway": "중립 관찰 — [실적] HUMANA INC, 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 338.77–361.39 | 목표 351.88/367.04 | 손절 SMA50(241.02 USD) (R:R 0.0R)",
     "data_snapshot": {
-      "Price": "387.12 USD",
-      "Daily Change": "-2.37%",
-      "Market Cap": "46.49B",
-      "Trailing P/E": "36.59",
+      "Price": "435.04 USD",
+      "Daily Change": "+12.38%",
+      "Market Cap": "52.24B",
+      "Trailing P/E": "41.12",
       "EPS": "10.58",
-      "52W High": "428.88",
+      "52W High": "456.50",
       "52W Low": "163.11",
-      "50D SMA": "386.28",
-      "200D SMA": "295.38",
-      "Volume": "2567704",
-      "3M Avg Volume": "1.24M",
-      "Price/Book": "2.42",
-      "Dividend Yield": "0.89%",
+      "50D SMA": "386.71",
+      "200D SMA": "296.02",
+      "Volume": "3704812",
+      "3M Avg Volume": "1.26M",
+      "Price/Book": "2.72",
+      "Dividend Yield": "0.91%",
       "Sector": "Healthcare",
-      "Open": "nan",
-      "High": "nan",
-      "Low": "nan",
-      "Close": "nan",
+      "Open": "450.49",
+      "High": "456.50",
+      "Low": "428.45",
+      "Close": "435.04",
       "RS vs Sector ETF": "+20.69%"
     },
     "fundamentals": {
-      "market_cap": "46.49B",
-      "trailing_pe": "36.59",
+      "market_cap": "52.24B",
+      "trailing_pe": "41.12",
       "eps": "10.58",
-      "forward_eps": "16.67",
+      "forward_eps": "16.97",
       "earnings_growth": "+27.10% YoY",
-      "price_to_book": "2.42",
-      "dividend_yield": "0.89%",
-      "volume": "2567704",
-      "avg_volume_3m": "1.24M",
-      "52w_high": "428.88",
+      "price_to_book": "2.72",
+      "dividend_yield": "0.91%",
+      "volume": "3704812",
+      "avg_volume_3m": "1.26M",
+      "52w_high": "456.50",
       "52w_low": "163.11",
       "short_float_pct": "2.69%",
       "short_ratio": "3.03일",
-      "analyst_target_price": "430.70 USD",
+      "analyst_target_price": "446.26 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "23명",
       "held_by_insiders": "0.21%",
-      "held_by_institutions": "100.95%",
-      "implied_volatility": "236.3%"
+      "held_by_institutions": "100.96%",
+      "implied_volatility": "35.1%"
     },
     "earnings_setup": {
       "forward_eps": "15.71 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "13.95",
-      "atr_percent": "3.60%",
-      "relative_volume": "2.07x",
-      "gap_percent": "-0.12%",
-      "price_vs_sma50": "+0.22%",
-      "price_vs_sma200": "+31.06%",
-      "week52_position": "84%",
+      "atr_14d": "19.25",
+      "atr_percent": "4.43%",
+      "relative_volume": "2.94x",
+      "gap_percent": "+16.37%",
+      "price_vs_sma50": "+12.50%",
+      "price_vs_sma200": "+46.96%",
+      "week52_position": "93%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-2.61%"
+      "rs_vs_sector_etf": "+5.83%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-10-09",
-      "implied_volatility": "236.3%",
-      "atm_call_iv": "231.2%",
-      "atm_put_iv": "241.4%",
-      "put_call_ratio": "0.73x",
-      "iv_percentile_30d": "38th",
+      "implied_volatility": "35.1%",
+      "atm_call_iv": "70.3%",
+      "atm_put_iv": "0.0%",
+      "put_call_ratio": "1.42x",
+      "iv_percentile_30d": "13th",
       "tone": "neutral",
       "unusual_activity": "PUT $360, vol 144, OI 대비 82% ; PUT $320, vol 58, OI 대비 112% ; PUT $280, vol 10, OI 대비 37%",
       "oi_change": "N/A"
@@ -384,8 +384,8 @@
       }
     },
     "period_changes": {
-      "7d": "+1.45%",
-      "30d": "-3.59%"
+      "7d": "+12.02%",
+      "30d": "+8.75%"
     },
     "sec_filing_tags": [
       "실적",
@@ -493,5 +493,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-10-09T00:05:27"
+  "intraday_refreshed_at": "2026-10-09T19:11:19"
 }
