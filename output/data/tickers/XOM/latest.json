@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-10-16",
+  "date": "2026-10-19",
   "ticker": "XOM",
   "payload": {
     "ticker": "XOM",
@@ -75,46 +75,46 @@
     ],
     "signal_or_takeaway": "매도 경계 — 50일선 하회와 약한 기술적 흐름 | 진입 트리거 149.92 이탈 확인 | 목표 132.58/101.73달러 | 손절 154.31달러",
     "data_snapshot": {
-      "Price": "178.98 USD",
-      "Daily Change": "+2.46%",
-      "Market Cap": "735.95B",
-      "Trailing P/E": "23.03",
+      "Price": "178.49 USD",
+      "Daily Change": "-0.28%",
+      "Market Cap": "733.85B",
+      "Trailing P/E": "22.97",
       "EPS": "7.77",
-      "52W High": "179.16",
-      "52W Low": "111.18",
-      "50D SMA": "163.21",
-      "200D SMA": "151.43",
-      "Volume": "12612757",
-      "3M Avg Volume": "13.68M",
-      "Price/Book": "2.84",
-      "Dividend Yield": "2.36%",
+      "52W High": "179.30",
+      "52W Low": "111.98",
+      "50D SMA": "163.69",
+      "200D SMA": "151.72",
+      "Volume": "6758154",
+      "3M Avg Volume": "13.59M",
+      "Price/Book": "2.83",
+      "Dividend Yield": "2.30%",
       "Sector": "Energy",
-      "Open": "176.49",
-      "High": "179.16",
-      "Low": "175.15",
-      "Close": "178.98",
+      "Open": "178.45",
+      "High": "179.30",
+      "Low": "177.23",
+      "Close": "178.49",
       "RS vs Sector ETF": "+0.86%"
     },
     "fundamentals": {
-      "market_cap": "735.95B",
-      "trailing_pe": "23.03",
+      "market_cap": "733.85B",
+      "trailing_pe": "22.97",
       "eps": "7.77",
-      "forward_eps": "11.55",
+      "forward_eps": "11.86",
       "earnings_growth": "+1.13% YoY",
-      "price_to_book": "2.84",
-      "dividend_yield": "2.36%",
-      "volume": "12612757",
-      "avg_volume_3m": "13.68M",
-      "52w_high": "179.16",
-      "52w_low": "111.18",
+      "price_to_book": "2.83",
+      "dividend_yield": "2.30%",
+      "volume": "6758154",
+      "avg_volume_3m": "13.59M",
+      "52w_high": "179.30",
+      "52w_low": "111.98",
       "short_float_pct": "1.07%",
       "short_ratio": "2.75일",
-      "analyst_target_price": "174.00 USD",
+      "analyst_target_price": "177.59 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "22명",
       "held_by_insiders": "0.08%",
-      "held_by_institutions": "67.22%",
-      "implied_volatility": "19.8%"
+      "held_by_institutions": "67.24%",
+      "implied_volatility": "28.3%"
     },
     "earnings_setup": {
       "forward_eps": "10.64 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "3.52",
-      "atr_percent": "1.97%",
-      "relative_volume": "0.92x",
-      "gap_percent": "+1.03%",
-      "price_vs_sma50": "+9.67%",
-      "price_vs_sma200": "+18.20%",
-      "week52_position": "100%",
+      "atr_14d": "3.43",
+      "atr_percent": "1.92%",
+      "relative_volume": "0.50x",
+      "gap_percent": "-0.30%",
+      "price_vs_sma50": "+9.04%",
+      "price_vs_sma200": "+17.64%",
+      "week52_position": "99%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+2.38%"
+      "rs_vs_sector_etf": "+3.02%"
     },
     "quarterly_financials": [
       {
@@ -230,12 +230,12 @@
       "watch_period": "2026-06-10 배당 지급일 전까지"
     },
     "options_summary": {
-      "expiry": "2026-10-16",
-      "implied_volatility": "19.8%",
-      "atm_call_iv": "10.2%",
-      "atm_put_iv": "29.5%",
-      "put_call_ratio": "0.71x",
-      "iv_percentile_30d": "5th",
+      "expiry": "2026-10-23",
+      "implied_volatility": "28.3%",
+      "atm_call_iv": "29.8%",
+      "atm_put_iv": "26.9%",
+      "put_call_ratio": "0.39x",
+      "iv_percentile_30d": "7th",
       "tone": "bearish",
       "unusual_activity": "PUT $230, vol 2, OI 대비 40% ; PUT $220, vol 2, OI 대비 200% ; PUT $65, vol 55, OI 대비 38%",
       "oi_change": "N/A"
@@ -406,8 +406,8 @@
       }
     },
     "period_changes": {
-      "7d": "+5.94%",
-      "30d": "+9.59%"
+      "7d": "+3.68%",
+      "30d": "+9.38%"
     },
     "sec_filing_tags": [
       "실적",
@@ -515,5 +515,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-10-16T20:20:33"
+  "intraday_refreshed_at": "2026-10-19T19:36:04"
 }
