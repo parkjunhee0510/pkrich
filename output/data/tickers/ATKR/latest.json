@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-10-19",
+  "date": "2026-10-20",
   "ticker": "ATKR",
   "payload": {
     "ticker": "ATKR",
@@ -85,7 +85,7 @@
       "50D SMA": "94.19",
       "200D SMA": "76.91",
       "Volume": "1301600",
-      "3M Avg Volume": "946,398",
+      "3M Avg Volume": "956,161",
       "Price/Book": "2.51",
       "Dividend Yield": "1.39%",
       "Sector": "Industrials",
@@ -104,7 +104,7 @@
       "price_to_book": "2.51",
       "dividend_yield": "1.39%",
       "volume": "1301600",
-      "avg_volume_3m": "946,398",
+      "avg_volume_3m": "956,161",
       "52w_high": "94.97",
       "52w_low": "53.75",
       "short_float_pct": "4.89%",
@@ -114,7 +114,7 @@
       "analyst_count": "2명",
       "held_by_insiders": "0.97%",
       "held_by_institutions": "98.51%",
-      "implied_volatility": "1.6%"
+      "implied_volatility": "3.2%"
     },
     "earnings_setup": {
       "forward_eps": "6.15 USD/share",
@@ -145,13 +145,13 @@
     "price_action": {
       "atr_14d": "0.11",
       "atr_percent": "0.12%",
-      "relative_volume": "1.37x",
+      "relative_volume": "1.35x",
       "gap_percent": "+0.03%",
       "price_vs_sma50": "+0.81%",
       "price_vs_sma200": "+23.47%",
       "week52_position": "100%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "+2.22%"
+      "rs_vs_sector_etf": "+2.26%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-11-20",
-      "implied_volatility": "1.6%",
-      "atm_call_iv": "0.0%",
-      "atm_put_iv": "3.1%",
-      "put_call_ratio": "0.22x",
-      "iv_percentile_30d": "33th",
+      "implied_volatility": "3.2%",
+      "atm_call_iv": "0.1%",
+      "atm_put_iv": "6.3%",
+      "put_call_ratio": "0.05x",
+      "iv_percentile_30d": "40th",
       "tone": "neutral",
       "unusual_activity": "CALL $95, vol 30, OI 대비 75% ; PUT $75, vol 40, OI 대비 100% ; CALL $60, vol 3, OI 대비 100%",
       "oi_change": "N/A"
@@ -492,5 +492,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-10-19T23:14:55"
+  "intraday_refreshed_at": "2026-10-20T18:13:30"
 }
