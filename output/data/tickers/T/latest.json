@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-10-21",
+  "date": "2026-10-22",
   "ticker": "T",
   "payload": {
     "ticker": "T",
@@ -75,46 +75,46 @@
     ],
     "signal_or_takeaway": "중립 경계 — 2026-07-22 실적 발표 전 약세와 저점 근처 변동성 확대 | 진입 트리거 23.66 상향 돌파 | 목표 26.12/26.41달러 | 손절 22.59달러",
     "data_snapshot": {
-      "Price": "21.91 USD",
-      "Daily Change": "-6.45%",
-      "Market Cap": "150.14B",
-      "Trailing P/E": "7.23",
-      "EPS": "3.03",
+      "Price": "22.65 USD",
+      "Daily Change": "+3.35%",
+      "Market Cap": "155.17B",
+      "Trailing P/E": "12.11",
+      "EPS": "1.87",
       "52W High": "29.44",
       "52W Low": "19.89",
-      "50D SMA": "24.91",
-      "200D SMA": "25.09",
-      "Volume": "84370448",
-      "3M Avg Volume": "45.93M",
-      "Price/Book": "1.40",
-      "Dividend Yield": "4.74%",
+      "50D SMA": "24.85",
+      "200D SMA": "25.08",
+      "Volume": "28546280",
+      "3M Avg Volume": "44.33M",
+      "Price/Book": "1.45",
+      "Dividend Yield": "5.07%",
       "Sector": "Communication Services",
-      "Open": "21.89",
-      "High": "22.62",
-      "Low": "21.79",
-      "Close": "21.91",
+      "Open": "22.05",
+      "High": "22.68",
+      "Low": "22.03",
+      "Close": "22.65",
       "RS vs Sector ETF": "-5.07%"
     },
     "fundamentals": {
-      "market_cap": "150.14B",
-      "trailing_pe": "7.23",
-      "eps": "3.03",
-      "forward_eps": "2.57",
-      "earnings_growth": "+6.20% YoY",
-      "price_to_book": "1.40",
-      "dividend_yield": "4.74%",
-      "volume": "84370448",
-      "avg_volume_3m": "45.93M",
+      "market_cap": "155.17B",
+      "trailing_pe": "12.11",
+      "eps": "1.87",
+      "forward_eps": "2.59",
+      "earnings_growth": "-90.40% YoY",
+      "price_to_book": "1.45",
+      "dividend_yield": "5.07%",
+      "volume": "28546280",
+      "avg_volume_3m": "44.33M",
       "52w_high": "29.44",
       "52w_low": "19.89",
       "short_float_pct": "1.82%",
       "short_ratio": "3.25일",
-      "analyst_target_price": "28.59 USD",
+      "analyst_target_price": "27.93 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "23명",
       "held_by_insiders": "0.09%",
-      "held_by_institutions": "68.45%",
-      "implied_volatility": "31.8%"
+      "held_by_institutions": "68.38%",
+      "implied_volatility": "22.4%"
     },
     "earnings_setup": {
       "forward_eps": "2.55 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 3개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.0%"
     },
     "price_action": {
-      "atr_14d": "0.72",
-      "atr_percent": "3.31%",
-      "relative_volume": "1.84x",
-      "gap_percent": "-6.55%",
-      "price_vs_sma50": "-12.03%",
-      "price_vs_sma200": "-12.68%",
-      "week52_position": "21%",
+      "atr_14d": "0.76",
+      "atr_percent": "3.35%",
+      "relative_volume": "0.64x",
+      "gap_percent": "+0.62%",
+      "price_vs_sma50": "-8.89%",
+      "price_vs_sma200": "-9.70%",
+      "week52_position": "29%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-7.90%"
+      "rs_vs_sector_etf": "-3.12%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-10-23",
-      "implied_volatility": "31.8%",
-      "atm_call_iv": "34.4%",
-      "atm_put_iv": "29.3%",
-      "put_call_ratio": "0.68x",
-      "iv_percentile_30d": "3th",
+      "implied_volatility": "22.4%",
+      "atm_call_iv": "9.4%",
+      "atm_put_iv": "35.4%",
+      "put_call_ratio": "0.58x",
+      "iv_percentile_30d": "10th",
       "tone": "neutral",
       "unusual_activity": "PUT $40, vol 4, OI 대비 100% ; CALL $40, vol 40, OI 대비 35%",
       "oi_change": "N/A"
@@ -384,8 +384,8 @@
       }
     },
     "period_changes": {
-      "7d": "-4.95%",
-      "30d": "-13.91%"
+      "7d": "-3.62%",
+      "30d": "-9.76%"
     },
     "sec_filing_tags": [
       "실적",
@@ -493,5 +493,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-10-21T22:03:32"
+  "intraday_refreshed_at": "2026-10-22T18:14:29"
 }
