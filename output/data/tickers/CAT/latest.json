@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-10-29",
+  "date": "2026-10-30",
   "ticker": "CAT",
   "payload": {
     "ticker": "CAT",
@@ -75,46 +75,46 @@
     ],
     "signal_or_takeaway": "중립 관찰 — 실적 기대와 고점권 부담이 공존 | 진입 트리거 904.28 상향 확인 | 목표 936.99/949.34달러 | 손절 827.23달러",
     "data_snapshot": {
-      "Price": "647.39 USD",
-      "Daily Change": "-9.25%",
-      "Market Cap": "297.59B",
-      "Trailing P/E": "27.87",
+      "Price": "618.23 USD",
+      "Daily Change": "-4.50%",
+      "Market Cap": "284.18B",
+      "Trailing P/E": "26.61",
       "EPS": "23.23",
       "52W High": "1073.46",
       "52W Low": "537.08",
-      "50D SMA": "790.53",
-      "200D SMA": "809.93",
-      "Volume": "8141539",
-      "3M Avg Volume": "2.62M",
-      "Price/Book": "15.34",
-      "Dividend Yield": "0.91%",
+      "50D SMA": "787.16",
+      "200D SMA": "809.99",
+      "Volume": "3282685",
+      "3M Avg Volume": "2.69M",
+      "Price/Book": "13.21",
+      "Dividend Yield": "1.01%",
       "Sector": "Industrials",
-      "Open": "636.33",
-      "High": "664.47",
-      "Low": "631.01",
-      "Close": "647.39",
+      "Open": "627.32",
+      "High": "637.70",
+      "Low": "616.66",
+      "Close": "618.23",
       "RS vs Sector ETF": "+0.19%"
     },
     "fundamentals": {
-      "market_cap": "297.59B",
-      "trailing_pe": "27.87",
+      "market_cap": "284.18B",
+      "trailing_pe": "26.61",
       "eps": "23.23",
-      "forward_eps": "32.59",
-      "earnings_growth": "+68.20% YoY",
-      "price_to_book": "15.34",
-      "dividend_yield": "0.91%",
-      "volume": "8141539",
-      "avg_volume_3m": "2.62M",
+      "forward_eps": "32.37",
+      "earnings_growth": "+46.10% YoY",
+      "price_to_book": "13.21",
+      "dividend_yield": "1.01%",
+      "volume": "3282685",
+      "avg_volume_3m": "2.69M",
       "52w_high": "1073.46",
       "52w_low": "537.08",
       "short_float_pct": "1.83%",
       "short_ratio": "2.92일",
-      "analyst_target_price": "926.91 USD",
+      "analyst_target_price": "917.68 USD",
       "analyst_recommendation": "Buy",
       "analyst_count": "26명",
       "held_by_insiders": "0.22%",
-      "held_by_institutions": "73.53%",
-      "implied_volatility": "48.7%"
+      "held_by_institutions": "73.49%",
+      "implied_volatility": "21.9%"
     },
     "earnings_setup": {
       "forward_eps": "29.98 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 3개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.1%"
     },
     "price_action": {
-      "atr_14d": "30.88",
-      "atr_percent": "4.77%",
-      "relative_volume": "3.11x",
-      "gap_percent": "-10.80%",
-      "price_vs_sma50": "-18.11%",
-      "price_vs_sma200": "-20.07%",
-      "week52_position": "21%",
+      "atr_14d": "31.92",
+      "atr_percent": "5.16%",
+      "relative_volume": "1.22x",
+      "gap_percent": "-3.10%",
+      "price_vs_sma50": "-21.46%",
+      "price_vs_sma200": "-23.67%",
+      "week52_position": "15%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-22.09%"
+      "rs_vs_sector_etf": "-23.55%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-10-30",
-      "implied_volatility": "48.7%",
-      "atm_call_iv": "42.7%",
-      "atm_put_iv": "54.6%",
-      "put_call_ratio": "0.54x",
-      "iv_percentile_30d": "12th",
+      "implied_volatility": "21.9%",
+      "atm_call_iv": "20.5%",
+      "atm_put_iv": "23.3%",
+      "put_call_ratio": "0.39x",
+      "iv_percentile_30d": "1th",
       "tone": "neutral",
       "unusual_activity": "PUT $720, vol 271, OI 대비 57% ; PUT $1340, vol 8, OI 대비 100% ; PUT $1320, vol 8, OI 대비 100%",
       "oi_change": "N/A"
@@ -396,8 +396,8 @@
       }
     },
     "period_changes": {
-      "7d": "-8.05%",
-      "30d": "-21.68%"
+      "7d": "-10.01%",
+      "30d": "-23.75%"
     },
     "sec_filing_tags": [
       "실적",
@@ -505,5 +505,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-10-29T23:44:33"
+  "intraday_refreshed_at": "2026-10-30T18:57:06"
 }
