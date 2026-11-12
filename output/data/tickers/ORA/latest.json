@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-11-11",
+  "date": "2026-11-12",
   "ticker": "ORA",
   "payload": {
     "ticker": "ORA",
@@ -75,36 +75,36 @@
     ],
     "signal_or_takeaway": "중립 관찰 — [실적] ORMAT TECHNOLOGIES, INC., 10-Q 분기 실적 관련 보고서를 SEC에 제출 | 진입 트리거 135.90–144.10 | 목표 146.15/150.25 | 손절 SMA50(120.42 USD) (R:R 0.3R)",
     "data_snapshot": {
-      "Price": "93.36 USD",
-      "Daily Change": "+1.06%",
-      "Market Cap": "5.74B",
-      "Trailing P/E": "43.18",
+      "Price": "90.45 USD",
+      "Daily Change": "-2.99%",
+      "Market Cap": "5.56B",
+      "Trailing P/E": "41.87",
       "EPS": "2.16",
       "52W High": "146.39",
       "52W Low": "85.77",
-      "50D SMA": "93.33",
-      "200D SMA": "110.53",
-      "Volume": "415204",
-      "3M Avg Volume": "864,142",
-      "Price/Book": "2.18",
-      "Dividend Yield": "0.52%",
+      "50D SMA": "93.05",
+      "200D SMA": "110.37",
+      "Volume": "464448",
+      "3M Avg Volume": "854,679",
+      "Price/Book": "2.11",
+      "Dividend Yield": "0.51%",
       "Sector": "Utilities",
-      "Open": "93.20",
-      "High": "93.82",
-      "Low": "92.07",
-      "Close": "93.36",
+      "Open": "92.20",
+      "High": "92.59",
+      "Low": "90.38",
+      "Close": "90.45",
       "RS vs Sector ETF": "+16.00%"
     },
     "fundamentals": {
-      "market_cap": "5.74B",
-      "trailing_pe": "43.18",
+      "market_cap": "5.56B",
+      "trailing_pe": "41.87",
       "eps": "2.16",
-      "forward_eps": "2.64",
+      "forward_eps": "2.60",
       "earnings_growth": "+30.80% YoY",
-      "price_to_book": "2.18",
-      "dividend_yield": "0.52%",
-      "volume": "415204",
-      "avg_volume_3m": "864,142",
+      "price_to_book": "2.11",
+      "dividend_yield": "0.51%",
+      "volume": "464448",
+      "avg_volume_3m": "854,679",
       "52w_high": "146.39",
       "52w_low": "85.77",
       "short_float_pct": "12.12%",
@@ -114,7 +114,7 @@
       "analyst_count": "13명",
       "held_by_insiders": "0.42%",
       "held_by_institutions": "95.14%",
-      "implied_volatility": "42.4%"
+      "implied_volatility": "45.0%"
     },
     "earnings_setup": {
       "forward_eps": "2.49 USD/share",
@@ -143,15 +143,15 @@
       "pattern_note": "최근 1개 분기 연속 상회 · 최근 4개 분기 서프라이즈 추세 안정 · 평균 서프라이즈 +0.2%"
     },
     "price_action": {
-      "atr_14d": "2.87",
-      "atr_percent": "3.08%",
-      "relative_volume": "0.48x",
-      "gap_percent": "+0.89%",
-      "price_vs_sma50": "+0.03%",
-      "price_vs_sma200": "-15.54%",
-      "week52_position": "13%",
+      "atr_14d": "2.95",
+      "atr_percent": "3.26%",
+      "relative_volume": "0.54x",
+      "gap_percent": "-1.12%",
+      "price_vs_sma50": "-2.79%",
+      "price_vs_sma200": "-18.05%",
+      "week52_position": "8%",
       "rs_vs_spy": "N/A",
-      "rs_vs_sector_etf": "-3.45%"
+      "rs_vs_sector_etf": "-5.27%"
     },
     "quarterly_financials": [
       {
@@ -224,11 +224,11 @@
     },
     "options_summary": {
       "expiry": "2026-11-20",
-      "implied_volatility": "42.4%",
-      "atm_call_iv": "43.8%",
+      "implied_volatility": "45.0%",
+      "atm_call_iv": "49.0%",
       "atm_put_iv": "41.0%",
-      "put_call_ratio": "0.30x",
-      "iv_percentile_30d": "5th",
+      "put_call_ratio": "0.31x",
+      "iv_percentile_30d": "15th",
       "tone": "bearish",
       "unusual_activity": "PUT $140, vol 141, OI 대비 138% ; PUT $130, vol 37, OI 대비 1850% ; CALL $145, vol 10, OI 대비 38%",
       "oi_change": "N/A"
@@ -385,8 +385,8 @@
       }
     },
     "period_changes": {
-      "7d": "-1.12%",
-      "30d": "+1.82%"
+      "7d": "-3.08%",
+      "30d": "-0.64%"
     },
     "sec_filing_tags": [
       "실적",
@@ -494,5 +494,5 @@
       }
     }
   },
-  "intraday_refreshed_at": "2026-11-11T21:00:56"
+  "intraday_refreshed_at": "2026-11-12T21:16:33"
 }
